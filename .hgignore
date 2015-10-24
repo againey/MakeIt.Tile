@@ -1,0 +1,7 @@
+syntax: regexp
+\.suo$
+^Assets/UnityVS/
+^Assets/UnityVS\.meta$
+^Miscellaneous/Screenshots/
+^Library/
+^Temp/
