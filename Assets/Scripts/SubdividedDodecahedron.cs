@@ -21,7 +21,7 @@ public class SubdividedDodecahedron : MonoBehaviour
 	{
 		UnityEditor.EditorApplication.delayCall += () =>
 		{
-			RebuildMeshes();
+			if (this != null && gameObject != null) RebuildMeshes();
 		};
 	}
 
@@ -47,6 +47,15 @@ public class SubdividedDodecahedron : MonoBehaviour
 				var s1 = Mathf.Sin(t * omega);
 				vertexPositions[i2] = (p0 * s0 + p1 * s1) / d;
 			}));
+
+		topology = topology.AlterTopology(1,
+			delegate(MeshTopology altered, int edge)
+			{
+				return Random.Range(0, 10) == 0;
+			},
+			delegate(MeshTopology altered)
+			{
+			});
 
 		var tileCount = topology._vertexNeighborOffsets.Length - 1;
 
