@@ -1,20 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Tiling;
 
 public class SubdividedDodecahedron : MonoBehaviour
 {
 	public int SubdivisionDegree = 0;
+	public int AlterationDegree = 0;
+	public int MinimumPolygonSize = 3;
+	public int MaximumPolygonSize = 8;
+	public float AlterationFrequency = 0.1f;
+	public int RandomSeed = 0;
+	public float RelaxationRegularity = 0.5f;
 
 	public Material Material;
 
-	private readonly MeshTopology _icosahedronTopology;
-	private readonly Vector3[] _icosahedronVertexPositions;
+	private readonly Topology _icosahedronTopology;
+	private readonly TileAttribute<Vector3> _icosahedronTilePositions;
 
 	public SubdividedDodecahedron()
 	{
-		BasicMeshTopology basicIcosahedron;
-		SphereTopology.Icosahedron(out basicIcosahedron, out _icosahedronVertexPositions);
-		_icosahedronTopology = new MeshTopology(basicIcosahedron);
+		MinimalTopology basicIcosahedron;
+		SphereTopology.Icosahedron(out basicIcosahedron, out _icosahedronTilePositions);
+		_icosahedronTopology = new Topology(basicIcosahedron);
 	}
 
 	void OnValidate()
@@ -27,48 +34,59 @@ public class SubdividedDodecahedron : MonoBehaviour
 
 	void RebuildMeshes()
 	{
-		Vector3[] vertexPositions = null;
-		var topology = new MeshTopology(_icosahedronTopology.Subdivide(SubdivisionDegree,
-			delegate (int count)
+		TileAttribute<Vector3> tilePositions = new TileAttribute<Vector3>();
+		var topology = new Topology(_icosahedronTopology.Subdivide(SubdivisionDegree,
+			delegate (int subdividedTileCount)
 			{
-				vertexPositions = new Vector3[count];
+				tilePositions = new TileAttribute<Vector3>(subdividedTileCount);
 			},
 			delegate (int i0, int i1)
 			{
-				vertexPositions[i1] = _icosahedronVertexPositions[i0];
+				tilePositions[i1] = _icosahedronTilePositions[i0];
 			},
 			delegate (int i0, int i1, int i2, float t)
 			{
-				var p0 = vertexPositions[i0];
-				var p1 = vertexPositions[i1];
+				var p0 = tilePositions[i0];
+				var p1 = tilePositions[i1];
 				var omega = Mathf.Acos(Vector3.Dot(p0, p1));
 				var d = Mathf.Sin(omega);
 				var s0 = Mathf.Sin((1f - t) * omega);
 				var s1 = Mathf.Sin(t * omega);
-				vertexPositions[i2] = (p0 * s0 + p1 * s1) / d;
+				tilePositions[i2] = (p0 * s0 + p1 * s1) / d;
 			}));
 
-		Vector3[] relaxedPositions = new Vector3[vertexPositions.Length];
+		var random = new System.Random(RandomSeed);
+		TileAttribute<Vector3> regularityRelaxedPositions = new TileAttribute<Vector3>(tilePositions.Count);
+		TileAttribute<Vector3> areaRelaxedPositions = new TileAttribute<Vector3>(tilePositions.Count);
+		TileAttribute<Vector3> relaxedPositions = new TileAttribute<Vector3>(tilePositions.Count);
+		var idealArea = 4f * Mathf.PI;
 		int pass = 0;
-		topology = topology.AlterTopology(3,
-			delegate(MeshTopology altered, int edge)
+		topology = topology.AlterTopology(AlterationDegree,
+			delegate(Topology altered, Edge edge)
 			{
-				//return Random.Range(0, 10) == 0;
-				return ((edge + 1 + pass * 5) % 41 == 0 || (edge + 1 + pass * 5) % 43 == 0);
+				if (edge.Tiles[0].NeighborCount <= MinimumPolygonSize || edge.Tiles[1].NeighborCount <= MinimumPolygonSize) return false;
+				if (edge.Corners[0].OppositeTile(edge).NeighborCount >= MaximumPolygonSize || edge.Corners[1].OppositeTile(edge).NeighborCount >= MaximumPolygonSize) return false;
+				return random.NextDouble() < AlterationFrequency / AlterationDegree;
 			},
-			delegate(MeshTopology altered)
+			delegate(Topology altered)
 			{
 				//return;
 				++pass;
 				float priorRelaxationAmount = 0f;
 				for (int i = 0; i < 20; ++i)
 				{
-					altered.RelaxForRegularity(vertexPositions, relaxedPositions);
+					TilingUtility.RelaxTilePositionsForRegularity(altered, tilePositions, regularityRelaxedPositions);
+					TilingUtility.RelaxTilePositionsForEqualArea(altered, tilePositions, areaRelaxedPositions, idealArea / tilePositions.Count);
+
+					for (int j = 0; j < tilePositions.Count; ++j)
+					{
+						relaxedPositions[j] = regularityRelaxedPositions[j] * RelaxationRegularity + areaRelaxedPositions[j] * (1f - RelaxationRegularity);
+					}
 
 					float relaxationAmount = 0f;
-					for (int j = 0; j < vertexPositions.Length; ++j)
+					for (int j = 0; j < tilePositions.Count; ++j)
 					{
-						relaxationAmount += (vertexPositions[j] - relaxedPositions[j]).magnitude;
+						relaxationAmount += (tilePositions[j] - relaxedPositions[j]).magnitude;
 					}
 
 					if (relaxationAmount == 0f || (priorRelaxationAmount != 0f && relaxationAmount / priorRelaxationAmount > 0.95f))
@@ -76,11 +94,11 @@ public class SubdividedDodecahedron : MonoBehaviour
 						break;
 					}
 
-					Utility.Swap(ref vertexPositions, ref relaxedPositions);
+					Utility.Swap(ref tilePositions, ref relaxedPositions);
 
 					for (int j = 0; j < 20; ++j)
 					{
-						if (altered.ValidateAndRepairPositions(vertexPositions, 0.5f))
+						if (TilingUtility.ValidateAndRepairTilePositions(altered, tilePositions, 0.5f))
 						{
 							break;
 						}
@@ -88,43 +106,43 @@ public class SubdividedDodecahedron : MonoBehaviour
 				}
 			});
 
-		var tileCount = topology._vertexNeighborOffsets.Length - 1;
-
-		var centroids = new Vector3[topology._triangleVertices.GetLength(0)];
-		for (int i = 0; i < centroids.Length; ++i)
+		var cornerPositions = new CornerAttribute<Vector3>(topology.Corners.Count);
+		foreach (var corner in topology.Corners)
 		{
-			centroids[i] = (
-				vertexPositions[topology._triangleVertices[i, 0]] +
-				vertexPositions[topology._triangleVertices[i, 1]] +
-				vertexPositions[topology._triangleVertices[i, 2]]
+			cornerPositions[corner] = (
+				tilePositions[corner.Tiles[0]] +
+				tilePositions[corner.Tiles[1]] +
+				tilePositions[corner.Tiles[2]]
 			).normalized;
 		}
 
-		var tileCenters = new Vector3[tileCount];
-		for (int i = 0; i < tileCount; ++i)
+		var flattenedTilePositions = new TileAttribute<Vector3>(topology.Tiles.Count);
+		foreach (var tile in topology.Tiles)
 		{
-			for (int j = topology._vertexNeighborOffsets[i]; j < topology._vertexNeighborOffsets[i + 1]; ++j)
+			foreach (var corner in tile.Corners)
 			{
-				tileCenters[i] += centroids[topology._vertexTriangles[j]];
+				flattenedTilePositions[tile] += cornerPositions[corner];
 			}
-			tileCenters[i] /= topology._vertexNeighborOffsets[i + 1] - topology._vertexNeighborOffsets[i];
+			flattenedTilePositions[tile] /= tile.NeighborCount;
 		}
 
 		var meshes = gameObject.GetComponentsInChildren<UniqueMesh>();
 
-		var tile = 0;
+		var tileIndex = 0;
 		var meshIndex = 0;
-		while (tile < tileCount)
+		var tileCount = topology.Tiles.Count;
+		while (tileIndex < tileCount)
 		{
-			var endTile = tile;
+			var endTileIndex = tileIndex;
 			var vertexCount = 0;
 			var triangleCount = 0;
-			while (endTile < tileCount)
+			while (endTileIndex < tileCount)
 			{
-				var tileNeighborCount = topology._vertexNeighborOffsets[endTile + 1] - topology._vertexNeighborOffsets[endTile];
+				var tile = topology.Tiles[endTileIndex];
+				var tileNeighborCount = tile.NeighborCount;
 				var tileVertexCount = tileNeighborCount + 1;
 				if (vertexCount + tileVertexCount > 65534) break;
-				++endTile;
+				++endTileIndex;
 				vertexCount += tileVertexCount;
 				triangleCount += tileNeighborCount;
 			}
@@ -136,15 +154,16 @@ public class SubdividedDodecahedron : MonoBehaviour
 			int vertex = 0;
 			int triangle = 0;
 
-			while (tile < endTile)
+			while (tileIndex < endTileIndex)
 			{
-				vertices[vertex] = tileCenters[tile];
+				var tile = topology.Tiles[tileIndex];
+				var corners = tile.Corners;
+				var neighborCount = tile.NeighborCount;
+				vertices[vertex] = flattenedTilePositions[tileIndex];
 				colors[vertex] = new Color(1, 1, 1);
-				var neighborOffset = topology._vertexNeighborOffsets[tile];
-				var neighborCount = topology._vertexNeighborOffsets[tile + 1] - neighborOffset;
 				for (int j = 0; j < neighborCount; ++j)
 				{
-					vertices[vertex + j + 1] = centroids[topology._vertexTriangles[neighborOffset + j]];
+					vertices[vertex + j + 1] = cornerPositions[corners[j]];
 					colors[vertex + j + 1] = new Color(0, 0, 0);
 					triangles[triangle + j * 3 + 0] = vertex;
 					triangles[triangle + j * 3 + 1] = vertex + 1 + j;
@@ -152,7 +171,7 @@ public class SubdividedDodecahedron : MonoBehaviour
 				}
 				vertex += neighborCount + 1;
 				triangle += neighborCount * 3;
-				++tile;
+				++tileIndex;
 			}
 
 			Mesh mesh;
