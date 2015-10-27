@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 public class BasicMeshTopology
 {
@@ -17,6 +18,374 @@ public class MeshTopology : BasicMeshTopology
 	public int[] _vertexTriangles;
 	public int[] _vertexEdges;
 	public int[] _vertexVertices;
+
+	public struct VerticesIndexer : IEnumerable<Vertex>
+	{
+		private MeshTopology _topology;
+		public VerticesIndexer(MeshTopology topology) { _topology = topology; }
+		public Vertex this[int i] { get { return new Vertex(_topology, i); } }
+		public int Count { get { return _topology._vertexNeighborOffsets.Length - 1; } }
+		public IEnumerator<Vertex> GetEnumerator() { for (int i = 0; i < _topology._vertexNeighborOffsets.Length - 1; ++i) yield return new Vertex(_topology, i); }
+		IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Vertex>).GetEnumerator(); }
+	}
+
+	public VerticesIndexer Vertices { get { return new VerticesIndexer(this); } }
+
+	public struct EdgesIndexer : IEnumerable<Edge>
+	{
+		private MeshTopology _topology;
+		public EdgesIndexer(MeshTopology topology) { _topology = topology; }
+		public Edge this[int i] { get { return new Edge(_topology, i); } }
+		public int Count { get { return _topology._edgeVertices.GetLength(0); } }
+		public IEnumerator<Edge> GetEnumerator() { for (int i = 0; i < _topology._edgeVertices.GetLength(0); ++i) yield return new Edge(_topology, i); }
+		IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Edge>).GetEnumerator(); }
+	}
+
+	public EdgesIndexer Edges { get { return new EdgesIndexer(this); } }
+
+	public struct TrianglesIndexer : IEnumerable<Triangle>
+	{
+		private MeshTopology _topology;
+		public TrianglesIndexer(MeshTopology topology) { _topology = topology; }
+		public Triangle this[int i] { get { return new Triangle(_topology, i); } }
+		public int Count { get { return _topology._triangleVertices.GetLength(0); } }
+		public IEnumerator<Triangle> GetEnumerator() { for (int i = 0; i < _topology._triangleVertices.GetLength(0); ++i) yield return new Triangle(_topology, i); }
+		IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Triangle>).GetEnumerator(); }
+	}
+
+	public TrianglesIndexer Triangles { get { return new TrianglesIndexer(this); } }
+
+	public struct Vertex : IEquatable<Vertex>
+	{
+		private MeshTopology _topology;
+		private int _index;
+
+		private int _neighborOffset;
+		private int _neighborCount;
+
+		public Vertex(MeshTopology topology, int index)
+		{
+			_topology = topology;
+			_index = index;
+			_neighborOffset = _topology._vertexNeighborOffsets[_index];
+			_neighborCount = _topology._vertexNeighborOffsets[_index + 1] - _neighborOffset;
+		}
+
+		public int Index { get { return _index; } }
+
+		public int NeighborCount { get { return _neighborCount; } }
+
+		public struct VerticesIndexer : IEnumerable<Vertex>
+		{
+			private Vertex _vertex;
+			public VerticesIndexer(Vertex vertex) { _vertex = vertex; }
+			public Vertex this[int i] { get { return new Vertex(_vertex._topology, _vertex._topology._vertexVertices[_vertex._neighborOffset + i]); } }
+			public int Count { get { return _vertex._neighborCount; } }
+			public IEnumerator<Vertex> GetEnumerator() { for (int i = 0; i < _vertex._neighborCount; ++i) yield return this[i]; }
+			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Vertex>).GetEnumerator(); }
+		}
+
+		public VerticesIndexer Vertices { get { return new VerticesIndexer(this); } }
+
+		public struct EdgesIndexer : IEnumerable<Edge>
+		{
+			private Vertex _vertex;
+			public EdgesIndexer(Vertex vertex) { _vertex = vertex; }
+			public Edge this[int i] { get { return new Edge(_vertex._topology, _vertex._topology._vertexEdges[_vertex._neighborOffset + i]); } }
+			public int Count { get { return _vertex._neighborCount; } }
+			public IEnumerator<Edge> GetEnumerator() { for (int i = 0; i < _vertex._neighborCount; ++i) yield return this[i]; }
+			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Edge>).GetEnumerator(); }
+		}
+
+		public EdgesIndexer Edges { get { return new EdgesIndexer(this); } }
+
+		public struct TrianglesIndexer : IEnumerable<Triangle>
+		{
+			private Vertex _vertex;
+			public TrianglesIndexer(Vertex vertex) { _vertex = vertex; }
+			public Triangle this[int i] { get { return new Triangle(_vertex._topology, _vertex._topology._vertexTriangles[_vertex._neighborOffset + i]); } }
+			public int Count { get { return _vertex._neighborCount; } }
+			public IEnumerator<Triangle> GetEnumerator() { for (int i = 0; i < _vertex._neighborCount; ++i) yield return this[i]; }
+			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Triangle>).GetEnumerator(); }
+		}
+
+		public TrianglesIndexer Triangles { get { return new TrianglesIndexer(this); } }
+
+		public int NeighborIndexOf(Vertex vertex)
+		{
+			for (int i = _neighborOffset; i < _neighborOffset + _neighborCount; ++i)
+			{
+				if (_topology._vertexVertices[i] == vertex.Index) return i - _neighborOffset;
+			}
+			throw new ApplicationException("The specified vertex is not a neighbor of this vertex.");
+		}
+
+		public int NeighborIndexOf(Edge edge)
+		{
+			for (int i = _neighborOffset; i < _neighborOffset + _neighborCount; ++i)
+			{
+				if (_topology._vertexEdges[i] == edge.Index) return i - _neighborOffset;
+			}
+			throw new ApplicationException("The specified edge is not a neighbor of this vertex.");
+		}
+
+		public int NeighborIndexOf(Triangle triangle)
+		{
+			for (int i = _neighborOffset; i < _neighborOffset + _neighborCount; ++i)
+			{
+				if (_topology._vertexTriangles[i] == triangle.Index) return i - _neighborOffset;
+			}
+			throw new ApplicationException("The specified triangle is not a neighbor of this vertex.");
+		}
+
+		public int RotateNeighborIndex(int index, int distance)
+		{
+			return (index + _neighborCount + distance) % _neighborCount;
+		}
+
+		public Vertex PrevVertex(Vertex neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Edge PrevEdge(Edge neighbor) { return Edges[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Triangle PrevTriangle(Triangle neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+
+		public Vertex NextVertex(Vertex neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+		public Edge NextEdge(Edge neighbor) { return Edges[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+		public Triangle NextTriangle(Triangle neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+
+		public Vertex AssociatedVertex(Edge neighbor) { return Vertices[NeighborIndexOf(neighbor)]; }
+		public Vertex PrevVertex(Triangle neighbor) { return Vertices[NeighborIndexOf(neighbor)]; }
+		public Vertex NextVertex(Triangle neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+
+		public Edge AssociatedEdge(Vertex neighbor) { return Edges[NeighborIndexOf(neighbor)]; }
+		public Edge PrevEdge(Triangle neighbor) { return Edges[NeighborIndexOf(neighbor)]; }
+		public Edge NextEdge(Triangle neighbor) { return Edges[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+
+		public Triangle PrevTriangle(Vertex neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Triangle NextTriangle(Vertex neighbor) { return Triangles[NeighborIndexOf(neighbor)]; }
+		public Triangle PrevTriangle(Edge neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Triangle NextTriangle(Edge neighbor) { return Triangles[NeighborIndexOf(neighbor)]; }
+
+		public override bool Equals(object other) { return other is Vertex && _index == ((Vertex)other)._index; }
+		public bool Equals(Vertex other) { return _index == other._index; }
+		public static bool operator ==(Vertex lhs, Vertex rhs) { return lhs._index == rhs._index; }
+		public static bool operator !=(Vertex lhs, Vertex rhs) { return lhs._index != rhs._index; }
+		public override int GetHashCode() { return _index.GetHashCode(); }
+	}
+
+	public struct Edge : IEquatable<Edge>
+	{
+		private MeshTopology _topology;
+		private int _index;
+
+		public Edge(MeshTopology topology, int index)
+		{
+			_topology = topology;
+			_index = index;
+		}
+
+		public int Index { get { return _index; } }
+
+		public int NeighborCount { get { return 2; } }
+
+		public struct VerticesIndexer : IEnumerable<Vertex>
+		{
+			private MeshTopology _topology;
+			private int _index;
+
+			public VerticesIndexer(MeshTopology topology, int index)
+			{
+				_topology = topology;
+				_index = index;
+			}
+
+			public Vertex this[int i] { get { return new Vertex(_topology, _topology._edgeVertices[_index, i]); } }
+			public int Count { get { return 2; } }
+			public IEnumerator<Vertex> GetEnumerator() { for (int i = 0; i < 2; ++i) yield return this[i]; }
+			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Vertex>).GetEnumerator(); }
+		}
+
+		public VerticesIndexer Vertices { get { return new VerticesIndexer(_topology, _index); } }
+
+		public struct TrianglesIndexer : IEnumerable<Triangle>
+		{
+			private MeshTopology _topology;
+			private int _index;
+
+			public TrianglesIndexer(MeshTopology topology, int index)
+			{
+				_topology = topology;
+				_index = index;
+			}
+
+			public Triangle this[int i] { get { return new Triangle(_topology, _topology._edgeTriangles[_index, i]); } }
+			public int Count { get { return 2; } }
+			public IEnumerator<Triangle> GetEnumerator() { for (int i = 0; i < 2; ++i) yield return this[i]; }
+			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Triangle>).GetEnumerator(); }
+		}
+
+		public TrianglesIndexer Triangles { get { return new TrianglesIndexer(_topology, _index); } }
+
+		public int NeighborIndexOf(Vertex vertex)
+		{
+			if (_topology._edgeVertices[_index, 0] == vertex.Index) return 0;
+			else if (_topology._edgeVertices[_index, 1] == vertex.Index) return 1;
+			throw new ApplicationException("The specified vertex is not a neighbor of this edge.");
+		}
+
+		public int NeighborIndexOf(Triangle triangle)
+		{
+			if (_topology._edgeTriangles[_index, 0] == triangle.Index) return 0;
+			else if (_topology._edgeTriangles[_index, 1] == triangle.Index) return 1;
+			throw new ApplicationException("The specified triangle is not a neighbor of this edge.");
+		}
+
+		public int RotateNeighborIndex(int index, int distance)
+		{
+			return (index + 2 + distance) % 2;
+		}
+
+		public Vertex OppositeVertex(Vertex neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+		public Triangle OppositeTriangle(Triangle neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+
+		public Triangle PrevTriangle(Vertex neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Triangle NextTriangle(Vertex neighbor) { return Triangles[NeighborIndexOf(neighbor)]; }
+		public Vertex PrevVertex(Triangle neighbor) { return Vertices[NeighborIndexOf(neighbor)]; }
+		public Vertex NextVertex(Triangle neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+
+		public override bool Equals(object other) { return other is Edge && _index == ((Edge)other)._index; }
+		public bool Equals(Edge other) { return _index == other._index; }
+		public static bool operator ==(Edge lhs, Edge rhs) { return lhs._index == rhs._index; }
+		public static bool operator !=(Edge lhs, Edge rhs) { return lhs._index != rhs._index; }
+		public override int GetHashCode() { return _index.GetHashCode(); }
+	}
+
+	public struct Triangle : IEquatable<Triangle>
+	{
+		private MeshTopology _topology;
+		private int _index;
+
+		public Triangle(MeshTopology topology, int index)
+		{
+			_topology = topology;
+			_index = index;
+		}
+
+		public int Index { get { return _index; } }
+
+		public int NeighborCount { get { return 3; } }
+
+		public struct VerticesIndexer : IEnumerable<Vertex>
+		{
+			private MeshTopology _topology;
+			private int _index;
+
+			public VerticesIndexer(MeshTopology topology, int index)
+			{
+				_topology = topology;
+				_index = index;
+			}
+
+			public Vertex this[int i] { get { return new Vertex(_topology, _topology._triangleVertices[_index, i]); } }
+			public int Count { get { return 3; } }
+			public IEnumerator<Vertex> GetEnumerator() { for (int i = 0; i < 3; ++i) yield return this[i]; }
+			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Vertex>).GetEnumerator(); }
+		}
+
+		public VerticesIndexer Vertices { get { return new VerticesIndexer(_topology, _index); } }
+
+		public struct EdgesIndexer : IEnumerable<Edge>
+		{
+			private MeshTopology _topology;
+			private int _index;
+
+			public EdgesIndexer(MeshTopology topology, int index)
+			{
+				_topology = topology;
+				_index = index;
+			}
+
+			public Edge this[int i] { get { return new Edge(_topology, _topology._triangleEdges[_index, i]); } }
+			public int Count { get { return 3; } }
+			public IEnumerator<Edge> GetEnumerator() { for (int i = 0; i < 3; ++i) yield return this[i]; }
+			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Edge>).GetEnumerator(); }
+		}
+
+		public EdgesIndexer Edges { get { return new EdgesIndexer(_topology, _index); } }
+
+		public struct TrianglesIndexer : IEnumerable<Triangle>
+		{
+			private MeshTopology _topology;
+			private int _index;
+
+			public TrianglesIndexer(MeshTopology topology, int index)
+			{
+				_topology = topology;
+				_index = index;
+			}
+
+			public Triangle this[int i] { get { return new Triangle(_topology, _topology._triangleTriangles[_index, i]); } }
+			public int Count { get { return 3; } }
+			public IEnumerator<Triangle> GetEnumerator() { for (int i = 0; i < 3; ++i) yield return this[i]; }
+			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Triangle>).GetEnumerator(); }
+		}
+
+		public TrianglesIndexer Triangles { get { return new TrianglesIndexer(_topology, _index); } }
+
+		public int NeighborIndexOf(Vertex vertex)
+		{
+			if (_topology._triangleVertices[_index, 0] == vertex.Index) return 0;
+			else if (_topology._triangleVertices[_index, 1] == vertex.Index) return 1;
+			else if (_topology._triangleVertices[_index, 2] == vertex.Index) return 2;
+			throw new ApplicationException("The specified vertex is not a neighbor of this triangle.");
+		}
+
+		public int NeighborIndexOf(Edge edge)
+		{
+			if (_topology._triangleEdges[_index, 0] == edge.Index) return 0;
+			else if (_topology._triangleEdges[_index, 1] == edge.Index) return 1;
+			else if (_topology._triangleEdges[_index, 2] == edge.Index) return 2;
+			throw new ApplicationException("The specified edge is not a neighbor of this triangle.");
+		}
+
+		public int NeighborIndexOf(Triangle triangle)
+		{
+			if (_topology._triangleTriangles[_index, 0] == triangle.Index) return 0;
+			else if (_topology._triangleTriangles[_index, 1] == triangle.Index) return 1;
+			else if (_topology._triangleTriangles[_index, 2] == triangle.Index) return 2;
+			throw new ApplicationException("The specified triangle is not a neighbor of this triangle.");
+		}
+
+		public int RotateNeighborIndex(int index, int distance)
+		{
+			return (index + 3 + distance) % 3;
+		}
+
+		public Vertex PrevVertex(Vertex neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Edge PrevEdge(Edge neighbor) { return Edges[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Triangle PrevTriangle(Triangle neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+
+		public Vertex NextVertex(Vertex neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+		public Edge NextEdge(Edge neighbor) { return Edges[RotateNeighborIndex(NeighborIndexOf(neighbor), 1)]; }
+		public Triangle NextTriangle(Triangle neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+
+		public Vertex PrevVertex(Edge neighbor) { return Vertices[NeighborIndexOf(neighbor)]; }
+		public Vertex NextVertex(Edge neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+		public Vertex PrevVertex(Triangle neighbor) { return Vertices[NeighborIndexOf(neighbor)]; }
+		public Vertex NextVertex(Triangle neighbor) { return Vertices[RotateNeighborIndex(NeighborIndexOf(neighbor), +1)]; }
+
+		public Edge PrevEdge(Vertex neighbor) { return Edges[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Edge NextEdge(Vertex neighbor) { return Edges[NeighborIndexOf(neighbor)]; }
+		public Edge AssociatedEdge(Triangle neighbor) { return Edges[NeighborIndexOf(neighbor)]; }
+
+		public Triangle PrevTriangle(Vertex neighbor) { return Triangles[RotateNeighborIndex(NeighborIndexOf(neighbor), -1)]; }
+		public Triangle NextTriangle(Vertex neighbor) { return Triangles[NeighborIndexOf(neighbor)]; }
+		public Triangle AssociatedTriangle(Edge neighbor) { return Triangles[NeighborIndexOf(neighbor)]; }
+
+		public override bool Equals(object other) { return other is Triangle && _index == ((Triangle)other)._index; }
+		public bool Equals(Triangle other) { return _index == other._index; }
+		public static bool operator ==(Triangle lhs, Triangle rhs) { return lhs._index == rhs._index; }
+		public static bool operator !=(Triangle lhs, Triangle rhs) { return lhs._index != rhs._index; }
+		public override int GetHashCode() { return _index.GetHashCode(); }
+	}
 
 	public MeshTopology()
 	{
@@ -416,6 +785,14 @@ public class MeshTopology : BasicMeshTopology
 		else throw new ApplicationException("The provided edge was not a neighbor of the specified triangle.");
 	}
 
+	private int GetTriangleTriangleNeighborIndex(int triangle, int neighborTriangle)
+	{
+		if (_triangleTriangles[triangle, 0] == neighborTriangle) return 0;
+		else if (_triangleTriangles[triangle, 1] == neighborTriangle) return 1;
+		else if (_triangleTriangles[triangle, 2] == neighborTriangle) return 2;
+		else throw new ApplicationException("The provided triangle was not a neighbor of the specified triangle.");
+	}
+
 	private int RotateVertexNeighborIndex(int vertex, int neighborIndex, int distance)
 	{
 		var neighborCount = _vertexNeighborOffsets[vertex + 1] - _vertexNeighborOffsets[vertex];
@@ -437,40 +814,35 @@ public class MeshTopology : BasicMeshTopology
 		vertexAlterationQueue.Insert(insertionIndex, alteration);
 	}
 
-	private void ApplyVertexAlteration(MeshTopology altered, List<int> vertexAlterationIndexQueue, List<VertexAlteration> vertexAlterationQueue, int[] newVertexNeighborOffsets, int[] newVertexVertices, int[] newVertexEdges, int[] newVertexTriangles, ref int newOffset, ref int vertexAlterationQueuePosition)
+	private void ApplyVertexAlteration(List<int> vertexAlterationIndexQueue, List<VertexAlteration> vertexAlterationQueue, int[] newVertexNeighborOffsets, int[] newVertexVertices, int[] newVertexEdges, int[] newVertexTriangles, ref int newOffset, ref int vertexAlterationQueuePosition)
 	{
 		var vertex = vertexAlterationIndexQueue[vertexAlterationQueuePosition];
-		var firstOffset = altered._vertexNeighborOffsets[vertex];
-		var neighborCount = altered._vertexNeighborOffsets[vertex + 1] - firstOffset;
+		var firstOffset = _vertexNeighborOffsets[vertex];
+		var neighborCount = _vertexNeighborOffsets[vertex + 1] - firstOffset;
 		newVertexNeighborOffsets[vertex] = newOffset;
 
 		var neighborIndex = vertexAlterationQueue[vertexAlterationQueuePosition]._neighbor;
 		if (vertexAlterationQueue[vertexAlterationQueuePosition]._vertex >= 0)
 		{
-			var priorNeighborIndex = altered.RotateVertexNeighborIndex(vertex, neighborIndex, -1);
 			if (neighborIndex > 0)
 			{
-				System.Array.Copy(altered._vertexVertices, firstOffset, newVertexVertices, newOffset, neighborIndex);
-				System.Array.Copy(altered._vertexEdges, firstOffset, newVertexEdges, newOffset, neighborIndex);
-			}
-			if (priorNeighborIndex > 0)
-			{
-				System.Array.Copy(altered._vertexTriangles, firstOffset, newVertexTriangles, newOffset, priorNeighborIndex);
+				System.Array.Copy(_vertexVertices, firstOffset, newVertexVertices, newOffset, neighborIndex);
+				System.Array.Copy(_vertexEdges, firstOffset, newVertexEdges, newOffset, neighborIndex);
+				System.Array.Copy(_vertexTriangles, firstOffset, newVertexTriangles, newOffset, neighborIndex);
 			}
 
 			newVertexVertices[newOffset + neighborIndex] = vertexAlterationQueue[vertexAlterationQueuePosition]._vertex;
 			newVertexEdges[newOffset + neighborIndex] = vertexAlterationQueue[vertexAlterationQueuePosition]._edge;
-			newVertexTriangles[newOffset + priorNeighborIndex] = vertexAlterationQueue[vertexAlterationQueuePosition]._triangle;
+			newVertexTriangles[newOffset + neighborIndex] = _vertexTriangles[firstOffset + (neighborIndex + neighborCount - 1) % neighborCount];
 
 			if (neighborIndex < neighborCount)
 			{
-				System.Array.Copy(altered._vertexVertices, firstOffset + neighborIndex, newVertexVertices, newOffset + neighborIndex + 1, neighborCount - neighborIndex);
-				System.Array.Copy(altered._vertexEdges, firstOffset + neighborIndex, newVertexEdges, newOffset + neighborIndex + 1, neighborCount - neighborIndex);
+				System.Array.Copy(_vertexVertices, firstOffset + neighborIndex, newVertexVertices, newOffset + neighborIndex + 1, neighborCount - neighborIndex);
+				System.Array.Copy(_vertexEdges, firstOffset + neighborIndex, newVertexEdges, newOffset + neighborIndex + 1, neighborCount - neighborIndex);
+				System.Array.Copy(_vertexTriangles, firstOffset + neighborIndex, newVertexTriangles, newOffset + neighborIndex + 1, neighborCount - neighborIndex);
 			}
-			if (priorNeighborIndex < neighborCount)
-			{
-				System.Array.Copy(altered._vertexTriangles, firstOffset + priorNeighborIndex, newVertexTriangles, newOffset + priorNeighborIndex + 1, neighborCount - priorNeighborIndex);
-			}
+
+			newVertexTriangles[newOffset + (neighborIndex + neighborCount) % (neighborCount + 1)] = vertexAlterationQueue[vertexAlterationQueuePosition]._triangle;
 
 			newOffset += neighborCount + 1;
 		}
@@ -478,16 +850,16 @@ public class MeshTopology : BasicMeshTopology
 		{
 			if (neighborIndex > 0)
 			{
-				System.Array.Copy(altered._vertexVertices, firstOffset, newVertexVertices, newOffset, neighborIndex);
-				System.Array.Copy(altered._vertexEdges, firstOffset, newVertexEdges, newOffset, neighborIndex);
-				System.Array.Copy(altered._vertexTriangles, firstOffset, newVertexTriangles, newOffset, neighborIndex);
+				System.Array.Copy(_vertexVertices, firstOffset, newVertexVertices, newOffset, neighborIndex);
+				System.Array.Copy(_vertexEdges, firstOffset, newVertexEdges, newOffset, neighborIndex);
+				System.Array.Copy(_vertexTriangles, firstOffset, newVertexTriangles, newOffset, neighborIndex);
 			}
 
 			if (neighborIndex < neighborCount - 1)
 			{
-				System.Array.Copy(altered._vertexVertices, firstOffset + neighborIndex + 1, newVertexVertices, newOffset + neighborIndex, neighborCount - neighborIndex - 1);
-				System.Array.Copy(altered._vertexEdges, firstOffset + neighborIndex + 1, newVertexEdges, newOffset + neighborIndex, neighborCount - neighborIndex - 1);
-				System.Array.Copy(altered._vertexTriangles, firstOffset + neighborIndex + 1, newVertexTriangles, newOffset + neighborIndex, neighborCount - neighborIndex - 1);
+				System.Array.Copy(_vertexVertices, firstOffset + neighborIndex + 1, newVertexVertices, newOffset + neighborIndex, neighborCount - neighborIndex - 1);
+				System.Array.Copy(_vertexEdges, firstOffset + neighborIndex + 1, newVertexEdges, newOffset + neighborIndex, neighborCount - neighborIndex - 1);
+				System.Array.Copy(_vertexTriangles, firstOffset + neighborIndex + 1, newVertexTriangles, newOffset + neighborIndex, neighborCount - neighborIndex - 1);
 			}
 
 			newOffset += neighborCount - 1;
@@ -526,10 +898,10 @@ public class MeshTopology : BasicMeshTopology
 		var triangleOuterEdge10 = _triangleEdges[triangle1, triangleNeighborNextIndex1];
 		var triangleOuterEdge11 = _triangleEdges[triangle1, triangleOuterNeighborIndex1];
 
-		_triangleEdges[triangle0, 0] = triangle1;
+		_triangleEdges[triangle0, 0] = edge;
 		_triangleEdges[triangle0, 1] = triangleOuterEdge11;
 		_triangleEdges[triangle0, 2] = triangleOuterEdge00;
-		_triangleEdges[triangle1, 0] = triangle0;
+		_triangleEdges[triangle1, 0] = edge;
 		_triangleEdges[triangle1, 1] = triangleOuterEdge01;
 		_triangleEdges[triangle1, 2] = triangleOuterEdge10;
 
@@ -551,6 +923,9 @@ public class MeshTopology : BasicMeshTopology
 		_edgeTriangles[triangleOuterEdge01, GetEdgeTriangleNeighborIndex(triangleOuterEdge01, triangle0)] = triangle1;
 		_edgeTriangles[triangleOuterEdge11, GetEdgeTriangleNeighborIndex(triangleOuterEdge11, triangle1)] = triangle0;
 
+		_triangleTriangles[triangleOuterTriangle01, GetTriangleTriangleNeighborIndex(triangleOuterTriangle01, triangle0)] = triangle1;
+		_triangleTriangles[triangleOuterTriangle11, GetTriangleTriangleNeighborIndex(triangleOuterTriangle11, triangle1)] = triangle0;
+
 		InsertVertexAlteration(oldVertex0, new VertexAlteration(oldVertexNeighborIndex0), vertexAlterationIndexQueue, vertexAlterationQueue);
 		InsertVertexAlteration(oldVertex1, new VertexAlteration(oldVertexNeighborIndex1), vertexAlterationIndexQueue, vertexAlterationQueue);
 
@@ -560,7 +935,7 @@ public class MeshTopology : BasicMeshTopology
 		InsertVertexAlteration(newVertex1, new VertexAlteration(newVertexNeighborIndex1, newVertex0, edge, triangle0), vertexAlterationIndexQueue, vertexAlterationQueue);
 	}
 
-	public MeshTopology AlterTopology(int passCount, System.Func<MeshTopology, int, bool> edgeRotationPredicate, System.Action<MeshTopology> relaxer)
+	public MeshTopology AlterTopology(int passCount, System.Func<MeshTopology, int, bool> edgeRotationPredicate, System.Action<MeshTopology> afterPassAction)
 	{
 		MeshTopology altered = new MeshTopology();
 
@@ -645,8 +1020,8 @@ public class MeshTopology : BasicMeshTopology
 						goto rotate;
 
 						tryFarEdge:
-						var neighborLeftMiddle = GetVertexVertexNeighborIndex(vertexLeft, vertexMiddle);
-						var neighborLeftLeft = RotateVertexNeighborIndex(vertexLeft, neighborLeftMiddle, -1);
+						var neighborLeftMiddle = altered.GetVertexVertexNeighborIndex(vertexLeft, vertexMiddle);
+						var neighborLeftLeft = altered.RotateVertexNeighborIndex(vertexLeft, neighborLeftMiddle, -1);
 						var leftFirstOffset = altered._vertexNeighborOffsets[vertexLeft];
 						var vertexLeftLeft = altered._vertexVertices[leftFirstOffset + neighborLeftLeft];
 
@@ -677,35 +1052,103 @@ public class MeshTopology : BasicMeshTopology
 				}
 				else
 				{
-					ApplyVertexAlteration(altered, vertexAlterationIndexQueue, vertexAlterationQueue, newVertexNeighborOffsets, newVertexVertices, newVertexEdges, newVertexTriangles, ref newOffset, ref vertexAlterationQueuePosition);
+					altered.ApplyVertexAlteration(vertexAlterationIndexQueue, vertexAlterationQueue, newVertexNeighborOffsets, newVertexVertices, newVertexEdges, newVertexTriangles, ref newOffset, ref vertexAlterationQueuePosition);
 				}
 			}
 
 			newVertexNeighborOffsets[newVertexNeighborOffsets.Length - 1] = newOffset;
 
-			var swapIntermediate = altered._vertexNeighborOffsets;
-			altered._vertexNeighborOffsets = newVertexNeighborOffsets;
-			newVertexNeighborOffsets = swapIntermediate;
-
-			swapIntermediate = altered._vertexVertices;
-			altered._vertexVertices = newVertexVertices;
-			newVertexVertices = swapIntermediate;
-
-			swapIntermediate = altered._vertexEdges;
-			altered._vertexEdges = newVertexEdges;
-			newVertexEdges = swapIntermediate;
-
-			swapIntermediate = altered._vertexTriangles;
-			altered._vertexTriangles = newVertexTriangles;
-			newVertexTriangles = swapIntermediate;
+			Utility.Swap(ref altered._vertexNeighborOffsets, ref newVertexNeighborOffsets);
+			Utility.Swap(ref altered._vertexVertices, ref newVertexVertices);
+			Utility.Swap(ref altered._vertexEdges, ref newVertexEdges);
+			Utility.Swap(ref altered._vertexTriangles, ref newVertexTriangles);
 
 			vertexAlterationIndexQueue.Clear();
 			vertexAlterationQueue.Clear();
 
-			relaxer(altered);
+			afterPassAction(altered);
 		}
 
 		return altered;
+	}
+
+	public void RelaxForRegularity(Vector3[] originalPositions, Vector3[] relaxedPositions)
+	{
+		System.Array.Clear(relaxedPositions, 0, relaxedPositions.Length);
+
+		for (int i = 0; i < originalPositions.Length; ++i)
+		{
+			for (int j = _vertexNeighborOffsets[i]; j < _vertexNeighborOffsets[i + 1]; ++j)
+			{
+				relaxedPositions[i] += originalPositions[_vertexVertices[j]];
+			}
+			relaxedPositions[i].Normalize();
+		}
+	}
+
+	public void RelaxForArea(Vector3[] originalPositions, Vector3[] relaxedPositions, float idealArea)
+	{
+		System.Array.Clear(relaxedPositions, 0, relaxedPositions.Length);
+
+		for (int i = 0; i < originalPositions.Length; ++i)
+		{
+			var centerPosition = originalPositions[i];
+			var prevNeighborPosition = originalPositions[_vertexVertices[_vertexNeighborOffsets[i + 1] - 1]];
+			float surroundingArea = 0;
+			for (int j = _vertexNeighborOffsets[i]; j < _vertexNeighborOffsets[i + 1]; ++j)
+			{
+				var neighborPosition = originalPositions[_vertexVertices[j]];
+				surroundingArea += Vector3.Cross(neighborPosition - centerPosition, prevNeighborPosition - centerPosition).magnitude * 0.5f;
+				prevNeighborPosition = neighborPosition;
+			}
+			surroundingArea /= 3f;
+			var multiplier = idealArea / surroundingArea;
+			for (int j = _vertexNeighborOffsets[i]; j < _vertexNeighborOffsets[i + 1]; ++j)
+			{
+				var neighborPosition = originalPositions[_vertexVertices[j]];
+				relaxedPositions[_vertexVertices[j]] += (neighborPosition - centerPosition) * multiplier + centerPosition;
+			}
+		}
+
+		for (int i = 0; i < originalPositions.Length; ++i)
+		{
+			relaxedPositions[i].Normalize();
+		}
+	}
+
+	public bool ValidateAndRepairPositions(Vector3[] vertexPositions, float adjustmentWeight)
+	{
+		bool adjusted = false;
+		float originalWeight = 1f - adjustmentWeight;
+		for (int i = 0; i < vertexPositions.Length; ++i)
+		{
+			var centerPosition = vertexPositions[i];
+			var neighborPosition0 = vertexPositions[_vertexVertices[_vertexNeighborOffsets[i + 1] - 2]];
+			var neighborPosition1 = vertexPositions[_vertexVertices[_vertexNeighborOffsets[i + 1] - 1]];
+			var centroid0 = (centerPosition + neighborPosition0 + neighborPosition1) / 3f;
+			for (int j = _vertexNeighborOffsets[i]; j < _vertexNeighborOffsets[i + 1]; ++j)
+			{
+				var neighborPosition2 = vertexPositions[_vertexVertices[j]];
+				var centroid1 = (centerPosition + neighborPosition1 + neighborPosition2) / 3f;
+				var normal = Vector3.Cross(centroid0 - centerPosition, centroid1 - centerPosition);
+				if (Vector3.Dot(normal, centerPosition) < 0f)
+				{
+					adjusted = true;
+					var averageNeighborPosition = new Vector3(0f, 0f, 0f);
+					for (int k = _vertexNeighborOffsets[i]; k < _vertexNeighborOffsets[i + 1]; ++k)
+					{
+						averageNeighborPosition += vertexPositions[_vertexVertices[k]];
+					}
+					averageNeighborPosition /= _vertexNeighborOffsets[i + 1] - _vertexNeighborOffsets[i];
+					vertexPositions[i] = (centerPosition * originalWeight + averageNeighborPosition * adjustmentWeight).normalized;
+					break;
+				}
+				neighborPosition0 = neighborPosition1;
+				neighborPosition1 = neighborPosition2;
+				centroid0 = centroid1;
+			}
+		}
+		return !adjusted;
 	}
 }
 

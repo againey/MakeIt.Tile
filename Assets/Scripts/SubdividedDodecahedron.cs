@@ -48,13 +48,44 @@ public class SubdividedDodecahedron : MonoBehaviour
 				vertexPositions[i2] = (p0 * s0 + p1 * s1) / d;
 			}));
 
-		topology = topology.AlterTopology(1,
+		Vector3[] relaxedPositions = new Vector3[vertexPositions.Length];
+		int pass = 0;
+		topology = topology.AlterTopology(3,
 			delegate(MeshTopology altered, int edge)
 			{
-				return Random.Range(0, 10) == 0;
+				//return Random.Range(0, 10) == 0;
+				return ((edge + 1 + pass * 5) % 41 == 0 || (edge + 1 + pass * 5) % 43 == 0);
 			},
 			delegate(MeshTopology altered)
 			{
+				//return;
+				++pass;
+				float priorRelaxationAmount = 0f;
+				for (int i = 0; i < 20; ++i)
+				{
+					altered.RelaxForRegularity(vertexPositions, relaxedPositions);
+
+					float relaxationAmount = 0f;
+					for (int j = 0; j < vertexPositions.Length; ++j)
+					{
+						relaxationAmount += (vertexPositions[j] - relaxedPositions[j]).magnitude;
+					}
+
+					if (relaxationAmount == 0f || (priorRelaxationAmount != 0f && relaxationAmount / priorRelaxationAmount > 0.95f))
+					{
+						break;
+					}
+
+					Utility.Swap(ref vertexPositions, ref relaxedPositions);
+
+					for (int j = 0; j < 20; ++j)
+					{
+						if (altered.ValidateAndRepairPositions(vertexPositions, 0.5f))
+						{
+							break;
+						}
+					}
+				}
 			});
 
 		var tileCount = topology._vertexNeighborOffsets.Length - 1;
@@ -116,8 +147,8 @@ public class SubdividedDodecahedron : MonoBehaviour
 					vertices[vertex + j + 1] = centroids[topology._vertexTriangles[neighborOffset + j]];
 					colors[vertex + j + 1] = new Color(0, 0, 0);
 					triangles[triangle + j * 3 + 0] = vertex;
-					triangles[triangle + j * 3 + 2] = vertex + 1 + j;
-					triangles[triangle + j * 3 + 1] = vertex + 1 + (j + 1) % neighborCount;
+					triangles[triangle + j * 3 + 1] = vertex + 1 + j;
+					triangles[triangle + j * 3 + 2] = vertex + 1 + (j + 1) % neighborCount;
 				}
 				vertex += neighborCount + 1;
 				triangle += neighborCount * 3;
