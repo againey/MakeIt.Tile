@@ -4,7 +4,7 @@ using Tiling;
 
 public class SphereTopology
 {
-	public static void Icosahedron(out MinimalTopology topology, out TileAttribute<Vector3> tilePositions)
+	public static void Dodecahedron(out MinimalTopology topology, out TileAttribute<Vector3> tilePositions)
 	{
 		var latitude = Mathf.Atan2(1, 2);
 		var longitude = Mathf.PI * 0.2f;

@@ -233,21 +233,21 @@ public class MeshTopologyTests
 	}
 
 	[Test]
-	public void IcosahedronValidation()
+	public void DodecahedronValidation()
 	{
 		MinimalTopology basicTopology;
 		TileAttribute<Vector3> tilePositions;
-		SphereTopology.Icosahedron(out basicTopology, out tilePositions);
+		SphereTopology.Dodecahedron(out basicTopology, out tilePositions);
 		var topology = new Topology(basicTopology);
 		ValidateInvariants(topology);
 	}
 
 	[Test]
-	public void SubdividedIcosahedronValidation()
+	public void SubdividedDodecahedronValidation()
 	{
 		MinimalTopology basicTopology;
 		TileAttribute<Vector3> tilePositions;
-		SphereTopology.Icosahedron(out basicTopology, out tilePositions);
+		SphereTopology.Dodecahedron(out basicTopology, out tilePositions);
 		var topology = new Topology(basicTopology);
 		ValidateInvariants(new Topology(topology.Subdivide(1, (int count) => { }, (int lhs, int rhs) => { }, (int i, int j, int k, float t) => { })));
 		ValidateInvariants(new Topology(topology.Subdivide(2, (int count) => { }, (int lhs, int rhs) => { }, (int i, int j, int k, float t) => { })));
@@ -255,11 +255,11 @@ public class MeshTopologyTests
 	}
 
 	[Test]
-	public void IcosahedronAlterTopologyValidation_SingleEdgeRotation()
+	public void DodecahedronAlterTopologyValidation_SingleEdgeRotation()
 	{
 		MinimalTopology basicTopology;
 		TileAttribute<Vector3> tilePositions;
-		SphereTopology.Icosahedron(out basicTopology, out tilePositions);
+		SphereTopology.Dodecahedron(out basicTopology, out tilePositions);
 		var topology = new Topology(basicTopology);
 		ValidateInvariants(topology
 			.AlterTopology(1,
@@ -273,11 +273,11 @@ public class MeshTopologyTests
 	}
 
 	[Test]
-	public void SubdividedIcosahedronAlterTopologyValidation_SingleEdgeRotation()
+	public void SubdividedDodecahedronAlterTopologyValidation_SingleEdgeRotation()
 	{
 		MinimalTopology basicTopology;
 		TileAttribute<Vector3> tilePositions;
-		SphereTopology.Icosahedron(out basicTopology, out tilePositions);
+		SphereTopology.Dodecahedron(out basicTopology, out tilePositions);
 		var topology = new Topology(basicTopology);
 		ValidateInvariants(new Topology(topology.Subdivide(1, (int count) => { }, (int lhs, int rhs) => { }, (int i, int j, int k, float t) => { }))
 			.AlterTopology(1,
@@ -291,11 +291,11 @@ public class MeshTopologyTests
 	}
 
 	[Test]
-	public void SubdividedIcosahedronAlterTopologyValidation_MultipleEdgeRotations()
+	public void SubdividedDodecahedronAlterTopologyValidation_MultipleEdgeRotations()
 	{
 		MinimalTopology basicTopology;
 		TileAttribute<Vector3> tilePositions;
-		SphereTopology.Icosahedron(out basicTopology, out tilePositions);
+		SphereTopology.Dodecahedron(out basicTopology, out tilePositions);
 		var topology = new Topology(basicTopology);
 		ValidateInvariants(new Topology(topology.Subdivide(1, (int count) => { }, (int lhs, int rhs) => { }, (int i, int j, int k, float t) => { }))
 			.AlterTopology(1,
@@ -309,11 +309,11 @@ public class MeshTopologyTests
 	}
 
 	[Test]
-	public void IcosahedronAlterTopologyValidation_MultipleEdgeRotations_MultiplePasses()
+	public void DodecahedronAlterTopologyValidation_MultipleEdgeRotations_MultiplePasses()
 	{
 		MinimalTopology basicTopology;
 		TileAttribute<Vector3> tilePositions;
-		SphereTopology.Icosahedron(out basicTopology, out tilePositions);
+		SphereTopology.Dodecahedron(out basicTopology, out tilePositions);
 		var topology = new Topology(basicTopology);
 		topology = topology
 			.AlterTopology(3,
@@ -328,11 +328,11 @@ public class MeshTopologyTests
 	}
 
 	[Test]
-	public void SubdividedIcosahedronAlterTopologyValidation_MultipleEdgeRotations_MultiplePasses()
+	public void SubdividedDodecahedronAlterTopologyValidation_MultipleEdgeRotations_MultiplePasses()
 	{
 		MinimalTopology basicTopology;
 		TileAttribute<Vector3> tilePositions;
-		SphereTopology.Icosahedron(out basicTopology, out tilePositions);
+		SphereTopology.Dodecahedron(out basicTopology, out tilePositions);
 		var topology = new Topology(basicTopology);
 		topology = topology
 			.AlterTopology(3,
