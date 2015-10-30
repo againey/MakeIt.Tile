@@ -135,7 +135,7 @@ public class TilingMeshGenerator : MonoBehaviour
 #if UNITY_EDITOR
 		UnityEditor.EditorApplication.delayCall += () =>
 		{
-			if (gameObject != null)
+			if (this != null && gameObject != null)
 			{
 #endif
 				while (meshIndex < meshes.Length)
