@@ -8,6 +8,10 @@ public class TilingMeshGenerator : MonoBehaviour
 	public Material Material;
 	public TilingGenerator TilingGenerator;
 
+#if UNITY_EDITOR
+	private Topology _topology = null;
+#endif
+
 	private bool _invalidated = true;
 
 	public void Invalidate()
@@ -17,32 +21,33 @@ public class TilingMeshGenerator : MonoBehaviour
 
 	void Start()
 	{
-		TilingGenerator.OnRebuildTiling.AddListener(() => { Invalidate(); });
 	}
 
 	void OnValidate()
 	{
 		Invalidate();
-		//UnityEditor.EditorApplication.delayCall += () =>
-		//{
-		//	if (this != null && gameObject != null) RebuildMeshes();
-		//};
 	}
 
-	void Update()
+#if UNITY_EDITOR
+	void LateUpdate()
 	{
-		if (_invalidated)
+		if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
 		{
-			RebuildMeshes();
+			if (TilingGenerator.Topology != _topology)
+			{
+				RebuildMeshes();
+				_topology = TilingGenerator.Topology;
+			}
 		}
 	}
+#endif
 
 	void RebuildMeshes()
 	{
 		var meshes = gameObject.GetComponentsInChildren<UniqueMesh>();
 		var meshIndex = 0;
 
-		if (TilingGenerator != null)
+		if (TilingGenerator != null && TilingGenerator.Topology != null)
 		{
 			var flattenedTilePositions = new TileAttribute<Vector3>(TilingGenerator.Topology.Tiles.Count);
 			foreach (var tile in TilingGenerator.Topology.Tiles)
@@ -127,10 +132,20 @@ public class TilingMeshGenerator : MonoBehaviour
 			}
 		}
 
-		while (meshIndex < meshes.Length)
+#if UNITY_EDITOR
+		UnityEditor.EditorApplication.delayCall += () =>
 		{
-			DestroyImmediate(meshes[meshIndex++].gameObject);
-		}
+			if (gameObject != null)
+			{
+#endif
+				while (meshIndex < meshes.Length)
+				{
+					DestroyImmediate(meshes[meshIndex++].gameObject);
+				}
+#if UNITY_EDITOR
+			}
+		};
+#endif
 
 		_invalidated = false;
 	}

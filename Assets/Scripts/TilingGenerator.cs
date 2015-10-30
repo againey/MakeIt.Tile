@@ -6,8 +6,6 @@ using Tiling;
 [ExecuteInEditMode]
 public abstract class TilingGenerator : MonoBehaviour
 {
-	public UnityEvent OnRebuildTiling;
-
 	private Topology _topology;
 	private TileAttribute<Vector3> _tilePositions;
 	private CornerAttribute<Vector3> _cornerPositions;
@@ -25,7 +23,7 @@ public abstract class TilingGenerator : MonoBehaviour
 
 	void Awake()
 	{
-		Update();
+		Invalidate();
 	}
 
 	void OnValidate()
@@ -39,7 +37,6 @@ public abstract class TilingGenerator : MonoBehaviour
 		{
 			RebuildTiling(out _topology, out _tilePositions, out _cornerPositions);
 			_invalidated = false;
-			OnRebuildTiling.Invoke();
 		}
 	}
 
