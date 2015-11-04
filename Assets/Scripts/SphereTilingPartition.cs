@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Tiling;
-
+/*
 public class SphereTilingPartition
 {
 	private struct PartitionedTile
@@ -145,3 +145,4 @@ public class SphereTilingPartition
 		return new Tile();
 	}
 }
+*/

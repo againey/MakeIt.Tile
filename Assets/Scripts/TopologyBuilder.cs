@@ -8,8 +8,17 @@ namespace Tiling
 	{
 		public class Builder
 		{
-			private int _vertexCount = 0;
-			private readonly List<int> _vertexNeighbors = new List<int>();
+			private struct VertexNeighbor
+			{
+				public int _next;
+				public int _vertex;
+
+				public VertexNeighbor(int vertex) { _next = -1; _vertex = vertex; }
+				public VertexNeighbor(int next, int vertex) { _next = next; _vertex = vertex; }
+			}
+
+			private readonly List<int> _vertexRoots = new List<int>();
+			private readonly List<VertexNeighbor> _vertexNeighbors = new List<VertexNeighbor>();
 
 			public Builder()
 			{
@@ -17,190 +26,307 @@ namespace Tiling
 
 			public Builder(int vertexCount, int edgeCount, int faceCount)
 			{
-				_vertexNeighbors.Capacity = vertexCount + edgeCount * 2;
+				_vertexRoots.Capacity = vertexCount;
+				_vertexNeighbors.Capacity = vertexCount + edgeCount * 3 / 2;
 			}
 
-			public void AddVertex(int neighbor0, int neighbor1, int neighbor2)
+			public int vertexCount { get { return _vertexRoots.Count; } }
+
+			public int AddVertex()
 			{
-				++_vertexCount;
-				_vertexNeighbors.Add(3);
-				_vertexNeighbors.Add(neighbor0);
-				_vertexNeighbors.Add(neighbor1);
-				_vertexNeighbors.Add(neighbor2);
+				var vertexIndex = _vertexRoots.Count;
+				_vertexRoots.Add(-1);
+				return vertexIndex;
 			}
 
-			public void AddVertex(int neighbor0, int neighbor1, int neighbor2, int neighbor3)
+			public int AddVertex(int neighbor0, int neighbor1, int neighbor2)
 			{
-				++_vertexCount;
-				_vertexNeighbors.Add(4);
-				_vertexNeighbors.Add(neighbor0);
-				_vertexNeighbors.Add(neighbor1);
-				_vertexNeighbors.Add(neighbor2);
-				_vertexNeighbors.Add(neighbor3);
+				var vertexIndex = _vertexRoots.Count;
+				_vertexRoots.Add(_vertexNeighbors.Count);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(neighbor2));
+				return vertexIndex;
 			}
 
-			public void AddVertex(int neighbor0, int neighbor1, int neighbor2, int neighbor3, int neighbor4)
+			public int AddVertex(int neighbor0, int neighbor1, int neighbor2, int neighbor3)
 			{
-				++_vertexCount;
-				_vertexNeighbors.Add(5);
-				_vertexNeighbors.Add(neighbor0);
-				_vertexNeighbors.Add(neighbor1);
-				_vertexNeighbors.Add(neighbor2);
-				_vertexNeighbors.Add(neighbor3);
-				_vertexNeighbors.Add(neighbor4);
+				var vertexIndex = _vertexRoots.Count;
+				_vertexRoots.Add(_vertexNeighbors.Count);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(neighbor3));
+				return vertexIndex;
 			}
 
-			public void AddVertex(int neighbor0, int neighbor1, int neighbor2, int neighbor3, int neighbor4, int neighbor5)
+			public int AddVertex(int neighbor0, int neighbor1, int neighbor2, int neighbor3, int neighbor4)
 			{
-				++_vertexCount;
-				_vertexNeighbors.Add(6);
-				_vertexNeighbors.Add(neighbor0);
-				_vertexNeighbors.Add(neighbor1);
-				_vertexNeighbors.Add(neighbor2);
-				_vertexNeighbors.Add(neighbor3);
-				_vertexNeighbors.Add(neighbor4);
-				_vertexNeighbors.Add(neighbor5);
+				var vertexIndex = _vertexRoots.Count;
+				_vertexRoots.Add(_vertexNeighbors.Count);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor3));
+				_vertexNeighbors.Add(new VertexNeighbor(neighbor4));
+				return vertexIndex;
 			}
 
-			public void AddVertex(params int[] neighbors)
+			public int AddVertex(int neighbor0, int neighbor1, int neighbor2, int neighbor3, int neighbor4, int neighbor5)
 			{
-				++_vertexCount;
-				_vertexNeighbors.Add(neighbors.Length);
-				_vertexNeighbors.AddRange(neighbors);
+				var vertexIndex = _vertexRoots.Count;
+				_vertexRoots.Add(_vertexNeighbors.Count);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor3));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor4));
+				_vertexNeighbors.Add(new VertexNeighbor(neighbor5));
+				return vertexIndex;
 			}
 
-			private void InitializeVertexNeighbor(Topology topology, int vertexIndex, int vertexNeighborIndex, ref int edgeIndex, ref int inputIndex)
+			public int AddVertex(params int[] neighbors)
 			{
-				var neighborVertexIndex = _vertexNeighbors[inputIndex++];
-				topology._vertexNeighbors[vertexNeighborIndex]._vertex = neighborVertexIndex;
-				topology._vertexNeighbors[vertexNeighborIndex]._face = -1;
+				return AddVertex(neighbors.Length, neighbors);
+			}
 
-				if (vertexIndex < neighborVertexIndex)
+			public int AddVertex(int neighborCount, int[] neighbors)
+			{
+				var vertexIndex = _vertexRoots.Count;
+				_vertexRoots.Add(_vertexNeighbors.Count);
+				int i = 0;
+				int iEnd = neighborCount - 1;
+				while (i < iEnd)
 				{
-					topology._vertexNeighbors[vertexNeighborIndex]._edge = edgeIndex;
-					topology._edgeNeighbors[edgeIndex, 0] = new EdgeNeighbor(vertexIndex, -1);
-					topology._edgeNeighbors[edgeIndex, 1] = new EdgeNeighbor(neighborVertexIndex, -1);
+					_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbors[i]));
+					++i;
 				}
-				else
-				{
-					var neighborNeighborIndex = topology._vertexRoots[neighborVertexIndex].rootIndex;
-					while (topology._vertexNeighbors[neighborNeighborIndex]._vertex != vertexIndex)
-					{
-						neighborNeighborIndex = topology._vertexNeighbors[neighborNeighborIndex]._next;
-					}
-					topology._vertexNeighbors[vertexNeighborIndex]._edge = topology._vertexNeighbors[neighborNeighborIndex]._edge;
-					++edgeIndex;
-				}
+				_vertexNeighbors.Add(new VertexNeighbor(neighbors[i]));
+				return vertexIndex;
 			}
 
-			private void InitializeFace(Topology topology, int vertexIndex, int vertexNeighborIndex, ref int faceIndex, ref int faceNeighborIndex)
+			public void ExtendVertex(int vertex, int neighbor0)
 			{
-				var neighborCount = 0;
-				var rootIndex = faceNeighborIndex;
+				var originalIndex = _vertexRoots[vertex];
+				_vertexRoots[vertex] = _vertexNeighbors.Count;
+				_vertexNeighbors.Add(new VertexNeighbor(originalIndex, neighbor0));
+			}
 
-				var prevVertexIndex = vertexIndex;
+			public void ExtendVertex(int vertex, int neighbor0, int neighbor1)
+			{
+				var originalIndex = _vertexRoots[vertex];
+				_vertexRoots[vertex] = _vertexNeighbors.Count;
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(originalIndex, neighbor1));
+			}
 
-				do
+			public void ExtendVertex(int vertex, int neighbor0, int neighbor1, int neighbor2)
+			{
+				var originalIndex = _vertexRoots[vertex];
+				_vertexRoots[vertex] = _vertexNeighbors.Count;
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(originalIndex, neighbor2));
+			}
+
+			public void ExtendVertex(int vertex, int neighbor0, int neighbor1, int neighbor2, int neighbor3)
+			{
+				var originalIndex = _vertexRoots[vertex];
+				_vertexRoots[vertex] = _vertexNeighbors.Count;
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(originalIndex, neighbor3));
+			}
+
+			public void ExtendVertex(int vertex, int neighbor0, int neighbor1, int neighbor2, int neighbor3, int neighbor4)
+			{
+				var originalIndex = _vertexRoots[vertex];
+				_vertexRoots[vertex] = _vertexNeighbors.Count;
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor3));
+				_vertexNeighbors.Add(new VertexNeighbor(originalIndex, neighbor4));
+			}
+
+			public void ExtendVertex(int vertex, int neighbor0, int neighbor1, int neighbor2, int neighbor3, int neighbor4, int neighbor5)
+			{
+				var originalIndex = _vertexRoots[vertex];
+				_vertexRoots[vertex] = _vertexNeighbors.Count;
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor3));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor4));
+				_vertexNeighbors.Add(new VertexNeighbor(originalIndex, neighbor5));
+			}
+
+			public void ExtendVertex(int vertex, params int[] neighbors)
+			{
+				ExtendVertex(vertex, neighbors.Length, neighbors);
+			}
+
+			public void ExtendVertex(int vertex, int neighborCount, int[] neighbors)
+			{
+				var originalIndex = _vertexRoots[vertex];
+				_vertexRoots[vertex] = _vertexNeighbors.Count;
+				int iEnd = neighborCount - 1;
+				for (int i = 0; i < iEnd; ++i)
 				{
-					var nextVertexIndex = topology._vertexNeighbors[vertexNeighborIndex]._vertex;
-					var edgeIndex = topology._vertexNeighbors[vertexNeighborIndex]._edge;
+					_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbors[i]));
+				}
+				_vertexNeighbors.Add(new VertexNeighbor(originalIndex, neighbors[iEnd]));
+			}
 
-					topology._vertexNeighbors[vertexNeighborIndex]._face = faceIndex;
+			private int FindVertexNeighborIndex(int vertexIndex, int neighborVertexIndex)
+			{
+				var neighborIndex = _vertexRoots[vertexIndex];
+				while (neighborIndex != -1)
+				{
+					if (_vertexNeighbors[neighborIndex]._vertex == neighborVertexIndex) return neighborIndex;
+					neighborIndex = _vertexNeighbors[neighborIndex]._next;
+				}
+				throw new System.ArgumentException("The vertex after which the new neighbors were to be inserted is not already recorded as a neighbor vertex.");
+			}
 
-					var edgeNeighborIndex = (topology._edgeNeighbors[edgeIndex, 0]._vertex == prevVertexIndex ? 0 : 1);
-					var edgeOppositeNeighborIndex = -edgeNeighborIndex + 1;
-					topology._edgeNeighbors[edgeIndex, edgeNeighborIndex]._face = faceIndex;
+			public void ExtendVertexAfter(int vertexIndex, int insertAfterVertexIndex, int neighbor0)
+			{
+				var neighborIndex = FindVertexNeighborIndex(vertexIndex, insertAfterVertexIndex);
+				var nextneighborIndex = _vertexNeighbors[neighborIndex]._next;
+				_vertexNeighbors[neighborIndex] = new VertexNeighbor(_vertexNeighbors.Count, insertAfterVertexIndex);
+				_vertexNeighbors.Add(new VertexNeighbor(nextneighborIndex, neighbor0));
+			}
 
-					topology._faceNeighbors[faceNeighborIndex]._prev = faceNeighborIndex - 1;
-					topology._faceNeighbors[faceNeighborIndex]._next = faceNeighborIndex + 1;
-					topology._faceNeighbors[faceNeighborIndex]._vertex = nextVertexIndex;
-					topology._faceNeighbors[faceNeighborIndex]._edge = edgeIndex;
+			public void ExtendVertexAfter(int vertexIndex, int insertAfterVertexIndex, int neighbor0, int neighbor1)
+			{
+				var neighborIndex = FindVertexNeighborIndex(vertexIndex, insertAfterVertexIndex);
+				var nextneighborIndex = _vertexNeighbors[neighborIndex]._next;
+				_vertexNeighbors[neighborIndex] = new VertexNeighbor(_vertexNeighbors.Count, insertAfterVertexIndex);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(nextneighborIndex, neighbor1));
+			}
 
-					var oppositeFaceIndex = topology._edgeNeighbors[edgeIndex, edgeOppositeNeighborIndex]._face;
-					topology._faceNeighbors[faceNeighborIndex]._face = oppositeFaceIndex;
-					if (oppositeFaceIndex != -1)
-					{
-						var neighborNeighborIndex = topology._faceRoots[oppositeFaceIndex].rootIndex;
-						while (topology._faceNeighbors[neighborNeighborIndex]._edge != edgeIndex)
-						{
-							neighborNeighborIndex = topology._faceNeighbors[neighborNeighborIndex]._next;
-						}
-						topology._faceNeighbors[neighborNeighborIndex]._face = faceIndex;
-					}
+			public void ExtendVertexAfter(int vertexIndex, int insertAfterVertexIndex, int neighbor0, int neighbor1, int neighbor2)
+			{
+				var neighborIndex = FindVertexNeighborIndex(vertexIndex, insertAfterVertexIndex);
+				var nextneighborIndex = _vertexNeighbors[neighborIndex]._next;
+				_vertexNeighbors[neighborIndex] = new VertexNeighbor(_vertexNeighbors.Count, insertAfterVertexIndex);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(nextneighborIndex, neighbor2));
+			}
 
-					vertexNeighborIndex = topology._vertexRoots[nextVertexIndex].rootIndex;
-					while (topology._vertexNeighbors[vertexNeighborIndex]._vertex != prevVertexIndex)
-					{
-						vertexNeighborIndex = topology._vertexNeighbors[vertexNeighborIndex]._next;
-					}
-					vertexNeighborIndex = topology._vertexNeighbors[vertexNeighborIndex]._prev;
-					prevVertexIndex = nextVertexIndex;
+			public void ExtendVertexAfter(int vertexIndex, int insertAfterVertexIndex, int neighbor0, int neighbor1, int neighbor2, int neighbor3)
+			{
+				var neighborIndex = FindVertexNeighborIndex(vertexIndex, insertAfterVertexIndex);
+				var nextneighborIndex = _vertexNeighbors[neighborIndex]._next;
+				_vertexNeighbors[neighborIndex] = new VertexNeighbor(_vertexNeighbors.Count, insertAfterVertexIndex);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(nextneighborIndex, neighbor3));
+			}
 
-					++faceNeighborIndex;
-					++neighborCount;
-				} while (prevVertexIndex != vertexIndex);
+			public void ExtendVertexAfter(int vertexIndex, int insertAfterVertexIndex, int neighbor0, int neighbor1, int neighbor2, int neighbor3, int neighbor4)
+			{
+				var neighborIndex = FindVertexNeighborIndex(vertexIndex, insertAfterVertexIndex);
+				var nextneighborIndex = _vertexNeighbors[neighborIndex]._next;
+				_vertexNeighbors[neighborIndex] = new VertexNeighbor(_vertexNeighbors.Count, insertAfterVertexIndex);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor3));
+				_vertexNeighbors.Add(new VertexNeighbor(nextneighborIndex, neighbor4));
+			}
 
-				topology._faceRoots[faceIndex] = new FaceRoot(neighborCount, rootIndex);
+			public void ExtendVertexAfter(int vertexIndex, int insertAfterVertexIndex, int neighbor0, int neighbor1, int neighbor2, int neighbor3, int neighbor4, int neighbor5)
+			{
+				var neighborIndex = FindVertexNeighborIndex(vertexIndex, insertAfterVertexIndex);
+				var nextneighborIndex = _vertexNeighbors[neighborIndex]._next;
+				_vertexNeighbors[neighborIndex] = new VertexNeighbor(_vertexNeighbors.Count, insertAfterVertexIndex);
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor0));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor1));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor2));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor3));
+				_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbor4));
+				_vertexNeighbors.Add(new VertexNeighbor(nextneighborIndex, neighbor5));
+			}
 
-				++faceIndex;
+			public void ExtendVertexAfter(int vertexIndex, int insertAfterVertexIndex, params int[] neighbors)
+			{
+				ExtendVertexAfter(vertexIndex, insertAfterVertexIndex, neighbors.Length, neighbors);
+			}
+
+			public void ExtendVertexAfter(int vertexIndex, int insertAfterVertexIndex, int neighborCount, int[] neighbors)
+			{
+				var neighborIndex = FindVertexNeighborIndex(vertexIndex, insertAfterVertexIndex);
+				var nextneighborIndex = _vertexNeighbors[neighborIndex]._next;
+				int iEnd = neighborCount - 1;
+				for (int i = 0; i < iEnd; ++i)
+				{
+					_vertexNeighbors.Add(new VertexNeighbor(_vertexNeighbors.Count + 1, neighbors[i]));
+				}
+				_vertexNeighbors.Add(new VertexNeighbor(nextneighborIndex, neighbors[iEnd]));
 			}
 
 			public Topology BuildTopology()
 			{
 				var topology = new Topology();
 
-				topology._vertexRoots = new VertexRoot[_vertexCount];
-				topology._vertexNeighbors = new VertexNeighbor[_vertexNeighbors.Count - _vertexCount];
-				topology._edgeNeighbors = new EdgeNeighbor[(_vertexNeighbors.Count - _vertexCount) / 2, 2];
+				topology._vertexData = new NodeData[_vertexRoots.Count];
+				topology._edgeData = new EdgeData[_vertexNeighbors.Count];
 
-				int vertexIndex = 0;
-				int vertexNeighborIndex = 0;
 				int edgeIndex = 0;
-				int inputIndex = 0;
-				while (inputIndex < _vertexNeighbors.Count)
+
+				for (int vertexIndex = 0; vertexIndex < _vertexRoots.Count; ++vertexIndex)
 				{
-					var neighborCount = _vertexNeighbors[inputIndex++];
-					var lastIndex = vertexNeighborIndex + neighborCount - 1;
-					topology._vertexRoots[vertexIndex] = new VertexRoot(neighborCount, vertexNeighborIndex);
-
-					topology._vertexNeighbors[lastIndex]._next = vertexNeighborIndex;
-					topology._vertexNeighbors[vertexNeighborIndex]._prev = lastIndex;
-					while (vertexNeighborIndex < lastIndex)
+					var bufferIndex = _vertexRoots[vertexIndex];
+					var firstEdgeIndex = edgeIndex;
+					while (bufferIndex != -1)
 					{
-						InitializeVertexNeighbor(topology, vertexIndex, vertexNeighborIndex, ref edgeIndex, ref inputIndex);
+						var neighborVertexIndex = _vertexNeighbors[bufferIndex]._vertex;
+						topology._edgeData[edgeIndex]._vertex = neighborVertexIndex;
+						topology._edgeData[edgeIndex]._face = -1;
 
-						var nextNeighborIndex = vertexNeighborIndex + 1;
-						topology._vertexNeighbors[vertexNeighborIndex]._next = nextNeighborIndex;
-						topology._vertexNeighbors[nextNeighborIndex]._prev = vertexNeighborIndex;
-						vertexNeighborIndex = nextNeighborIndex;
-					}
-
-					InitializeVertexNeighbor(topology, vertexIndex, vertexNeighborIndex, ref edgeIndex, ref inputIndex);
-
-					++vertexNeighborIndex;
-					++vertexIndex;
-				}
-
-				if (vertexIndex != topology._vertexRoots.Length) throw new System.InvalidOperationException("The input vertex data did not generate the expected number of final vertices.");
-				if (vertexNeighborIndex != topology._vertexNeighbors.Length) throw new System.InvalidOperationException("The input vertex data did not generate the expected number of final vertex neighbors.");
-				if (edgeIndex != topology._edgeNeighbors.GetLength(0)) throw new System.InvalidOperationException("The input vertex data did not generate the expected number of final edges.");
-
-				int faceIndex = 0;
-				int faceNeighborIndex = 0;
-
-				for (vertexIndex = 0; vertexIndex < topology._vertexRoots.Length; ++vertexIndex)
-				{
-					var neighborCount = topology._vertexRoots[vertexIndex].neighborCount;
-					var neighborIndex = topology._vertexRoots[vertexIndex].rootIndex;
-					while (neighborCount > 0)
-					{
-						if (topology._vertexNeighbors[neighborIndex]._face == -1)
+						if (neighborVertexIndex < vertexIndex)
 						{
-							InitializeFace(topology, vertexIndex, neighborIndex, ref faceIndex, ref faceNeighborIndex);
+							var firstNeighborEdgeIndex = topology._vertexData[neighborVertexIndex].firstEdge;
+							var neighborEdgeIndex = firstNeighborEdgeIndex;
+							while (topology._edgeData[neighborEdgeIndex]._vertex != vertexIndex)
+							{
+								neighborEdgeIndex = topology._edgeData[neighborEdgeIndex]._next;
+								if (neighborEdgeIndex == firstNeighborEdgeIndex) throw new System.InvalidOperationException("Two vertices that were set as neighbors in one direction were not also set as neighbors in the opposite direction.");
+							}
+							topology._edgeData[neighborEdgeIndex]._twin = edgeIndex;
+							topology._edgeData[edgeIndex]._twin = neighborEdgeIndex;
 						}
 
-						neighborIndex = topology._vertexNeighbors[neighborIndex]._next;
-						--neighborCount;
+						var nextEdgeIndex = edgeIndex + 1;
+						topology._edgeData[edgeIndex]._next = nextEdgeIndex;
+						topology._edgeData[nextEdgeIndex]._prev = edgeIndex;
+						edgeIndex = nextEdgeIndex;
+						bufferIndex = _vertexNeighbors[bufferIndex]._next;
+					}
+
+					var lastEdgeIndex = edgeIndex - 1;
+					topology._edgeData[firstEdgeIndex]._prev = lastEdgeIndex;
+					topology._edgeData[lastEdgeIndex]._next = firstEdgeIndex;
+					topology._vertexData[vertexIndex] = new NodeData(edgeIndex - firstEdgeIndex, firstEdgeIndex);
+				}
+
+				int faceIndex = 0;
+
+				for (edgeIndex = 0; edgeIndex < _vertexNeighbors.Count; ++edgeIndex)
+				{
+					if (topology._edgeData[edgeIndex]._face == -1)
+					{
+						var faceEdgeIndex = edgeIndex;
+						do
+						{
+							topology._edgeData[edgeIndex]._face = faceIndex;
+							faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._twin]._prev;
+						} while (faceEdgeIndex != edgeIndex);
 					}
 				}
 

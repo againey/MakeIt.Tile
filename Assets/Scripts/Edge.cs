@@ -7,171 +7,195 @@ namespace Tiling
 {
 	public partial class Topology
 	{
-		private struct EdgeNeighbor
+		private struct EdgeData
 		{
-			public int _vertex; // The vertex that preceeds the below face when going around the edge clockwise.
-			public int _face; // The face that follows after the above vertex when going around the vertex clockwise.
+			// \             /
+			//  P     R     /
+			//   \         /
+			//    r---E-->v
+			//   /         \
+			//  N     F     \
+			// /             \
+			//
+			// E:  This edge
+			// r:  Implicit near vertex
+			// v:  Explicit far vertex
+			// R:  Implicit near face
+			// F:  Explicit far face
+			// P:  Previous edge (also the next edge when going around the implicit near face clockwise)
+			// N:  Next edge
 
-			public EdgeNeighbor(int vertex, int face) { _vertex = vertex; _face = face; }
+			public int _twin; // The other edge between the same two vertices and same two faces, but going the opposite direction.
+			public int _prev; // The next edge after this one when going clockwise around the implicit near vertex.
+			public int _next; // The next edge this one when going clockwise around the implicit near face.
+			public int _vertex; // The vertex at the far end of this edge that preceeds the below face when going clockwise around the implicit near vertex.
+			public int _face; // The face on the far side of this edge that follows after the above vertex when going clockwise around the implicit near vertex.
+
+			public EdgeData(int twin, int prev, int next, int vertex, int face)
+			{
+				_twin = twin;
+				_prev = prev;
+				_next = next;
+				_vertex = vertex;
+				_face = face;
+			}
 		}
 
-		private EdgeNeighbor[,] _edgeNeighbors;
+		private EdgeData[] _edgeData;
 
-		public struct Edge : IEquatable<Edge>
+		public struct VertexEdge : IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>
 		{
 			private Topology _topology;
 			private int _index;
 
-			public Edge(Topology topology, int index)
+			public VertexEdge(Topology topology, int index)
 			{
 				_topology = topology;
 				_index = index;
 			}
 
-			public int index { get { return _index; } }
-
-			public struct Neighbor
+			public VertexEdge(FaceEdge faceEdge)
 			{
-				private Topology _topology;
-				private int _edgeIndex;
-				private int _neighborIndex;
-
-				public Neighbor(Topology topology, int edgeIndex, int neighborIndex)
-				{
-					_topology = topology;
-					_edgeIndex = edgeIndex;
-					_neighborIndex = neighborIndex;
-				}
-
-				public int index { get { return _neighborIndex; } }
-
-				public Vertex vertex { get { return new Vertex(_topology, _topology._edgeNeighbors[_edgeIndex, _neighborIndex]._vertex); } }
-				public Face face { get { return new Face(_topology, _topology._edgeNeighbors[_edgeIndex, _neighborIndex]._face); } }
-
-				public Neighbor prev { get { return new Neighbor(_topology, _edgeIndex, (_neighborIndex + 1) & 1); } }
-				public Neighbor next { get { return new Neighbor(_topology, _edgeIndex, (_neighborIndex + 1) & 1); } }
+				_topology = faceEdge.topology;
+				_index = faceEdge.index;
 			}
 
-			public struct NeighborsIndexer
+			public Topology topology { get { return _topology; } }
+
+			public int index { get { return _index; } }
+			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
+
+			public VertexEdge twin { get { return new VertexEdge(_topology, _topology._edgeData[_index]._twin); } }
+			public VertexEdge prev { get { return new VertexEdge(_topology, _topology._edgeData[_index]._prev); } }
+			public VertexEdge next { get { return new VertexEdge(_topology, _topology._edgeData[_index]._next); } }
+			public Vertex nearVertex { get { return new Vertex(_topology, _topology._edgeData[twinIndex]._vertex); } }
+			public Vertex farVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
+			public Face prevFace { get { return new Face(_topology, _topology._edgeData[twinIndex]._face); } }
+			public Face nextFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
+
+			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
+
+			public override bool Equals(object other) { return other is VertexEdge && _index == ((VertexEdge)other)._index || other is FaceEdge && _index == ((FaceEdge)other).index; }
+			public override int GetHashCode() { return _index.GetHashCode(); }
+
+			public bool Equals(VertexEdge other) { return _index == other._index; }
+			public int CompareTo(VertexEdge other) { return _index - other._index; }
+			public static bool operator ==(VertexEdge lhs, VertexEdge rhs) { return lhs._index == rhs._index; }
+			public static bool operator !=(VertexEdge lhs, VertexEdge rhs) { return lhs._index != rhs._index; }
+			public static bool operator < (VertexEdge lhs, VertexEdge rhs) { return lhs._index <  rhs._index; }
+			public static bool operator > (VertexEdge lhs, VertexEdge rhs) { return lhs._index >  rhs._index; }
+			public static bool operator <=(VertexEdge lhs, VertexEdge rhs) { return lhs._index <= rhs._index; }
+			public static bool operator >=(VertexEdge lhs, VertexEdge rhs) { return lhs._index >= rhs._index; }
+
+			public bool Equals(FaceEdge other) { return _index == other.index; }
+			public int CompareTo(FaceEdge other) { return _index - other.index; }
+			public static bool operator ==(VertexEdge lhs, FaceEdge rhs) { return lhs._index == rhs.index; }
+			public static bool operator !=(VertexEdge lhs, FaceEdge rhs) { return lhs._index != rhs.index; }
+			public static bool operator < (VertexEdge lhs, FaceEdge rhs) { return lhs._index <  rhs.index; }
+			public static bool operator > (VertexEdge lhs, FaceEdge rhs) { return lhs._index >  rhs.index; }
+			public static bool operator <=(VertexEdge lhs, FaceEdge rhs) { return lhs._index <= rhs.index; }
+			public static bool operator >=(VertexEdge lhs, FaceEdge rhs) { return lhs._index >= rhs.index; }
+		}
+
+		public struct FaceEdge : IEquatable<FaceEdge>, IEquatable<VertexEdge>, IComparable<FaceEdge>, IComparable<VertexEdge>
+		{
+			private Topology _topology;
+			private int _index;
+
+			public FaceEdge(Topology topology, int index)
+			{
+				_topology = topology;
+				_index = index;
+			}
+
+			public FaceEdge(VertexEdge vertexEdge)
+			{
+				_topology = vertexEdge.topology;
+				_index = vertexEdge.index;
+			}
+
+			public Topology topology { get { return _topology; } }
+
+			public int index { get { return _index; } }
+			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
+
+			public FaceEdge twin { get { return new FaceEdge(_topology, _topology._edgeData[_index]._twin); } }
+			public FaceEdge prev { get { return new FaceEdge(_topology, _topology._edgeData[twinIndex]._next); } }
+			public FaceEdge next { get { return new FaceEdge(_topology, _topology._edgeData[_index]._prev); } }
+			public Vertex prevVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
+			public Vertex nextVertex { get { return new Vertex(_topology, _topology._edgeData[twinIndex]._vertex); } }
+			public Face nearFace { get { return new Face(_topology, _topology._edgeData[twinIndex]._face); } }
+			public Face farFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
+
+			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
+
+			public override bool Equals(object other) { return other is FaceEdge && _index == ((FaceEdge)other)._index || other is VertexEdge && _index == ((VertexEdge)other).index; }
+			public override int GetHashCode() { return _index.GetHashCode(); }
+
+			public bool Equals(FaceEdge other) { return _index == other._index; }
+			public int CompareTo(FaceEdge other) { return _index - other._index; }
+			public static bool operator ==(FaceEdge lhs, FaceEdge rhs) { return lhs._index == rhs._index; }
+			public static bool operator !=(FaceEdge lhs, FaceEdge rhs) { return lhs._index != rhs._index; }
+			public static bool operator < (FaceEdge lhs, FaceEdge rhs) { return lhs._index <  rhs._index; }
+			public static bool operator > (FaceEdge lhs, FaceEdge rhs) { return lhs._index >  rhs._index; }
+			public static bool operator <=(FaceEdge lhs, FaceEdge rhs) { return lhs._index <= rhs._index; }
+			public static bool operator >=(FaceEdge lhs, FaceEdge rhs) { return lhs._index >= rhs._index; }
+
+			public bool Equals(VertexEdge other) { return _index == other.index; }
+			public int CompareTo(VertexEdge other) { return _index - other.index; }
+			public static bool operator ==(FaceEdge lhs, VertexEdge rhs) { return lhs._index == rhs.index; }
+			public static bool operator !=(FaceEdge lhs, VertexEdge rhs) { return lhs._index != rhs.index; }
+			public static bool operator < (FaceEdge lhs, VertexEdge rhs) { return lhs._index <  rhs.index; }
+			public static bool operator > (FaceEdge lhs, VertexEdge rhs) { return lhs._index >  rhs.index; }
+			public static bool operator <=(FaceEdge lhs, VertexEdge rhs) { return lhs._index <= rhs.index; }
+			public static bool operator >=(FaceEdge lhs, VertexEdge rhs) { return lhs._index >= rhs.index; }
+		}
+
+		public struct VertexEdgesIndexer
+		{
+			private Topology _topology;
+
+			public VertexEdgesIndexer(Topology topology){ _topology = topology; }
+			public VertexEdge this[int i] { get { return new VertexEdge(_topology, i); } }
+			public int Count { get { return _topology._edgeData.Length; } }
+			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology); }
+
+			public struct EdgeEnumerator
 			{
 				private Topology _topology;
 				private int _index;
 
-				public NeighborsIndexer(Topology topology, int index)
-				{
-					_topology = topology;
-					_index = index;
-				}
-
-				public int Count { get { return 2; } }
-				
-				public struct NeighborEnumerator
-				{
-					private Topology _topology;
-					private int _edgeIndex;
-					private int _neighborIndex;
-
-					public NeighborEnumerator(Topology topology, int edgeIndex)
-					{
-						_topology = topology;
-						_edgeIndex = edgeIndex;
-						_neighborIndex = -1;
-					}
-
-					public Neighbor Current { get { return new Neighbor(_topology, _edgeIndex, _neighborIndex); } }
-
-					public bool MoveNext()
-					{
-						return ++_neighborIndex < 2;
-					}
-
-					public void Reset()
-					{
-						_neighborIndex = -1;
-					}
-				}
-
-				public NeighborEnumerator GetEnumerator()
-				{
-					return new NeighborEnumerator(_topology, _index);
-				}
+				public EdgeEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public VertexEdge Current { get { return new VertexEdge(_topology, _index); } }
+				public bool MoveNext() { return (++_index < _topology._edgeData.Length); }
+				public void Reset() { _index = -1; }
 			}
-
-			public NeighborsIndexer Neighbors { get { return new NeighborsIndexer(_topology, _index); } }
-
-			public Neighbor FindNeighbor(Vertex vertex)
-			{
-				Neighbor neighbor;
-				if (!TryFindNeighbor(vertex, out neighbor)) throw new InvalidOperationException("The specified vertex is not a neighbor of this edge.");
-				return neighbor;
-			}
-
-			public Neighbor FindNeighbor(Face face)
-			{
-				Neighbor neighbor;
-				if (!TryFindNeighbor(face, out neighbor)) throw new InvalidOperationException("The specified face is not a neighbor of this edge.");
-				return neighbor;
-			}
-
-			public bool TryFindNeighbor(Vertex vertex, out Neighbor neighbor)
-			{
-				if (_topology._edgeNeighbors[_index, 0]._vertex == vertex.index)
-				{
-					neighbor = new Neighbor(_topology, _index, 0);
-					return true;
-				}
-				else if (_topology._edgeNeighbors[_index, 1]._vertex == vertex.index)
-				{
-					neighbor = new Neighbor(_topology, _index, 1);
-					return true;
-				}
-				else
-				{
-					neighbor = new Neighbor();
-					return false;
-				}
-			}
-
-			public bool TryFindNeighbor(Face face, out Neighbor neighbor)
-			{
-				if (_topology._edgeNeighbors[_index, 0]._face == face.index)
-				{
-					neighbor = new Neighbor(_topology, _index, 0);
-					return true;
-				}
-				else if (_topology._edgeNeighbors[_index, 1]._face == face.index)
-				{
-					neighbor = new Neighbor(_topology, _index, 1);
-					return true;
-				}
-				else
-				{
-					neighbor = new Neighbor();
-					return false;
-				}
-			}
-
-			public Vertex GetOpposite(Vertex vertex) { return FindNeighbor(vertex).next.vertex; }
-			public Face GetOpposite(Face face) { return FindNeighbor(face).next.face; }
-
-			public override bool Equals(object other) { return other is Edge && _index == ((Edge)other)._index; }
-			public bool Equals(Edge other) { return _index == other._index; }
-			public static bool operator ==(Edge lhs, Edge rhs) { return lhs._index == rhs._index; }
-			public static bool operator !=(Edge lhs, Edge rhs) { return lhs._index != rhs._index; }
-			public override int GetHashCode() { return _index.GetHashCode(); }
 		}
 
-		public struct EdgesIndexer : IEnumerable<Edge>
+		public VertexEdgesIndexer vertexEdges { get { return new VertexEdgesIndexer(this); } }
+
+		public struct FaceEdgesIndexer
 		{
 			private Topology _topology;
-			public EdgesIndexer(Topology topology) { _topology = topology; }
-			public Edge this[int i] { get { return new Edge(_topology, i); } }
-			public int Count { get { return _topology._edgeNeighbors.Length; } }
-			public IEnumerator<Edge> GetEnumerator() { for (int i = 0; i < _topology._edgeNeighbors.Length; ++i) yield return new Edge(_topology, i); }
-			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Edge>).GetEnumerator(); }
+
+			public FaceEdgesIndexer(Topology topology){ _topology = topology; }
+			public FaceEdge this[int i] { get { return new FaceEdge(_topology, i); } }
+			public int Count { get { return _topology._edgeData.Length; } }
+			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology); }
+
+			public struct EdgeEnumerator
+			{
+				private Topology _topology;
+				private int _index;
+
+				public EdgeEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public FaceEdge Current { get { return new FaceEdge(_topology, _index); } }
+				public bool MoveNext() { return (++_index < _topology._edgeData.Length); }
+				public void Reset() { _index = -1; }
+			}
 		}
 
-		public EdgesIndexer edges { get { return new EdgesIndexer(this); } }
+		public FaceEdgesIndexer faceEdges { get { return new FaceEdgesIndexer(this); } }
 
 		public struct EdgeAttribute<T> where T : new()
 		{
@@ -182,13 +206,35 @@ namespace Tiling
 				_values = new T[edgeCount];
 			}
 
+			public EdgeAttribute(T[] values)
+			{
+				_values = values.Clone() as T[];
+			}
+
+			public EdgeAttribute(ICollection<T> collection)
+			{
+				_values = new T[collection.Count];
+				collection.CopyTo(_values, 0);
+			}
+
+			public EdgeAttribute<T> Clone()
+			{
+				return new EdgeAttribute<T>(_values);
+			}
+
 			public T this[int i]
 			{
 				get {  return _values[i]; }
 				set {  _values[i] = value; }
 			}
 
-			public T this[Edge edge]
+			public T this[VertexEdge edge]
+			{
+				get {  return _values[edge.index]; }
+				set { _values[edge.index] = value; }
+			}
+
+			public T this[FaceEdge edge]
 			{
 				get {  return _values[edge.index]; }
 				set { _values[edge.index] = value; }

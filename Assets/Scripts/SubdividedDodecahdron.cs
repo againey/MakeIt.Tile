@@ -13,35 +13,37 @@ public class SubdividedDodecahdron : TilingGenerator
 	public int RandomSeed = 0;
 	public float RelaxationRegularity = 0.5f;
 
-	protected override void RebuildTiling(out Topology topology, out TileAttribute<Vector3> tilePositions, out CornerAttribute<Vector3> cornerPositions)
+	protected override void RebuildTiling(out Topology topology, out Topology.FaceAttribute<Vector3> facePositions, out Topology.VertexAttribute<Vector3> vertexPositions)
 	{
-		MinimalTopology basicDodecahedron;
-		TileAttribute<Vector3> dodecahedronTilePositions;
-		SphereTopology.Dodecahedron(out basicDodecahedron, out dodecahedronTilePositions);
-		var dodecahedronTopology = new Topology(basicDodecahedron);
+		var icosahedron = SphereTopology.CreateOctahedron();
+		var subdivided = SphereTopology.Subdivide(icosahedron, SubdivisionDegree);
+		var dualTopology = subdivided.topology.GetDualTopology();
+		facePositions = new Topology.FaceAttribute<Vector3>(dualTopology.faces.Count);
+		vertexPositions = new Topology.VertexAttribute<Vector3>(dualTopology.vertices.Count);
 
-		var localTilePositions = new TileAttribute<Vector3>();
-		topology = new Topology(dodecahedronTopology.Subdivide(SubdivisionDegree,
-			delegate (int subdividedTileCount)
+		foreach (var vertex in subdivided.topology.vertices)
+		{
+			var average = new Vector3();
+			foreach (var edge in vertex.edges)
 			{
-				localTilePositions = new TileAttribute<Vector3>(subdividedTileCount);
-			},
-			delegate (int i0, int i1)
-			{
-				localTilePositions[i1] = dodecahedronTilePositions[i0];
-			},
-			delegate (int i0, int i1, int i2, float t)
-			{
-				var p0 = localTilePositions[i0];
-				var p1 = localTilePositions[i1];
-				var omega = Mathf.Acos(Vector3.Dot(p0, p1));
-				var d = Mathf.Sin(omega);
-				var s0 = Mathf.Sin((1f - t) * omega);
-				var s1 = Mathf.Sin(t * omega);
-				localTilePositions[i2] = (p0 * s0 + p1 * s1) / d;
-			}));
+				average += subdivided.vertexPositions[edge.farVertex];
+			}
+			vertexPositions[vertex] = average.normalized;
+		}
 
-		if (AlterationDegree > 0 && AlterationFrequency > 0f)
+		foreach (var face in dualTopology.faces)
+		{
+			var average = new Vector3();
+			foreach (var edge in face.edges)
+			{
+				average += vertexPositions[edge.nextVertex];
+			}
+			facePositions[face] = average / face.edges.Count;
+		}
+
+		topology = dualTopology;
+
+		/*if (AlterationDegree > 0 && AlterationFrequency > 0f)
 		{
 			var random = new System.Random(RandomSeed);
 			TileAttribute<Vector3> regularityRelaxedPositions = new TileAttribute<Vector3>(localTilePositions.Count);
@@ -102,6 +104,6 @@ public class SubdividedDodecahdron : TilingGenerator
 				tilePositions[corner.Tiles[1]] +
 				tilePositions[corner.Tiles[2]]
 			).normalized;
-		}
+		}*/
 	}
 }

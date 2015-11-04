@@ -5,6 +5,7 @@ using Tiling;
 
 public class MeshTopologyTests
 {
+	/*
 	private void Print(Tile tile)
 	{
 		var sb = new System.Text.StringBuilder();
@@ -345,4 +346,5 @@ public class MeshTopologyTests
 					ValidateInvariants(altered);
 				});
 	}
+	*/
 }

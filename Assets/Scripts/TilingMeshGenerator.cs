@@ -39,6 +39,20 @@ public class TilingMeshGenerator : MonoBehaviour
 				_topology = TilingGenerator.Topology;
 			}
 		}
+		else
+		{
+			if (_invalidated)
+			{
+				RebuildMeshes();
+			}
+		}
+	}
+#else
+	void Update()
+	{
+		if (_invalidated)
+		{
+		}
 	}
 #endif
 
@@ -49,59 +63,49 @@ public class TilingMeshGenerator : MonoBehaviour
 
 		if (TilingGenerator != null && TilingGenerator.Topology != null)
 		{
-			var flattenedTilePositions = new TileAttribute<Vector3>(TilingGenerator.Topology.Tiles.Count);
-			foreach (var tile in TilingGenerator.Topology.Tiles)
+			var faceIndex = 0;
+			var faceCount = TilingGenerator.Topology.faces.Count;
+			while (faceIndex < faceCount)
 			{
-				foreach (var corner in tile.Corners)
+				var endFaceIndex = faceIndex;
+				var meshVertexCount = 0;
+				var meshTriangleCount = 0;
+				while (endFaceIndex < faceCount)
 				{
-					flattenedTilePositions[tile] += TilingGenerator.CornerPositions[corner];
-				}
-				flattenedTilePositions[tile] /= tile.NeighborCount;
-			}
-
-			var tileIndex = 0;
-			var tileCount = TilingGenerator.Topology.Tiles.Count;
-			while (tileIndex < tileCount)
-			{
-				var endTileIndex = tileIndex;
-				var vertexCount = 0;
-				var triangleCount = 0;
-				while (endTileIndex < tileCount)
-				{
-					var tile = TilingGenerator.Topology.Tiles[endTileIndex];
-					var tileNeighborCount = tile.NeighborCount;
-					var tileVertexCount = tileNeighborCount + 1;
-					if (vertexCount + tileVertexCount > 65534) break;
-					++endTileIndex;
-					vertexCount += tileVertexCount;
-					triangleCount += tileNeighborCount;
+					var face = TilingGenerator.Topology.faces[endFaceIndex];
+					var neighborCount = face.neighborCount;
+					var faceVertexCount = neighborCount + 1;
+					if (meshVertexCount + faceVertexCount > 65534) break;
+					++endFaceIndex;
+					meshVertexCount += faceVertexCount;
+					meshTriangleCount += neighborCount;
 				}
 
-				Vector3[] vertices = new Vector3[vertexCount];
-				Color[] colors = new Color[vertexCount];
-				int[] triangles = new int[triangleCount * 3];
+				Vector3[] vertices = new Vector3[meshVertexCount];
+				Color[] colors = new Color[meshVertexCount];
+				int[] triangles = new int[meshTriangleCount * 3];
 
-				int vertex = 0;
-				int triangle = 0;
+				int meshVertex = 0;
+				int meshTriangle = 0;
 
-				while (tileIndex < endTileIndex)
+				while (faceIndex < endFaceIndex)
 				{
-					var tile = TilingGenerator.Topology.Tiles[tileIndex];
-					var corners = tile.Corners;
-					var neighborCount = tile.NeighborCount;
-					vertices[vertex] = flattenedTilePositions[tileIndex];
-					colors[vertex] = new Color(1, 1, 1);
-					for (int j = 0; j < neighborCount; ++j)
+					var face = TilingGenerator.Topology.faces[faceIndex];
+					var edge = face.firstEdge;
+					var neighborCount = face.neighborCount;
+					vertices[meshVertex] = TilingGenerator.FacePositions[faceIndex];
+					colors[meshVertex] = new Color(1, 1, 1);
+					for (int j = 0; j < neighborCount; ++j, edge = edge.next)
 					{
-						vertices[vertex + j + 1] = TilingGenerator.CornerPositions[corners[j]];
-						colors[vertex + j + 1] = new Color(0, 0, 0);
-						triangles[triangle + j * 3 + 0] = vertex;
-						triangles[triangle + j * 3 + 1] = vertex + 1 + j;
-						triangles[triangle + j * 3 + 2] = vertex + 1 + (j + 1) % neighborCount;
+						vertices[meshVertex + j + 1] = TilingGenerator.VertexPositions[edge.nextVertex];
+						colors[meshVertex + j + 1] = new Color(0, 0, 0);
+						triangles[meshTriangle + j * 3 + 0] = meshVertex;
+						triangles[meshTriangle + j * 3 + 1] = meshVertex + 1 + j;
+						triangles[meshTriangle + j * 3 + 2] = meshVertex + 1 + (j + 1) % neighborCount;
 					}
-					vertex += neighborCount + 1;
-					triangle += neighborCount * 3;
-					++tileIndex;
+					meshVertex += neighborCount + 1;
+					meshTriangle += neighborCount * 3;
+					++faceIndex;
 				}
 
 				Mesh mesh;

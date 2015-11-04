@@ -7,14 +7,14 @@ using Tiling;
 public abstract class TilingGenerator : MonoBehaviour
 {
 	private Topology _topology;
-	private TileAttribute<Vector3> _tilePositions;
-	private CornerAttribute<Vector3> _cornerPositions;
+	private Topology.FaceAttribute<Vector3> _facePositions;
+	private Topology.VertexAttribute<Vector3> _vertexPositions;
 
 	private bool _invalidated = true;
 
 	public Topology Topology { get { return _topology; } }
-	public TileAttribute<Vector3> TilePositions { get { return _tilePositions; } }
-	public CornerAttribute<Vector3> CornerPositions { get { return _cornerPositions; } }
+	public Topology.FaceAttribute<Vector3> FacePositions { get { return _facePositions; } }
+	public Topology.VertexAttribute<Vector3> VertexPositions { get { return _vertexPositions; } }
 
 	public void Invalidate()
 	{
@@ -35,10 +35,10 @@ public abstract class TilingGenerator : MonoBehaviour
 	{
 		if (_invalidated)
 		{
-			RebuildTiling(out _topology, out _tilePositions, out _cornerPositions);
+			RebuildTiling(out _topology, out _facePositions, out _vertexPositions);
 			_invalidated = false;
 		}
 	}
 
-	protected abstract void RebuildTiling(out Topology topology, out TileAttribute<Vector3> tilePositions, out CornerAttribute<Vector3> cornerPositions);
+	protected abstract void RebuildTiling(out Topology topology, out Topology.FaceAttribute<Vector3> facePositions, out Topology.VertexAttribute<Vector3> vertexPositions);
 }

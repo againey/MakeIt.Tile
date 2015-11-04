@@ -7,55 +7,9 @@ namespace Tiling
 {
 	public partial class Topology
 	{
-		private struct FaceNeighbor
-		{
-			public int _prev; // The previous face neighbor.
-			public int _next; // The next face neighbor.
-			public int _vertex; // The vertex that follows after the edge and face below when going around the face clockwise.
-			public int _edge; // The edge that is between this face and the face below, and which preceeds the above vertex when going around the face clockwise.
-			public int _face; // The face that is on the other side of the above edge, and which preceeds the above vertex when going around the face clockwise.
+		private NodeData[] _faceData;
 
-			public FaceNeighbor(int prev, int next, int vertex, int edge, int face) { _prev = prev; _next = next; _vertex = vertex; _edge = edge; _face = face; }
-		}
-
-		private struct FaceRoot
-		{
-			private uint _data;
-
-			public FaceRoot(int neighborCount, int rootIndex)
-			{
-				_data = (((uint)neighborCount & 0xFF) << 24) & ((uint)rootIndex & 0xFFFFFF);
-			}
-
-			public int neighborCount
-			{
-				get
-				{
-					return (int)((_data >> 24) & 0xFF);
-				}
-				set
-				{
-					_data = (_data & 0xFFFFFF) | (((uint)value & 0xFF) << 24);
-				}
-			}
-
-			public int rootIndex
-			{
-				get
-				{
-					return (int)(_data & 0xFFFFFF);
-				}
-				set
-				{
-					_data = (_data & 0xFF000000) | ((uint)value & 0xFFFFFF);
-				}
-			}
-		}
-
-		private FaceRoot[] _faceRoots;
-		private FaceNeighbor[] _faceNeighbors;
-
-		public struct Face : IEquatable<Face>
+		public struct Face : IEquatable<Face>, IComparable<Face>
 		{
 			private Topology _topology;
 			private int _index;
@@ -66,176 +20,144 @@ namespace Tiling
 				_index = index;
 			}
 
+			public Topology topology { get { return _topology; } }
+
 			public int index { get { return _index; } }
+			public int neighborCount { get { return _topology._vertexData[_index].neighborCount; } }
+			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceData[_index].firstEdge); } }
 
-			public struct Neighbor
+			public struct FaceEdgesIndexer
 			{
 				private Topology _topology;
 				private int _index;
 
-				public Neighbor(Topology topology, int index)
+				public FaceEdgesIndexer(Topology topology, int index)
 				{
 					_topology = topology;
 					_index = index;
 				}
 
-				public int index { get { return _index; } }
-
-				public Vertex vertex { get { return new Vertex(_topology, _topology._faceNeighbors[_index]._vertex); } }
-				public Edge edge { get { return new Edge(_topology, _topology._faceNeighbors[_index]._edge); } }
-				public Face face { get { return new Face(_topology, _topology._faceNeighbors[_index]._face); } }
-
-				public Neighbor prev { get { return new Neighbor(_topology, _topology._faceNeighbors[_index]._prev); } }
-				public Neighbor next { get { return new Neighbor(_topology, _topology._faceNeighbors[_index]._next); } }
-			}
-
-			public struct NeighborsIndexer
-			{
-				private Topology _topology;
-				private int _index;
-
-				public NeighborsIndexer(Topology topology, int index)
-				{
-					_topology = topology;
-					_index = index;
-				}
-
-				public int Count { get { return _topology._faceRoots[_index].neighborCount; } }
+				public int Count { get { return _topology._faceData[_index].neighborCount; } }
 				
-				public struct NeighborEnumerator
+				public struct FaceEdgeEnumerator
 				{
 					private Topology _topology;
-					private int _index;
-					private int _first;
+					private int _firstEdgeIndex;
+					private int _currentEdgeIndex;
+					private int _nextEdgeIndex;
 
-					public NeighborEnumerator(Topology topology, int first)
+					public FaceEdgeEnumerator(Topology topology, int firstEdgeIndex)
 					{
 						_topology = topology;
-						_index = _topology._faceNeighbors[first]._prev;
-						_first = int.MinValue;
+						_firstEdgeIndex = firstEdgeIndex;
+						_currentEdgeIndex = -1;
+						_nextEdgeIndex = firstEdgeIndex;
 					}
 
-					public Neighbor Current { get { return new Neighbor(_topology, _index); } }
+					public FaceEdge Current { get { return new FaceEdge(_topology, _currentEdgeIndex); } }
 
 					public bool MoveNext()
 					{
-						_index = _topology._faceNeighbors[_index]._next;
-						if (_first == int.MinValue)
+						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
-							_first = _index;
+							_currentEdgeIndex = _nextEdgeIndex;
+							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._next;
 							return true;
 						}
 						else
 						{
-							return (_index != _first);
+							return false;
 						}
 					}
 
 					public void Reset()
 					{
-						_index = _topology._faceNeighbors[_first]._prev;
-						_first = int.MinValue;
+						_currentEdgeIndex = -1;
+						_nextEdgeIndex = _firstEdgeIndex;
 					}
 				}
 
-				public NeighborEnumerator GetEnumerator()
+				public FaceEdgeEnumerator GetEnumerator()
 				{
-					return new NeighborEnumerator(_topology, _topology._faceRoots[_index].rootIndex);
+					return new FaceEdgeEnumerator(_topology, _topology._faceData[_index].firstEdge);
 				}
 			}
 
-			public NeighborsIndexer Neighbors { get { return new NeighborsIndexer(_topology, _index); } }
+			public FaceEdgesIndexer edges { get { return new FaceEdgesIndexer(_topology, _index); } }
 
-			public Neighbor FindNeighbor(Vertex vertex)
+			public FaceEdge FindEdge(Vertex vertex)
 			{
-				Neighbor neighbor;
-				if (!TryFindNeighbor(vertex, out neighbor)) throw new InvalidOperationException("The specified vertex is not a neighbor of this face.");
+				FaceEdge neighbor;
+				if (!TryFindEdge(vertex, out neighbor)) throw new InvalidOperationException("The specified vertex is not a neighbor of this face.");
 				return neighbor;
 			}
 
-			public Neighbor FindNeighbor(Edge edge)
+			public FaceEdge FindEdge(Face face)
 			{
-				Neighbor neighbor;
-				if (!TryFindNeighbor(edge, out neighbor)) throw new InvalidOperationException("The specified edge is not a neighbor of this face.");
-				return neighbor;
+				FaceEdge edge;
+				if (!TryFindEdge(face, out edge)) throw new InvalidOperationException("The specified face is not a neighbor of this face.");
+				return edge;
 			}
 
-			public Neighbor FindNeighbor(Face face)
+			public bool TryFindEdge(Vertex vertex, out FaceEdge edge)
 			{
-				Neighbor neighbor;
-				if (!TryFindNeighbor(face, out neighbor)) throw new InvalidOperationException("The specified face is not a neighbor of this face.");
-				return neighbor;
-			}
-
-			public bool TryFindNeighbor(Vertex vertex, out Neighbor neighbor)
-			{
-				var vertexRoot = _topology._faceRoots[_index];
-				var neighborCount = vertexRoot.neighborCount;
-				var neighborIndex = vertexRoot.rootIndex;
-				while (neighborCount > 0)
+				foreach (var faceEdge in edges)
 				{
-					if (_topology._faceNeighbors[neighborIndex]._vertex == vertex.index)
+					if (faceEdge.nextVertex == vertex)
 					{
-						neighbor = new Neighbor(_topology, neighborIndex);
+						edge = faceEdge;
 						return true;
 					}
-					--neighborCount;
 				}
-				neighbor = new Neighbor();
+				edge = new FaceEdge();
 				return false;
 			}
 
-			public bool TryFindNeighbor(Edge edge, out Neighbor neighbor)
+			public bool TryFindEdge(Face face, out FaceEdge edge)
 			{
-				var vertexRoot = _topology._faceRoots[_index];
-				var neighborCount = vertexRoot.neighborCount;
-				var neighborIndex = vertexRoot.rootIndex;
-				while (neighborCount > 0)
+				foreach (var faceEdge in edges)
 				{
-					if (_topology._faceNeighbors[neighborIndex]._edge == edge.index)
+					if (faceEdge.farFace == face)
 					{
-						neighbor = new Neighbor(_topology, neighborIndex);
+						edge = faceEdge;
 						return true;
 					}
-					--neighborCount;
 				}
-				neighbor = new Neighbor();
-				return false;
-			}
-
-			public bool TryFindNeighbor(Face face, out Neighbor neighbor)
-			{
-				var vertexRoot = _topology._faceRoots[_index];
-				var neighborCount = vertexRoot.neighborCount;
-				var neighborIndex = vertexRoot.rootIndex;
-				while (neighborCount > 0)
-				{
-					if (_topology._faceNeighbors[neighborIndex]._face == face.index)
-					{
-						neighbor = new Neighbor(_topology, neighborIndex);
-						return true;
-					}
-					--neighborCount;
-				}
-				neighbor = new Neighbor();
+				edge = new FaceEdge();
 				return false;
 			}
 
 			public override bool Equals(object other) { return other is Face && _index == ((Face)other)._index; }
 			public bool Equals(Face other) { return _index == other._index; }
+			public int CompareTo(Face other) { return _index - other._index; }
 			public static bool operator ==(Face lhs, Face rhs) { return lhs._index == rhs._index; }
 			public static bool operator !=(Face lhs, Face rhs) { return lhs._index != rhs._index; }
+			public static bool operator < (Face lhs, Face rhs) { return lhs._index <  rhs._index; }
+			public static bool operator > (Face lhs, Face rhs) { return lhs._index >  rhs._index; }
+			public static bool operator <=(Face lhs, Face rhs) { return lhs._index <= rhs._index; }
+			public static bool operator >=(Face lhs, Face rhs) { return lhs._index >= rhs._index; }
 			public override int GetHashCode() { return _index.GetHashCode(); }
 		}
 
-		public struct FacesIndexer : IEnumerable<Face>
+		public struct FacesIndexer
 		{
 			private Topology _topology;
-			public FacesIndexer(Topology topology) { _topology = topology; }
+
+			public FacesIndexer(Topology topology){ _topology = topology; }
 			public Face this[int i] { get { return new Face(_topology, i); } }
-			public int Count { get { return _topology._faceRoots.Length; } }
-			public IEnumerator<Face> GetEnumerator() { for (int i = 0; i < _topology._faceRoots.Length; ++i) yield return new Face(_topology, i); }
-			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Face>).GetEnumerator(); }
+			public int Count { get { return _topology._faceData.Length; } }
+			public FaceEnumerator GetEnumerator() { return new FaceEnumerator(_topology); }
+
+			public struct FaceEnumerator
+			{
+				private Topology _topology;
+				private int _index;
+
+				public FaceEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public Face Current { get { return new Face(_topology, _index); } }
+				public bool MoveNext() { return (++_index < _topology._faceData.Length); }
+				public void Reset() { _index = -1; }
+			}
 		}
 
 		public FacesIndexer faces { get { return new FacesIndexer(this); } }
@@ -247,6 +169,22 @@ namespace Tiling
 			public FaceAttribute(int faceCount)
 			{
 				_values = new T[faceCount];
+			}
+
+			public FaceAttribute(T[] values)
+			{
+				_values = values.Clone() as T[];
+			}
+
+			public FaceAttribute(ICollection<T> collection)
+			{
+				_values = new T[collection.Count];
+				collection.CopyTo(_values, 0);
+			}
+
+			public FaceAttribute<T> Clone()
+			{
+				return new FaceAttribute<T>(_values);
 			}
 
 			public T this[int i]

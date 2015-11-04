@@ -7,55 +7,9 @@ namespace Tiling
 {
 	public partial class Topology
 	{
-		private struct VertexNeighbor
-		{
-			public int _prev; // The previous vertex neighbor.
-			public int _next; // The next vertex neighbor.
-			public int _vertex; // The vertex that is on the other end of the below edge, and which preceeds the face below when going around the vertex clockwise.
-			public int _edge; // The edge that is between this vertex and the vertex above, and which preceeds the below face when going around the vertex clockwise.
-			public int _face; // The face that follows after the above vertex and edge when going around the vertex clockwise.
+		private NodeData[] _vertexData;
 
-			public VertexNeighbor(int prev, int next, int vertex, int edge, int face) { _prev = prev; _next = next; _vertex = vertex; _edge = edge; _face = face; }
-		}
-
-		private struct VertexRoot
-		{
-			private uint _data;
-
-			public VertexRoot(int neighborCount, int rootIndex)
-			{
-				_data = (((uint)neighborCount & 0xFF) << 24) & ((uint)rootIndex & 0xFFFFFF);
-			}
-
-			public int neighborCount
-			{
-				get
-				{
-					return (int)((_data >> 24) & 0xFF);
-				}
-				set
-				{
-					_data = (_data & 0xFFFFFF) | (((uint)value & 0xFF) << 24);
-				}
-			}
-
-			public int rootIndex
-			{
-				get
-				{
-					return (int)(_data & 0xFFFFFF);
-				}
-				set
-				{
-					_data = (_data & 0xFF000000) | ((uint)value & 0xFFFFFF);
-				}
-			}
-		}
-
-		private VertexRoot[] _vertexRoots;
-		private VertexNeighbor[] _vertexNeighbors;
-
-		public struct Vertex : IEquatable<Vertex>
+		public struct Vertex : IEquatable<Vertex>, IComparable<Vertex>
 		{
 			private Topology _topology;
 			private int _index;
@@ -66,176 +20,144 @@ namespace Tiling
 				_index = index;
 			}
 
+			public Topology topology { get { return _topology; } }
+
 			public int index { get { return _index; } }
+			public int neighborCount { get { return _topology._vertexData[_index].neighborCount; } }
+			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology._vertexData[_index].firstEdge); } }
 
-			public struct Neighbor
+			public struct VertexEdgesIndexer
 			{
 				private Topology _topology;
 				private int _index;
 
-				public Neighbor(Topology topology, int index)
+				public VertexEdgesIndexer(Topology topology, int index)
 				{
 					_topology = topology;
 					_index = index;
 				}
 
-				public int index { get { return _index; } }
-
-				public Vertex vertex { get { return new Vertex(_topology, _topology._vertexNeighbors[_index]._vertex); } }
-				public Edge edge { get { return new Edge(_topology, _topology._vertexNeighbors[_index]._edge); } }
-				public Face face { get { return new Face(_topology, _topology._vertexNeighbors[_index]._face); } }
-
-				public Neighbor prev { get { return new Neighbor(_topology, _topology._vertexNeighbors[_index]._prev); } }
-				public Neighbor next { get { return new Neighbor(_topology, _topology._vertexNeighbors[_index]._next); } }
-			}
-
-			public struct NeighborsIndexer
-			{
-				private Topology _topology;
-				private int _index;
-
-				public NeighborsIndexer(Topology topology, int index)
-				{
-					_topology = topology;
-					_index = index;
-				}
-
-				public int Count { get { return _topology._vertexRoots[_index].neighborCount; } }
+				public int Count { get { return _topology._vertexData[_index].neighborCount; } }
 				
-				public struct NeighborEnumerator
+				public struct VertexEdgeEnumerator
 				{
 					private Topology _topology;
-					private int _index;
-					private int _first;
+					private int _firstEdgeIndex;
+					private int _currentEdgeIndex;
+					private int _nextEdgeIndex;
 
-					public NeighborEnumerator(Topology topology, int first)
+					public VertexEdgeEnumerator(Topology topology, int firstEdgeIndex)
 					{
 						_topology = topology;
-						_index = _topology._vertexNeighbors[first]._prev;
-						_first = int.MinValue;
+						_firstEdgeIndex = firstEdgeIndex;
+						_currentEdgeIndex = -1;
+						_nextEdgeIndex = firstEdgeIndex;
 					}
 
-					public Neighbor Current { get { return new Neighbor(_topology, _index); } }
+					public VertexEdge Current { get { return new VertexEdge(_topology, _currentEdgeIndex); } }
 
 					public bool MoveNext()
 					{
-						_index = _topology._vertexNeighbors[_index]._next;
-						if (_first == int.MinValue)
+						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
-							_first = _index;
+							_currentEdgeIndex = _nextEdgeIndex;
+							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._next;
 							return true;
 						}
 						else
 						{
-							return (_index != _first);
+							return false;
 						}
 					}
 
 					public void Reset()
 					{
-						_index = _topology._vertexNeighbors[_first]._prev;
-						_first = int.MinValue;
+						_currentEdgeIndex = -1;
+						_nextEdgeIndex = _firstEdgeIndex;
 					}
 				}
 
-				public NeighborEnumerator GetEnumerator()
+				public VertexEdgeEnumerator GetEnumerator()
 				{
-					return new NeighborEnumerator(_topology, _topology._vertexRoots[_index].rootIndex);
+					return new VertexEdgeEnumerator(_topology, _topology._vertexData[_index].firstEdge);
 				}
 			}
 
-			public NeighborsIndexer Neighbors { get { return new NeighborsIndexer(_topology, _index); } }
+			public VertexEdgesIndexer edges { get { return new VertexEdgesIndexer(_topology, _index); } }
 
-			public Neighbor FindNeighbor(Vertex vertex)
+			public VertexEdge FindEdge(Vertex vertex)
 			{
-				Neighbor neighbor;
-				if (!TryFindNeighbor(vertex, out neighbor)) throw new InvalidOperationException("The specified vertex is not a neighbor of this vertex.");
+				VertexEdge edge;
+				if (!TryFindEdge(vertex, out edge)) throw new InvalidOperationException("The specified vertex is not a neighbor of this vertex.");
+				return edge;
+			}
+
+			public VertexEdge FindEdge(Face face)
+			{
+				VertexEdge neighbor;
+				if (!TryFindEdge(face, out neighbor)) throw new InvalidOperationException("The specified face is not a neighbor of this vertex.");
 				return neighbor;
 			}
 
-			public Neighbor FindNeighbor(Edge edge)
+			public bool TryFindEdge(Vertex vertex, out VertexEdge edge)
 			{
-				Neighbor neighbor;
-				if (!TryFindNeighbor(edge, out neighbor)) throw new InvalidOperationException("The specified edge is not a neighbor of this vertex.");
-				return neighbor;
-			}
-
-			public Neighbor FindNeighbor(Face face)
-			{
-				Neighbor neighbor;
-				if (!TryFindNeighbor(face, out neighbor)) throw new InvalidOperationException("The specified face is not a neighbor of this vertex.");
-				return neighbor;
-			}
-
-			public bool TryFindNeighbor(Vertex vertex, out Neighbor neighbor)
-			{
-				var vertexRoot = _topology._vertexRoots[_index];
-				var neighborCount = vertexRoot.neighborCount;
-				var neighborIndex = vertexRoot.rootIndex;
-				while (neighborCount > 0)
+				foreach (var vertexEdge in edges)
 				{
-					if (_topology._vertexNeighbors[neighborIndex]._vertex == vertex.index)
+					if (vertexEdge.farVertex == vertex)
 					{
-						neighbor = new Neighbor(_topology, neighborIndex);
+						edge = vertexEdge;
 						return true;
 					}
-					--neighborCount;
 				}
-				neighbor = new Neighbor();
+				edge = new VertexEdge();
 				return false;
 			}
 
-			public bool TryFindNeighbor(Edge edge, out Neighbor neighbor)
+			public bool TryFindEdge(Face face, out VertexEdge edge)
 			{
-				var vertexRoot = _topology._vertexRoots[_index];
-				var neighborCount = vertexRoot.neighborCount;
-				var neighborIndex = vertexRoot.rootIndex;
-				while (neighborCount > 0)
+				foreach (var vertexEdge in edges)
 				{
-					if (_topology._vertexNeighbors[neighborIndex]._edge == edge.index)
+					if (vertexEdge.nextFace == face)
 					{
-						neighbor = new Neighbor(_topology, neighborIndex);
+						edge = vertexEdge;
 						return true;
 					}
-					--neighborCount;
 				}
-				neighbor = new Neighbor();
-				return false;
-			}
-
-			public bool TryFindNeighbor(Face face, out Neighbor neighbor)
-			{
-				var vertexRoot = _topology._vertexRoots[_index];
-				var neighborCount = vertexRoot.neighborCount;
-				var neighborIndex = vertexRoot.rootIndex;
-				while (neighborCount > 0)
-				{
-					if (_topology._vertexNeighbors[neighborIndex]._face == face.index)
-					{
-						neighbor = new Neighbor(_topology, neighborIndex);
-						return true;
-					}
-					--neighborCount;
-				}
-				neighbor = new Neighbor();
+				edge = new VertexEdge();
 				return false;
 			}
 
 			public override bool Equals(object other) { return other is Vertex && _index == ((Vertex)other)._index; }
 			public bool Equals(Vertex other) { return _index == other._index; }
+			public int CompareTo(Vertex other) { return _index - other._index; }
 			public static bool operator ==(Vertex lhs, Vertex rhs) { return lhs._index == rhs._index; }
 			public static bool operator !=(Vertex lhs, Vertex rhs) { return lhs._index != rhs._index; }
+			public static bool operator < (Vertex lhs, Vertex rhs) { return lhs._index <  rhs._index; }
+			public static bool operator > (Vertex lhs, Vertex rhs) { return lhs._index >  rhs._index; }
+			public static bool operator <=(Vertex lhs, Vertex rhs) { return lhs._index <= rhs._index; }
+			public static bool operator >=(Vertex lhs, Vertex rhs) { return lhs._index >= rhs._index; }
 			public override int GetHashCode() { return _index.GetHashCode(); }
 		}
 
-		public struct VerticesIndexer : IEnumerable<Vertex>
+		public struct VerticesIndexer
 		{
 			private Topology _topology;
-			public VerticesIndexer(Topology topology) { _topology = topology; }
+
+			public VerticesIndexer(Topology topology){ _topology = topology; }
 			public Vertex this[int i] { get { return new Vertex(_topology, i); } }
-			public int Count { get { return _topology._vertexRoots.Length; } }
-			public IEnumerator<Vertex> GetEnumerator() { for (int i = 0; i < _topology._vertexRoots.Length; ++i) yield return new Vertex(_topology, i); }
-			IEnumerator IEnumerable.GetEnumerator() { return (this as IEnumerable<Vertex>).GetEnumerator(); }
+			public int Count { get { return _topology._vertexData.Length; } }
+			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology); }
+
+			public struct VertexEnumerator
+			{
+				private Topology _topology;
+				private int _index;
+
+				public VertexEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public Vertex Current { get { return new Vertex(_topology, _index); } }
+				public bool MoveNext() { return (++_index < _topology._vertexData.Length); }
+				public void Reset() { _index = -1; }
+			}
 		}
 
 		public VerticesIndexer vertices { get { return new VerticesIndexer(this); } }
@@ -247,6 +169,22 @@ namespace Tiling
 			public VertexAttribute(int vertexCount)
 			{
 				_values = new T[vertexCount];
+			}
+
+			public VertexAttribute(T[] values)
+			{
+				_values = values.Clone() as T[];
+			}
+
+			public VertexAttribute(ICollection<T> collection)
+			{
+				_values = new T[collection.Count];
+				collection.CopyTo(_values, 0);
+			}
+
+			public VertexAttribute<T> Clone()
+			{
+				return new VertexAttribute<T>(_values);
 			}
 
 			public T this[int i]

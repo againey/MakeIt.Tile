@@ -7,17 +7,49 @@ namespace Tiling
 {
 	public partial class Topology
 	{
+		private struct NodeData
+		{
+			private uint _data;
+
+			public NodeData(int neighborCount, int firstEdge)
+			{
+				_data = (((uint)neighborCount & 0xFF) << 24) & ((uint)firstEdge & 0xFFFFFF);
+			}
+
+			public int neighborCount
+			{
+				get
+				{
+					return (int)((_data >> 24) & 0xFF);
+				}
+				set
+				{
+					_data = (_data & 0xFFFFFF) | (((uint)value & 0xFF) << 24);
+				}
+			}
+
+			public int firstEdge
+			{
+				get
+				{
+					return (int)(_data & 0xFFFFFF);
+				}
+				set
+				{
+					_data = (_data & 0xFF000000) | ((uint)value & 0xFFFFFF);
+				}
+			}
+		}
+
 		public Topology()
 		{
 		}
 
 		public Topology(Topology original)
 		{
-			_vertexNeighbors = _vertexNeighbors.Clone() as VertexNeighbor[];
-			_vertexRoots = _vertexRoots.Clone() as VertexRoot[];
-			_edgeNeighbors = _edgeNeighbors.Clone() as EdgeNeighbor[,];
-			_faceNeighbors = _faceNeighbors.Clone() as FaceNeighbor[];
-			_faceRoots = _faceRoots.Clone() as FaceRoot[];
+			_vertexData = original._vertexData.Clone() as NodeData[];
+			_edgeData = original._edgeData.Clone() as EdgeData[];
+			_faceData = original._faceData.Clone() as NodeData[];
 		}
 
 		public Topology Clone()
@@ -28,37 +60,13 @@ namespace Tiling
 		public Topology GetDualTopology()
 		{
 			var dual = new Topology();
+			dual._vertexData = _faceData.Clone() as NodeData[];
+			dual._faceData = _vertexData.Clone() as NodeData[];
 
-			dual._vertexNeighbors = new VertexNeighbor[_faceNeighbors.Length];
-			dual._vertexRoots = new VertexRoot[_faceRoots.Length];
-			dual._edgeNeighbors = new EdgeNeighbor[_edgeNeighbors.GetLength(0), 2];
-			dual._faceNeighbors = new FaceNeighbor[_vertexNeighbors.Length];
-			dual._faceRoots = new FaceRoot[_vertexRoots.Length];
-
-			for (int i = 0; i < _faceRoots.Length; ++i)
+			dual._edgeData = new EdgeData[_edgeData.Length];
+			foreach (var edge in faceEdges)
 			{
-				dual._vertexRoots[i] = new VertexRoot(_faceRoots[i].neighborCount, _faceRoots[i].rootIndex);
-			}
-
-			for (int i = 0; i < _faceNeighbors.Length; ++i)
-			{
-				dual._vertexNeighbors[i] = new VertexNeighbor(_faceNeighbors[i]._prev, _faceNeighbors[i]._next, _faceNeighbors[i]._face, _faceNeighbors[i]._edge, _faceNeighbors[i]._vertex);
-			}
-
-			for (int i = 0; i < _edgeNeighbors.Length; ++i)
-			{
-				dual._edgeNeighbors[i, 0] = new EdgeNeighbor(_edgeNeighbors[i, 0]._face, _edgeNeighbors[i, 1]._vertex);
-				dual._edgeNeighbors[i, 1] = new EdgeNeighbor(_edgeNeighbors[i, 1]._face, _edgeNeighbors[i, 0]._vertex);
-			}
-
-			for (int i = 0; i < _vertexRoots.Length; ++i)
-			{
-				dual._faceRoots[i] = new FaceRoot(_vertexRoots[i].neighborCount, _vertexRoots[i].rootIndex);
-			}
-
-			for (int i = 0; i < _vertexNeighbors.Length; ++i)
-			{
-				dual._faceNeighbors[i] = new FaceNeighbor(_vertexNeighbors[i]._prev, _vertexNeighbors[i]._next, _vertexNeighbors[i]._vertex, _vertexNeighbors[i]._edge, _vertexNeighbors[i]._face);
+				dual._edgeData[edge.index] = new EdgeData(edge.twinIndex, edge.prev.index, edge.next.index, edge.farFace.index, edge.nextVertex.index);
 			}
 
 			return dual;
@@ -230,327 +238,140 @@ namespace Tiling
 			return subdivided;
 		}*/
 
-		private void MoveVertexNeighborBefore(int vertexIndex, int neighborIndex, int targetVertexIndex, int targetNextNeighbor)
+		private void RemoveEdgeFromFarVertex(VertexEdge edge)
 		{
-			_vertexRoots[vertexIndex].neighborCount -= 1;
-			_vertexRoots[targetVertexIndex].neighborCount += 1;
-
-			if (_vertexRoots[vertexIndex].rootIndex == neighborIndex) _vertexRoots[vertexIndex].rootIndex = _vertexNeighbors[neighborIndex]._next;
-
-			// Remove element from its original list.
-			_vertexNeighbors[_vertexNeighbors[neighborIndex]._next]._prev = _vertexNeighbors[neighborIndex]._prev;
-			_vertexNeighbors[_vertexNeighbors[neighborIndex]._prev]._next = _vertexNeighbors[neighborIndex]._next;
-
-			// Add element to the target list.
-			_vertexNeighbors[neighborIndex]._prev = _vertexNeighbors[targetNextNeighbor]._prev;
-			_vertexNeighbors[neighborIndex]._next = targetNextNeighbor;
-
-			// Make target list aware of moved element.
-			_vertexNeighbors[targetNextNeighbor]._prev = neighborIndex;
-			_vertexNeighbors[_vertexNeighbors[neighborIndex]._prev]._next = neighborIndex;
+			var twin = edge.twin;
+			var vertex = edge.farVertex;
+			_edgeData[twin.prev.index]._next = twin.next.index;
+			_edgeData[twin.next.index]._prev = twin.prev.index;
+			_vertexData[vertex.index].neighborCount -= 1;
+			if (vertex.firstEdge == twin) _vertexData[vertex.index].firstEdge = twin.next.index;
 		}
 
-		private void MoveVertexNeighborAfter(int vertexIndex, int neighborIndex, int targetVertexIndex, int targetPrevNeighbor)
+		private void AddEdgeToFarVertex(Vertex vertex, VertexEdge edge, VertexEdge insertBefore)
 		{
-			_vertexRoots[vertexIndex].neighborCount -= 1;
-			_vertexRoots[targetVertexIndex].neighborCount += 1;
-
-			if (_vertexRoots[vertexIndex].rootIndex == neighborIndex) _vertexRoots[vertexIndex].rootIndex = _vertexNeighbors[neighborIndex]._next;
-
-			// Remove element from its original list.
-			_vertexNeighbors[_vertexNeighbors[neighborIndex]._next]._prev = _vertexNeighbors[neighborIndex]._prev;
-			_vertexNeighbors[_vertexNeighbors[neighborIndex]._prev]._next = _vertexNeighbors[neighborIndex]._next;
-
-			// Add element to the target list.
-			_vertexNeighbors[neighborIndex]._prev = targetPrevNeighbor;
-			_vertexNeighbors[neighborIndex]._next = _vertexNeighbors[targetPrevNeighbor]._next;
-
-			// Make target list aware of moved element.
-			_vertexNeighbors[_vertexNeighbors[neighborIndex]._next]._prev = neighborIndex;
-			_vertexNeighbors[targetPrevNeighbor]._next = neighborIndex;
+			_edgeData[edge.index]._vertex = vertex.index;
+			_edgeData[edge.index]._prev = insertBefore.prev.index;
+			_edgeData[insertBefore.prev.index]._next = edge.index;
+			_edgeData[edge.index]._next = insertBefore.index;
+			_edgeData[insertBefore.index]._prev = edge.index;
+			_vertexData[vertex.index].neighborCount += 1;
 		}
 
-		private void MoveFaceNeighborBefore(int faceIndex, int neighborIndex, int targetFaceIndex, int targetNextNeighbor)
-		{
-			_faceRoots[faceIndex].neighborCount -= 1;
-			_faceRoots[targetFaceIndex].neighborCount += 1;
-
-			if (_faceRoots[faceIndex].rootIndex == neighborIndex) _faceRoots[faceIndex].rootIndex = _faceNeighbors[neighborIndex]._next;
-
-			// Remove element from its original list.
-			_faceNeighbors[_faceNeighbors[neighborIndex]._next]._prev = _faceNeighbors[neighborIndex]._prev;
-			_faceNeighbors[_faceNeighbors[neighborIndex]._prev]._next = _faceNeighbors[neighborIndex]._next;
-
-			// Add element to the target list.
-			_faceNeighbors[neighborIndex]._prev = _faceNeighbors[targetNextNeighbor]._prev;
-			_faceNeighbors[neighborIndex]._next = targetNextNeighbor;
-
-			// Make target list aware of moved element.
-			_faceNeighbors[targetNextNeighbor]._prev = neighborIndex;
-			_faceNeighbors[_faceNeighbors[neighborIndex]._prev]._next = neighborIndex;
-		}
-
-		private void MoveFaceNeighborAfter(int faceIndex, int neighborIndex, int targetFaceIndex, int targetPrevNeighbor)
-		{
-			_faceRoots[faceIndex].neighborCount -= 1;
-			_faceRoots[targetFaceIndex].neighborCount += 1;
-
-			if (_faceRoots[faceIndex].rootIndex == neighborIndex) _faceRoots[faceIndex].rootIndex = _faceNeighbors[neighborIndex]._next;
-
-			// Remove element from its original list.
-			_faceNeighbors[_faceNeighbors[neighborIndex]._next]._prev = _faceNeighbors[neighborIndex]._prev;
-			_faceNeighbors[_faceNeighbors[neighborIndex]._prev]._next = _faceNeighbors[neighborIndex]._next;
-
-			// Add element to the target list.
-			_faceNeighbors[neighborIndex]._prev = targetPrevNeighbor;
-			_faceNeighbors[neighborIndex]._next = _faceNeighbors[targetPrevNeighbor]._next;
-
-			// Make target list aware of moved element.
-			_faceNeighbors[_faceNeighbors[neighborIndex]._next]._prev = neighborIndex;
-			_faceNeighbors[targetPrevNeighbor]._next = neighborIndex;
-		}
-
-		// Shift a vertex's neighbor edge/vertex pair over to the next neighbor vertex.
+		// Pivot an edge counter-clockwise around its implicit near vertex.
 		//
-		//   o---o           o---o
-		//  /   / \         /    |\
-		// o   E   o  -->  o     E o
-		//  \ /   /         \    |/
-		//   V---N           V---N
-		//  / --> \         /     \
-		private void ShiftVertexNeighborPrev(Vertex vertex, Vertex.Neighbor neighbor)
-		{
-			var prevNeighbor = neighbor.prev;
-			var prevPrevNeighbor = prevNeighbor.prev;
-
-			var neighborVertex = neighbor.vertex;
-			var pivotingVertex = prevNeighbor.vertex;
-			var pivotingEdge = prevNeighbor.edge;
-			var outsideEdge = neighbor.edge;
-			var nextFace = prevNeighbor.face;
-			var prevFace = prevPrevNeighbor.face;
-			var outsideFace = neighbor.face;
-
-			// Update the new vertex on the shifting end of the pivoting edge.
-			_edgeNeighbors[pivotingEdge.index, pivotingEdge.FindNeighbor(vertex).index]._vertex = neighborVertex.index;
-			// Update the new face next to the outside edge.
-			_edgeNeighbors[outsideEdge.index, outsideEdge.FindNeighbor(nextFace).index]._face = prevFace.index;
-
-			// Update the new neighbor vertex of the pivoting vertex.
-			_vertexNeighbors[pivotingVertex.FindNeighbor(vertex).index]._vertex = neighborVertex.index;
-
-			// Update the new neighbor face of the outside face.
-			_faceNeighbors[outsideFace.FindNeighbor(outsideEdge).index]._face = prevFace.index;
-
-			// Move the linked list element from the original vertex to the neighbor vertex.
-			MoveVertexNeighborAfter(vertex.index, prevNeighbor.index, neighborVertex.index, neighborVertex.FindNeighbor(vertex).index);
-			// Move the linked list element from the next face to the prev face.
-			MoveFaceNeighborAfter(nextFace.index, nextFace.FindNeighbor(outsideEdge).index, prevFace.index, prevFace.FindNeighbor(pivotingEdge).index);
-		}
-
-		// Shift a vertex's neighbor edge/vertex pair over to the next neighbor vertex.
+		//    \         /           \         /
+		//     o-------o             o-------o
+		//    /       / \           /        |\
+		//   /       /   \         /         | \
+		//  /   3   /     \       /         1|  \
+		// o      1/2      o --> o      3    | 4 o
+		//  \     /   4   /       \          |2 /
+		//   A   /       B         A         | B
+		//    \ /       /           \        |/
+		//     5--7/8--6             5--7/8--6
+		//    /         \           /         \
+		//   /     9     \         /     9     \
 		//
-		//   o---o           o---o
-		//  / \   \         /|    \
-		// o   E   o  -->  o E     o
-		//  \   \ /         \|    /
-		//   N---V           N---V
-		//  / <-- \         /     \
-		private void ShiftVertexNeighborNext(Vertex vertex, Vertex.Neighbor neighbor)
+		// 1:  The edge that is pivoting
+		// 2:  The twin of the pivoting edge
+		// 3:  The next face from the pivoting edge
+		// 4:  The prev face from the pivoting edge
+		// 5:  The old far vertex of the pivoting edge
+		// 6:  The new far vertex of the pivoting edge
+		// 7:  The sliding edge facing outward toward the outside face
+		// 8:  The twin of the sliding edge facing inward toward the prev face
+		// 9:  The outside face
+		// A:  An edge facing inward toward the next face
+		// B:  An edge facing outward away from the prev face
+
+		private void PivotEdgeBackwardUnchecked(VertexEdge edge)
 		{
-			var nextNeighbor = neighbor.next;
-			var prevNeighbor = neighbor.prev;
+			var twinEdge = edge.twin;
+			var slidingEdge = twinEdge.next;
+			var twinSlidingEdge = slidingEdge.twin;
+			var newVertex = slidingEdge.farVertex;
 
-			var neighborVertex = neighbor.vertex;
-			var pivotingVertex = nextNeighbor.vertex;
-			var pivotingEdge = nextNeighbor.edge;
-			var outsideEdge = neighbor.edge;
-			var nextFace = nextNeighbor.face;
-			var prevFace = neighbor.face;
-			var outsideFace = prevNeighbor.face;
+			// Outside face needs to point inward at the prev face.
+			_edgeData[twinSlidingEdge.index]._face = edge.nextFace.index;
 
-			// Update the new vertex on the shifting end of the pivoting edge.
-			_edgeNeighbors[pivotingEdge.index, pivotingEdge.FindNeighbor(vertex).index]._vertex = neighborVertex.index;
-			// Update the new face next to the outside edge.
-			_edgeNeighbors[outsideEdge.index, outsideEdge.FindNeighbor(prevFace).index]._face = nextFace.index;
-
-			// Update the new neighbor vertex of the pivoting vertex.
-			_vertexNeighbors[pivotingVertex.FindNeighbor(vertex).index]._vertex = neighborVertex.index;
-
-			// Update the new neighbor face of the outside face.
-			_faceNeighbors[outsideFace.FindNeighbor(outsideEdge).index]._face = nextFace.index;
-
-			// Move the linked list element from the original vertex to the neighbor vertex.
-			MoveVertexNeighborBefore(vertex.index, nextNeighbor.index, neighborVertex.index, neighborVertex.FindNeighbor(vertex).index);
-			// Move the linked list element from the prev face to the next face.
-			MoveFaceNeighborBefore(prevFace.index, prevFace.FindNeighbor(outsideEdge).index, nextFace.index, nextFace.FindNeighbor(pivotingEdge).index);
+			RemoveEdgeFromFarVertex(edge);
+			AddEdgeToFarVertex(newVertex, edge, twinSlidingEdge.next);
 		}
 
-		// Rotate counter-clockwise around the pivot vertex until all that remains in the counter-clockwise
-		// direction is a triangle.  The next pivot will then move the pivot point to the far vertex of that
-		// triangle, and will connect the edge to the vertex that is next in the clockwise direction from the
-		// pivot's prior vertex.
+		// Pivot an edge clockwise around its implicit near vertex.
 		//
-		//   ---->               *
-		//   o---o           o---o           o---o
-		//  / \   \         /   /|\         /     \
-		// o   E   o  -->  o   v E o  -->  o     _-P
-		//  \   \ /         \    |/  ^      \  _- /
-		//   o---P           o---P   |       o---o
-		public void PivotEdgePrev(Edge edge, Edge.Neighbor pivot)
-		{
-			var nextFace = pivot.face;
-			if (nextFace.Neighbors.Count > 3)
-			{
-				var shiftingVertex = pivot.next.vertex;
-				ShiftVertexNeighborNext(shiftingVertex, shiftingVertex.FindNeighbor(edge).prev);
-			}
-			else
-			{
-				var firstShiftingVertex = pivot.vertex;
-				var secondShiftingVertex = pivot.next.vertex;
-				ShiftVertexNeighborNext(firstShiftingVertex, firstShiftingVertex.FindNeighbor(edge).prev);
-				ShiftVertexNeighborNext(secondShiftingVertex, secondShiftingVertex.FindNeighbor(edge).prev);
-				Utility.Swap(ref _edgeNeighbors[edge.index, 0], ref _edgeNeighbors[edge.index, 1]);
-			}
-		}
-
-		// Rotate counter-clockwise around the pivot vertex until all that remains in the counter-clockwise
-		// direction is a triangle.  The next pivot will then move the pivot point to the far vertex of that
-		// triangle, and will connect the edge to the vertex that is next in the clockwise direction from the
-		// pivot's prior vertex.
+		//    \         /           \         /
+		//     o-------o             o-------o
+		//    / \       \           /|        \
+		//   /   \       \         / |         \
+		//  /     \   4   \       /  |2         \
+		// o      1\2      o --> o 3 |    4      o
+		//  \   3   \     /       \ 1|          /
+		//   A       \   B         A |         B
+		//    \       \ /           \|        /
+		//     6--7/8--5             6--7/8--5
+		//    /         \           /         \
+		//   /     9     \         /     9     \
 		//
-		//   <----           *
-		//   o---o           o---o           o---o
-		//  /   / \         /|\   \         /     \
-		// o   E   o  -->  o E v   o  -->  P-_     o
-		//  \ /   /      ^  \|    /         \ -_  /
-		//   P---o       |   P---o           o---o
-		public void PivotEdgeNext(Edge edge, Edge.Neighbor pivot)
+		// 1:  The edge that is pivoting
+		// 2:  The twin of the pivoting edge
+		// 3:  The next face from the pivoting edge
+		// 4:  The prev face from the pivoting edge
+		// 5:  The old far vertex of the pivoting edge
+		// 6:  The new far vertex of the pivoting edge
+		// 7:  The sliding edge facing inward toward the next face
+		// 8:  The twin of the sliding edge facing outward toward the outside face
+		// 9:  The outside face
+		// A:  An edge facing inward toward the next face
+		// B:  An edge facing outward away from the prev face
+
+		private void PivotEdgeForwardUnchecked(VertexEdge edge)
 		{
-			var nextFace = pivot.face;
-			if (nextFace.Neighbors.Count > 3)
-			{
-				var shiftingVertex = pivot.next.vertex;
-				ShiftVertexNeighborPrev(shiftingVertex, shiftingVertex.FindNeighbor(edge).next);
-			}
-			else
-			{
-				var firstShiftingVertex = pivot.vertex;
-				var secondShiftingVertex = pivot.next.vertex;
-				ShiftVertexNeighborPrev(firstShiftingVertex, firstShiftingVertex.FindNeighbor(edge).next);
-				ShiftVertexNeighborPrev(secondShiftingVertex, secondShiftingVertex.FindNeighbor(edge).next);
-				Utility.Swap(ref _edgeNeighbors[edge.index, 0], ref _edgeNeighbors[edge.index, 1]);
-			}
+			var twinEdge = edge.twin;
+			var slidingEdge = twinEdge.prev;
+			var twinSlidingEdge = slidingEdge.twin;
+			var newVertex = slidingEdge.farVertex;
+
+			// Outside face needs to point inward at the prev face.
+			_edgeData[slidingEdge.index]._face = edge.prevFace.index;
+
+			RemoveEdgeFromFarVertex(edge);
+			AddEdgeToFarVertex(newVertex, edge, twinSlidingEdge);
 		}
 
-		// Pivot around the first neighbor by default.  Pivoting around the second neighbor would merey
-		// reverse the direction of pivoting anyway.
-		public void PivotEdgePrev(Edge edge)
+		public bool CanPivotEdgeBackward(VertexEdge edge)
 		{
-			PivotEdgePrev(edge, new Edge.Neighbor(this, edge.index, 0));
+			return edge.prevFace.neighborCount > 3;
 		}
 
-		// Pivot around the first neighbor by default.  Pivoting around the second neighbor would merey
-		// reverse the direction of pivoting anyway.
-		public void PivotEdgeNext(Edge edge)
+		public bool CanPivotEdgeForward(VertexEdge edge)
 		{
-			PivotEdgeNext(edge, new Edge.Neighbor(this, edge.index, 0));
+			return edge.nextFace.neighborCount > 3;
 		}
 
-		// Shift both edge ends forward around the pair of faces.
-		//
-		// |   o---o           o---o
-		// v  / \   \         /     \
-		//   o   E   o  --> *o---E---o*
-		//    \   \ /  ^      \     /
-		//     o---o   |       o---o
-		public void SpinEdgePrev(Edge edge)
+		public void PivotEdgeBackward(VertexEdge edge)
 		{
-			var firstShiftingVertex = new Vertex(this, _edgeNeighbors[edge.index, 0]._vertex);
-			var secondShiftingVertex = new Vertex(this, _edgeNeighbors[edge.index, 1]._vertex);
-			ShiftVertexNeighborPrev(firstShiftingVertex, firstShiftingVertex.FindNeighbor(edge).next);
-			ShiftVertexNeighborPrev(secondShiftingVertex, secondShiftingVertex.FindNeighbor(edge).next);
+			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge backward when it's previous face has only three sides.");
+			PivotEdgeBackwardUnchecked(edge);
 		}
 
-		// Shift both edge ends forward around the pair of faces.
-		//
-		//     o---o   |       o---o
-		//    /   / \  v      /     \
-		//   o   E   o  --> *o---E---o*
-		// ^  \ /   /         \     /
-		// |   o---o           o---o
-		public void SpinEdgeNext(Edge edge)
+		public void PivotEdgeForward(VertexEdge edge)
 		{
-			var firstShiftingVertex = new Vertex(this, _edgeNeighbors[edge.index, 0]._vertex);
-			var secondShiftingVertex = new Vertex(this, _edgeNeighbors[edge.index, 1]._vertex);
-			ShiftVertexNeighborPrev(firstShiftingVertex, firstShiftingVertex.FindNeighbor(edge).prev);
-			ShiftVertexNeighborPrev(secondShiftingVertex, secondShiftingVertex.FindNeighbor(edge).prev);
+			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge forward when it's next face has only three sides.");
+			PivotEdgeForwardUnchecked(edge);
 		}
 
-		// Reorder the vertex neighbors and face neighbors in physical memory so that all of the
-		// embedded linked lists are essentially contiguous.
-		public void Optimize()
+		public void SpinEdgeBackward(VertexEdge edge)
 		{
-			var optimizedVertexNeighbors = new VertexNeighbor[_vertexNeighbors.Length];
-			var nextNeighborIndex = 0;
+			PivotEdgeBackwardUnchecked(edge);
+			PivotEdgeBackwardUnchecked(edge.twin);
+		}
 
-			for (int vertexIndex = 0; vertexIndex < _vertexNeighbors.Length; ++vertexIndex)
-			{
-				var neighborCount = _vertexRoots[vertexIndex].neighborCount;
-				if (neighborCount == 0) continue;
-
-				var neighborIndex = _vertexRoots[vertexIndex].rootIndex;
-				_vertexRoots[vertexIndex].rootIndex = nextNeighborIndex;
-				while (neighborCount > 0)
-				{
-					optimizedVertexNeighbors[nextNeighborIndex]._prev = nextNeighborIndex - 1;
-					optimizedVertexNeighbors[nextNeighborIndex]._next = nextNeighborIndex + 1;
-					optimizedVertexNeighbors[nextNeighborIndex]._vertex = _vertexNeighbors[neighborIndex]._vertex;
-					optimizedVertexNeighbors[nextNeighborIndex]._edge = _vertexNeighbors[neighborIndex]._edge;
-					optimizedVertexNeighbors[nextNeighborIndex]._face = _vertexNeighbors[neighborIndex]._face;
-
-					--neighborCount;
-					++nextNeighborIndex;
-					neighborIndex = _vertexNeighbors[neighborIndex]._next;
-				}
-
-				neighborCount = _vertexRoots[vertexIndex].neighborCount;
-				optimizedVertexNeighbors[nextNeighborIndex - 1]._next = nextNeighborIndex - neighborCount;
-				optimizedVertexNeighbors[nextNeighborIndex - neighborCount]._prev = nextNeighborIndex - 1;
-			}
-
-			_vertexNeighbors = optimizedVertexNeighbors;
-
-			var optimizedFaceNeighbors = new FaceNeighbor[_faceNeighbors.Length];
-			nextNeighborIndex = 0;
-
-			for (int faceIndex = 0; faceIndex < _faceNeighbors.Length; ++faceIndex)
-			{
-				var neighborCount = _faceRoots[faceIndex].neighborCount;
-				if (neighborCount == 0) continue;
-
-				var neighborIndex = _faceRoots[faceIndex].rootIndex;
-				_faceRoots[faceIndex].rootIndex = nextNeighborIndex;
-				while (neighborCount > 0)
-				{
-					optimizedFaceNeighbors[nextNeighborIndex]._prev = nextNeighborIndex - 1;
-					optimizedFaceNeighbors[nextNeighborIndex]._next = nextNeighborIndex + 1;
-					optimizedFaceNeighbors[nextNeighborIndex]._vertex = _faceNeighbors[neighborIndex]._vertex;
-					optimizedFaceNeighbors[nextNeighborIndex]._edge = _faceNeighbors[neighborIndex]._edge;
-					optimizedFaceNeighbors[nextNeighborIndex]._face = _faceNeighbors[neighborIndex]._face;
-
-					--neighborCount;
-					++nextNeighborIndex;
-					neighborIndex = _faceNeighbors[neighborIndex]._next;
-				}
-
-				neighborCount = _faceRoots[faceIndex].neighborCount;
-				optimizedFaceNeighbors[nextNeighborIndex - 1]._next = nextNeighborIndex - neighborCount;
-				optimizedFaceNeighbors[nextNeighborIndex - neighborCount]._prev = nextNeighborIndex - 1;
-			}
-
-			_faceNeighbors = optimizedFaceNeighbors;
+		public void SpinEdgeForward(VertexEdge edge)
+		{
+			PivotEdgeForwardUnchecked(edge);
+			PivotEdgeForwardUnchecked(edge.twin);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+/*
 namespace Tiling
 {
 	public static class TilingUtility
@@ -84,3 +84,4 @@ namespace Tiling
 		}
 	}
 }
+*/
