@@ -1,9 +1,6 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System;
-using System.Collections;
+﻿using System;
 
-namespace Tiling
+namespace Experilous.Topological
 {
 	public partial class Topology
 	{

@@ -1,25 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-[ExecuteInEditMode]
-public abstract class DynamicMesh : UniqueMesh
+namespace Experilous
 {
-	private bool _invalidated = false;
-
-	public void InvalidateMesh()
+	[ExecuteInEditMode]
+	public abstract class DynamicMesh : UniqueMesh
 	{
-		_invalidated = true;
-	}
+		private bool _invalidated = false;
 
-	public void Update()
-	{
-		if (_invalidated)
+		public void InvalidateMesh()
 		{
-			RebuildMesh();
-			_invalidated = false;
+			_invalidated = true;
 		}
+
+		public void Update()
+		{
+			if (_invalidated)
+			{
+				RebuildMesh();
+				_invalidated = false;
+			}
+		}
+
+
+		protected abstract void RebuildMesh();
 	}
-
-
-	protected abstract void RebuildMesh();
 }

@@ -2,14 +2,14 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using Tiling;
+using Experilous.Topological;
 
 public class MeshTopologyTests
 {
 	[Test]
 	public void TetrahedronComponentCountValidation()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		Assert.AreEqual(4, tetrahedron.topology.vertices.Count);
 		Assert.AreEqual(12, tetrahedron.topology.vertexEdges.Count);
 		Assert.AreEqual(12, tetrahedron.topology.faceEdges.Count);
@@ -19,7 +19,7 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronComponentNeighborCountValidation()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		Assert.AreEqual(3, tetrahedron.topology.vertices[0].neighborCount);
 		Assert.AreEqual(3, tetrahedron.topology.vertices[1].neighborCount);
 		Assert.AreEqual(3, tetrahedron.topology.vertices[2].neighborCount);
@@ -33,7 +33,7 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronVertexNeighborValidation()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
 
 		var vertexEdges = tetrahedron.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -75,7 +75,7 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronFaceNeighborValidation()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
 
 		var vertex0 = tetrahedron.topology.vertices[0];
 		var vertexEdge = vertex0.firstEdge;
@@ -193,7 +193,7 @@ public class MeshTopologyTests
 	[Test]
 	public void CubeComponentCountValidation()
 	{
-		var cube = SphereTopology.CreateCube();
+		var cube = SphericalManifold.CreateCube();
 		Assert.AreEqual(8, cube.topology.vertices.Count);
 		Assert.AreEqual(24, cube.topology.vertexEdges.Count);
 		Assert.AreEqual(24, cube.topology.faceEdges.Count);
@@ -203,7 +203,7 @@ public class MeshTopologyTests
 	[Test]
 	public void CubeComponentNeighborCountValidation()
 	{
-		var cube = SphereTopology.CreateCube();
+		var cube = SphericalManifold.CreateCube();
 		Assert.AreEqual(3, cube.topology.vertices[0].neighborCount);
 		Assert.AreEqual(3, cube.topology.vertices[1].neighborCount);
 		Assert.AreEqual(3, cube.topology.vertices[2].neighborCount);
@@ -223,7 +223,7 @@ public class MeshTopologyTests
 	[Test]
 	public void CubeVertexNeighborValidation()
 	{
-		var cube = SphereTopology.CreateCube();
+		var cube = SphericalManifold.CreateCube();
 
 		var vertexEdges = cube.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -301,7 +301,7 @@ public class MeshTopologyTests
 	[Test]
 	public void OctahedronComponentCountValidation()
 	{
-		var octahedron = SphereTopology.CreateOctahedron();
+		var octahedron = SphericalManifold.CreateOctahedron();
 		Assert.AreEqual(6, octahedron.topology.vertices.Count);
 		Assert.AreEqual(24, octahedron.topology.vertexEdges.Count);
 		Assert.AreEqual(24, octahedron.topology.faceEdges.Count);
@@ -311,7 +311,7 @@ public class MeshTopologyTests
 	[Test]
 	public void OctahedronComponentNeighborCountValidation()
 	{
-		var octahedron = SphereTopology.CreateOctahedron();
+		var octahedron = SphericalManifold.CreateOctahedron();
 		Assert.AreEqual(4, octahedron.topology.vertices[0].neighborCount);
 		Assert.AreEqual(4, octahedron.topology.vertices[1].neighborCount);
 		Assert.AreEqual(4, octahedron.topology.vertices[2].neighborCount);
@@ -331,7 +331,7 @@ public class MeshTopologyTests
 	[Test]
 	public void OctahedronVertexNeighborValidation()
 	{
-		var octahedron = SphereTopology.CreateOctahedron();
+		var octahedron = SphericalManifold.CreateOctahedron();
 
 		var vertexEdges = octahedron.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -403,7 +403,7 @@ public class MeshTopologyTests
 	[Test]
 	public void IcosahedronComponentCountValidation()
 	{
-		var icosahedron = SphereTopology.CreateIcosahedron();
+		var icosahedron = SphericalManifold.CreateIcosahedron();
 		Assert.AreEqual(12, icosahedron.topology.vertices.Count);
 		Assert.AreEqual(60, icosahedron.topology.vertexEdges.Count);
 		Assert.AreEqual(60, icosahedron.topology.faceEdges.Count);
@@ -413,7 +413,7 @@ public class MeshTopologyTests
 	[Test]
 	public void IcosahedronComponentNeighborCountValidation()
 	{
-		var icosahedron = SphereTopology.CreateIcosahedron();
+		var icosahedron = SphericalManifold.CreateIcosahedron();
 		Assert.AreEqual(5, icosahedron.topology.vertices[0].neighborCount);
 		Assert.AreEqual(5, icosahedron.topology.vertices[1].neighborCount);
 		Assert.AreEqual(5, icosahedron.topology.vertices[2].neighborCount);
@@ -451,7 +451,7 @@ public class MeshTopologyTests
 	[Test]
 	public void IcosahedronVertexNeighborValidation()
 	{
-		var icosahedron = SphereTopology.CreateIcosahedron();
+		var icosahedron = SphericalManifold.CreateIcosahedron();
 
 		var vertexEdges = icosahedron.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -613,8 +613,8 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronSubdivisionDegree1()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
-		var subdivided = SphereTopology.Subdivide(tetrahedron, 1);
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
+		var subdivided = SphericalManifold.Subdivide(tetrahedron, 1);
 		Assert.AreEqual(10, subdivided.topology.vertices.Count);
 		Assert.AreEqual(48, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(48, subdivided.topology.faceEdges.Count);
@@ -643,8 +643,8 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronSubdivisionDegree2()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
-		var subdivided = SphereTopology.Subdivide(tetrahedron, 2);
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
+		var subdivided = SphericalManifold.Subdivide(tetrahedron, 2);
 		Assert.AreEqual(20, subdivided.topology.vertices.Count);
 		Assert.AreEqual(108, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(108, subdivided.topology.faceEdges.Count);
@@ -673,8 +673,8 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronSubdivisionDegree3()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
-		var subdivided = SphereTopology.Subdivide(tetrahedron, 3);
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
+		var subdivided = SphericalManifold.Subdivide(tetrahedron, 3);
 		Assert.AreEqual(4 + 3*6 + 3*4 /*34*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((4 + 3*6 + 3*4) + (4*4 * 4) - 2) * 2 /*192*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((4 + 3*6 + 3*4) + (4*4 * 4) - 2) * 2 /*192*/, subdivided.topology.faceEdges.Count);
@@ -703,8 +703,8 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronSubdivisionDegree4()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
-		var subdivided = SphereTopology.Subdivide(tetrahedron, 4);
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
+		var subdivided = SphericalManifold.Subdivide(tetrahedron, 4);
 		Assert.AreEqual(4 + 4*6 + 6*4 /*52*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((4 + 4*6 + 6*4) + (5*5 * 4) - 2) * 2 /*300*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((4 + 4*6 + 6*4) + (5*5 * 4) - 2) * 2 /*300*/, subdivided.topology.faceEdges.Count);
@@ -733,12 +733,12 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronSubdivisionDegree5()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		var degree = 5;
 		var vertexCount = 4 + degree * 6 + (degree * (degree - 1) / 2) * 4; /*74*/
 		var faceCount = (degree + 1) * (degree + 1) * 4; /*144*/
 		var edgeCount = (vertexCount + faceCount - 2) * 2; /*432*/
-		var subdivided = SphereTopology.Subdivide(tetrahedron, degree);
+		var subdivided = SphericalManifold.Subdivide(tetrahedron, degree);
 		Assert.AreEqual(vertexCount, subdivided.topology.vertices.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.faceEdges.Count);
@@ -767,8 +767,8 @@ public class MeshTopologyTests
 	[Test]
 	public void CubeSubdivisionDegree1()
 	{
-		var cube = SphereTopology.CreateCube();
-		var subdivided = SphereTopology.Subdivide(cube, 1);
+		var cube = SphericalManifold.CreateCube();
+		var subdivided = SphericalManifold.Subdivide(cube, 1);
 		Assert.AreEqual(8 + 1*12 + 1*1*6 /*26*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 1*12 + 1*1*6) + (2*2 * 6) - 2) * 2 /*96*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((8 + 1*12 + 1*1*6) + (2*2 * 6) - 2) * 2 /*96*/, subdivided.topology.faceEdges.Count);
@@ -797,8 +797,8 @@ public class MeshTopologyTests
 	[Test]
 	public void CubeSubdivisionDegree2()
 	{
-		var cube = SphereTopology.CreateCube();
-		var subdivided = SphereTopology.Subdivide(cube, 2);
+		var cube = SphericalManifold.CreateCube();
+		var subdivided = SphericalManifold.Subdivide(cube, 2);
 		Assert.AreEqual(8 + 2*12 + 2*2*6 /*56*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 2*12 + 2*2*6) + (3*3 * 6) - 2) * 2 /*216*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((8 + 2*12 + 2*2*6) + (3*3 * 6) - 2) * 2 /*216*/, subdivided.topology.faceEdges.Count);
@@ -827,8 +827,8 @@ public class MeshTopologyTests
 	[Test]
 	public void CubeSubdivisionDegree3()
 	{
-		var cube = SphereTopology.CreateCube();
-		var subdivided = SphereTopology.Subdivide(cube, 3);
+		var cube = SphericalManifold.CreateCube();
+		var subdivided = SphericalManifold.Subdivide(cube, 3);
 		Assert.AreEqual(8 + 3*12 + 3*3*6 /*98*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 3*12 + 3*3*6) + (4*4 * 6) - 2) * 2 /*384*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((8 + 3*12 + 3*3*6) + (4*4 * 6) - 2) * 2 /*384*/, subdivided.topology.faceEdges.Count);
@@ -857,12 +857,12 @@ public class MeshTopologyTests
 	[Test]
 	public void CubeSubdivisionDegree4()
 	{
-		var cube = SphereTopology.CreateCube();
+		var cube = SphericalManifold.CreateCube();
 		var degree = 4;
 		var vertexCount = 8 + degree * 12 + degree * degree * 6; /*152*/
 		var faceCount = (degree + 1) * (degree + 1) * 6; /*150*/
 		var edgeCount = (vertexCount + faceCount - 2) * 2; /*384*/
-		var subdivided = SphereTopology.Subdivide(cube, degree);
+		var subdivided = SphericalManifold.Subdivide(cube, degree);
 		Assert.AreEqual(vertexCount, subdivided.topology.vertices.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.faceEdges.Count);
@@ -891,12 +891,12 @@ public class MeshTopologyTests
 	[Test]
 	public void CubeSubdivisionDegree5()
 	{
-		var cube = SphereTopology.CreateCube();
+		var cube = SphericalManifold.CreateCube();
 		var degree = 5;
 		var vertexCount = 8 + degree * 12 + degree * degree * 6; /*218*/
 		var faceCount = (degree + 1) * (degree + 1) * 6; /*216*/
 		var edgeCount = (vertexCount + faceCount - 2) * 2; /*864*/
-		var subdivided = SphereTopology.Subdivide(cube, degree);
+		var subdivided = SphericalManifold.Subdivide(cube, degree);
 		Assert.AreEqual(vertexCount, subdivided.topology.vertices.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.faceEdges.Count);
@@ -925,7 +925,7 @@ public class MeshTopologyTests
 	[Test]
 	public void TetrahedronDualValidation()
 	{
-		var tetrahedron = SphereTopology.CreateTetrahedron();
+		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		var dual = tetrahedron.topology.GetDualTopology();
 
 		foreach (var vertex in tetrahedron.topology.vertices)

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Tiling;
+
 /*
-public class SphereTilingPartition
+public class SphericalPartition
 {
 	private struct PartitionedTile
 	{
@@ -68,7 +68,7 @@ public class SphereTilingPartition
 	private readonly CornerAttribute<Vector3> _cornerPositions;
 	private readonly List<PartitionedTile>[] _octants = new List<PartitionedTile>[8];
 
-	public SphereTilingPartition(Topology topology, TileAttribute<Vector3> tilePositions, CornerAttribute<Vector3> cornerPositions)
+	public SphericalPartition(Topology topology, TileAttribute<Vector3> tilePositions, CornerAttribute<Vector3> cornerPositions)
 	{
 		_topology = topology;
 		_tilePositions = tilePositions;
