@@ -20,6 +20,10 @@ namespace Tiling
 			private readonly List<int> _vertexRoots = new List<int>();
 			private readonly List<VertexNeighbor> _vertexNeighbors = new List<VertexNeighbor>();
 
+			private int _vertexCount = -1;
+			private int _edgeCount = -1;
+			private int _faceCount = -1;
+
 			public Builder()
 			{
 			}
@@ -28,6 +32,10 @@ namespace Tiling
 			{
 				_vertexRoots.Capacity = vertexCount;
 				_vertexNeighbors.Capacity = vertexCount + edgeCount * 3 / 2;
+
+				_vertexCount = vertexCount;
+				_edgeCount = edgeCount;
+				_faceCount = faceCount;
 			}
 
 			public int vertexCount { get { return _vertexRoots.Count; } }
@@ -274,23 +282,41 @@ namespace Tiling
 			{
 				var topology = new Topology();
 
+				if (_vertexCount != -1 && _vertexRoots.Count != _vertexCount) throw new System.InvalidOperationException("The actual number of vertices does not match the number specified when the topology builder was first constructed.");
+				if (_edgeCount != -1 && _vertexNeighbors.Count != _edgeCount) throw new System.InvalidOperationException("The actual number of edges does not match the number specified when the topology builder was first constructed.");
+
 				topology._vertexData = new NodeData[_vertexRoots.Count];
 				topology._edgeData = new EdgeData[_vertexNeighbors.Count];
 
+				// Build all of the vertex <-> edge relationships
 				int edgeIndex = 0;
-
 				for (int vertexIndex = 0; vertexIndex < _vertexRoots.Count; ++vertexIndex)
 				{
 					var bufferIndex = _vertexRoots[vertexIndex];
 					var firstEdgeIndex = edgeIndex;
 					while (bufferIndex != -1)
 					{
+						// Fill in edge details for the edge pointing from the current vertex to its neighbor.
 						var neighborVertexIndex = _vertexNeighbors[bufferIndex]._vertex;
 						topology._edgeData[edgeIndex]._vertex = neighborVertexIndex;
 						topology._edgeData[edgeIndex]._face = -1;
 
+						// Setup the linked list between this edge and the next, if this isn't the last neighbor of the vertex.
+						bufferIndex = _vertexNeighbors[bufferIndex]._next;
+						var nextEdgeIndex = edgeIndex + 1;
+						if (bufferIndex != -1)
+						{
+							topology._edgeData[edgeIndex]._next = nextEdgeIndex;
+							topology._edgeData[nextEdgeIndex]._prev = edgeIndex;
+						}
+
+						// If the neighbor has a smaller index than the current vertex, then the neighbor is known to already
+						// have its neighbor relationships built.  Otherwise, the neighbor is not yet processed, and the
+						// relationship between it and the current vertex must be processed later.
 						if (neighborVertexIndex < vertexIndex)
 						{
+							// Search for which edge is the one pointing from the neighbor vertex to the current vertex, the
+							// opposite direction from the edge configured above.
 							var firstNeighborEdgeIndex = topology._vertexData[neighborVertexIndex].firstEdge;
 							var neighborEdgeIndex = firstNeighborEdgeIndex;
 							while (topology._edgeData[neighborEdgeIndex]._vertex != vertexIndex)
@@ -298,36 +324,109 @@ namespace Tiling
 								neighborEdgeIndex = topology._edgeData[neighborEdgeIndex]._next;
 								if (neighborEdgeIndex == firstNeighborEdgeIndex) throw new System.InvalidOperationException("Two vertices that were set as neighbors in one direction were not also set as neighbors in the opposite direction.");
 							}
+							// Set the two edges to reference each either as twins.
 							topology._edgeData[neighborEdgeIndex]._twin = edgeIndex;
 							topology._edgeData[edgeIndex]._twin = neighborEdgeIndex;
 						}
 
-						var nextEdgeIndex = edgeIndex + 1;
-						topology._edgeData[edgeIndex]._next = nextEdgeIndex;
-						topology._edgeData[nextEdgeIndex]._prev = edgeIndex;
 						edgeIndex = nextEdgeIndex;
-						bufferIndex = _vertexNeighbors[bufferIndex]._next;
 					}
 
+					// Finish the linked list by making it circular, wrapping around at the ends.
 					var lastEdgeIndex = edgeIndex - 1;
 					topology._edgeData[firstEdgeIndex]._prev = lastEdgeIndex;
 					topology._edgeData[lastEdgeIndex]._next = firstEdgeIndex;
+					// Store a link to the first edge created in this linked list, along with the number of edges.
 					topology._vertexData[vertexIndex] = new NodeData(edgeIndex - firstEdgeIndex, firstEdgeIndex);
 				}
 
-				int faceIndex = 0;
-
-				for (edgeIndex = 0; edgeIndex < _vertexNeighbors.Count; ++edgeIndex)
+				// If the face count wasn't given explicitly upfront, they must be counted first.
+				if (_faceCount == -1)
 				{
-					if (topology._edgeData[edgeIndex]._face == -1)
+					// Now that all vertex and edge relationships are established, locate all edges that don't have a
+					// face relationship specified (all of them at first) and spin around each face to establish those
+					// edge -> face relationships and count the total number of faces.
+					int faceIndex = 0;
+					for (edgeIndex = 0; edgeIndex < _vertexNeighbors.Count; ++edgeIndex)
 					{
-						var faceEdgeIndex = edgeIndex;
-						do
+						if (topology._edgeData[edgeIndex]._face == -1)
 						{
-							topology._edgeData[edgeIndex]._face = faceIndex;
-							faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._twin]._prev;
-						} while (faceEdgeIndex != edgeIndex);
+							// Starting with the current edge, follow the edge links appropriatley to wind around the
+							// implicit face clockwise and link the edges to the face.
+							var neighborCount = 0;
+							var faceEdgeIndex = edgeIndex;
+							do
+							{
+								topology._edgeData[faceEdgeIndex]._face = faceIndex;
+								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._prev]._twin;
+								++neighborCount;
+								if (neighborCount > topology._vertexData.Length) throw new System.InvalidOperationException("Vertex neighbors were specified such that a face was misconfigured.");
+							} while (faceEdgeIndex != edgeIndex);
+
+							++faceIndex;
+						}
 					}
+
+					// Allocate the array for face -> edge linkage, now that we know the number of faces, find the
+					// first edge of every face and count the face's neighbors.
+					topology._faceData = new NodeData[faceIndex];
+					faceIndex = 0;
+					for (edgeIndex = 0; edgeIndex < _vertexNeighbors.Count; ++edgeIndex)
+					{
+						// Give the above loop, the face index of edges in their current order are guaranteed to be
+						// such that the all edges that refer to a face other than the re-incrementing face index
+						// must have already been processed earlier in the loop and can be skipped.
+						if (topology._edgeData[edgeIndex]._face == faceIndex)
+						{
+							// Starting with the current edge, follow the edge links appropriatley to wind around the
+							// implicit face clockwise and link the edges to the face.
+							var neighborCount = 0;
+							var faceEdgeIndex = edgeIndex;
+							do
+							{
+								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._prev]._twin;
+								++neighborCount;
+								if (neighborCount > topology._vertexData.Length) throw new System.InvalidOperationException("Vertex neighbors were specified such that a face was misconfigured.");
+							} while (faceEdgeIndex != edgeIndex);
+
+							// Store the face count and link the face to the first edge.
+							topology._faceData[faceIndex] = new NodeData(neighborCount, edgeIndex);
+							++faceIndex;
+						}
+					}
+				}
+				else
+				{
+					// Now that all vertex and edge relationships are established, locate all edges that don't have a
+					// face relationship specified (all of them at first) and spin around each face to establish those
+					// edge -> face and face -> edge relationships.
+					topology._faceData = new NodeData[_faceCount];
+					int faceIndex = 0;
+					for (edgeIndex = 0; edgeIndex < _vertexNeighbors.Count; ++edgeIndex)
+					{
+						if (topology._edgeData[edgeIndex]._face == -1)
+						{
+							if (faceIndex == _faceCount) throw new System.InvalidOperationException("The actual number of faces does not match the number specified when the topology builder was first constructed.");
+
+							// Starting with the current edge, follow the edge links appropriatley to wind around the
+							// implicit face clockwise and link the edges to the face.
+							var neighborCount = 0;
+							var faceEdgeIndex = edgeIndex;
+							do
+							{
+								topology._edgeData[faceEdgeIndex]._face = faceIndex;
+								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._prev]._twin;
+								++neighborCount;
+								if (neighborCount > topology._vertexData.Length) throw new System.InvalidOperationException("Vertex neighbors were specified such that a face was misconfigured.");
+							} while (faceEdgeIndex != edgeIndex);
+
+							// Store the face count and link the face to the first edge.
+							topology._faceData[faceIndex] = new NodeData(neighborCount, edgeIndex);
+							++faceIndex;
+						}
+					}
+
+					if (faceIndex != _faceCount) throw new System.InvalidOperationException("The actual number of faces does not match the number specified when the topology builder was first constructed.");
 				}
 
 				return topology;

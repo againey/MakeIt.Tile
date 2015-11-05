@@ -13,25 +13,50 @@ public class SubdividedDodecahdron : TilingGenerator
 	public int RandomSeed = 0;
 	public float RelaxationRegularity = 0.5f;
 
+	public RegularPolyhedron BasePolyhedron = RegularPolyhedron.Icosahedron;
+	public bool UseDualPolyhedron = false;
+
 	protected override void RebuildTiling(out Topology topology, out Topology.FaceAttribute<Vector3> facePositions, out Topology.VertexAttribute<Vector3> vertexPositions)
 	{
-		var icosahedron = SphereTopology.CreateOctahedron();
-		var subdivided = SphereTopology.Subdivide(icosahedron, SubdivisionDegree);
-		var dualTopology = subdivided.topology.GetDualTopology();
-		facePositions = new Topology.FaceAttribute<Vector3>(dualTopology.faces.Count);
-		vertexPositions = new Topology.VertexAttribute<Vector3>(dualTopology.vertices.Count);
-
-		foreach (var vertex in subdivided.topology.vertices)
+		Manifold polyhedron;
+		switch (BasePolyhedron)
 		{
-			var average = new Vector3();
-			foreach (var edge in vertex.edges)
-			{
-				average += subdivided.vertexPositions[edge.farVertex];
-			}
-			vertexPositions[vertex] = average.normalized;
+			case RegularPolyhedron.Tetrahedron: polyhedron = SphereTopology.CreateTetrahedron(); break;
+			case RegularPolyhedron.Hexahedron: polyhedron = SphereTopology.CreateCube(); break;
+			case RegularPolyhedron.Octahedron: polyhedron = SphereTopology.CreateOctahedron(); break;
+			case RegularPolyhedron.Dodecahedron: throw new System.NotSupportedException("Using a dodecahedron as a base polyhedron is not currently supported.");
+			case RegularPolyhedron.Icosahedron: polyhedron = SphereTopology.CreateIcosahedron(); break;
+			default: throw new System.ArgumentException("A valid base polyhedron must be selected.");
 		}
 
-		foreach (var face in dualTopology.faces)
+		if (SubdivisionDegree > 0)
+		{
+			polyhedron = SphereTopology.Subdivide(polyhedron, SubdivisionDegree);
+		}
+
+		if (!UseDualPolyhedron)
+		{
+			topology = polyhedron.topology;
+			vertexPositions = polyhedron.vertexPositions;
+		}
+		else
+		{
+			topology = polyhedron.topology.GetDualTopology();
+			vertexPositions = new Topology.VertexAttribute<Vector3>(topology.vertices.Count);
+
+			foreach (var face in polyhedron.topology.faces)
+			{
+				var average = new Vector3();
+				foreach (var edge in face.edges)
+				{
+					average += polyhedron.vertexPositions[edge.prevVertex];
+				}
+				vertexPositions[face.index] = average.normalized;
+			}
+		}
+
+		facePositions = new Topology.FaceAttribute<Vector3>(topology.faces.Count);
+		foreach (var face in topology.faces)
 		{
 			var average = new Vector3();
 			foreach (var edge in face.edges)
@@ -40,8 +65,6 @@ public class SubdividedDodecahdron : TilingGenerator
 			}
 			facePositions[face] = average / face.edges.Count;
 		}
-
-		topology = dualTopology;
 
 		/*if (AlterationDegree > 0 && AlterationFrequency > 0f)
 		{

@@ -25,6 +25,15 @@ namespace Tiling
 		public VertexPositions vertexPositions { get { return _vertexPositions; } }
 	}
 
+	public enum RegularPolyhedron
+	{
+		Tetrahedron,
+		Hexahedron,
+		Octahedron,
+		Dodecahedron,
+		Icosahedron,
+	}
+
 	public static class SphereTopology
 	{
 		public static Manifold CreateTetrahedron()
@@ -69,7 +78,7 @@ namespace Tiling
 			builder.AddVertex(1, 3, 4);
 			builder.AddVertex(0, 5, 2);
 			builder.AddVertex(1, 6, 3);
-			builder.AddVertex(0, 3, 7);
+			builder.AddVertex(0, 2, 7);
 			builder.AddVertex(0, 7, 5);
 			builder.AddVertex(1, 4, 6);
 			builder.AddVertex(2, 5, 7);
@@ -123,14 +132,14 @@ namespace Tiling
 			vertexPositions[ 1] = new Vector3(+x2, +y1, +z0);
 			vertexPositions[ 2] = new Vector3(+x2, -y1, -z0);
 			vertexPositions[ 3] = new Vector3(+x2,  y2, 0.0f);
-			vertexPositions[ 4] = new Vector3(-x1, +y1, -z1);
-			vertexPositions[ 5] = new Vector3(+x1, +y1, -z1);
-			vertexPositions[ 6] = new Vector3(-x1, -y1, +z1);
-			vertexPositions[ 7] = new Vector3(+x1, -y1, +z1);
-			vertexPositions[ 8] = new Vector3(-x0, +y1, +z2);
-			vertexPositions[ 9] = new Vector3(-x0, -y1, -z2);
-			vertexPositions[10] = new Vector3(+x0, +y1, +z2);
-			vertexPositions[11] = new Vector3(+x0, -y1, -z2);
+			vertexPositions[ 4] = new Vector3(+x1, +y1, -z1);
+			vertexPositions[ 5] = new Vector3(-x1, +y1, -z1);
+			vertexPositions[ 6] = new Vector3(+x1, -y1, +z1);
+			vertexPositions[ 7] = new Vector3(-x1, -y1, +z1);
+			vertexPositions[ 8] = new Vector3(+x0, +y1, +z2);
+			vertexPositions[ 9] = new Vector3(+x0, -y1, -z2);
+			vertexPositions[10] = new Vector3(-x0, +y1, +z2);
+			vertexPositions[11] = new Vector3(-x0, -y1, -z2);
 
 			builder.AddVertex( 1,  8,  4,  5, 10);
 			builder.AddVertex( 0, 10,  7,  6,  8);
@@ -175,6 +184,10 @@ namespace Tiling
 			var bottomEdge = rightEdge.next;
 			var leftEdge = bottomEdge.next;
 
+			var topVertex = leftEdge.nextVertex;
+			var bottomRightVertex = rightEdge.nextVertex;
+			var bottomLeftVertex = bottomEdge.nextVertex;
+
 			int rightVertices = rightEdge.twinIndex * degree;
 			int bottomVertices = bottomEdge.index * degree;
 			int leftVertices = leftEdge.index * degree;
@@ -194,7 +207,7 @@ namespace Tiling
 					subdividedEdgeVertices[rightVertices + 1],
 					nextVertexIndex + 2,
 					nextVertexIndex + 1);
-				subdividedPositions[nextVertexIndex] = Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedPositions[subdividedEdgeVertices[rightVertices + 1]], 0.5f);
+				subdividedPositions.Add(Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedPositions[subdividedEdgeVertices[rightVertices + 1]], 0.5f));
 				++nextVertexIndex;
 
 				float t;
@@ -216,7 +229,7 @@ namespace Tiling
 						nextVertexIndex + 1,
 						nextVertexIndex + y + 2,
 						nextVertexIndex + y + 1);
-					subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+					subdividedPositions.Add(Slerp(p0, p1, t));
 					++nextVertexIndex;
 					t += dt;
 
@@ -229,7 +242,7 @@ namespace Tiling
 							nextVertexIndex + 1,
 							nextVertexIndex + y + 2,
 							nextVertexIndex + y + 1);
-						subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+						subdividedPositions.Add(Slerp(p0, p1, t));
 						++nextVertexIndex;
 						t += dt;
 					}
@@ -239,9 +252,9 @@ namespace Tiling
 						nextVertexIndex - y - 1,
 						subdividedEdgeVertices[rightVertices + y],
 						subdividedEdgeVertices[rightVertices + y + 1],
-						nextVertexIndex + 2,
-						nextVertexIndex + 1);
-					subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+						nextVertexIndex + y + 2,
+						nextVertexIndex + y + 1);
+					subdividedPositions.Add(Slerp(p0, p1, t));
 					++nextVertexIndex;
 				}
 
@@ -255,9 +268,9 @@ namespace Tiling
 					subdividedEdgeVertices[leftVertices + yEnd],
 					nextVertexIndex - yEnd,
 					nextVertexIndex + 1,
-					subdividedEdgeVertices[bottomVertices],
-					subdividedEdgeVertices[bottomVertices + 1]);
-				subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+					subdividedEdgeVertices[bottomVertices + 1],
+					subdividedEdgeVertices[bottomVertices]);
+				subdividedPositions.Add(Slerp(p0, p1, t));
 				++nextVertexIndex;
 				t += dt;
 
@@ -268,9 +281,9 @@ namespace Tiling
 						nextVertexIndex - yEnd - 1,
 						nextVertexIndex - yEnd,
 						nextVertexIndex + 1,
-						subdividedEdgeVertices[bottomVertices + x],
-						subdividedEdgeVertices[bottomVertices + x + 1]);
-					subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+						subdividedEdgeVertices[bottomVertices + x + 1],
+						subdividedEdgeVertices[bottomVertices + x]);
+					subdividedPositions.Add(Slerp(p0, p1, t));
 					++nextVertexIndex;
 					t += dt;
 				}
@@ -280,9 +293,9 @@ namespace Tiling
 					nextVertexIndex - yEnd - 1,
 					subdividedEdgeVertices[rightVertices + yEnd],
 					subdividedEdgeVertices[rightVertices + yEnd + 1],
-					subdividedEdgeVertices[bottomVertices + yEnd],
-					subdividedEdgeVertices[bottomVertices + yEnd + 1]);
-				subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+					subdividedEdgeVertices[bottomVertices + yEnd + 1],
+					subdividedEdgeVertices[bottomVertices + yEnd]);
+				subdividedPositions.Add(Slerp(p0, p1, t));
 
 				var lastRowFirstVertexIndex = firstVertexIndex + (yEnd * yEnd + yEnd) / 2;
 
@@ -296,10 +309,10 @@ namespace Tiling
 					var rowFirstVertexIndex = firstVertexIndex + (y * y + y) / 2;
 					builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + y], subdividedEdgeVertices[rightVertices + y + 1], rowFirstVertexIndex + y, rowFirstVertexIndex - 1);
 				}
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + yEnd], bottomEdge.nextVertex.index, subdividedEdgeVertices[bottomVertices + yEnd], lastRowFirstVertexIndex + yEnd - 1);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + yEnd], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices + yEnd], lastRowFirstVertexIndex + yEnd - 1);
 
 				// Bottom outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], leftEdge.nextVertex.index, subdividedEdgeVertices[leftVertices + yEnd], lastRowFirstVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, subdividedEdgeVertices[leftVertices + yEnd], lastRowFirstVertexIndex);
 				for (int x = 1; x < xEnd; ++x)
 				{
 					builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + x], subdividedEdgeVertices[bottomVertices + x - 1], lastRowFirstVertexIndex + x - 1, lastRowFirstVertexIndex + x);
@@ -307,7 +320,7 @@ namespace Tiling
 				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + xEnd], subdividedEdgeVertices[bottomVertices + xEnd - 1], lastRowFirstVertexIndex + yEnd - 1, subdividedEdgeVertices[rightVertices + yEnd]);
 
 				// Left outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], rightEdge.nextVertex.index, subdividedEdgeVertices[rightVertices], firstVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices], firstVertexIndex);
 				for (int y = 1; y < yEnd; ++y)
 				{
 					var nextRowFirstVertexIndex = firstVertexIndex + (y * y + y) / 2;
@@ -324,20 +337,20 @@ namespace Tiling
 					subdividedEdgeVertices[bottomVertices],
 					subdividedEdgeVertices[leftVertices + 1],
 					subdividedEdgeVertices[leftVertices]);
-				subdividedPositions[innerVertexIndex] = Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedPositions[subdividedEdgeVertices[rightVertices + 1]], 0.5f);
+				subdividedPositions.Add(Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedPositions[subdividedEdgeVertices[rightVertices + 1]], 0.5f));
 
 				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[rightVertices + 1], innerVertexIndex, subdividedEdgeVertices[leftVertices]);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + 1], bottomEdge.nextVertex.index, subdividedEdgeVertices[bottomVertices + 1], innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], leftEdge.nextVertex.index, subdividedEdgeVertices[leftVertices + 1], innerVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + 1], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices + 1], innerVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, subdividedEdgeVertices[leftVertices + 1], innerVertexIndex);
 				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + 1], subdividedEdgeVertices[bottomVertices], innerVertexIndex, subdividedEdgeVertices[rightVertices + 1]);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], rightEdge.nextVertex.index, subdividedEdgeVertices[rightVertices], innerVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices], innerVertexIndex);
 				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices + 1], subdividedEdgeVertices[leftVertices], innerVertexIndex, subdividedEdgeVertices[bottomVertices]);
 			}
 			else if (degree == 1)
 			{
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], bottomEdge.nextVertex.index, subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices]);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], leftEdge.nextVertex.index, subdividedEdgeVertices[leftVertices], subdividedEdgeVertices[rightVertices]);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], rightEdge.nextVertex.index, subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[bottomVertices]);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices]);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, subdividedEdgeVertices[leftVertices], subdividedEdgeVertices[rightVertices]);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[bottomVertices]);
 			}
 		}
 
@@ -347,6 +360,11 @@ namespace Tiling
 			var rightEdge = topEdge.next;
 			var bottomEdge = rightEdge.next;
 			var leftEdge = bottomEdge.next;
+
+			var topLeftVertex = leftEdge.nextVertex;
+			var topRightVertex = topEdge.nextVertex;
+			var bottomRightVertex = rightEdge.nextVertex;
+			var bottomLeftVertex = bottomEdge.nextVertex;
 
 			int topVertices = topEdge.twinIndex * degree;
 			int bottomVertices = bottomEdge.index * degree;
@@ -373,18 +391,18 @@ namespace Tiling
 				p1 = subdividedPositions[subdividedEdgeVertices[rightVertices]];
 
 				builder.AddVertex(subdividedEdgeVertices[topVertices], nextVertexIndex + 1, nextVertexIndex + degree, subdividedEdgeVertices[leftVertices]);
-				subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+				subdividedPositions.Add(Slerp(p0, p1, t));
 				++nextVertexIndex;
 				t += dt;
 				for (int x = 1; x < xEnd; ++x)
 				{
 					builder.AddVertex(subdividedEdgeVertices[topVertices + x], nextVertexIndex + 1, nextVertexIndex + degree, nextVertexIndex - 1);
-					subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+					subdividedPositions.Add(Slerp(p0, p1, t));
 					++nextVertexIndex;
 					t += dt;
 				}
 				builder.AddVertex(subdividedEdgeVertices[topVertices + xEnd], subdividedEdgeVertices[rightVertices], nextVertexIndex + degree, nextVertexIndex - 1);
-				subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+				subdividedPositions.Add(Slerp(p0, p1, t));
 				++nextVertexIndex;
 
 				// Middle rows of inner subdivided vertices
@@ -395,18 +413,18 @@ namespace Tiling
 					p1 = subdividedPositions[subdividedEdgeVertices[rightVertices + y]];
 
 					builder.AddVertex(nextVertexIndex - degree, nextVertexIndex + 1, nextVertexIndex + degree, subdividedEdgeVertices[leftVertices + y]);
-					subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+					subdividedPositions.Add(Slerp(p0, p1, t));
 					++nextVertexIndex;
 					t += dt;
 					for (int x = 1; x < xEnd; ++x)
 					{
 						builder.AddVertex(nextVertexIndex - degree, nextVertexIndex + 1, nextVertexIndex + degree, nextVertexIndex - 1);
-						subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+						subdividedPositions.Add(Slerp(p0, p1, t));
 						++nextVertexIndex;
 						t += dt;
 					}
 					builder.AddVertex(nextVertexIndex - degree, subdividedEdgeVertices[rightVertices + y], nextVertexIndex + degree, nextVertexIndex - 1);
-					subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+					subdividedPositions.Add(Slerp(p0, p1, t));
 					++nextVertexIndex;
 				}
 
@@ -416,31 +434,31 @@ namespace Tiling
 				p1 = subdividedPositions[subdividedEdgeVertices[rightVertices + yEnd]];
 
 				builder.AddVertex(nextVertexIndex - degree, nextVertexIndex + 1, subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices + yEnd]);
-				subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+				subdividedPositions.Add(Slerp(p0, p1, t));
 				++nextVertexIndex;
 				t += dt;
 				for (int x = 1; x < xEnd; ++x)
 				{
 					builder.AddVertex(nextVertexIndex - degree, nextVertexIndex + 1, subdividedEdgeVertices[bottomVertices + x], nextVertexIndex - 1);
-					subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+					subdividedPositions.Add(Slerp(p0, p1, t));
 					++nextVertexIndex;
 					t += dt;
 				}
 				builder.AddVertex(nextVertexIndex - degree, subdividedEdgeVertices[rightVertices + yEnd], subdividedEdgeVertices[bottomVertices + xEnd], nextVertexIndex - 1);
-				subdividedPositions[nextVertexIndex] = Slerp(p0, p1, t);
+				subdividedPositions.Add(Slerp(p0, p1, t));
 
 				// Top outside edge vertices
 				for (int x = 0; x < xEnd; ++x)
 				{
 					builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices + x], subdividedEdgeVertices[topVertices + x + 1], firstVertexIndex + x);
 				}
-				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices + xEnd], rightEdge.nextVertex.index, firstVertexIndex + xEnd);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices + xEnd], topRightVertex.index, firstVertexIndex + xEnd);
 
 				// Bottom outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], leftEdge.nextVertex.index, firstVertexIndex + yEnd * degree);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, firstVertexIndex + yEnd * degree);
 				for (int x = 1; x <= xEnd; ++x)
 				{
-					builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + x], subdividedEdgeVertices[topVertices + x - 1], firstVertexIndex + yEnd * degree + x);
+					builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + x], subdividedEdgeVertices[bottomVertices + x - 1], firstVertexIndex + yEnd * degree + x);
 				}
 
 				// Right outside edge vertices
@@ -448,10 +466,10 @@ namespace Tiling
 				{
 					builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + y], subdividedEdgeVertices[rightVertices + y + 1], firstVertexIndex + y * degree + xEnd);
 				}
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + yEnd], bottomEdge.nextVertex.index, firstVertexIndex + yEnd * degree + xEnd);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + yEnd], bottomRightVertex.index, firstVertexIndex + yEnd * degree + xEnd);
 
 				// Left outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topEdge.nextVertex.index, firstVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topLeftVertex.index, firstVertexIndex);
 				for (int y = 1; y <= yEnd; ++y)
 				{
 					builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices + y], subdividedEdgeVertices[leftVertices + y - 1], firstVertexIndex + y * degree);
@@ -466,30 +484,30 @@ namespace Tiling
 				builder.AddVertex(firstVertexIndex, firstVertexIndex + 3, subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices + 1]);
 				builder.AddVertex(firstVertexIndex + 1, subdividedEdgeVertices[rightVertices + 1], subdividedEdgeVertices[bottomVertices + 1], firstVertexIndex + 2);
 
-				subdividedPositions[firstVertexIndex] = Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices]], subdividedPositions[subdividedEdgeVertices[rightVertices]], dt);
-				subdividedPositions[firstVertexIndex + 1] = Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices]], subdividedPositions[subdividedEdgeVertices[rightVertices]], dt + dt);
-				subdividedPositions[firstVertexIndex + 2] = Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedPositions[subdividedEdgeVertices[rightVertices + 1]], dt);
-				subdividedPositions[firstVertexIndex + 3] = Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedPositions[subdividedEdgeVertices[rightVertices + 1]], dt + dt);
+				subdividedPositions.Add(Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices]], subdividedPositions[subdividedEdgeVertices[rightVertices]], dt));
+				subdividedPositions.Add(Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices]], subdividedPositions[subdividedEdgeVertices[rightVertices]], dt + dt));
+				subdividedPositions.Add(Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedPositions[subdividedEdgeVertices[rightVertices + 1]], dt));
+				subdividedPositions.Add(Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedPositions[subdividedEdgeVertices[rightVertices + 1]], dt + dt));
 
 				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices], subdividedEdgeVertices[topVertices + 1], firstVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices + 1], rightEdge.nextVertex.index, firstVertexIndex + 1);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], leftEdge.nextVertex.index, firstVertexIndex + 2);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices + 1], topRightVertex.index, firstVertexIndex + 1);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, firstVertexIndex + 2);
 				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + 1], subdividedEdgeVertices[bottomVertices], firstVertexIndex + 3);
 				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[rightVertices + 1], firstVertexIndex + 1);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + 1], bottomEdge.nextVertex.index, firstVertexIndex + 3);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topEdge.nextVertex.index, firstVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + 1], bottomRightVertex.index, firstVertexIndex + 3);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topLeftVertex.index, firstVertexIndex);
 				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices + 1], subdividedEdgeVertices[leftVertices], firstVertexIndex + 2);
 			}
 			else if (degree == 1)
 			{
 				int innerVertexIndex = builder.AddVertex(subdividedEdgeVertices[topVertices], subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices]);
 
-				subdividedPositions[innerVertexIndex] = Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices]], subdividedPositions[subdividedEdgeVertices[rightVertices]], dt);
+				subdividedPositions.Add(Slerp(subdividedPositions[subdividedEdgeVertices[leftVertices]], subdividedPositions[subdividedEdgeVertices[rightVertices]], dt));
 
-				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices], rightEdge.nextVertex.index, innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], leftEdge.nextVertex.index, innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], bottomEdge.nextVertex.index, innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topEdge.nextVertex.index, innerVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices], topRightVertex.index, innerVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, innerVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], bottomRightVertex.index, innerVertexIndex);
+				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topLeftVertex.index, innerVertexIndex);
 			}
 		}
 
@@ -524,7 +542,7 @@ namespace Tiling
 					var subdividedEdgeVertexIndex = edge.index * degree;
 					while (t < tEnd)
 					{
-						subdividedEdgeVertices[subdividedEdgeVertexIndex] = builder.AddVertex();
+						subdividedEdgeVertices[subdividedEdgeVertexIndex++] = builder.AddVertex();
 						subdividedPositions.Add(Slerp(p0, p1, t));
 						t += dt;
 					}
@@ -564,7 +582,7 @@ namespace Tiling
 				int i = 0;
 				foreach (var edge in vertex.edges)
 				{
-					neighbors[i++] = edge.farVertex.index;
+					neighbors[i++] = subdividedEdgeVertices[edge.index * degree];
 				}
 				builder.ExtendVertex(vertex.index, i, neighbors);
 			}

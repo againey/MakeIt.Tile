@@ -23,7 +23,7 @@ namespace Tiling
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public int neighborCount { get { return _topology._vertexData[_index].neighborCount; } }
+			public int neighborCount { get { return _topology._faceData[_index].neighborCount; } }
 			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceData[_index].firstEdge); } }
 
 			public struct FaceEdgesIndexer
@@ -61,7 +61,7 @@ namespace Tiling
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._next;
+							_nextEdgeIndex = _topology._edgeData[_topology._edgeData[_currentEdgeIndex]._prev]._twin;
 							return true;
 						}
 						else
@@ -137,6 +137,17 @@ namespace Tiling
 			public static bool operator <=(Face lhs, Face rhs) { return lhs._index <= rhs._index; }
 			public static bool operator >=(Face lhs, Face rhs) { return lhs._index >= rhs._index; }
 			public override int GetHashCode() { return _index.GetHashCode(); }
+
+			public override string ToString()
+			{
+				var sb = new System.Text.StringBuilder();
+				sb.AppendFormat("Face {0} (", _index);
+				foreach (var edge in edges)
+					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0}), (", edge.farFace.index);
+				foreach (var edge in edges)
+					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0})", edge.nextVertex.index);
+				return sb.ToString();
+			}
 		}
 
 		public struct FacesIndexer

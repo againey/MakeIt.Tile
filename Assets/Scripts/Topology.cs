@@ -13,7 +13,7 @@ namespace Tiling
 
 			public NodeData(int neighborCount, int firstEdge)
 			{
-				_data = (((uint)neighborCount & 0xFF) << 24) & ((uint)firstEdge & 0xFFFFFF);
+				_data = (((uint)neighborCount & 0xFF) << 24) | ((uint)firstEdge & 0xFFFFFF);
 			}
 
 			public int neighborCount
@@ -38,6 +38,11 @@ namespace Tiling
 				{
 					_data = (_data & 0xFF000000) | ((uint)value & 0xFFFFFF);
 				}
+			}
+
+			public override string ToString()
+			{
+				return string.Format("NodeData ({0}, {1})", neighborCount, firstEdge);
 			}
 		}
 
@@ -64,180 +69,18 @@ namespace Tiling
 			dual._faceData = _vertexData.Clone() as NodeData[];
 
 			dual._edgeData = new EdgeData[_edgeData.Length];
-			foreach (var edge in faceEdges)
+			foreach (var edge in vertexEdges)
 			{
-				dual._edgeData[edge.index] = new EdgeData(edge.twinIndex, edge.prev.index, edge.next.index, edge.farFace.index, edge.nextVertex.index);
+				dual._edgeData[edge.index] = new EdgeData(edge.twinIndex, edge.twin.next.index, edge.prev.twin.index, edge.nextFace.index, edge.nearVertex.index);
+			}
+
+			for (int i = 0; i < dual._faceData.Length; ++i)
+			{
+				dual._faceData[i].firstEdge = dual._edgeData[dual._faceData[i].firstEdge]._twin;
 			}
 
 			return dual;
 		}
-
-		/*public MinimalTopology Subdivide(int degree, System.Action<int> tileAllocator, System.Action<int, int> tileCopier, System.Action<int, int, int, float> tileInterpolator)
-		{
-			var subdivided = new MinimalTopology();
-
-			if (degree == 0)
-			{
-				subdivided._cornerTiles = new int[_cornerTiles.GetLength(0), 3];
-				System.Array.Copy(_cornerTiles, 0, subdivided._cornerTiles, 0, _cornerTiles.Length);
-				subdivided._edgeTiles = new int[_edgeTiles.GetLength(0), 2];
-				System.Array.Copy(_edgeTiles, 0, subdivided._edgeTiles, 0, _edgeTiles.Length);
-				tileAllocator(_tileNeighborOffsets.Length - 1);
-				for (int i = 0; i < _tileNeighborOffsets.Length - 1; ++i)
-				{
-					tileCopier(i, i);
-				}
-				return subdivided;
-			}
-
-			var tileCount = _tileNeighborOffsets.Length - 1;
-			var edgeCount = _edgeTiles.GetLength(0);
-			var cornerCount = _cornerTiles.GetLength(0);
-
-			var innerTilesPerEdge = degree + 0;
-			var innerEdgesPerEdge = degree + 1;
-			var tilesPerCorner = (degree + 2) * (degree + 3) / 2;
-			var innerTilesPerCorner = (degree - 1) * degree / 2;
-			var innerEdgesPerCorner = degree * (degree + 1) * 3 / 2;
-			var innerCornersPerCorner = (degree + 1) * (degree + 1);
-
-			int totalSubdividedTileCount = innerTilesPerCorner * cornerCount + innerTilesPerEdge * edgeCount + tileCount;
-			int totalSubdividedEdgeCount = innerEdgesPerCorner * cornerCount + innerEdgesPerEdge * edgeCount;
-			int totalSubdividedCornerCount = innerCornersPerCorner * cornerCount;
-
-			tileAllocator(totalSubdividedTileCount);
-			subdivided._edgeTiles = new int[totalSubdividedEdgeCount, 2];
-			subdivided._cornerTiles = new int[totalSubdividedCornerCount, 3];
-
-			int subdividedTileCount = 0;
-			int subdividedEdgeCount = 0;
-			int subdividedCornerCount = 0;
-
-			for (int i = 0; i < _tileNeighborOffsets.Length - 1; ++i)
-			{
-				tileCopier(i, i);
-			}
-			subdividedTileCount = _tileNeighborOffsets.Length - 1;
-
-			System.Action<int, int, int> SubdivideLine = delegate (int i0, int i1, int count)
-			{
-				var dt = 1.0f / (float)(count + 1);
-				var t = dt;
-				var tEnd = 1f - dt * 0.5f;
-				while (t < tEnd)
-				{
-					tileInterpolator(i0, i1, subdividedTileCount++, t);
-					t += dt;
-				}
-			};
-
-			var firstSubdividedEdgeTile = subdividedTileCount;
-			for (int i = 0; i < edgeCount; ++i)
-			{
-				int firstEdgeTile = subdividedTileCount;
-
-				SubdivideLine(_edgeTiles[i, 0], _edgeTiles[i, 1], innerTilesPerEdge);
-
-				subdivided._edgeTiles[subdividedEdgeCount, 0] = _edgeTiles[i, 0];
-				subdivided._edgeTiles[subdividedEdgeCount++, 1] = firstEdgeTile;
-				for (int j = 1; j < degree; ++j)
-				{
-					subdivided._edgeTiles[subdividedEdgeCount, 0] = firstEdgeTile + j - 1;
-					subdivided._edgeTiles[subdividedEdgeCount++, 1] = firstEdgeTile + j;
-				}
-				subdivided._edgeTiles[subdividedEdgeCount, 0] = firstEdgeTile + degree - 1;
-				subdivided._edgeTiles[subdividedEdgeCount++, 1] = _edgeTiles[i, 1];
-			}
-
-			var cornerTileLookup = new int[tilesPerCorner];
-
-			for (int i = 0; i < cornerCount; ++i)
-			{
-				var edge0 = _cornerEdges[i, 0];
-				var edge1 = _cornerEdges[i, 1];
-				var edge2 = _cornerEdges[i, 2];
-				var firstEdgeTile0 = firstSubdividedEdgeTile + edge0 * innerTilesPerEdge;
-				var firstEdgeTile1 = firstSubdividedEdgeTile + edge1 * innerTilesPerEdge;
-				var firstEdgeTile2 = firstSubdividedEdgeTile + edge2 * innerTilesPerEdge;
-				var tileDelta0 = _edgeTiles[edge0, 0] == _cornerTiles[i, 1] ? 1 : -1;
-				var tileDelta1 = _edgeTiles[edge1, 0] == _cornerTiles[i, 1] ? 1 : -1;
-				var tileDelta2 = _edgeTiles[edge2, 0] == _cornerTiles[i, 0] ? 1 : -1;
-				if (tileDelta0 == -1) firstEdgeTile0 += innerTilesPerEdge - 1;
-				if (tileDelta1 == -1) firstEdgeTile1 += innerTilesPerEdge - 1;
-				if (tileDelta2 == -1) firstEdgeTile2 += innerTilesPerEdge - 1;
-
-				cornerTileLookup[0] = _cornerTiles[i, 1];
-				cornerTileLookup[1] = firstEdgeTile0;
-				cornerTileLookup[2] = firstEdgeTile1;
-				var cornerTileLookupCount = 3;
-
-				var edgeTile0 = firstEdgeTile0 + tileDelta0;
-				var edgeTile1 = firstEdgeTile1 + tileDelta1;
-
-				for (int j = 1; j < innerTilesPerEdge; ++j)
-				{
-					var firstRowTile = subdividedTileCount;
-					SubdivideLine(edgeTile0, edgeTile1, j);
-
-					cornerTileLookup[cornerTileLookupCount++] = edgeTile0;
-					for (int k = 0; k < j; ++k)
-					{
-						cornerTileLookup[cornerTileLookupCount++] = firstRowTile + k;
-					}
-					cornerTileLookup[cornerTileLookupCount++] = edgeTile1;
-
-					edgeTile0 += tileDelta0;
-					edgeTile1 += tileDelta1;
-				}
-
-				cornerTileLookup[cornerTileLookupCount++] = _cornerTiles[i, 0];
-				var edgeTile2 = firstEdgeTile2;
-				for (int k = 0; k < innerTilesPerEdge; ++k)
-				{
-					cornerTileLookup[cornerTileLookupCount++] = edgeTile2++;
-				}
-				cornerTileLookup[cornerTileLookupCount++] = _cornerTiles[i, 2];
-
-				subdivided._cornerTiles[subdividedCornerCount, 0] = cornerTileLookup[0];
-				subdivided._cornerTiles[subdividedCornerCount, 1] = cornerTileLookup[1];
-				subdivided._cornerTiles[subdividedCornerCount++, 2] = cornerTileLookup[2];
-
-				var cornerTile = 1;
-				for (int j = 1; j <= innerTilesPerEdge; ++j)
-				{
-					for (int k = 0; k < j; ++k)
-					{
-						subdivided._edgeTiles[subdividedEdgeCount, 0] = cornerTileLookup[cornerTile];
-						subdivided._edgeTiles[subdividedEdgeCount++, 1] = cornerTileLookup[cornerTile + 1];
-
-						subdivided._edgeTiles[subdividedEdgeCount, 0] = cornerTileLookup[cornerTile];
-						subdivided._edgeTiles[subdividedEdgeCount++, 1] = cornerTileLookup[cornerTile + j + 2];
-
-						subdivided._edgeTiles[subdividedEdgeCount, 0] = cornerTileLookup[cornerTile + 1];
-						subdivided._edgeTiles[subdividedEdgeCount++, 1] = cornerTileLookup[cornerTile + j + 2];
-
-						subdivided._cornerTiles[subdividedCornerCount, 0] = cornerTileLookup[cornerTile];
-						subdivided._cornerTiles[subdividedCornerCount, 1] = cornerTileLookup[cornerTile + j + 1];
-						subdivided._cornerTiles[subdividedCornerCount++, 2] = cornerTileLookup[cornerTile + j + 2];
-
-						subdivided._cornerTiles[subdividedCornerCount, 0] = cornerTileLookup[cornerTile];
-						subdivided._cornerTiles[subdividedCornerCount, 1] = cornerTileLookup[cornerTile + j + 2];
-						subdivided._cornerTiles[subdividedCornerCount++, 2] = cornerTileLookup[cornerTile + 1];
-
-						++cornerTile;
-					}
-
-					subdivided._cornerTiles[subdividedCornerCount, 0] = cornerTileLookup[cornerTile];
-					subdivided._cornerTiles[subdividedCornerCount, 1] = cornerTileLookup[cornerTile + j + 1];
-					subdivided._cornerTiles[subdividedCornerCount++, 2] = cornerTileLookup[cornerTile + j + 2];
-
-					++cornerTile;
-				}
-			}
-
-			return subdivided;
-		}*/
-
 		private void RemoveEdgeFromFarVertex(VertexEdge edge)
 		{
 			var twin = edge.twin;

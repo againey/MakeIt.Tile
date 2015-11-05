@@ -39,6 +39,11 @@ namespace Tiling
 				_vertex = vertex;
 				_face = face;
 			}
+
+			public override string ToString()
+			{
+				return string.Format("EdgeData ({0}, {1}, {2}, {3}, {4})", _twin, _prev, _next, _vertex, _face);
+			}
 		}
 
 		private EdgeData[] _edgeData;
@@ -95,6 +100,11 @@ namespace Tiling
 			public static bool operator > (VertexEdge lhs, FaceEdge rhs) { return lhs._index >  rhs.index; }
 			public static bool operator <=(VertexEdge lhs, FaceEdge rhs) { return lhs._index <= rhs.index; }
 			public static bool operator >=(VertexEdge lhs, FaceEdge rhs) { return lhs._index >= rhs.index; }
+
+			public override string ToString()
+			{
+				return string.Format("Vertex Edge {0} ({1}, {2}, {3}), ({4}, {5}), ({6}, {7})", _index, prev.index, next.index, twinIndex, nearVertex.index, farVertex.index, prevFace.index, nextFace.index);
+			}
 		}
 
 		public struct FaceEdge : IEquatable<FaceEdge>, IEquatable<VertexEdge>, IComparable<FaceEdge>, IComparable<VertexEdge>
@@ -121,7 +131,7 @@ namespace Tiling
 
 			public FaceEdge twin { get { return new FaceEdge(_topology, _topology._edgeData[_index]._twin); } }
 			public FaceEdge prev { get { return new FaceEdge(_topology, _topology._edgeData[twinIndex]._next); } }
-			public FaceEdge next { get { return new FaceEdge(_topology, _topology._edgeData[_index]._prev); } }
+			public FaceEdge next { get { return new FaceEdge(_topology, _topology._edgeData[_topology._edgeData[_index]._prev]._twin); } }
 			public Vertex prevVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
 			public Vertex nextVertex { get { return new Vertex(_topology, _topology._edgeData[twinIndex]._vertex); } }
 			public Face nearFace { get { return new Face(_topology, _topology._edgeData[twinIndex]._face); } }
@@ -149,6 +159,11 @@ namespace Tiling
 			public static bool operator > (FaceEdge lhs, VertexEdge rhs) { return lhs._index >  rhs.index; }
 			public static bool operator <=(FaceEdge lhs, VertexEdge rhs) { return lhs._index <= rhs.index; }
 			public static bool operator >=(FaceEdge lhs, VertexEdge rhs) { return lhs._index >= rhs.index; }
+
+			public override string ToString()
+			{
+				return string.Format("Face Edge {0} ({1}, {2}, {3}), ({4}, {5}), ({6}, {7})", _index, prev.index, next.index, twinIndex, nearFace.index, farFace.index, prevVertex.index, nextVertex.index);
+			}
 		}
 
 		public struct VertexEdgesIndexer

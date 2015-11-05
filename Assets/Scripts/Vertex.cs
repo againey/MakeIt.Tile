@@ -137,6 +137,17 @@ namespace Tiling
 			public static bool operator <=(Vertex lhs, Vertex rhs) { return lhs._index <= rhs._index; }
 			public static bool operator >=(Vertex lhs, Vertex rhs) { return lhs._index >= rhs._index; }
 			public override int GetHashCode() { return _index.GetHashCode(); }
+
+			public override string ToString()
+			{
+				var sb = new System.Text.StringBuilder();
+				sb.AppendFormat("Vertex {0} (", _index);
+				foreach (var edge in edges)
+					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0}), (", edge.farVertex.index);
+				foreach (var edge in edges)
+					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0})", edge.nextFace.index);
+				return sb.ToString();
+			}
 		}
 
 		public struct VerticesIndexer
