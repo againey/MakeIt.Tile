@@ -1,36 +1,39 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class UniqueMesh : MonoBehaviour
+namespace Experilous
 {
-	private int _ownerId;
-	private MeshFilter _meshFilter;
-	private Mesh _mesh;
-
-	public MeshFilter meshFilter
+	[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+	public class UniqueMesh : MonoBehaviour
 	{
-		get
+		private int _ownerId;
+		private MeshFilter _meshFilter;
+		private Mesh _mesh;
+
+		public MeshFilter meshFilter
 		{
-			if (_meshFilter == null)
+			get
 			{
-				_meshFilter = gameObject.GetComponent<MeshFilter>();
+				if (_meshFilter == null)
+				{
+					_meshFilter = gameObject.GetComponent<MeshFilter>();
+				}
+				return _meshFilter;
 			}
-			return _meshFilter;
 		}
-	}
 
-	public Mesh mesh
-	{
-		get
+		public Mesh mesh
 		{
-			if (meshFilter.sharedMesh == null || gameObject.GetInstanceID() != _ownerId)
+			get
 			{
-				meshFilter.sharedMesh = _mesh = new Mesh();
-				_ownerId = gameObject.GetInstanceID();
-				_mesh.name = "Mesh [" + _ownerId + "]";
+				if (meshFilter.sharedMesh == null || gameObject.GetInstanceID() != _ownerId)
+				{
+					meshFilter.sharedMesh = _mesh = new Mesh();
+					_ownerId = gameObject.GetInstanceID();
+					_mesh.name = "Mesh [" + _ownerId + "]";
+				}
+				return _mesh;
 			}
-			return _mesh;
 		}
 	}
 }
