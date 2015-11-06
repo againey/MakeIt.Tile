@@ -943,4 +943,87 @@ public class MeshTopologyTests
 			Assert.AreEqual(edge.farVertex.index, dualEdge.farFace.index);
 		}
 	}
+
+	[Test]
+	public void SpinEdgeForwardThrowsOnVerticesWithThreeNeighbors()
+	{
+		var tetrahedron = SphericalManifold.CreateTetrahedron().topology;
+		foreach (var edge in tetrahedron.vertexEdges)
+		{
+			Assert.Throws<InvalidOperationException>(() => { tetrahedron.SpinEdgeForward(edge); });
+		}
+	}
+
+	[Test]
+	public void SpinEdgeForward()
+	{
+		var octahedron = SphericalManifold.CreateOctahedron().topology;
+
+		var oldVertex0 = octahedron.vertices[2];
+		var oldVertex1 = octahedron.vertices[3];
+		var newVertex0 = octahedron.vertices[0];
+		var newVertex1 = octahedron.vertices[5];
+
+		Assert.AreEqual(4, oldVertex0.neighborCount);
+		Assert.AreEqual(4, oldVertex1.neighborCount);
+		Assert.AreEqual(4, newVertex0.neighborCount);
+		Assert.AreEqual(4, newVertex1.neighborCount);
+
+		Topology.VertexEdge edgeToSpin;
+		Assert.IsTrue(oldVertex0.TryFindEdge(oldVertex1, out edgeToSpin));
+
+		var face0 = edgeToSpin.nextFace;
+		var face1 = edgeToSpin.prevFace;
+
+		Topology.FaceEdge faceEdge0;
+		Topology.FaceEdge faceEdge1;
+
+		Assert.IsTrue(face0.TryFindEdge(newVertex0, out faceEdge0));
+		Assert.IsTrue(face1.TryFindEdge(newVertex1, out faceEdge1));
+
+		Assert.AreEqual(newVertex0, faceEdge0.nextVertex);
+		Assert.AreEqual(oldVertex0, faceEdge0.next.nextVertex);
+		Assert.AreEqual(oldVertex1, faceEdge0.next.next.nextVertex);
+		Assert.AreEqual(newVertex1, faceEdge1.nextVertex);
+		Assert.AreEqual(oldVertex1, faceEdge1.next.nextVertex);
+		Assert.AreEqual(oldVertex0, faceEdge1.next.next.nextVertex);
+
+		octahedron.SpinEdgeForward(edgeToSpin);
+
+		Assert.AreEqual(3, oldVertex0.neighborCount);
+		Assert.AreEqual(3, oldVertex1.neighborCount);
+		Assert.AreEqual(5, newVertex0.neighborCount);
+		Assert.AreEqual(5, newVertex1.neighborCount);
+
+		Assert.AreEqual(newVertex0, edgeToSpin.farVertex);
+		Assert.AreEqual(newVertex1, edgeToSpin.nearVertex);
+		Assert.AreEqual(newVertex1, edgeToSpin.twin.farVertex);
+		Assert.AreEqual(newVertex0, edgeToSpin.twin.nearVertex);
+
+		Assert.AreEqual(oldVertex0.firstEdge, oldVertex0.firstEdge.next.next.next);
+		Assert.AreEqual(oldVertex1.firstEdge, oldVertex1.firstEdge.next.next.next);
+		Assert.AreEqual(newVertex0.firstEdge, newVertex0.firstEdge.next.next.next.next.next);
+		Assert.AreEqual(newVertex1.firstEdge, newVertex1.firstEdge.next.next.next.next.next);
+
+		Assert.Throws<InvalidOperationException>(() => { oldVertex0.FindEdge(oldVertex1); });
+		Assert.Throws<InvalidOperationException>(() => { oldVertex1.FindEdge(oldVertex0); });
+
+		Assert.DoesNotThrow(() => { newVertex0.FindEdge(newVertex1); });
+		Assert.DoesNotThrow(() => { newVertex1.FindEdge(newVertex0); });
+		Assert.AreEqual(edgeToSpin, newVertex1.FindEdge(newVertex0));
+		Assert.AreEqual(edgeToSpin.twin, newVertex0.FindEdge(newVertex1));
+
+		Assert.AreEqual(face0, edgeToSpin.nextFace);
+		Assert.AreEqual(face1, edgeToSpin.prevFace);
+
+		Assert.IsTrue(face0.TryFindEdge(newVertex0, out faceEdge0));
+		Assert.IsTrue(face1.TryFindEdge(newVertex1, out faceEdge1));
+
+		Assert.AreEqual(newVertex0, faceEdge0.nextVertex);
+		Assert.AreEqual(oldVertex0, faceEdge0.next.nextVertex);
+		Assert.AreEqual(newVertex1, faceEdge0.next.next.nextVertex);
+		Assert.AreEqual(newVertex1, faceEdge1.nextVertex);
+		Assert.AreEqual(oldVertex1, faceEdge1.next.nextVertex);
+		Assert.AreEqual(newVertex0, faceEdge1.next.next.nextVertex);
+	}
 }

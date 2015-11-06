@@ -577,85 +577,135 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), new VertexPositions(subdividedPositions));
 		}
 
-		/*
-		public static void RelaxTilePositionsForRegularity(Topology topology, TileAttribute<Vector3> originalPositions, TileAttribute<Vector3> relaxedPositions)
+		public static VertexPositions RelaxForRegularity(Manifold manifold)
 		{
-			System.Array.Clear(relaxedPositions._values, 0, relaxedPositions.Count);
-
-			foreach (var tile in topology.Tiles)
-			{
-				foreach (var neighborTile in tile.Tiles)
-				{
-					relaxedPositions[tile] += originalPositions[neighborTile];
-				}
-				relaxedPositions[tile] = relaxedPositions[tile].normalized;
-			}
+			return RelaxForRegularity(manifold, new VertexPositions(manifold.vertexPositions.Count));
 		}
 
-		public static void RelaxTilePositionsForEqualArea(Topology topology, TileAttribute<Vector3> originalPositions, TileAttribute<Vector3> relaxedPositions, float idealArea)
+		public static VertexPositions RelaxForRegularity(Manifold manifold, VertexPositions relaxed)
 		{
-			System.Array.Clear(relaxedPositions._values, 0, relaxedPositions.Count);
+			var original = manifold.vertexPositions;
+			if (relaxed.Count < original.Count) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
 
-			foreach (var tile in topology.Tiles)
+			relaxed.Clear();
+
+			foreach (var vertex in manifold.topology.vertices)
 			{
-				var centerPosition = originalPositions[tile];
-				var prevNeighborPosition = originalPositions[tile.Tiles.Last];
+				foreach (var edge in vertex.edges)
+				{
+					relaxed[vertex] += original[edge.farVertex];
+				}
+				relaxed[vertex] = relaxed[vertex].normalized;
+			}
+
+			return relaxed;
+		}
+
+		public static VertexPositions RelaxForEqualArea(Manifold manifold)
+		{
+			return RelaxForEqualArea(manifold, new VertexPositions(manifold.vertexPositions.Count));
+		}
+
+		public static VertexPositions RelaxForEqualArea(Manifold manifold, VertexPositions relaxed)
+		{
+			return RelaxForEqualArea(manifold, relaxed, new FaceAttribute<Vector3>(manifold.vertexPositions.Count));
+		}
+
+		public static VertexPositions RelaxForEqualArea(Manifold manifold, VertexPositions relaxed, FaceAttribute<Vector3> centroidsBuffer)
+		{
+			var original = manifold.vertexPositions;
+			if (relaxed.Count < original.Count) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
+
+			var idealArea = 4f * Mathf.PI / manifold.topology.vertices.Count;
+
+			centroidsBuffer.Clear();
+			foreach (var face in manifold.topology.faces)
+			{
+				var sum = new Vector3();
+				foreach (var edge in face.edges)
+				{
+					sum += original[edge.prevVertex];
+				}
+				centroidsBuffer[face] = sum.normalized;
+			}
+
+			relaxed.Clear();
+
+			foreach (var vertex in manifold.topology.vertices)
+			{
+				var center = original[vertex];
+				var firstEdge = vertex.firstEdge;
+				var prevDelta = (original[firstEdge.prev.farVertex] - center) * 0.5f;
+				var centroid = centroidsBuffer[firstEdge.prevFace];
+				var edge = firstEdge;
 				float surroundingArea = 0;
-				foreach (var neighborTile in tile.Tiles)
+				do
 				{
-					var neighborPosition = originalPositions[neighborTile];
-					surroundingArea += Vector3.Cross(neighborPosition - centerPosition, prevNeighborPosition - centerPosition).magnitude * 0.5f;
-					prevNeighborPosition = neighborPosition;
-				}
-				surroundingArea /= 3f;
-				var multiplier = idealArea / surroundingArea;
-				foreach (var neighborTile in tile.Tiles)
+					var nextDelta = (original[edge.farVertex] - center) * 0.5f;
+					var centroidDelta = centroid - center;
+					surroundingArea += Vector3.Cross(prevDelta, centroidDelta).magnitude + Vector3.Cross(nextDelta, centroidDelta).magnitude;
+					prevDelta = nextDelta;
+					centroid = centroidsBuffer[edge.nextFace];
+					edge = edge.next;
+				} while (edge != firstEdge);
+				var multiplier = idealArea / (surroundingArea * 0.5f);
+				do
 				{
-					var neighborPosition = originalPositions[neighborTile];
-					relaxedPositions[neighborTile] += (neighborPosition - centerPosition) * multiplier + centerPosition;
-				}
+					relaxed[edge.farVertex] += (original[edge.farVertex] - center) * multiplier + center;
+					edge = edge.next;
+				} while (edge != firstEdge);
 			}
 
-			for (int i = 0; i < originalPositions.Count; ++i)
+			for (int i = 0; i < relaxed.Count; ++i)
 			{
-				relaxedPositions[i] = relaxedPositions[i].normalized;
+				relaxed[i] = relaxed[i].normalized;
 			}
+
+			return relaxed;
 		}
 
-		public static bool ValidateAndRepairTilePositions(Topology topology, TileAttribute<Vector3> tilePositions, float adjustmentWeight)
+		public static bool ValidateAndRepair(Manifold manifold, float adjustmentWeight)
 		{
 			bool repaired = false;
+			var vertexPositions = manifold.vertexPositions;
 			float originalWeight = 1f - adjustmentWeight;
-			foreach (var tile in topology.Tiles)
+			foreach (var vertex in manifold.topology.vertices)
 			{
-				var centerPosition = tilePositions[tile];
-				var neighborPosition0 = tilePositions[tile.PrevTile(tile.Tiles.Last)];
-				var neighborPosition1 = tilePositions[tile.Tiles.Last];
-				var centroid0 = (centerPosition + neighborPosition0 + neighborPosition1) / 3f;
-				foreach (var neighborTile in tile.Tiles)
+				var center = vertexPositions[vertex] * 3f; // Multiply by 3 to not have to divide centroid sums by 3 below.
+				var edge = vertex.firstEdge;
+				var p0 = vertexPositions[edge.farVertex];
+				edge = edge.next;
+				var p1 = vertexPositions[edge.farVertex];
+				edge = edge.next;
+				var centroid0 = (center + p0 + p1);
+				var firstEdge = edge;
+				do
 				{
-					var neighborPosition2 = tilePositions[neighborTile];
-					var centroid1 = (centerPosition + neighborPosition1 + neighborPosition2) / 3f;
-					var normal = Vector3.Cross(centroid0 - centerPosition, centroid1 - centerPosition);
-					if (Vector3.Dot(normal, centerPosition) < 0f) goto repair;
-					neighborPosition0 = neighborPosition1;
-					neighborPosition1 = neighborPosition2;
+					var p2 = vertexPositions[edge.farVertex];
+					var centroid1 = (center + p1 + p2);
+					var normal = Vector3.Cross(centroid0 - center, centroid1 - center);
+					if (Vector3.Dot(normal, center) < 0f) goto repair;
+					p0 = p1;
+					p1 = p2;
 					centroid0 = centroid1;
-				}
+					edge = edge.next;
+				} while (edge != firstEdge);
+
 				continue;
 
-				repair:
-				repaired = true;
-				var averageNeighborPosition = new Vector3(0f, 0f, 0f);
-				foreach (var neighborTile in tile.Tiles)
+				repair: repaired = true;
+				var average = new Vector3();
+				edge = firstEdge;
+				do
 				{
-					averageNeighborPosition += tilePositions[neighborTile];
-				}
-				averageNeighborPosition /= tile.NeighborCount;
-				tilePositions[tile] = (centerPosition * originalWeight + averageNeighborPosition * adjustmentWeight).normalized;
+					average += vertexPositions[edge.farVertex];
+					edge = edge.next;
+				} while (edge != firstEdge);
+				average /= vertex.neighborCount;
+				vertexPositions[vertex] = (center * originalWeight + average * adjustmentWeight).normalized;
 			}
+
 			return !repaired;
 		}
-		*/
 	}
 }

@@ -43,5 +43,10 @@ namespace Experilous.Topological
 		{
 			get { return _values.Length; }
 		}
+
+		public void Clear()
+		{
+			System.Array.Clear(_values, 0, _values.Length);
+		}
 	}
 }

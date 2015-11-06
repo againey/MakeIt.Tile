@@ -356,7 +356,7 @@ namespace Experilous.Topological
 							do
 							{
 								topology._edgeData[faceEdgeIndex]._face = faceIndex;
-								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._prev]._twin;
+								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._twin]._prev;
 								++neighborCount;
 								if (neighborCount > topology._vertexData.Length) throw new System.InvalidOperationException("Vertex neighbors were specified such that a face was misconfigured.");
 							} while (faceEdgeIndex != edgeIndex);
@@ -382,13 +382,13 @@ namespace Experilous.Topological
 							var faceEdgeIndex = edgeIndex;
 							do
 							{
-								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._prev]._twin;
+								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._twin]._prev;
 								++neighborCount;
 								if (neighborCount > topology._vertexData.Length) throw new System.InvalidOperationException("Vertex neighbors were specified such that a face was misconfigured.");
 							} while (faceEdgeIndex != edgeIndex);
 
 							// Store the face count and link the face to the first edge.
-							topology._faceData[faceIndex] = new NodeData(neighborCount, edgeIndex);
+							topology._faceData[faceIndex] = new NodeData(neighborCount, topology._edgeData[edgeIndex]._twin);
 							++faceIndex;
 						}
 					}
@@ -413,13 +413,13 @@ namespace Experilous.Topological
 							do
 							{
 								topology._edgeData[faceEdgeIndex]._face = faceIndex;
-								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._prev]._twin;
+								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._twin]._prev;
 								++neighborCount;
 								if (neighborCount > topology._vertexData.Length) throw new System.InvalidOperationException("Vertex neighbors were specified such that a face was misconfigured.");
 							} while (faceEdgeIndex != edgeIndex);
 
 							// Store the face count and link the face to the first edge.
-							topology._faceData[faceIndex] = new NodeData(neighborCount, edgeIndex);
+							topology._faceData[faceIndex] = new NodeData(neighborCount, topology._edgeData[edgeIndex]._twin);
 							++faceIndex;
 						}
 					}

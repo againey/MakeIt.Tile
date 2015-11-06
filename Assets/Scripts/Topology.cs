@@ -78,24 +78,28 @@ namespace Experilous.Topological
 
 			return dual;
 		}
+
 		private void RemoveEdgeFromFarVertex(VertexEdge edge)
 		{
-			var twin = edge.twin;
 			var vertex = edge.farVertex;
+			_vertexData[vertex.index].neighborCount -= 1;
+
+			var twin = edge.twin;
 			_edgeData[twin.prev.index]._next = twin.next.index;
 			_edgeData[twin.next.index]._prev = twin.prev.index;
-			_vertexData[vertex.index].neighborCount -= 1;
 			if (vertex.firstEdge == twin) _vertexData[vertex.index].firstEdge = twin.next.index;
 		}
 
 		private void AddEdgeToFarVertex(Vertex vertex, VertexEdge edge, VertexEdge insertBefore)
 		{
 			_edgeData[edge.index]._vertex = vertex.index;
-			_edgeData[edge.index]._prev = insertBefore.prev.index;
-			_edgeData[insertBefore.prev.index]._next = edge.index;
-			_edgeData[edge.index]._next = insertBefore.index;
-			_edgeData[insertBefore.index]._prev = edge.index;
 			_vertexData[vertex.index].neighborCount += 1;
+
+			var twin = edge.twin;
+			_edgeData[twin.index]._prev = insertBefore.prev.index;
+			_edgeData[insertBefore.prev.index]._next = twin.index;
+			_edgeData[twin.index]._next = insertBefore.index;
+			_edgeData[insertBefore.index]._prev = twin.index;
 		}
 
 		// Pivot an edge counter-clockwise around its implicit near vertex.
@@ -132,8 +136,11 @@ namespace Experilous.Topological
 			var twinSlidingEdge = slidingEdge.twin;
 			var newVertex = slidingEdge.farVertex;
 
-			// Outside face needs to point inward at the prev face.
+			// Outside face needs to point inward at the next face.
 			_edgeData[twinSlidingEdge.index]._face = edge.nextFace.index;
+
+			// Correct the root of the prev face if it was previously the sliding edge, which is now no longer a neighbor of the prev face.
+			if (_faceData[twinEdge.nextFace.index].firstEdge == slidingEdge.index) _faceData[twinEdge.nextFace.index].firstEdge = edge.index;
 
 			RemoveEdgeFromFarVertex(edge);
 			AddEdgeToFarVertex(newVertex, edge, twinSlidingEdge.next);
@@ -176,6 +183,9 @@ namespace Experilous.Topological
 			// Outside face needs to point inward at the prev face.
 			_edgeData[slidingEdge.index]._face = edge.prevFace.index;
 
+			// Correct the root of the next face if it was previously the sliding edge, which is now no longer a neighbor of the next face.
+			if (_faceData[edge.nextFace.index].firstEdge == twinSlidingEdge.index) _faceData[edge.nextFace.index].firstEdge = twinEdge.index;
+
 			RemoveEdgeFromFarVertex(edge);
 			AddEdgeToFarVertex(newVertex, edge, twinSlidingEdge);
 		}
@@ -192,24 +202,36 @@ namespace Experilous.Topological
 
 		public void PivotEdgeBackward(VertexEdge edge)
 		{
-			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge backward when it's previous face has only three sides.");
+			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge backward when its previous face has only three sides.");
 			PivotEdgeBackwardUnchecked(edge);
 		}
 
 		public void PivotEdgeForward(VertexEdge edge)
 		{
-			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge forward when it's next face has only three sides.");
+			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge forward when its next face has only three sides.");
 			PivotEdgeForwardUnchecked(edge);
+		}
+
+		public bool CanSpinEdgeBackward(VertexEdge edge)
+		{
+			return edge.farVertex.neighborCount > 3 && edge.nearVertex.neighborCount > 3;
+		}
+
+		public bool CanSpinEdgeForward(VertexEdge edge)
+		{
+			return edge.farVertex.neighborCount > 3 && edge.nearVertex.neighborCount > 3;
 		}
 
 		public void SpinEdgeBackward(VertexEdge edge)
 		{
+			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge backward when one of its vertices has only three neighbors.");
 			PivotEdgeBackwardUnchecked(edge);
 			PivotEdgeBackwardUnchecked(edge.twin);
 		}
 
 		public void SpinEdgeForward(VertexEdge edge)
 		{
+			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when one of its vertices has only three neighbors.");
 			PivotEdgeForwardUnchecked(edge);
 			PivotEdgeForwardUnchecked(edge.twin);
 		}

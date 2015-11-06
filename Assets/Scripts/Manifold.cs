@@ -5,8 +5,8 @@ namespace Experilous.Topological
 	using VertexPositions = VertexAttribute<Vector3>;
 	public class Manifold
 	{
-		private readonly Topology _topology;
-		private readonly VertexPositions _vertexPositions;
+		private Topology _topology;
+		private VertexPositions _vertexPositions;
 
 		public Manifold(Topology topology, VertexPositions vertexPositions)
 		{
@@ -19,7 +19,7 @@ namespace Experilous.Topological
 			return new Manifold(_topology.Clone(), _vertexPositions.Clone());
 		}
 
-		public Topology topology { get { return _topology; } }
-		public VertexPositions vertexPositions { get { return _vertexPositions; } }
+		public Topology topology { get { return _topology; } set { _topology = value; } }
+		public VertexPositions vertexPositions { get { return _vertexPositions; } set { _vertexPositions = value; } }
 	}
 }
