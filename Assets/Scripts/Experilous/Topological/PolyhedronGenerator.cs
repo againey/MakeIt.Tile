@@ -35,7 +35,7 @@ namespace Experilous.Topological
 			switch (BasePolyhedron)
 			{
 				case RegularPolyhedron.Tetrahedron: polyhedron = SphericalManifold.CreateTetrahedron(); break;
-				case RegularPolyhedron.Hexahedron: polyhedron = SphericalManifold.CreateCube(); break;
+				case RegularPolyhedron.Hexahedron: polyhedron = SphericalManifold.CreateHexahedron(); break;
 				case RegularPolyhedron.Octahedron: polyhedron = SphericalManifold.CreateOctahedron(); break;
 				case RegularPolyhedron.Icosahedron: polyhedron = SphericalManifold.CreateIcosahedron(); break;
 				default: throw new System.ArgumentException("A valid base polyhedron must be selected.");

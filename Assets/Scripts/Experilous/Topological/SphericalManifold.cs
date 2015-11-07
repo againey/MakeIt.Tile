@@ -30,7 +30,7 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), vertexPositions);
 		}
 
-		public static Manifold CreateCube()
+		public static Manifold CreateHexahedron()
 		{
 			var builder = new Topology.Builder(8, 24, 6);
 
@@ -78,6 +78,11 @@ namespace Experilous.Topological
 			builder.AddVertex(1, 4, 3, 2);
 
 			return new Manifold(builder.BuildTopology(), vertexPositions);
+		}
+
+		public static Manifold CreateDodecahedron()
+		{
+			return GetDualManifold(CreateIcosahedron());
 		}
 
 		public static Manifold CreateIcosahedron()
@@ -706,6 +711,24 @@ namespace Experilous.Topological
 			}
 
 			return !repaired;
+		}
+
+		public static Manifold GetDualManifold(Manifold manifold)
+		{
+			var topology = manifold.topology.GetDualTopology();
+			var vertexPositions = new VertexAttribute<Vector3>(topology.vertices.Count);
+
+			foreach (var face in manifold.topology.faces)
+			{
+				var average = new Vector3();
+				foreach (var edge in face.edges)
+				{
+					average += manifold.vertexPositions[edge.prevVertex];
+				}
+				vertexPositions[face.index] = average.normalized;
+			}
+
+			return new Manifold(topology, vertexPositions);
 		}
 	}
 }
