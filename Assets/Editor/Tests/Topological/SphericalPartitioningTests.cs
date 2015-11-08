@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Experilous.Topological;
 
-public class SphericalPartitionTests
+public class SphericalPartitioningTests
 {
 	private void ManifoldFaceCenterIntersections(Manifold manifold, SphericalPartitioning partitioning)
 	{

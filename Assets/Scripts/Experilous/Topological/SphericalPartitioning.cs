@@ -70,6 +70,157 @@ namespace Experilous.Topological
 			}
 		}
 
+		private class PartitionNode
+		{
+			public int _height;
+			public int _edgeIndex;
+			public Partition _partition;
+			public PartitionNode _parent;
+			public PartitionNode _under;
+			public PartitionNode _over;
+
+			public PartitionNode()
+			{
+				_height = 0;
+				_edgeIndex = -1;
+				_partition = new Partition();
+				_parent = null;
+				_under = null;
+				_over = null;
+			}
+
+			private PartitionNode(PartitionNode parent, Vector3 normal, int edgeIndex, int underFaceIndex, int overFaceIndex)
+			{
+				_height = 1;
+				_edgeIndex = edgeIndex;
+				_partition = new Partition(normal, underFaceIndex, overFaceIndex);
+				_parent = parent;
+				_under = null;
+				_over = null;
+			}
+
+			private PartitionNode(PartitionNode parent, Vector3 p0, Vector3 p1, int edgeIndex, int underFaceIndex, int overFaceIndex)
+				: this(parent, Vector3.Cross(p0 - p1, p0).normalized, edgeIndex, underFaceIndex, overFaceIndex)
+			{
+			}
+
+			private PartitionNode(PartitionNode parent, Topology.VertexEdge edge, VertexAttribute<Vector3> vertexPositions)
+				: this(parent, vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.index, edge.prevFace.index, edge.nextFace.index)
+			{
+			}
+
+			public PartitionNode AddUnder(Topology.VertexEdge edge, VertexAttribute<Vector3> vertexPositions)
+			{
+				_under = new PartitionNode(this, edge, vertexPositions);
+				return _under;
+			}
+
+			public PartitionNode AddUnder(Vector3 p0, Vector3 p1, int edgeIndex, int underFaceIndex, int overFaceIndex)
+			{
+				_under = new PartitionNode(this, p0, p1, edgeIndex, underFaceIndex, overFaceIndex);
+				return _under;
+			}
+
+			public PartitionNode AddOver(Topology.VertexEdge edge, VertexAttribute<Vector3> vertexPositions)
+			{
+				_over = new PartitionNode(this, edge, vertexPositions);
+				return _over;
+			}
+
+			public PartitionNode AddOver(Vector3 p0, Vector3 p1, int edgeIndex, int underFaceIndex, int overFaceIndex)
+			{
+				_over = new PartitionNode(this, p0, p1, edgeIndex, underFaceIndex, overFaceIndex);
+				return _over;
+			}
+
+			public void RotateLeft()
+			{
+				var child = _over;
+				var grandchild = _over._under;
+				_parent.ReplaceChild(this, child);
+				_over = grandchild;
+				if (grandchild != null) grandchild._parent = this;
+				_parent = child;
+				child._under = this;
+				RecomputeHeight();
+				child.RecomputeHeight();
+			}
+
+			public void RotateRight()
+			{
+				var child = _under;
+				var grandchild = _under._over;
+				_parent.ReplaceChild(this, child);
+				_under = grandchild;
+				if (grandchild != null) grandchild._parent = this;
+				_parent = child;
+				child._over = this;
+				RecomputeHeight();
+				child.RecomputeHeight();
+			}
+
+			public void RotateUnderLeft()
+			{
+				var parent = _under;
+				var child = parent._over;
+				var grandchild = child._under;
+				_under = child;
+				child._parent = this;
+				parent._over = grandchild;
+				if (grandchild != null) grandchild._parent = parent;
+				parent._parent = child;
+				child._under = parent;
+				parent.RecomputeHeight();
+				child.RecomputeHeight();
+			}
+
+			public void RotateOverRight()
+			{
+				var parent = _over;
+				var child = parent._under;
+				var grandchild = child._over;
+				_over = child;
+				child._parent = this;
+				parent._under = grandchild;
+				if (grandchild != null) grandchild._parent = parent;
+				parent._parent = child;
+				child._over = parent;
+				parent.RecomputeHeight();
+				child.RecomputeHeight();
+			}
+
+			public int balanceFactor
+			{
+				get
+				{
+					return (_under != null ? _under._height : 0) - (_over != null ? _over._height : 0);
+				}
+			}
+
+			public void RecomputeHeight()
+			{
+				_height = Mathf.Max(_under != null ? _under._height : 0, _over != null ? _over._height : 0) + 1;
+			}
+
+			public void ReplaceChild(PartitionNode oldChild, PartitionNode newChild)
+			{
+				if (ReferenceEquals(_under, oldChild))
+				{
+					_under = newChild;
+				}
+				else
+				{
+					_over = newChild;
+				}
+				newChild._parent = this;
+			}
+
+			public override string ToString()
+			{
+				return string.Format("PartitionNode ({0}, {1}, {2}), {3}", _height, balanceFactor, _edgeIndex, _partition);
+			}
+		}
+
 		private Manifold _manifold;
 		private Partition[] _partitionBinaryTree;
 
@@ -79,29 +230,181 @@ namespace Experilous.Topological
 
 			var edges = manifold.topology.vertexEdges;
 			var positions = manifold.vertexPositions;
-			Mathf.NextPowerOfTwo(edges.Count);
-			_partitionBinaryTree = new Partition[Mathf.NextPowerOfTwo(edges.Count)];
 
-			int i = 0;
-			while (i < edges.Count)
+			PartitionNode partitionRoot = new PartitionNode();
+
+			int edgesProcessed = 0;
+			int increment = 1;
+			if (edges.Count % 23 != 0) increment = 23;
+			else if (edges.Count % 19 != 0) increment = 19;
+			else if (edges.Count % 17 != 0) increment = 17;
+			else if (edges.Count % 13 != 0) increment = 13;
+			else if (edges.Count % 11 != 0) increment = 11;
+			else if (edges.Count % 7 != 0) increment = 7;
+			else if (edges.Count % 5 != 0) increment = 5;
+			else if (edges.Count % 3 != 0) increment = 3;
+			else if (edges.Count % 2 != 0) increment = 2;
+
+			int edgeIndex = 0;
+			while (edgesProcessed < edges.Count)
 			{
-				if (edges[i] < edges[i].twin)
+				++edgesProcessed;
+				if (edges[edgeIndex] < edges[edgeIndex].twin)
 				{
-					_partitionBinaryTree[0] = new Partition(edges[i], positions);
-					++i;
+					partitionRoot.AddUnder(edges[edgeIndex], positions);
+					edgeIndex = (edgeIndex + increment) % edges.Count;
 					break;
 				}
-				++i;
+				edgeIndex = (edgeIndex + increment) % edges.Count;
 			}
 
-			while (i < edges.Count)
+			while (edgesProcessed < edges.Count)
 			{
-				if (edges[i] < edges[i].twin)
+				++edgesProcessed;
+				if (edges[edgeIndex] < edges[edgeIndex].twin)
 				{
-					PartitionEdge(edges[i], positions);
+					PartitionEdge(partitionRoot._under, edges[edgeIndex], positions);
 				}
-				++i;
+				edgeIndex = (edgeIndex + increment) % edges.Count;
 			}
+
+			var deepProbe = partitionRoot._under;
+			var deepestIndex = 0;
+			while (true)
+			{
+				if (deepProbe.balanceFactor > 0)
+				{
+					deepProbe = deepProbe._under;
+					deepestIndex = GetUnderIndex(deepestIndex);
+				}
+				else if (deepProbe._over != null)
+				{
+					deepProbe = deepProbe._over;
+					deepestIndex = GetOverIndex(deepestIndex);
+				}
+				else if (deepProbe._under != null)
+				{
+					deepProbe = deepProbe._under;
+					deepestIndex = GetUnderIndex(deepestIndex);
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			_partitionBinaryTree = new Partition[deepestIndex + 1];
+			var count = BuildCompactTree(partitionRoot._under, 0);
+
+			Debug.LogFormat("{0:n0}, {1}, {2:n0}, {3}, {4}, {5:n0}", edges.Count / 2, Mathf.CeilToInt(Mathf.Log(edges.Count / 2) / Mathf.Log(2f)), _partitionBinaryTree.Length, Mathf.CeilToInt(Mathf.Log(_partitionBinaryTree.Length) / Mathf.Log(2f)), increment, count);
+		}
+
+		private void PartitionEdge(PartitionNode parent, Topology.VertexEdge edge, VertexAttribute<Vector3> vertexPositions)
+		{
+			PartitionEdge(parent, vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.index, edge.prevFace.index, edge.nextFace.index);
+		}
+
+		private bool PartitionEdge(PartitionNode parent, Vector3 p0, Vector3 p1, int edgeIndex, int underFaceIndex, int overFaceIndex)
+		{
+			var relation = parent._partition.Compare(p0, 0.0001f) * 3 + parent._partition.Compare(p1, 0.0001f);
+			Vector3 underIntersection;
+			Vector3 overIntersection;
+			bool balanced;
+			switch (relation)
+			{
+				case -4: //both points are under
+				case -3:
+				case -1:
+					balanced = PartitionEdgeUnder(parent, p0, p1, edgeIndex, underFaceIndex, overFaceIndex);
+					break;
+
+				case -2: //p0 is under and p1 is over
+					parent._partition.Intersect(p0, p1, out underIntersection, out overIntersection);
+					balanced =
+						PartitionEdgeUnder(parent, p0, overIntersection, edgeIndex, underFaceIndex, overFaceIndex) &
+						PartitionEdgeOver(parent, underIntersection, p1, edgeIndex, underFaceIndex, overFaceIndex);
+					break;
+
+				case 0: //both points are directly on the partition plane
+					return true;
+
+				case 2: //p0 is over and p1 is under
+					parent._partition.Intersect(p1, p0, out underIntersection, out overIntersection);
+					balanced =
+						PartitionEdgeUnder(parent, overIntersection, p1, edgeIndex, underFaceIndex, overFaceIndex) &
+						PartitionEdgeOver(parent, p0, underIntersection, edgeIndex, underFaceIndex, overFaceIndex);
+					break;
+
+				case 1: //both points are over
+				case 3:
+				case 4:
+					balanced = PartitionEdgeOver(parent, p0, p1, edgeIndex, underFaceIndex, overFaceIndex);
+					break;
+
+				default: throw new ApplicationException("An unexpected program state was encountered while comparing the relation of an edge to a planar partition.");
+			}
+
+			//parent.RecomputeHeight();
+			//return true;
+
+			if (!balanced)
+			{
+				var balanceFactor = parent.balanceFactor;
+				if (balanceFactor == 2)
+				{
+					if (parent._under.balanceFactor == -1)
+						parent.RotateUnderLeft();
+					parent.RotateRight();
+					return true;
+				}
+				else if (balanceFactor == -2)
+				{
+					if (parent._over.balanceFactor == 1)
+						parent.RotateOverRight();
+					parent.RotateLeft();
+					return true;
+				}
+				else
+				{
+					parent.RecomputeHeight();
+					return false;
+				}
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		private bool PartitionEdgeUnder(PartitionNode parent, Vector3 p0, Vector3 p1, int edgeIndex, int underFaceIndex, int overFaceIndex)
+		{
+			if (parent._under != null)
+			{
+				return PartitionEdge(parent._under, p0, p1, edgeIndex, underFaceIndex, overFaceIndex);
+			}
+			else
+			{
+				parent.AddUnder(p0, p1, edgeIndex, underFaceIndex, overFaceIndex);
+				return false;
+			}
+		}
+
+		private bool PartitionEdgeOver(PartitionNode parent, Vector3 p0, Vector3 p1, int edgeIndex, int underFaceIndex, int overFaceIndex)
+		{
+			if (parent._over != null)
+			{
+				return PartitionEdge(parent._over, p0, p1, edgeIndex, underFaceIndex, overFaceIndex);
+			}
+			else
+			{
+				parent.AddOver(p0, p1, edgeIndex, underFaceIndex, overFaceIndex);
+				return false;
+			}
+		}
+
+		private int GetParentIndex(int partitionIndex)
+		{
+			return (partitionIndex - 1) / 2;
 		}
 
 		private int GetUnderIndex(int partitionIndex)
@@ -114,110 +417,38 @@ namespace Experilous.Topological
 			return partitionIndex * 2 + 2;
 		}
 
-		private void PartitionEdge(Topology.VertexEdge edge, VertexAttribute<Vector3> vertexPositions)
+		private int GetOverIndexFromUnderIndex(int partitionIndex)
 		{
-			PartitionEdge(0, vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.prevFace.index, edge.nextFace.index);
+			return partitionIndex + 1;
 		}
 
-		private void PartitionEdge(int parentIndex, Vector3 p0, Vector3 p1, int underFaceIndex, int overFaceIndex)
+		private int BuildCompactTree(PartitionNode partitionNode, int partitionIndex)
 		{
-			var parent = _partitionBinaryTree[parentIndex];
-			var relation = parent.Compare(p0, 0.0001f) * 3 + parent.Compare(p1, 0.0001f);
-			Vector3 underIntersection;
-			Vector3 overIntersection;
-			switch (relation)
+			int count = 1;
+			int underFaceIndex;
+			int overFaceIndex;
+			if (partitionNode._under != null)
 			{
-				case -4: //both points are under
-				case -3:
-				case -1:
-					if (parent._underFaceIndex == -1)
-					{
-						PartitionEdge(GetUnderIndex(parentIndex), p0, p1, underFaceIndex, overFaceIndex);
-					}
-					else
-					{
-						PartitionEdgeUnder(parentIndex, p0, p1, underFaceIndex, overFaceIndex);
-					}
-					break;
-
-				case -2: //p0 is under and p1 is over
-					parent.Intersect(p0, p1, out underIntersection, out overIntersection);
-					if (parent._underFaceIndex == -1)
-					{
-						PartitionEdge(GetUnderIndex(parentIndex), p0, overIntersection, underFaceIndex, overFaceIndex);
-					}
-					else
-					{
-						PartitionEdgeUnder(parentIndex, p0, overIntersection, underFaceIndex, overFaceIndex);
-					}
-
-					if (parent._overFaceIndex == -1)
-					{
-						PartitionEdge(GetOverIndex(parentIndex), underIntersection, p1, underFaceIndex, overFaceIndex);
-					}
-					else
-					{
-						PartitionEdgeOver(parentIndex, underIntersection, p1, underFaceIndex, overFaceIndex);
-					}
-					break;
-
-				case 2: //p0 is over and p1 is under
-					parent.Intersect(p1, p0, out underIntersection, out overIntersection);
-					if (parent._underFaceIndex == -1)
-					{
-						PartitionEdge(GetUnderIndex(parentIndex), overIntersection, p1, underFaceIndex, overFaceIndex);
-					}
-					else
-					{
-						PartitionEdgeUnder(parentIndex, overIntersection, p1, underFaceIndex, overFaceIndex);
-					}
-
-					if (parent._overFaceIndex == -1)
-					{
-						PartitionEdge(GetOverIndex(parentIndex), p0, underIntersection, underFaceIndex, overFaceIndex);
-					}
-					else
-					{
-						PartitionEdgeOver(parentIndex, p0, underIntersection, underFaceIndex, overFaceIndex);
-					}
-					break;
-
-				case 1: //both points are over
-				case 3:
-				case 4:
-					if (parent._overFaceIndex == -1)
-					{
-						PartitionEdge(GetOverIndex(parentIndex), p0, p1, underFaceIndex, overFaceIndex);
-					}
-					else
-					{
-						PartitionEdgeOver(parentIndex, p0, p1, underFaceIndex, overFaceIndex);
-					}
-					break;
+				count += BuildCompactTree(partitionNode._under, GetUnderIndex(partitionIndex));
+				underFaceIndex = -1;
 			}
-		}
+			else
+			{
+				underFaceIndex = partitionNode._partition._underFaceIndex;
+			}
 
-		private void PartitionEdgeUnder(int parentIndex, Vector3 p0, Vector3 p1, int underFaceIndex, int overFaceIndex)
-		{
-			_partitionBinaryTree[parentIndex]._underFaceIndex = -1;
-			var childIndex = GetUnderIndex(parentIndex);
-			if (childIndex >= _partitionBinaryTree.Length) ExtendBinaryTree();
-			_partitionBinaryTree[childIndex] = new Partition(p0, p1, underFaceIndex, overFaceIndex);
-		}
+			if (partitionNode._over != null)
+			{
+				count += BuildCompactTree(partitionNode._over, GetOverIndex(partitionIndex));
+				overFaceIndex = -1;
+			}
+			else
+			{
+				overFaceIndex = partitionNode._partition._overFaceIndex;
+			}
 
-		private void PartitionEdgeOver(int parentIndex, Vector3 p0, Vector3 p1, int underFaceIndex, int overFaceIndex)
-		{
-			_partitionBinaryTree[parentIndex]._overFaceIndex = -1;
-			var childIndex = GetOverIndex(parentIndex);
-			if (childIndex >= _partitionBinaryTree.Length) ExtendBinaryTree();
-			_partitionBinaryTree[childIndex] = new Partition(p0, p1, underFaceIndex, overFaceIndex);
-		}
-
-		private void ExtendBinaryTree()
-		{
-			var extendedPartitionBinaryTree = new Partition[_partitionBinaryTree.Length * 2];
-			System.Array.Copy(_partitionBinaryTree, extendedPartitionBinaryTree, _partitionBinaryTree.Length);
-			_partitionBinaryTree = extendedPartitionBinaryTree;
+			_partitionBinaryTree[partitionIndex] = new Partition(partitionNode._partition._normal, underFaceIndex, overFaceIndex);
+			return count;
 		}
 
 		private Topology.Face Intersect(Vector3 centerRay, int partitionIndex)
