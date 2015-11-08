@@ -16,7 +16,7 @@ namespace Experilous.Topological
 
 		private bool _invalidated = true;
 
-		public SphericalPartitioning Partitioning { get { return _partitioning; } }
+		public SphericalPartitioning partitioning { get { return _partitioning; } }
 
 		public void Invalidate()
 		{
