@@ -128,7 +128,7 @@ namespace Experilous.Topological
 					{
 						var uniqueMesh = Instantiate(MeshPrefab);
 						uniqueMesh.name = "Mesh [" + meshIndex.ToString() + "]";
-						uniqueMesh.transform.parent = transform;
+						uniqueMesh.transform.SetParent(transform, false);
 						mesh = uniqueMesh.mesh;
 					}
 					else
