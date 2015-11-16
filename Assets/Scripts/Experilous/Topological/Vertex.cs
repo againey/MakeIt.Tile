@@ -5,7 +5,7 @@ namespace Experilous.Topological
 {
 	public partial class Topology
 	{
-		private NodeData[] _vertexData;
+		public NodeData[] _vertexData;
 
 		public struct Vertex : IEquatable<Vertex>, IComparable<Vertex>
 		{
@@ -22,24 +22,26 @@ namespace Experilous.Topological
 
 			public int index { get { return _index; } }
 			public int neighborCount { get { return _topology._vertexData[_index].neighborCount; } }
-			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology._vertexData[_index].firstEdge); } }
+			public int firstEdgeIndex { get { return _topology._vertexData[_index].firstEdge; } }
+			public VertexEdge firstEdge { get { return new VertexEdge(_topology, firstEdgeIndex); } }
 
 			public struct VertexEdgesIndexer
 			{
 				private Topology _topology;
-				private int _index;
+				private NodeData _data;
 
 				public VertexEdgesIndexer(Topology topology, int index)
 				{
 					_topology = topology;
-					_index = index;
+					_data = topology._vertexData[index];
 				}
 
-				public int Count { get { return _topology._vertexData[_index].neighborCount; } }
+				public int Count { get { return _data.neighborCount; } }
 				
 				public struct VertexEdgeEnumerator
 				{
 					private Topology _topology;
+					private EdgeData[] _edgeData;
 					private int _firstEdgeIndex;
 					private int _currentEdgeIndex;
 					private int _nextEdgeIndex;
@@ -47,6 +49,7 @@ namespace Experilous.Topological
 					public VertexEdgeEnumerator(Topology topology, int firstEdgeIndex)
 					{
 						_topology = topology;
+						_edgeData = topology._edgeData;
 						_firstEdgeIndex = firstEdgeIndex;
 						_currentEdgeIndex = -1;
 						_nextEdgeIndex = firstEdgeIndex;
@@ -54,12 +57,13 @@ namespace Experilous.Topological
 
 					public VertexEdge Current { get { return new VertexEdge(_topology, _currentEdgeIndex); } }
 
+					[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoOptimization)]
 					public bool MoveNext()
 					{
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._next;
+							_nextEdgeIndex = _edgeData[_currentEdgeIndex]._next;
 							return true;
 						}
 						else
@@ -77,7 +81,7 @@ namespace Experilous.Topological
 
 				public VertexEdgeEnumerator GetEnumerator()
 				{
-					return new VertexEdgeEnumerator(_topology, _topology._vertexData[_index].firstEdge);
+					return new VertexEdgeEnumerator(_topology, _data.firstEdge);
 				}
 			}
 

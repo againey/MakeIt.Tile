@@ -4,7 +4,7 @@ namespace Experilous.Topological
 {
 	public partial class Topology
 	{
-		private struct NodeData
+		public struct NodeData
 		{
 			private uint _data;
 
@@ -234,6 +234,149 @@ namespace Experilous.Topological
 			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when one of its vertices has only three neighbors.");
 			PivotEdgeForwardUnchecked(edge);
 			PivotEdgeForwardUnchecked(edge.twin);
+		}
+
+		private delegate void AddEdgeDelegate(int oldEdgeIndex, int prevNewEdgeIndex, int nextNewEdgeIndex, int newNearVertexIndex, bool isNeighbor);
+
+		public void OptimizeForVertexNeighborTraversal(Action<int, int> onMoveVertex, Action<int, int> onMoveEdge)
+		{
+			var newVertexData = new NodeData[_vertexData.Length];
+			var newEdgeData = new EdgeData[_edgeData.Length];
+
+			// Stores the map of old vertex indices to new vertex indices.
+			// If a vertex is open (hasn't been touched at all yet), its map value will be 0.
+			// If a vertex is half open (is a neighbor of a closed vertex, but is not yet closed itself), its map value will be -1.
+			// Index 0 will always be first to be processed, and will always therefore map to 0, so no other vertex, once closed, will map to 0.
+			var vertexIndexMap = new int[_vertexData.Length];
+
+			// Stores the map of old vertex indices to new vertex indices.
+			// If an edge is open (hasn't been processed yet), its map value will be 0.
+			// Index 0 will always be first to be processed, and will always therefore map to 0, so no other edge, once closed, will map to 0.
+			var edgeIndexMap = new int[_edgeData.Length];
+
+			var newVertexIndex = 0;
+			var newEdgeIndex = 0;
+
+			int openVertexCount = _vertexData.Length;
+			int closedVertexCount = 0;
+
+			AddEdgeDelegate AddEdge = delegate (int oldEdgeIndex, int prevNewEdgeIndex, int nextNewEdgeIndex, int newNearVertexIndex, bool isNeighbor)
+			{
+				var farVertexIndex = _edgeData[oldEdgeIndex]._vertex;
+				int newFarVertexIndex;
+
+				// Check if the twin index has been closed yet.
+				int oldTwinIndex = _edgeData[oldEdgeIndex]._twin;
+				int newTwinIndex = edgeIndexMap[oldTwinIndex];
+				if (oldTwinIndex == 0 || newTwinIndex > 0)
+				{
+					newEdgeData[newTwinIndex]._twin = newEdgeIndex;
+					newEdgeData[newTwinIndex]._vertex = newNearVertexIndex;
+					newFarVertexIndex = vertexIndexMap[farVertexIndex];
+				}
+				else
+				{
+					newTwinIndex = -1;
+					newFarVertexIndex = -1;
+				}
+				edgeIndexMap[oldEdgeIndex] = newEdgeIndex;
+				
+				newEdgeData[newEdgeIndex] = new EdgeData(newTwinIndex, prevNewEdgeIndex, nextNewEdgeIndex, newFarVertexIndex, _edgeData[oldEdgeIndex]._face);
+				onMoveEdge(oldEdgeIndex, newEdgeIndex);
+
+				// Check if the far vertex is open (0) and not closed (>0) or merely half open (-1).
+				if (isNeighbor && farVertexIndex != 0 && vertexIndexMap[farVertexIndex] == 0)
+				{
+					vertexIndexMap[farVertexIndex] = -1;
+					--openVertexCount;
+				}
+			};
+
+			Action<int, bool> AddVertex = delegate (int oldVertexIndex, bool isNeighbor)
+			{
+				var neighborCount = _vertexData[oldVertexIndex].neighborCount;
+				var firstEdgeIndex = _vertexData[oldVertexIndex].firstEdge;
+				newVertexData[newVertexIndex] = new NodeData(neighborCount, newEdgeIndex);
+				// Check if the vertex is open (0) and not merely half open (-1).
+				if (vertexIndexMap[oldVertexIndex] == 0)
+				{
+					--openVertexCount;
+				}
+				vertexIndexMap[oldVertexIndex] = newVertexIndex;
+				++closedVertexCount;
+
+				var firstNewEdgeIndex = newEdgeIndex;
+				var edgeIndex = firstEdgeIndex;
+				var nextEdgeIndex =  _edgeData[edgeIndex]._next;
+				var prevNewEdgeIndex = firstNewEdgeIndex + neighborCount - 1;
+				while (nextEdgeIndex != firstEdgeIndex)
+				{
+					var nextNewEdgeIndex = newEdgeIndex + 1;
+					AddEdge(edgeIndex, prevNewEdgeIndex, nextNewEdgeIndex, newVertexIndex, isNeighbor);
+					edgeIndex = nextEdgeIndex;
+					nextEdgeIndex = _edgeData[edgeIndex]._next;
+					prevNewEdgeIndex = newEdgeIndex;
+					newEdgeIndex = nextNewEdgeIndex;
+				}
+				AddEdge(edgeIndex, prevNewEdgeIndex, firstNewEdgeIndex, newVertexIndex, isNeighbor);
+				++newEdgeIndex;
+				onMoveVertex(oldVertexIndex, newVertexIndex);
+				++newVertexIndex;
+			};
+
+			Action<int> AddVertexNeighbors = delegate (int oldVertexIndex)
+			{
+				var firstEdgeIndex = _vertexData[oldVertexIndex].firstEdge;
+				var edgeIndex = firstEdgeIndex;
+				do
+				{
+					var oldNeighborVertexIndex = _edgeData[edgeIndex]._vertex;
+					// Check if the neighbor vertex is still open (0) or half open (-1).
+					if (oldNeighborVertexIndex != 0 && vertexIndexMap[oldNeighborVertexIndex] <= 0)
+					{
+						AddVertex(oldNeighborVertexIndex, true);
+					}
+					edgeIndex = _edgeData[edgeIndex]._next;
+				} while (edgeIndex != firstEdgeIndex);
+			};
+
+			int vertexIndex = 0;
+			while (openVertexCount > 0)
+			{
+				// Skip all vertices that are already half open (-1) or closed (>0).
+				while (vertexIndexMap[vertexIndex] != 0)
+				{
+					++vertexIndex;
+				}
+
+				AddVertex(vertexIndex, false);
+				AddVertexNeighbors(vertexIndex);
+
+				++vertexIndex;
+			}
+
+			vertexIndex = 1; // Index 0 is guaranteed to be closed in the first loop.
+			while (closedVertexCount < _vertexData.Length)
+			{
+				// Skip all vertices that are already closed.
+				while (vertexIndexMap[vertexIndex] > 0)
+				{
+					++vertexIndex;
+				}
+
+				AddVertex(vertexIndex, false);
+				AddVertexNeighbors(vertexIndex);
+
+				++vertexIndex;
+			}
+
+			for (int faceIndex = 0; faceIndex < _faceData.Length; ++faceIndex)
+			{
+				_faceData[faceIndex].firstEdge = edgeIndexMap[_faceData[faceIndex].firstEdge];
+			}
+
+			_vertexData = newVertexData;
+			_edgeData = newEdgeData;
 		}
 	}
 }

@@ -10,9 +10,7 @@ namespace Experilous.Topological
 
 		public bool Spherical = false;
 
-	#if UNITY_EDITOR
 		private Manifold _manifold = null;
-	#endif
 
 		private FaceAttribute<Vector3> _centroids;
 
@@ -34,32 +32,13 @@ namespace Experilous.Topological
 			Invalidate();
 		}
 
-	#if UNITY_EDITOR
 		void LateUpdate()
 		{
-			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			if (ManifoldGenerator.manifold != _manifold || _invalidated)
 			{
-				if (ManifoldGenerator.manifold != _manifold)
-				{
-					RebuildCentroids();
-				}
-			}
-			else
-			{
-				if (_invalidated)
-				{
-					RebuildCentroids();
-				}
+				RebuildCentroids();
 			}
 		}
-	#else
-		void Update()
-		{
-			if (_invalidated)
-			{
-			}
-		}
-	#endif
 
 		void RebuildCentroids()
 		{
@@ -95,6 +74,7 @@ namespace Experilous.Topological
 			else
 			{
 				_centroids.Clear();
+				_manifold = null;
 			}
 
 			_invalidated = false;

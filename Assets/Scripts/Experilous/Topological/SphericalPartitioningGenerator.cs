@@ -8,9 +8,7 @@ namespace Experilous.Topological
 	{
 		public ManifoldGenerator ManifoldGenerator;
 
-	#if UNITY_EDITOR
 		private Manifold _manifold = null;
-	#endif
 
 		private SphericalPartitioning _partitioning;
 
@@ -32,32 +30,13 @@ namespace Experilous.Topological
 			Invalidate();
 		}
 
-	#if UNITY_EDITOR
 		void LateUpdate()
 		{
-			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			if (ManifoldGenerator.manifold != _manifold || _invalidated)
 			{
-				if (ManifoldGenerator.manifold != _manifold)
-				{
-					RebuildPartitioning();
-				}
-			}
-			else
-			{
-				if (_invalidated)
-				{
-					RebuildPartitioning();
-				}
+				RebuildPartitioning();
 			}
 		}
-	#else
-		void Update()
-		{
-			if (_invalidated)
-			{
-			}
-		}
-	#endif
 
 		void RebuildPartitioning()
 		{
@@ -69,6 +48,7 @@ namespace Experilous.Topological
 			else
 			{
 				_partitioning = null;
+				_manifold = null;
 			}
 
 			_invalidated = false;

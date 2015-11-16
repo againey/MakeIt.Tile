@@ -5,7 +5,7 @@ namespace Experilous.Topological
 {
 	public partial class Topology
 	{
-		private NodeData[] _faceData;
+		public NodeData[] _faceData;
 
 		public struct Face : IEquatable<Face>, IComparable<Face>
 		{

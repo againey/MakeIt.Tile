@@ -10,9 +10,7 @@ namespace Experilous.Topological
 
 		public UniqueMesh MeshPrefab;
 
-	#if UNITY_EDITOR
 		private Manifold _manifold = null;
-	#endif
 
 		private bool _invalidated = true;
 
@@ -30,32 +28,13 @@ namespace Experilous.Topological
 			Invalidate();
 		}
 
-	#if UNITY_EDITOR
 		void LateUpdate()
 		{
-			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			if (ManifoldGenerator.manifold != _manifold || _invalidated)
 			{
-				if (ManifoldGenerator.manifold != _manifold)
-				{
-					RebuildMeshes();
-				}
-			}
-			else
-			{
-				if (_invalidated)
-				{
-					RebuildMeshes();
-				}
+				RebuildMeshes();
 			}
 		}
-	#else
-		void Update()
-		{
-			if (_invalidated)
-			{
-			}
-		}
-	#endif
 
 		void RebuildMeshes()
 		{
@@ -151,20 +130,20 @@ namespace Experilous.Topological
 				_manifold = null;
 			}
 
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 			UnityEditor.EditorApplication.delayCall += () =>
 			{
 				if (this != null && gameObject != null)
 				{
-	#endif
+#endif
 					while (meshIndex < meshes.Length)
 					{
 						DestroyImmediate(meshes[meshIndex++].gameObject);
 					}
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 				}
 			};
-	#endif
+#endif
 
 			_invalidated = false;
 		}

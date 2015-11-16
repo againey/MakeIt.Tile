@@ -29,8 +29,25 @@ namespace Experilous.Topological
 			Icosahedron,
 		}
 
+		public void IncreaseSubdivision()
+		{
+			SubdivisionDegree += 1;
+			Invalidate();
+		}
+
+		public void DecreaseSubdivision()
+		{
+			if (SubdivisionDegree > 0)
+			{
+				SubdivisionDegree -= 1;
+				Invalidate();
+			}
+		}
+
 		protected override Manifold RebuildManifold()
 		{
+			var stopwatch = new System.Diagnostics.Stopwatch();
+
 			Manifold polyhedron;
 			switch (BasePolyhedron)
 			{
@@ -43,11 +60,31 @@ namespace Experilous.Topological
 
 			if (SubdivisionDegree > 0)
 			{
+				stopwatch.Start();
 				polyhedron = SphericalManifold.Subdivide(polyhedron, SubdivisionDegree);
+				stopwatch.Stop();
+				Debug.LogFormat("Subdivision Elapsed Time:  {0}", stopwatch.ElapsedMilliseconds);
+				stopwatch.Reset();
 			}
 
 			if (AlterationDegree > 0 && AlterationFrequency > 0f)
 			{
+				var vertexPositions = polyhedron.vertexPositions;
+
+				/*stopwatch.Start();
+				var optimizedVertexPositions = new VertexAttribute<Vector3>(vertexPositions.Count);
+				polyhedron.topology.OptimizeForVertexNeighborTraversal((int oldVertexIndex, int newVertexIndex) =>
+				{
+					optimizedVertexPositions[newVertexIndex] = vertexPositions[oldVertexIndex];
+				},
+				(int oldEdgeIndex, int newEdgeIndex) =>
+				{
+				});
+				vertexPositions = polyhedron.vertexPositions = optimizedVertexPositions;
+				stopwatch.Stop();
+				Debug.LogFormat("Topology Optimizatoin Pass Time:  {0}", stopwatch.ElapsedMilliseconds);
+				stopwatch.Reset();*/
+
 				var random = RandomSeed > 0 ? new System.Random(RandomSeed) : new System.Random();
 
 				var iterationAlterationFrequency = AlterationFrequency / AlterationDegree;
@@ -57,7 +94,6 @@ namespace Experilous.Topological
 				//var minFace = UseDualPolyhedron ? MinVertexNeighbors : MinFaceNeighbors;
 				//var maxFace = UseDualPolyhedron ? MaxVertexNeighbors : MaxFaceNeighbors;
 
-				var vertexPositions = polyhedron.vertexPositions;
 				var regularityRelaxedPositions = new VertexAttribute<Vector3>(vertexPositions.Count);
 				var equalAreaRelaxedPositions = new VertexAttribute<Vector3>(vertexPositions.Count);
 				var centroidsBuffer = new FaceAttribute<Vector3>(polyhedron.topology.faces.Count);
@@ -67,6 +103,7 @@ namespace Experilous.Topological
 
 				for (int alterationPass = 0; alterationPass < AlterationDegree; ++alterationPass)
 				{
+					stopwatch.Start();
 					foreach (var edge in polyhedron.topology.vertexEdges)
 					{
 						if (random.NextDouble() < iterationAlterationFrequency &&
@@ -76,13 +113,26 @@ namespace Experilous.Topological
 							polyhedron.topology.SpinEdgeForward(edge);
 						}
 					}
+					stopwatch.Stop();
+					Debug.LogFormat("Alteration Pass Time:  {0}", stopwatch.ElapsedMilliseconds);
+					stopwatch.Reset();
 
 					float priorRelaxationAmount = 0f;
 					for (int i = 0; i < MaxRelaxIterations; ++i)
 					{
+						stopwatch.Start();
 						SphericalManifold.RelaxForRegularity(polyhedron, regularityRelaxedPositions);
-						SphericalManifold.RelaxForEqualArea(polyhedron, equalAreaRelaxedPositions, centroidsBuffer);
+						stopwatch.Stop();
+						Debug.LogFormat("Relax for Regularity Pass Time:  {0}", stopwatch.ElapsedMilliseconds);
+						stopwatch.Reset();
 
+						stopwatch.Start();
+						SphericalManifold.RelaxForEqualArea(polyhedron, equalAreaRelaxedPositions, centroidsBuffer);
+						stopwatch.Stop();
+						Debug.LogFormat("Relax for Equal Area Pass Time:  {0}", stopwatch.ElapsedMilliseconds);
+						stopwatch.Reset();
+
+						stopwatch.Start();
 						float relaxationAmount = 0f;
 						var weightedRelaxedPositions = regularityRelaxedPositions;
 						for (int j = 0; j < vertexPositions.Count; ++j)
@@ -91,6 +141,9 @@ namespace Experilous.Topological
 							relaxationAmount += (vertexPositions[j] - weightedRelaxedPosition).magnitude;
 							weightedRelaxedPositions[j] = weightedRelaxedPosition;
 						}
+						stopwatch.Stop();
+						Debug.LogFormat("Relax Average Pass Time:  {0}", stopwatch.ElapsedMilliseconds);
+						stopwatch.Reset();
 
 						if (relaxationAmount == 0f || (priorRelaxationAmount != 0f && relaxationAmount / priorRelaxationAmount > 0.95f))
 						{
@@ -102,6 +155,7 @@ namespace Experilous.Topological
 
 						polyhedron.vertexPositions = vertexPositions;
 
+						stopwatch.Start();
 						for (int j = 0; j < MaxRepairIterations; ++j)
 						{
 							if (SphericalManifold.ValidateAndRepair(polyhedron, 0.5f))
@@ -109,6 +163,9 @@ namespace Experilous.Topological
 								break;
 							}
 						}
+						stopwatch.Stop();
+						Debug.LogFormat("Repair Time:  {0}", stopwatch.ElapsedMilliseconds);
+						stopwatch.Reset();
 					}
 				}
 			}
@@ -121,6 +178,7 @@ namespace Experilous.Topological
 			}
 			else
 			{
+				stopwatch.Start();
 				var topology = polyhedron.topology.GetDualTopology();
 				var vertexPositions = new VertexAttribute<Vector3>(topology.vertices.Count);
 
@@ -135,6 +193,9 @@ namespace Experilous.Topological
 				}
 
 				manifold = new Manifold(topology, vertexPositions);
+				stopwatch.Stop();
+				Debug.LogFormat("Dual Polyhedron Time:  {0}", stopwatch.ElapsedMilliseconds);
+				stopwatch.Reset();
 			}
 
 			return manifold;

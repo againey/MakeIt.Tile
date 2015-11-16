@@ -5,7 +5,7 @@ namespace Experilous.Topological
 {
 	public partial class Topology
 	{
-		private struct EdgeData
+		public struct EdgeData
 		{
 			// \             /
 			//  P     R     /
@@ -44,7 +44,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		private EdgeData[] _edgeData;
+		public EdgeData[] _edgeData;
 
 		public struct VertexEdge : IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>
 		{
@@ -66,15 +66,22 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
 
-			public VertexEdge twin { get { return new VertexEdge(_topology, _topology._edgeData[_index]._twin); } }
-			public VertexEdge prev { get { return new VertexEdge(_topology, _topology._edgeData[_index]._prev); } }
-			public VertexEdge next { get { return new VertexEdge(_topology, _topology._edgeData[_index]._next); } }
-			public Vertex nearVertex { get { return new Vertex(_topology, _topology._edgeData[twinIndex]._vertex); } }
-			public Vertex farVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
-			public Face prevFace { get { return new Face(_topology, _topology._edgeData[twinIndex]._face); } }
-			public Face nextFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
+			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
+			public int prevIndex { get { return _topology._edgeData[_index]._prev; } }
+			public int nextIndex { get { return _topology._edgeData[_index]._next; } }
+			public int nearVertexIndex { get { return _topology._edgeData[twinIndex]._vertex; } }
+			public int farVertexIndex { get { return _topology._edgeData[_index]._vertex; } }
+			public int prevFaceIndex { get { return _topology._edgeData[twinIndex]._face; } }
+			public int nextFaceIndex { get { return _topology._edgeData[_index]._face; } }
+
+			public VertexEdge twin { get { return new VertexEdge(_topology, twinIndex); } }
+			public VertexEdge prev { get { return new VertexEdge(_topology, prevIndex); } }
+			public VertexEdge next { get { return new VertexEdge(_topology, nextIndex); } }
+			public Vertex nearVertex { get { return new Vertex(_topology, nearVertexIndex); } }
+			public Vertex farVertex { get { return new Vertex(_topology, farVertexIndex); } }
+			public Face prevFace { get { return new Face(_topology, prevFaceIndex); } }
+			public Face nextFace { get { return new Face(_topology, nextFaceIndex); } }
 
 			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
 
@@ -125,15 +132,22 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
 
-			public FaceEdge twin { get { return new FaceEdge(_topology, _topology._edgeData[_index]._twin); } }
-			public FaceEdge prev { get { return new FaceEdge(_topology, _topology._edgeData[twinIndex]._next); } }
-			public FaceEdge next { get { return new FaceEdge(_topology, _topology._edgeData[_topology._edgeData[_index]._prev]._twin); } }
-			public Vertex prevVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
-			public Vertex nextVertex { get { return new Vertex(_topology, _topology._edgeData[twinIndex]._vertex); } }
-			public Face nearFace { get { return new Face(_topology, _topology._edgeData[twinIndex]._face); } }
-			public Face farFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
+			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
+			public int prevIndex { get { return _topology._edgeData[twinIndex]._next; } }
+			public int nextIndex { get { return _topology._edgeData[_topology._edgeData[_index]._prev]._twin; } }
+			public int prevVertexIndex { get { return _topology._edgeData[_index]._vertex; } }
+			public int nextVertexIndex { get { return _topology._edgeData[twinIndex]._vertex; } }
+			public int nearFaceIndex { get { return _topology._edgeData[twinIndex]._face; } }
+			public int farFaceIndex { get { return _topology._edgeData[_index]._face; } }
+
+			public FaceEdge twin { get { return new FaceEdge(_topology, twinIndex); } }
+			public FaceEdge prev { get { return new FaceEdge(_topology, prevIndex); } }
+			public FaceEdge next { get { return new FaceEdge(_topology, nextIndex); } }
+			public Vertex prevVertex { get { return new Vertex(_topology, prevVertexIndex); } }
+			public Vertex nextVertex { get { return new Vertex(_topology, nextVertexIndex); } }
+			public Face nearFace { get { return new Face(_topology, nearFaceIndex); } }
+			public Face farFace { get { return new Face(_topology, farFaceIndex); } }
 
 			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
 
@@ -176,11 +190,12 @@ namespace Experilous.Topological
 			public struct EdgeEnumerator
 			{
 				private Topology _topology;
+				private EdgeData[] _edgeData;
 				private int _index;
 
-				public EdgeEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public EdgeEnumerator(Topology topology) { _topology = topology; _edgeData = topology._edgeData; _index = -1; }
 				public VertexEdge Current { get { return new VertexEdge(_topology, _index); } }
-				public bool MoveNext() { return (++_index < _topology._edgeData.Length); }
+				public bool MoveNext() { return (++_index < _edgeData.Length); }
 				public void Reset() { _index = -1; }
 			}
 		}
