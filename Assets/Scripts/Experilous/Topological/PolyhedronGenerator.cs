@@ -6,20 +6,24 @@ namespace Experilous.Topological
 	[ExecuteInEditMode]
 	public class PolyhedronGenerator : ManifoldGenerator
 	{
+		public RegularPolyhedron BasePolyhedron = RegularPolyhedron.Icosahedron;
 		public int SubdivisionDegree = 0;
+		public bool UseDualPolyhedron = false;
+
+		[Header("Topology Alteration")]
 		public int AlterationDegree = 0;
+		public float AlterationFrequency = 0.1f;
 		public int MinVertexNeighbors = 3;
 		public int MaxVertexNeighbors = 8;
 		public int MinFaceNeighbors = 3;
 		public int MaxFaceNeighbors = 8;
+		public int RandomSeed = 0;
+
+		[Header("Vertex Relaxation")]
+		public float RelaxationRegularity = 0.5f;
+		public float RelaxationPrecision = 0.05f;
 		public int MaxRelaxIterations = 20;
 		public int MaxRepairIterations = 20;
-		public float AlterationFrequency = 0.1f;
-		public int RandomSeed = 0;
-		public float RelaxationRegularity = 0.5f;
-
-		public RegularPolyhedron BasePolyhedron = RegularPolyhedron.Icosahedron;
-		public bool UseDualPolyhedron = false;
 
 		public enum RegularPolyhedron
 		{
@@ -92,10 +96,12 @@ namespace Experilous.Topological
 							weightedRelaxedPositions[j] = weightedRelaxedPosition;
 						}
 
-						if (relaxationAmount == 0f || (priorRelaxationAmount != 0f && relaxationAmount / priorRelaxationAmount > 0.95f))
+						if (relaxationAmount == 0f || (priorRelaxationAmount != 0f && 1f - relaxationAmount / priorRelaxationAmount < RelaxationPrecision))
 						{
 							break;
 						}
+
+						priorRelaxationAmount = relaxationAmount;
 
 						regularityRelaxedPositions = vertexPositions;
 						vertexPositions = weightedRelaxedPositions;
