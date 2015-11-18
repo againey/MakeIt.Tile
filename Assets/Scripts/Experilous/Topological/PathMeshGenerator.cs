@@ -18,7 +18,7 @@ namespace Experilous.Topological
 			var edge = firstEdge;
 			do
 			{
-				centroid += vertexPositions[edge.prevVertex];
+				centroid += vertexPositions[edge.nextVertex];
 				edge = edge.next;
 			} while (edge != firstEdge);
 			centroid /= neighborCount;
@@ -28,7 +28,7 @@ namespace Experilous.Topological
 			int i = 0;
 			do
 			{
-				vertices[meshVertex + i + 1] = vertexPositions[edge.prevVertex] * 1.001f;
+				vertices[meshVertex + i + 1] = vertexPositions[edge.nextVertex] * 1.001f;
 				colors[meshVertex + i + 1] = Color * 0.5f;
 				triangles[meshTriangle + i * 3 + 0] = meshVertex;
 				triangles[meshTriangle + i * 3 + 1] = meshVertex + 1 + i;

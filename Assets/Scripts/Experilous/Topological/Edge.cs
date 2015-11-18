@@ -8,11 +8,11 @@ namespace Experilous.Topological
 		private struct EdgeData
 		{
 			// \             /
-			//  P     R     /
+			//  \     F     /
 			//   \         /
 			//    r---E-->v
 			//   /         \
-			//  N     F     \
+			//  n     R     N
 			// /             \
 			//
 			// E:  This edge
@@ -20,27 +20,27 @@ namespace Experilous.Topological
 			// v:  Explicit far vertex
 			// R:  Implicit near face
 			// F:  Explicit far face
-			// P:  Previous edge (also the next edge when going around the implicit near face clockwise)
-			// N:  Next edge
+			// n:  Next edge when going around vertex r clockwise
+			// N:  Next edge when going around face R clockwise
 
 			public int _twin; // The other edge between the same two vertices and same two faces, but going the opposite direction.
-			public int _prev; // The next edge after this one when going clockwise around the implicit near vertex.
-			public int _next; // The next edge this one when going clockwise around the implicit near face.
+			public int _vNext; // The next edge after this one when going clockwise around the implicit near vertex.
+			public int _fNext; // The next edge this one when going clockwise around the implicit near face.
 			public int _vertex; // The vertex at the far end of this edge that preceeds the below face when going clockwise around the implicit near vertex.
 			public int _face; // The face on the far side of this edge that follows after the above vertex when going clockwise around the implicit near vertex.
 
-			public EdgeData(int twin, int prev, int next, int vertex, int face)
+			public EdgeData(int twin, int vNext, int fNext, int vertex, int face)
 			{
 				_twin = twin;
-				_prev = prev;
-				_next = next;
+				_vNext = vNext;
+				_fNext = fNext;
 				_vertex = vertex;
 				_face = face;
 			}
 
 			public override string ToString()
 			{
-				return string.Format("EdgeData ({0}, {1}, {2}, {3}, {4})", _twin, _prev, _next, _vertex, _face);
+				return string.Format("EdgeData ({0}, {1}, {2}, {3}, {4})", _twin, _vNext, _fNext, _vertex, _face);
 			}
 		}
 
@@ -69,12 +69,16 @@ namespace Experilous.Topological
 			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
 
 			public VertexEdge twin { get { return new VertexEdge(_topology, _topology._edgeData[_index]._twin); } }
-			public VertexEdge prev { get { return new VertexEdge(_topology, _topology._edgeData[_index]._prev); } }
-			public VertexEdge next { get { return new VertexEdge(_topology, _topology._edgeData[_index]._next); } }
-			public Vertex nearVertex { get { return new Vertex(_topology, _topology._edgeData[twinIndex]._vertex); } }
+			public VertexEdge prev { get { return new VertexEdge(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._fNext); } }
+			public VertexEdge next { get { return new VertexEdge(_topology, _topology._edgeData[_index]._vNext); } }
+			public Vertex nearVertex { get { return new Vertex(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._vertex); } }
 			public Vertex farVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
-			public Face prevFace { get { return new Face(_topology, _topology._edgeData[twinIndex]._face); } }
-			public Face nextFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
+			public Face prevFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
+			public Face nextFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
+
+			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
+			public bool isOuterBoundary { get { return _topology._edgeData[_index]._face == -1; } }
+			public bool isInnerBoundary { get { return _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
 
 			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
 
@@ -128,12 +132,16 @@ namespace Experilous.Topological
 			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
 
 			public FaceEdge twin { get { return new FaceEdge(_topology, _topology._edgeData[_index]._twin); } }
-			public FaceEdge prev { get { return new FaceEdge(_topology, _topology._edgeData[twinIndex]._next); } }
-			public FaceEdge next { get { return new FaceEdge(_topology, _topology._edgeData[_topology._edgeData[_index]._prev]._twin); } }
-			public Vertex prevVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
-			public Vertex nextVertex { get { return new Vertex(_topology, _topology._edgeData[twinIndex]._vertex); } }
-			public Face nearFace { get { return new Face(_topology, _topology._edgeData[twinIndex]._face); } }
+			public FaceEdge prev { get { return new FaceEdge(_topology, _topology._edgeData[_topology._edgeData[_index]._vNext]._twin); } }
+			public FaceEdge next { get { return new FaceEdge(_topology, _topology._edgeData[_index]._fNext); } }
+			public Vertex prevVertex { get { return new Vertex(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._vertex); } }
+			public Vertex nextVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
+			public Face nearFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
 			public Face farFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
+
+			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
+			public bool isOuterBoundary { get { return _topology._edgeData[_index]._face == -1; } }
+			public bool isInnerBoundary { get { return _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
 
 			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
 

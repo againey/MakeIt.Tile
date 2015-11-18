@@ -24,6 +24,21 @@ namespace Experilous.Topological
 			public int neighborCount { get { return _topology._faceData[_index].neighborCount; } }
 			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceData[_index].firstEdge); } }
 
+			public bool isSet { get { return _topology != null; } }
+			public bool isFilled { get { return _index != -1; } }
+			public bool isValid { get { return _topology != null && index != -1; } }
+
+			public bool isBoundary
+			{
+				get
+				{
+					foreach (var edge in edges)
+						if (edge.farFace.index == -1)
+							return true;
+					return false;
+				}
+			}
+
 			public struct FaceEdgesIndexer
 			{
 				private Topology _topology;
@@ -59,7 +74,7 @@ namespace Experilous.Topological
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology._edgeData[_topology._edgeData[_currentEdgeIndex]._prev]._twin;
+							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._fNext;
 							return true;
 						}
 						else
