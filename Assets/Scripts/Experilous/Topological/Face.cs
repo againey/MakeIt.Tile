@@ -20,13 +20,24 @@ namespace Experilous.Topological
 
 			public Topology topology { get { return _topology; } }
 
+			public int index { get { return _index; } }
+			public int neighborCount { get { return _topology._faceData[_index].neighborCount; } }
+			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceData[_index].firstEdge); } }
+
 			public bool isSet { get { return _topology != null; } }
 			public bool isFilled { get { return _index != -1; } }
 			public bool isValid { get { return _topology != null && index != -1; } }
 
-			public int index { get { return _index; } }
-			public int neighborCount { get { return _topology._faceData[_index].neighborCount; } }
-			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceData[_index].firstEdge); } }
+			public bool isBoundary
+			{
+				get
+				{
+					foreach (var edge in edges)
+						if (edge.farFace.index == -1)
+							return true;
+					return false;
+				}
+			}
 
 			public struct FaceEdgesIndexer
 			{

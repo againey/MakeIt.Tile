@@ -164,9 +164,9 @@ namespace Experilous.Topological
 			var bottomRightVertex = rightEdge.nextVertex;
 			var bottomLeftVertex = bottomEdge.nextVertex;
 
-			int rightVertices = rightEdge.twinIndex * degree;
-			int bottomVertices = bottomEdge.index * degree;
-			int leftVertices = leftEdge.index * degree;
+			int rightVertices = rightEdge.index * degree;
+			int bottomVertices = bottomEdge.twinIndex * degree;
+			int leftVertices = leftEdge.twinIndex * degree;
 
 			if (degree > 2)
 			{
@@ -342,10 +342,10 @@ namespace Experilous.Topological
 			var bottomRightVertex = rightEdge.nextVertex;
 			var bottomLeftVertex = bottomEdge.nextVertex;
 
-			int topVertices = topEdge.twinIndex * degree;
-			int bottomVertices = bottomEdge.index * degree;
-			int rightVertices = rightEdge.twinIndex * degree;
-			int leftVertices = leftEdge.index * degree;
+			int topVertices = topEdge.index * degree;
+			int bottomVertices = bottomEdge.twinIndex * degree;
+			int rightVertices = rightEdge.index * degree;
+			int leftVertices = leftEdge.twinIndex * degree;
 
 			var dt = 1f / (degree + 1);
 
@@ -629,7 +629,7 @@ namespace Experilous.Topological
 				var sum = new Vector3();
 				foreach (var edge in face.edges)
 				{
-					sum += original[edge.prevVertex];
+					sum += original[edge.nextVertex];
 				}
 				centroidsBuffer[face] = sum.normalized;
 			}
@@ -650,8 +650,8 @@ namespace Experilous.Topological
 					var centroidDelta = centroid - center;
 					surroundingArea += Vector3.Cross(prevDelta, centroidDelta).magnitude + Vector3.Cross(nextDelta, centroidDelta).magnitude;
 					prevDelta = nextDelta;
-					centroid = centroidsBuffer[edge.nextFace];
 					edge = edge.next;
+					centroid = centroidsBuffer[edge.prevFace];
 				} while (edge != firstEdge);
 				var multiplier = idealArea / (surroundingArea * 0.5f);
 				do
@@ -723,7 +723,7 @@ namespace Experilous.Topological
 				var average = new Vector3();
 				foreach (var edge in face.edges)
 				{
-					average += manifold.vertexPositions[edge.prevVertex];
+					average += manifold.vertexPositions[edge.nextVertex];
 				}
 				vertexPositions[face.index] = average.normalized;
 			}

@@ -6,7 +6,7 @@ using Experilous.Topological;
 
 public class TopologyNavigationTests
 {
-	[Test]
+	/*[Test]
 	public void Something()
 	{
 		var builder = new Topology.HalfEdgeBuilder();
@@ -98,5 +98,5 @@ public class TopologyNavigationTests
 		Assert.AreEqual(topology.faceEdges[0], topology.faceEdges[9].prev);
 		Assert.AreEqual(topology.faceEdges[6], topology.faceEdges[10].prev);
 		Assert.AreEqual(topology.faceEdges[2], topology.faceEdges[11].prev);
-	}
+	}*/
 }

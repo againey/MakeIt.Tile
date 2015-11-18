@@ -6,6 +6,34 @@ using Experilous.Topological;
 
 public class TopologyTests
 {
+	public static void CheckVerticesForInvalidEdgeCycles(Topology topology)
+	{
+		foreach (var vertex in topology.vertices)
+		{
+			var edge = vertex.firstEdge.next;
+			for (int i = 1; i < vertex.neighborCount; ++i)
+			{
+				Assert.AreNotEqual(vertex.firstEdge, edge, string.Format("The cycle of edges around vertex {0} returned back to the first edge earlier than was expected, {1} iterations rather than {2}.", vertex.index, i, vertex.neighborCount));
+				edge = edge.next;
+			}
+			Assert.AreEqual(vertex.firstEdge, edge, string.Format("The cycle of edges around vertex {0}  did not return back to the first edge in the {1} iterations expected.", vertex.index, vertex.neighborCount));
+		}
+	}
+
+	public static void CheckFacesForInvalidEdgeCycles(Topology topology)
+	{
+		foreach (var face in topology.faces)
+		{
+			var edge = face.firstEdge.next;
+			for (int i = 1; i < face.neighborCount; ++i)
+			{
+				Assert.AreNotEqual(face.firstEdge, edge, string.Format("The cycle of edges around face {0} returned back to the first edge earlier than was expected, {1} iterations rather than {2}.", face.index, i, face.neighborCount));
+				edge = edge.next;
+			}
+			Assert.AreEqual(face.firstEdge, edge, string.Format("The cycle of edges around face {0} did not return back to the first edge in the {1} iterations expected.", face.index, face.neighborCount));
+		}
+	}
+
 	[Test]
 	public void TetrahedronComponentCountValidation()
 	{
@@ -81,113 +109,113 @@ public class TopologyTests
 		var vertexEdge = vertex0.firstEdge;
 		var vertex1 = vertexEdge.farVertex;
 		var vertex2 = vertexEdge.next.farVertex;
-		var faceEdge = vertexEdge.faceEdge.twin;
+		var faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertexEdge = vertexEdge.next;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertexEdge = vertexEdge.next;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertex0 = tetrahedron.topology.vertices[1];
 		vertexEdge = vertex0.firstEdge;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertexEdge = vertexEdge.next;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertexEdge = vertexEdge.next;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertex0 = tetrahedron.topology.vertices[2];
 		vertexEdge = vertex0.firstEdge;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertexEdge = vertexEdge.next;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertexEdge = vertexEdge.next;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertex0 = tetrahedron.topology.vertices[3];
 		vertexEdge = vertex0.firstEdge;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertexEdge = vertexEdge.next;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
 		vertexEdge = vertexEdge.next;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
-		faceEdge = vertexEdge.faceEdge.twin;
+		faceEdge = vertexEdge.faceEdge;
 		Assert.AreEqual(vertex1, faceEdge.nextVertex);
 		Assert.AreEqual(vertex2, faceEdge.next.nextVertex);
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
-		Assert.AreEqual(vertexEdge.next, faceEdge.next.next);
+		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 	}
 
 	[Test]
@@ -941,16 +969,6 @@ public class TopologyTests
 			edge = edge.next;
 			dualEdge = dualEdge.next;
 			Assert.AreEqual(edge.farVertex.index, dualEdge.farFace.index);
-		}
-	}
-
-	[Test]
-	public void SpinEdgeForwardThrowsOnVerticesWithThreeNeighbors()
-	{
-		var tetrahedron = SphericalManifold.CreateTetrahedron().topology;
-		foreach (var edge in tetrahedron.vertexEdges)
-		{
-			Assert.Throws<InvalidOperationException>(() => { tetrahedron.SpinEdgeForward(edge); });
 		}
 	}
 

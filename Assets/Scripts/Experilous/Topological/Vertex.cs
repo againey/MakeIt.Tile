@@ -24,6 +24,17 @@ namespace Experilous.Topological
 			public int neighborCount { get { return _topology._vertexData[_index].neighborCount; } }
 			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology._vertexData[_index].firstEdge); } }
 
+			public bool isBoundary
+			{
+				get
+				{
+					foreach (var edge in edges)
+						if (edge.prevFace.index == -1)
+							return true;
+					return false;
+				}
+			}
+
 			public struct VertexEdgesIndexer
 			{
 				private Topology _topology;
@@ -115,7 +126,7 @@ namespace Experilous.Topological
 			{
 				foreach (var vertexEdge in edges)
 				{
-					if (vertexEdge.nextFace == face)
+					if (vertexEdge.prevFace == face)
 					{
 						edge = vertexEdge;
 						return true;
@@ -143,7 +154,7 @@ namespace Experilous.Topological
 				foreach (var edge in edges)
 					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0}), (", edge.farVertex.index);
 				foreach (var edge in edges)
-					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0})", edge.nextFace.index);
+					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0})", edge.prevFace.index);
 				return sb.ToString();
 			}
 		}

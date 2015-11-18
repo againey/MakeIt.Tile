@@ -74,14 +74,24 @@ namespace Experilous.Topological
 			dual._faceData = _vertexData.Clone() as NodeData[];
 
 			dual._edgeData = new EdgeData[_edgeData.Length];
-			foreach (var edge in vertexEdges)
+			for (int i = 0; i < _edgeData.Length; ++i)
 			{
-				dual._edgeData[edge.index] = new EdgeData(edge.twinIndex, edge.twin.next.index, edge.prev.twin.index, edge.nextFace.index, edge.nearVertex.index);
+				// Edges rotate clockwise to point at next faces becoming far vertices, with their
+				// side toward far vertices becoming prev faces.
+				dual._edgeData[i] = new EdgeData(
+					_edgeData[i]._twin, // twin remains the same
+					_edgeData[_edgeData[_edgeData[i]._twin]._fNext]._twin, // vNext becomes twin of vPrev, where vPrev is the fNext of twin
+					_edgeData[i]._vNext, // fNext becomes what vNext had been
+					_edgeData[_edgeData[i]._twin]._face, // far vertex becomes what had been next face
+					_edgeData[i]._vertex); // prev face becomes what had been far vertex
 			}
 
-			for (int i = 0; i < dual._faceData.Length; ++i)
+			// Due to rotations, face data (which had been vertex data) still points to the same edges,
+			// but vertex data (which had been face data) is now backwards, pointing to edges which
+			// point back at the vertex; this needs to be reversed by setting first edges to their twins.
+			for (int i = 0; i < dual._vertexData.Length; ++i)
 			{
-				dual._faceData[i].firstEdge = dual._edgeData[dual._faceData[i].firstEdge]._twin;
+				dual._vertexData[i].firstEdge = dual._edgeData[dual._vertexData[i].firstEdge]._twin;
 			}
 
 			return dual;
@@ -211,7 +221,7 @@ namespace Experilous.Topological
 			_edgeData[innerEdgeIndex1]._face = prevFaceIndex;
 
 			// Remove twin edge from old vertex linked list by skipping over it.
-			_edgeData[outerEdgeIndex1]._vNext = outerEdgeIndex0;
+			_edgeData[outerEdgeIndex1]._vNext = innerEdgeIndex0;
 
 			// Insert twin edge into new vertex linked list.
 			_edgeData[outerEdgeIndex2]._vNext = twinEdgeIndex;
@@ -259,24 +269,70 @@ namespace Experilous.Topological
 
 		public bool CanSpinEdgeBackward(VertexEdge edge)
 		{
-			return edge.farVertex.neighborCount > 3 && edge.nearVertex.neighborCount > 3;
+			return !edge.isBoundary && edge.farVertex.neighborCount >= 3 && edge.nearVertex.neighborCount >= 3;
 		}
 
 		public bool CanSpinEdgeForward(VertexEdge edge)
 		{
-			return edge.farVertex.neighborCount > 3 && edge.nearVertex.neighborCount > 3;
+			return !edge.isBoundary && edge.farVertex.neighborCount >= 3 && edge.nearVertex.neighborCount >= 3;
 		}
 
 		public void SpinEdgeBackward(VertexEdge edge)
 		{
-			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge backward when one of its vertices has only three neighbors.");
+			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge backward when it is a boundary edge or one of its vertices has only three neighbors.");
 			PivotEdgeBackwardUnchecked(edge.index);
 			PivotEdgeBackwardUnchecked(edge.twinIndex);
 		}
 
 		public void SpinEdgeForward(VertexEdge edge)
 		{
-			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when one of its vertices has only three neighbors.");
+			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when it is a boundary edge or one of its vertices has only three neighbors.");
+			PivotEdgeForwardUnchecked(edge.index);
+			PivotEdgeForwardUnchecked(edge.twinIndex);
+		}
+
+		public bool CanPivotEdgeBackward(FaceEdge edge)
+		{
+			return edge.farFace.neighborCount > 3;
+		}
+
+		public bool CanPivotEdgeForward(FaceEdge edge)
+		{
+			return edge.nearFace.neighborCount > 3;
+		}
+
+		public void PivotEdgeBackward(FaceEdge edge)
+		{
+			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a face edge backward when its far face has only three sides.");
+			PivotEdgeBackwardUnchecked(edge.index);
+		}
+
+		public void PivotEdgeForward(FaceEdge edge)
+		{
+			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a face edge forward when its near face has only three sides.");
+			PivotEdgeForwardUnchecked(edge.index);
+		}
+
+		public bool CanSpinEdgeBackward(FaceEdge edge)
+		{
+			return !edge.isBoundary && edge.prevVertex.neighborCount >= 3 && edge.nextVertex.neighborCount >= 3;
+		}
+
+		public bool CanSpinEdgeForward(FaceEdge edge)
+		{
+			return !edge.isBoundary && edge.prevVertex.neighborCount >= 3 && edge.nextVertex.neighborCount >= 3;
+		}
+
+		public void SpinEdgeBackward(FaceEdge edge)
+		{
+			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a face edge backward when it is a boundary edge or one of its vertices has only three neighbors.");
+			PivotEdgeBackwardUnchecked(edge.index);
+			PivotEdgeBackwardUnchecked(edge.twinIndex);
+		}
+
+		public void SpinEdgeForward(FaceEdge edge)
+		{
+			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a face edge forward when it is a boundary edge or one of its vertices has only three neighbors.");
 			PivotEdgeForwardUnchecked(edge.index);
 			PivotEdgeForwardUnchecked(edge.twinIndex);
 		}

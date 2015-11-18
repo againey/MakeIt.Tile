@@ -71,11 +71,11 @@ namespace Experilous.Topological
 
 				for (int alterationPass = 0; alterationPass < AlterationDegree; ++alterationPass)
 				{
-					foreach (var edge in polyhedron.topology.vertexEdges)
+					foreach (var edge in polyhedron.topology.faceEdges)
 					{
 						if (random.NextDouble() < iterationAlterationFrequency &&
-							edge.nearVertex.neighborCount > minVertex && edge.farVertex.neighborCount > minVertex &&
-							edge.prev.farVertex.neighborCount < maxVertex && edge.twin.prev.farVertex.neighborCount < maxVertex)
+							edge.prevVertex.neighborCount > minVertex && edge.nextVertex.neighborCount > minVertex &&
+							edge.next.nextVertex.neighborCount < maxVertex && edge.twin.next.nextVertex.neighborCount < maxVertex)
 						{
 							polyhedron.topology.SpinEdgeForward(edge);
 						}
@@ -135,7 +135,7 @@ namespace Experilous.Topological
 					var average = new Vector3();
 					foreach (var edge in face.edges)
 					{
-						average += polyhedron.vertexPositions[edge.prevVertex];
+						average += polyhedron.vertexPositions[edge.nextVertex];
 					}
 					vertexPositions[face.index] = average.normalized;
 				}

@@ -65,8 +65,6 @@ namespace Experilous.Topological
 
 			public Topology topology { get { return _topology; } }
 
-			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
-
 			public int index { get { return _index; } }
 			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
 
@@ -77,6 +75,10 @@ namespace Experilous.Topological
 			public Vertex farVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
 			public Face prevFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
 			public Face nextFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
+
+			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
+			public bool isOuterBoundary { get { return _topology._edgeData[_index]._face == -1; } }
+			public bool isInnerBoundary { get { return _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
 
 			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
 
@@ -126,8 +128,6 @@ namespace Experilous.Topological
 
 			public Topology topology { get { return _topology; } }
 
-			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
-
 			public int index { get { return _index; } }
 			public int twinIndex { get { return _topology._edgeData[_index]._twin; } }
 
@@ -138,6 +138,10 @@ namespace Experilous.Topological
 			public Vertex nextVertex { get { return new Vertex(_topology, _topology._edgeData[_index]._vertex); } }
 			public Face nearFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
 			public Face farFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
+
+			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
+			public bool isOuterBoundary { get { return _topology._edgeData[_index]._face == -1; } }
+			public bool isInnerBoundary { get { return _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
 
 			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
 
