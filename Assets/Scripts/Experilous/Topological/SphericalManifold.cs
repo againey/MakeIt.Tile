@@ -9,7 +9,7 @@ namespace Experilous.Topological
 	{
 		public static Manifold CreateTetrahedron()
 		{
-			var builder = new Topology.Builder(4, 12, 4);
+			var builder = new Topology.VertexVerticesBuilder(4, 12, 4);
 
 			var y = -1f / 3f;
 			var z0 = 2f / 3f * Mathf.Sqrt(2f);
@@ -32,7 +32,7 @@ namespace Experilous.Topological
 
 		public static Manifold CreateHexahedron()
 		{
-			var builder = new Topology.Builder(8, 24, 6);
+			var builder = new Topology.VertexVerticesBuilder(8, 24, 6);
 
 			var a = 1f / Mathf.Sqrt(3f);
 
@@ -60,7 +60,7 @@ namespace Experilous.Topological
 
 		public static Manifold CreateOctahedron()
 		{
-			var builder = new Topology.Builder(6, 24, 8);
+			var builder = new Topology.VertexVerticesBuilder(6, 24, 8);
 
 			var vertexPositions = new VertexPositions(6);
 			vertexPositions[ 0] = new Vector3( 0, +1,  0);
@@ -87,7 +87,7 @@ namespace Experilous.Topological
 
 		public static Manifold CreateIcosahedron()
 		{
-			var builder = new Topology.Builder(12, 60, 20);
+			var builder = new Topology.VertexVerticesBuilder(12, 60, 20);
 
 			var latitude = Mathf.Atan2(1, 2);
 			var longitude = Mathf.PI * 0.2f;
@@ -154,7 +154,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		private static void SubdivideTriangle(Topology.Builder builder, Topology.Face face, int degree, List<Vector3> subdividedPositions, int[] subdividedEdgeVertices)
+		private static void SubdivideTriangle(Topology.VertexVerticesBuilder builder, Topology.Face face, int degree, List<Vector3> subdividedPositions, int[] subdividedEdgeVertices)
 		{
 			var rightEdge = face.firstEdge;
 			var bottomEdge = rightEdge.next;
@@ -330,7 +330,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		private static void SubdivideQuadrilateral(Topology.Builder builder, Topology.Face face, int degree, List<Vector3> subdividedPositions, int[] subdividedEdgeVertices)
+		private static void SubdivideQuadrilateral(Topology.VertexVerticesBuilder builder, Topology.Face face, int degree, List<Vector3> subdividedPositions, int[] subdividedEdgeVertices)
 		{
 			var topEdge = face.firstEdge;
 			var rightEdge = topEdge.next;
@@ -494,7 +494,7 @@ namespace Experilous.Topological
 
 			var topology = manifold.topology;
 			var positions = manifold.vertexPositions;
-			var builder = new Topology.Builder();
+			var builder = new Topology.VertexVerticesBuilder();
 			var subdividedPositions = new List<Vector3>();
 
 			foreach (var vertex in topology.vertices)

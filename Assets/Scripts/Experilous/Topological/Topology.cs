@@ -37,6 +37,14 @@ namespace Experilous.Topological
 				}
 			}
 
+			public bool isEmpty
+			{
+				get
+				{
+					return _data == 0;
+				}
+			}
+
 			public override string ToString()
 			{
 				return string.Format("NodeData ({0}, {1})", neighborCount, firstEdge);
@@ -79,115 +87,152 @@ namespace Experilous.Topological
 			return dual;
 		}
 
-		private void RemoveEdgeFromFarVertex(VertexEdge edge)
-		{
-			var vertex = edge.farVertex;
-			_vertexData[vertex.index].neighborCount -= 1;
-
-			var twin = edge.twin;
-			_edgeData[twin.prev.index]._next = twin.next.index;
-			_edgeData[twin.next.index]._prev = twin.prev.index;
-			if (vertex.firstEdge == twin) _vertexData[vertex.index].firstEdge = twin.next.index;
-		}
-
-		private void AddEdgeToFarVertex(Vertex vertex, VertexEdge edge, VertexEdge insertBefore)
-		{
-			_edgeData[edge.index]._vertex = vertex.index;
-			_vertexData[vertex.index].neighborCount += 1;
-
-			var twin = edge.twin;
-			_edgeData[twin.index]._prev = insertBefore.prev.index;
-			_edgeData[insertBefore.prev.index]._next = twin.index;
-			_edgeData[twin.index]._next = insertBefore.index;
-			_edgeData[insertBefore.index]._prev = twin.index;
-		}
-
 		// Pivot an edge counter-clockwise around its implicit near vertex.
 		//
-		//    \         /           \         /
-		//     o-------o             o-------o
-		//    /       / \           /        |\
-		//   /       /   \         /         | \
-		//  /   3   /     \       /         1|  \
-		// o      1/2      o --> o      3    | 4 o
-		//  \     /   4   /       \          |2 /
-		//   A   /       B         A         | B
-		//    \ /       /           \        |/
-		//     5--7/8--6             5--7/8--6
-		//    /         \           /         \
-		//   /     9     \         /     9     \
+		// \         /          \         /
+		//  o-------o            o-------o
+		//  |       |            |       |
+		//  2   N   |            2   N   |
+		//  |       |            |       |
+		//  A<--E---V      -->   A       V
+		// / \       \          / \     / \
+		//    1       \            1   E   \
+		//     \       \ /          \ v     \ /
+		//      B       o            B       o
+		//      |   P   |            |   P   |
+		//      0       |            0       |
+		//      |       |            |       |
+		//      o-------o            o-------o
+		//     /         \          /         \
 		//
-		// 1:  The edge that is pivoting
-		// 2:  The twin of the pivoting edge
-		// 3:  The next face from the pivoting edge
-		// 4:  The prev face from the pivoting edge
-		// 5:  The old far vertex of the pivoting edge
-		// 6:  The new far vertex of the pivoting edge
-		// 7:  The sliding edge facing outward toward the outside face
-		// 8:  The twin of the sliding edge facing inward toward the prev face
-		// 9:  The outside face
-		// A:  An edge facing inward toward the next face
-		// B:  An edge facing outward away from the prev face
+		// E:  edge passed in as parameter
+		// V:  vertex to pivot E around clockwise
+		// A:  old vertex that E is originally pointing at
+		// B:  new vertex that E will now point at
+		// P:  previous face on the counter-clockwise side of E
+		// N:  next face on the clockwise side of E
+		// 0:  outer edge 0 points at B, inner edge 0 points away from B
+		// 1:  outer edge 1 points at A, inner edge 1 points at B, at P before pivot, at N after pivot
+		// 2:  outer edge 2 points away from A
+		// Note:  inner edges point downward, outer edges point upward
 
-		private void PivotEdgeBackwardUnchecked(VertexEdge edge)
+		private void PivotEdgeBackwardUnchecked(int edgeIndex)
 		{
-			var twinEdge = edge.twin;
-			var slidingEdge = twinEdge.next;
-			var twinSlidingEdge = slidingEdge.twin;
-			var newVertex = slidingEdge.farVertex;
+			var twinEdgeIndex = _edgeData[edgeIndex]._twin;
+			var outerEdgeIndex2 = _edgeData[edgeIndex]._fNext;
+			var innerEdgeIndex1 = _edgeData[twinEdgeIndex]._vNext;
+			var outerEdgeIndex1 = _edgeData[innerEdgeIndex1]._twin;
+			var innerEdgeIndex0 = _edgeData[outerEdgeIndex1]._vNext;
+			var outerEdgeIndex0 = _edgeData[innerEdgeIndex0]._twin;
 
-			// Outside face needs to point inward at the next face.
-			_edgeData[twinSlidingEdge.index]._face = edge.nextFace.index;
+			var prevFaceIndex = _edgeData[edgeIndex]._face;
+			var nextFaceIndex = _edgeData[twinEdgeIndex]._face;
+			var oldVertexIndex = _edgeData[edgeIndex]._vertex;
+			var newVertexIndex = _edgeData[innerEdgeIndex1]._vertex;
 
-			// Correct the root of the prev face if it was previously the sliding edge, which is now no longer a neighbor of the prev face.
-			if (_faceData[twinEdge.nextFace.index].firstEdge == slidingEdge.index) _faceData[twinEdge.nextFace.index].firstEdge = edge.index;
+			// The edge was pointing at the old vertex, will now point at the new vertex.
+			_edgeData[edgeIndex]._vertex = newVertexIndex;
 
-			RemoveEdgeFromFarVertex(edge);
-			AddEdgeToFarVertex(newVertex, edge, twinSlidingEdge.next);
+			// The second inner edge was pointing at the previous face, will now point at the next face.
+			_edgeData[innerEdgeIndex1]._face = prevFaceIndex;
+
+			// Remove twin edge from old vertex linked list by skipping over it.
+			_edgeData[outerEdgeIndex2]._vNext = innerEdgeIndex1;
+
+			// Insert twin edge into new vertex linked list.
+			_edgeData[outerEdgeIndex1]._vNext = twinEdgeIndex;
+			_edgeData[twinEdgeIndex]._vNext = innerEdgeIndex0;
+
+			// Remove second outer edge from previous face linked list by skipping over it.
+			_edgeData[outerEdgeIndex0]._fNext = twinEdgeIndex;
+
+			// Insert second outer edge into the previous face linked list.
+			_edgeData[edgeIndex]._fNext = outerEdgeIndex1;
+			_edgeData[outerEdgeIndex1]._fNext = outerEdgeIndex2;
+
+			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
+			_vertexData[oldVertexIndex].firstEdge = innerEdgeIndex1;
+			_faceData[prevFaceIndex].firstEdge = twinEdgeIndex;
+
+			// Adjust neighbor counts.
+			_vertexData[oldVertexIndex].neighborCount -= 1;
+			_vertexData[newVertexIndex].neighborCount += 1;
+			_faceData[prevFaceIndex].neighborCount -= 1;
+			_faceData[nextFaceIndex].neighborCount += 1;
 		}
 
 		// Pivot an edge clockwise around its implicit near vertex.
 		//
-		//    \         /           \         /
-		//     o-------o             o-------o
-		//    / \       \           /|        \
-		//   /   \       \         / |         \
-		//  /     \   4   \       /  |2         \
-		// o      1\2      o --> o 3 |    4      o
-		//  \   3   \     /       \ 1|          /
-		//   A       \   B         A |         B
-		//    \       \ /           \|        /
-		//     6--7/8--5             6--7/8--5
-		//    /         \           /         \
-		//   /     9     \         /     9     \
+		// \         /          \         /
+		//  o-------o            o-------o
+		//  |       |            |       |
+		//  2   N   |            2   N   |
+		//  |       |            |       |
+		//  B       V      -->   B<--E---V
+		// / \     / \          / \       \
+		//    1   E   \            1       \
+		//     \ v     \ /          \       \ /
+		//      A       o            A       o
+		//      |   P   |            |   P   |
+		//      0       |            0       |
+		//      |       |            |       |
+		//      o-------o            o-------o
+		//     /         \          /         \
 		//
-		// 1:  The edge that is pivoting
-		// 2:  The twin of the pivoting edge
-		// 3:  The next face from the pivoting edge
-		// 4:  The prev face from the pivoting edge
-		// 5:  The old far vertex of the pivoting edge
-		// 6:  The new far vertex of the pivoting edge
-		// 7:  The sliding edge facing inward toward the next face
-		// 8:  The twin of the sliding edge facing outward toward the outside face
-		// 9:  The outside face
-		// A:  An edge facing inward toward the next face
-		// B:  An edge facing outward away from the prev face
+		// E:  edge passed in as parameter
+		// V:  vertex to pivot E around clockwise
+		// A:  old vertex that E is originally pointing at
+		// B:  new vertex that E will now point at
+		// P:  previous face on the counter-clockwise side of E
+		// N:  next face on the clockwise side of E
+		// 0:  outer edge 0 points at A, inner edge 0 points away from A
+		// 1:  outer edge 1 points at B, inner edge 1 points at A, at N before pivot, at P after pivot
+		// 2:  outer edge 2 points away from B
+		// Note:  inner edges point downward, outer edges point upward
 
-		private void PivotEdgeForwardUnchecked(VertexEdge edge)
+		private void PivotEdgeForwardUnchecked(int edgeIndex)
 		{
-			var twinEdge = edge.twin;
-			var slidingEdge = twinEdge.prev;
-			var twinSlidingEdge = slidingEdge.twin;
-			var newVertex = slidingEdge.farVertex;
+			var twinEdgeIndex = _edgeData[edgeIndex]._twin;
+			var outerEdgeIndex1 = _edgeData[edgeIndex]._fNext;
+			var outerEdgeIndex2 = _edgeData[outerEdgeIndex1]._fNext;
+			var innerEdgeIndex0 = _edgeData[twinEdgeIndex]._vNext;
+			var outerEdgeIndex0 = _edgeData[innerEdgeIndex0]._twin;
+			var innerEdgeIndex1 = _edgeData[outerEdgeIndex1]._twin;
 
-			// Outside face needs to point inward at the prev face.
-			_edgeData[slidingEdge.index]._face = edge.prevFace.index;
+			var prevFaceIndex = _edgeData[edgeIndex]._face;
+			var nextFaceIndex = _edgeData[twinEdgeIndex]._face;
+			var oldVertexIndex = _edgeData[edgeIndex]._vertex;
+			var newVertexIndex = _edgeData[outerEdgeIndex1]._vertex;
 
-			// Correct the root of the next face if it was previously the sliding edge, which is now no longer a neighbor of the next face.
-			if (_faceData[edge.nextFace.index].firstEdge == twinSlidingEdge.index) _faceData[edge.nextFace.index].firstEdge = twinEdge.index;
+			// The edge was pointing at the old vertex, will now point at the new vertex.
+			_edgeData[edgeIndex]._vertex = newVertexIndex;
 
-			RemoveEdgeFromFarVertex(edge);
-			AddEdgeToFarVertex(newVertex, edge, twinSlidingEdge);
+			// The second inner edge was pointing at the next face, will now point at the previous face.
+			_edgeData[innerEdgeIndex1]._face = prevFaceIndex;
+
+			// Remove twin edge from old vertex linked list by skipping over it.
+			_edgeData[outerEdgeIndex1]._vNext = outerEdgeIndex0;
+
+			// Insert twin edge into new vertex linked list.
+			_edgeData[outerEdgeIndex2]._vNext = twinEdgeIndex;
+			_edgeData[twinEdgeIndex]._vNext = innerEdgeIndex1;
+
+			// Remove second outer edge from next face linked list by skipping over it.
+			_edgeData[edgeIndex]._fNext = outerEdgeIndex2;
+
+			// Insert second outer edge into the previous face linked list.
+			_edgeData[outerEdgeIndex0]._fNext = outerEdgeIndex1;
+			_edgeData[outerEdgeIndex1]._fNext = twinEdgeIndex;
+
+			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
+			_vertexData[oldVertexIndex].firstEdge = outerEdgeIndex1;
+			_faceData[nextFaceIndex].firstEdge = edgeIndex;
+
+			// Adjust neighbor counts.
+			_vertexData[oldVertexIndex].neighborCount -= 1;
+			_vertexData[newVertexIndex].neighborCount += 1;
+			_faceData[nextFaceIndex].neighborCount -= 1;
+			_faceData[prevFaceIndex].neighborCount += 1;
 		}
 
 		public bool CanPivotEdgeBackward(VertexEdge edge)
@@ -203,13 +248,13 @@ namespace Experilous.Topological
 		public void PivotEdgeBackward(VertexEdge edge)
 		{
 			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge backward when its previous face has only three sides.");
-			PivotEdgeBackwardUnchecked(edge);
+			PivotEdgeBackwardUnchecked(edge.index);
 		}
 
 		public void PivotEdgeForward(VertexEdge edge)
 		{
 			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge forward when its next face has only three sides.");
-			PivotEdgeForwardUnchecked(edge);
+			PivotEdgeForwardUnchecked(edge.index);
 		}
 
 		public bool CanSpinEdgeBackward(VertexEdge edge)
@@ -225,15 +270,15 @@ namespace Experilous.Topological
 		public void SpinEdgeBackward(VertexEdge edge)
 		{
 			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge backward when one of its vertices has only three neighbors.");
-			PivotEdgeBackwardUnchecked(edge);
-			PivotEdgeBackwardUnchecked(edge.twin);
+			PivotEdgeBackwardUnchecked(edge.index);
+			PivotEdgeBackwardUnchecked(edge.twinIndex);
 		}
 
 		public void SpinEdgeForward(VertexEdge edge)
 		{
 			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when one of its vertices has only three neighbors.");
-			PivotEdgeForwardUnchecked(edge);
-			PivotEdgeForwardUnchecked(edge.twin);
+			PivotEdgeForwardUnchecked(edge.index);
+			PivotEdgeForwardUnchecked(edge.twinIndex);
 		}
 	}
 }

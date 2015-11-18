@@ -59,7 +59,7 @@ namespace Experilous.Topological
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._next;
+							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._vNext;
 							return true;
 						}
 						else
