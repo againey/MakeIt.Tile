@@ -244,4 +244,19 @@ public class TopologyFaceVerticesBuilderTests
 		Assert.AreEqual(topology.vertices[3], vertexEdge.next.farVertex);
 		Assert.AreEqual(topology.vertices[1], vertexEdge.next.next.farVertex);
 	}
+
+	[Test]
+	public void BadInputTest_0()
+	{
+		var builder = new Topology.FaceVerticesBuilder();
+		builder.AddFace(2, 0, 4);
+		builder.AddFace(3, 4, 2);
+		builder.AddFace(3, 1, 5);
+		builder.AddFace(2, 5, 3);
+		builder.AddFace(4, 6, 2);
+		builder.AddFace(4, 3, 7);
+		builder.AddFace(5, 7, 3);
+		builder.AddFace(5, 2, 6);
+		Assert.Throws<InvalidOperationException>(() => builder.BuildTopology());
+	}
 }

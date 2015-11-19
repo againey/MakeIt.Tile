@@ -32,7 +32,7 @@ namespace Experilous.Topological
 			public FaceVerticesBuilder(int faceCount, int edgeCount)
 			{
 				_faceRoots.Capacity = faceCount;
-				_faceVertices.Capacity = edgeCount * 2;
+				_faceVertices.Capacity = edgeCount;
 			}
 
 			public int faceCount { get { return _faceRoots.Count; } }

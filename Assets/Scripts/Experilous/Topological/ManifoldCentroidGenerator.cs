@@ -39,7 +39,7 @@ namespace Experilous.Topological
 		{
 			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
 			{
-				if (ManifoldGenerator.manifold != _manifold)
+				if ((ManifoldGenerator != null && ManifoldGenerator.manifold != _manifold) || (ManifoldGenerator == null && _manifold != null))
 				{
 					RebuildCentroids();
 				}

@@ -56,6 +56,8 @@ namespace Experilous.Topological
 
 		public static int[] FindPath(Topology.Face source, Topology.Face target, CostHeuristicDelegate costHeuristic, CostDelegate cost)
 		{
+			if (!target.isValid) return new int[0];
+
 			var topology = source.topology;
 			var queue = new PriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.faces.Count)));
 			var openSet = new Dictionary<int, Node>();
@@ -123,6 +125,7 @@ namespace Experilous.Topological
 				},
 				(Topology.FaceEdge edge, int pathLength) =>
 				{
+					if (edge.isOuterBoundary) return float.PositiveInfinity;
 					return (facePositions[edge.nearFace] - facePositions[edge.farFace]).magnitude;
 				});
 		}
@@ -138,6 +141,7 @@ namespace Experilous.Topological
 				},
 				(Topology.FaceEdge edge, int pathLength) =>
 				{
+					if (edge.isOuterBoundary) return float.PositiveInfinity;
 					var sourcePosition = facePositions[edge.nearFace];
 					var targetPosition = facePositions[edge.farFace];
 					return Mathf.Atan2(Vector3.Cross(sourcePosition, targetPosition).magnitude, Vector3.Dot(sourcePosition, targetPosition));
