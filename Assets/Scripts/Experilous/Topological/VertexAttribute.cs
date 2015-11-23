@@ -2,7 +2,17 @@
 
 namespace Experilous.Topological
 {
-	public struct VertexAttribute<T> where T : new()
+	public interface IVertexAttribute<T> where T : new()
+	{
+		T this[int vertexIndex] { get; set; }
+		T this[Topology.Vertex vertex] { get; set; }
+
+		int Count { get; }
+
+		void Clear();
+	}
+
+	public struct VertexAttribute<T> : IVertexAttribute<T> where T : new()
 	{
 		public T[] _values;
 
@@ -27,10 +37,10 @@ namespace Experilous.Topological
 			return new VertexAttribute<T>(_values);
 		}
 
-		public T this[int i]
+		public T this[int vertexIndex]
 		{
-			get {  return _values[i]; }
-			set {  _values[i] = value; }
+			get {  return _values[vertexIndex]; }
+			set {  _values[vertexIndex] = value; }
 		}
 
 		public T this[Topology.Vertex vertex]

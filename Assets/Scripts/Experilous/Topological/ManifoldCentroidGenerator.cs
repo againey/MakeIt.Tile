@@ -1,103 +1,102 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
 	[ExecuteInEditMode]
-	public class ManifoldCentroidGenerator : MonoBehaviour
+	public class ManifoldCentroidGenerator : RefreshableMonoBehaviour, IFaceAttributeProvider<Vector3>, ISerializationCallbackReceiver
 	{
-		public ManifoldGenerator ManifoldGenerator;
+		[SerializeField]
+		private Component _serializableManifoldGenerator;
+		private IManifoldProvider _manifoldGenerator;
+
+		public IManifoldProvider ManifoldGenerator
+		{
+			get { return _manifoldGenerator; }
+			set { Refreshable.Rechain(ref _manifoldGenerator, value, this); }
+		}
 
 		public bool Spherical = false;
 
-	#if UNITY_EDITOR
-		private Manifold _manifold = null;
-	#endif
-
 		private FaceAttribute<Vector3> _centroids;
 
-		private bool _invalidated = true;
-
-		public FaceAttribute<Vector3> centroids { get { return _centroids; } }
-
-		public void Invalidate()
+		public FaceAttribute<Vector3> centroids
 		{
-			_invalidated = true;
-		}
-
-		void Start()
-		{
-		}
-
-		void OnValidate()
-		{
-			Invalidate();
-		}
-
-	#if UNITY_EDITOR
-		void LateUpdate()
-		{
-			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			get
 			{
-				if ((ManifoldGenerator != null && ManifoldGenerator.manifold != _manifold) || (ManifoldGenerator == null && _manifold != null))
-				{
-					RebuildCentroids();
-				}
-			}
-			else
-			{
-				if (_invalidated)
-				{
-					RebuildCentroids();
-				}
+				RefreshImmediatelyIfAwaiting();
+				return _centroids;
 			}
 		}
-	#else
-		void Update()
+
+		public FaceAttribute<Vector3> attribute
 		{
-			if (_invalidated)
+			get
 			{
+				RefreshImmediatelyIfAwaiting();
+				return _centroids;
 			}
 		}
-	#endif
 
-		void RebuildCentroids()
+		protected override void RefreshContent()
 		{
-			if (ManifoldGenerator != null && ManifoldGenerator.manifold != null)
+			if (ManifoldGenerator != null)
 			{
-				_manifold = ManifoldGenerator.manifold;
-				_centroids = new FaceAttribute<Vector3>(_manifold.topology.faces.Count);
-				foreach (var face in _manifold.topology.faces)
+				var manifold = ManifoldGenerator.manifold;
+				if (manifold != null)
 				{
-					var sum = new Vector3();
-					foreach (var edge in face.edges)
+					var topology = manifold.topology;
+					var vertexPositions = manifold.vertexPositions;
+					_centroids = new FaceAttribute<Vector3>(topology.faces.Count);
+					foreach (var face in topology.faces)
 					{
-						sum += _manifold.vertexPositions[edge.nextVertex];
+						var sum = new Vector3();
+						foreach (var edge in face.edges)
+						{
+							sum += vertexPositions[edge.nextVertex];
+						}
+						_centroids[face] = sum;
 					}
-					_centroids[face] = sum;
-				}
 
-				if (!Spherical)
-				{
-					foreach (var face in _manifold.topology.faces)
+					if (!Spherical)
 					{
-						_centroids[face] /= face.edges.Count;
+						foreach (var face in topology.faces)
+						{
+							_centroids[face] /= face.edges.Count;
+						}
 					}
-				}
-				else
-				{
-					foreach (var face in _manifold.topology.faces)
+					else
 					{
-						_centroids[face] = _centroids[face].normalized;
+						foreach (var face in topology.faces)
+						{
+							_centroids[face] = _centroids[face].normalized;
+						}
 					}
+
+					return;
 				}
 			}
-			else
-			{
-				_centroids.Clear();
-			}
 
-			_invalidated = false;
+			_centroids = new FaceAttribute<Vector3>();
+		}
+
+		private void OnEnable()
+		{
+			if (_manifoldGenerator != null) _manifoldGenerator.Refreshed += PropagateRefresh;
+		}
+
+		private void OnDisable()
+		{
+			if (_manifoldGenerator != null) _manifoldGenerator.Refreshed -= PropagateRefresh;
+		}
+
+		public void OnBeforeSerialize()
+		{
+			_serializableManifoldGenerator = (Component)_manifoldGenerator;
+		}
+
+		public void OnAfterDeserialize()
+		{
+			_manifoldGenerator = (_serializableManifoldGenerator != null ? (IManifoldProvider)_serializableManifoldGenerator : null);
 		}
 	}
 }

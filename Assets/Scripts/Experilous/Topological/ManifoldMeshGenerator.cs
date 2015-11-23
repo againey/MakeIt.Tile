@@ -1,172 +1,145 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using System;
 
 namespace Experilous.Topological
 {
-	[ExecuteInEditMode]
-	public class ManifoldMeshGenerator : MonoBehaviour
+	public class ManifoldMeshGenerator : RefreshableCompoundMesh, ISerializationCallbackReceiver
 	{
-		public ManifoldGenerator ManifoldGenerator;
+		[SerializeField]
+		private Component _serializableManifoldGenerator;
+		private IManifoldProvider _manifoldGenerator;
 
-		public UniqueMesh MeshPrefab;
-
-	#if UNITY_EDITOR
-		private Manifold _manifold = null;
-	#endif
-
-		private bool _invalidated = true;
-
-		public void Invalidate()
+		public IManifoldProvider ManifoldGenerator
 		{
-			_invalidated = true;
+			get { return _manifoldGenerator; }
+			set { Refreshable.Rechain(ref _manifoldGenerator, value, this); }
 		}
 
-		void Start()
+		[SerializeField]
+		private Component _serializableCentroidGenerator;
+		private IFaceAttributeProvider<Vector3> _centroidGenerator;
+
+		public IFaceAttributeProvider<Vector3> CentroidGenerator
+		{
+			get { return _centroidGenerator; }
+			set { Refreshable.Rechain(ref _centroidGenerator, value, this); }
+		}
+
+		[SerializeField]
+		private Component _serializableFaceColors;
+		private IFaceAttribute<Color> _faceColors;
+
+		public IFaceAttribute<Color> FaceColors
+		{
+			get { return _faceColors; }
+			set { _faceColors = Refreshable.Rechain(_faceColors, value, this); }
+		}
+
+		private void BuildSubmeshes(Topology.FacesIndexer faces, VertexAttribute<Vector3> vertexPositions)
 		{
 		}
 
-		void OnValidate()
+		private void BuildSubmeshes(Topology.FacesIndexer faces, VertexAttribute<Vector3> vertexPositions, FaceAttribute<Vector3> centroidPositions)
 		{
-			Invalidate();
+			var faceIndex = 0;
+			var faceCount = faces.Count;
+			while (faceIndex < faceCount)
+			{
+				var endFaceIndex = faceIndex;
+				var meshVertexCount = 0;
+				var meshTriangleCount = 0;
+				while (endFaceIndex < faceCount)
+				{
+					var face = faces[endFaceIndex];
+					var neighborCount = face.neighborCount;
+					var faceVertexCount = neighborCount + 1;
+					if (meshVertexCount + faceVertexCount > 65534) break;
+					++endFaceIndex;
+					meshVertexCount += faceVertexCount;
+					meshTriangleCount += neighborCount;
+				}
+
+				Vector3[] vertices = new Vector3[meshVertexCount];
+				Color[] colors = new Color[meshVertexCount];
+				int[] triangles = new int[meshTriangleCount * 3];
+
+				int meshVertex = 0;
+				int meshTriangle = 0;
+
+				while (faceIndex < endFaceIndex)
+				{
+					var face = faces[faceIndex];
+					var edge = face.firstEdge;
+					var neighborCount = face.neighborCount;
+					vertices[meshVertex] = centroidPositions[faceIndex];
+					colors[meshVertex] = (FaceColors != null) ? FaceColors[face] : new Color(1, 1, 1);
+					for (int j = 0; j < neighborCount; ++j, edge = edge.next)
+					{
+						vertices[meshVertex + j + 1] = vertexPositions[edge.nextVertex];
+						colors[meshVertex + j + 1] = new Color(0, 0, 0);
+						triangles[meshTriangle + j * 3 + 0] = meshVertex;
+						triangles[meshTriangle + j * 3 + 1] = meshVertex + 1 + j;
+						triangles[meshTriangle + j * 3 + 2] = meshVertex + 1 + (j + 1) % neighborCount;
+
+						if (meshVertex + 1 + j >= meshVertexCount || meshVertex + 1 + (j + 1) % neighborCount > meshVertexCount) throw new InvalidOperationException("Oops");
+					}
+					meshVertex += neighborCount + 1;
+					meshTriangle += neighborCount * 3;
+					++faceIndex;
+				}
+
+				PushSubmesh(vertices, colors, triangles);
+			}
 		}
 
-	#if UNITY_EDITOR
-		void LateUpdate()
+		protected override void RefreshContent()
 		{
-			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			ClearSubmeshes();
+
+			bool hasFaces = ManifoldGenerator != null && ManifoldGenerator.manifold != null && ManifoldGenerator.manifold.topology.faces.Count > 0;
+			bool hasCentroids = CentroidGenerator != null && !CentroidGenerator.attribute.isEmpty;
+
+			if (hasFaces && SubmeshPrefab != null)
 			{
-				if ((ManifoldGenerator != null && ManifoldGenerator.manifold != _manifold) || (ManifoldGenerator == null && _manifold != null))
+				if (hasCentroids)
 				{
-					RebuildMeshes();
+					BuildSubmeshes(ManifoldGenerator.manifold.topology.faces, ManifoldGenerator.manifold.vertexPositions, CentroidGenerator.attribute);
+				}
+				else
+				{
+					BuildSubmeshes(ManifoldGenerator.manifold.topology.faces, ManifoldGenerator.manifold.vertexPositions);
 				}
 			}
-			else
-			{
-				if (_invalidated)
-				{
-					RebuildMeshes();
-				}
-			}
+
+			ClearSubmeshCache();
 		}
-	#else
-		void Update()
+
+		private void OnEnable()
 		{
-			if (_invalidated)
-			{
-			}
+			if (_manifoldGenerator != null) _manifoldGenerator.Refreshed += PropagateRefresh;
+			if (_centroidGenerator != null) _centroidGenerator.Refreshed += PropagateRefresh;
+			if (FaceColors != null) ((IRefreshable)FaceColors).Refreshed += PropagateRefresh;
 		}
-	#endif
 
-		void RebuildMeshes()
+		private void OnDisable()
 		{
-			var meshes = gameObject.GetComponentsInChildren<UniqueMesh>();
-			var meshIndex = 0;
+			if (_manifoldGenerator != null) _manifoldGenerator.Refreshed -= PropagateRefresh;
+			if (_centroidGenerator != null) _centroidGenerator.Refreshed -= PropagateRefresh;
+			if (_faceColors != null) ((IRefreshable)_faceColors).Refreshed -= PropagateRefresh;
+		}
 
-			if (ManifoldGenerator != null && ManifoldGenerator.manifold != null)
-			{
-				_manifold = ManifoldGenerator.manifold;
+		public void OnBeforeSerialize()
+		{
+			_serializableManifoldGenerator = (Component)_manifoldGenerator;
+			_serializableCentroidGenerator = (Component)_centroidGenerator;
+			_serializableFaceColors = (Component)_faceColors;
+		}
 
-				var facePositions = new FaceAttribute<Vector3>(_manifold.topology.faces.Count);
-				foreach (var face in _manifold.topology.faces)
-				{
-					var average = new Vector3();
-					foreach (var edge in face.edges)
-					{
-						average += _manifold.vertexPositions[edge.nextVertex];
-					}
-					facePositions[face] = average / face.edges.Count;
-				}
-
-				var faceIndex = 0;
-				var faceCount = _manifold.topology.faces.Count;
-				while (faceIndex < faceCount)
-				{
-					var endFaceIndex = faceIndex;
-					var meshVertexCount = 0;
-					var meshTriangleCount = 0;
-					while (endFaceIndex < faceCount)
-					{
-						var face = _manifold.topology.faces[endFaceIndex];
-						var neighborCount = face.neighborCount;
-						var faceVertexCount = neighborCount + 1;
-						if (meshVertexCount + faceVertexCount > 65534) break;
-						++endFaceIndex;
-						meshVertexCount += faceVertexCount;
-						meshTriangleCount += neighborCount;
-					}
-
-					Vector3[] vertices = new Vector3[meshVertexCount];
-					Color[] colors = new Color[meshVertexCount];
-					int[] triangles = new int[meshTriangleCount * 3];
-
-					int meshVertex = 0;
-					int meshTriangle = 0;
-
-					while (faceIndex < endFaceIndex)
-					{
-						var face = _manifold.topology.faces[faceIndex];
-						var edge = face.firstEdge;
-						var neighborCount = face.neighborCount;
-						vertices[meshVertex] = facePositions[faceIndex];
-						colors[meshVertex] = new Color(1, 1, 1);
-						for (int j = 0; j < neighborCount; ++j, edge = edge.next)
-						{
-							vertices[meshVertex + j + 1] = _manifold.vertexPositions[edge.nextVertex];
-							colors[meshVertex + j + 1] = new Color(0, 0, 0);
-							triangles[meshTriangle + j * 3 + 0] = meshVertex;
-							triangles[meshTriangle + j * 3 + 1] = meshVertex + 1 + j;
-							triangles[meshTriangle + j * 3 + 2] = meshVertex + 1 + (j + 1) % neighborCount;
-						}
-						meshVertex += neighborCount + 1;
-						meshTriangle += neighborCount * 3;
-						++faceIndex;
-					}
-
-					Mesh mesh;
-
-					if (meshIndex >= meshes.Length)
-					{
-						var uniqueMesh = Instantiate(MeshPrefab);
-						uniqueMesh.name = "Mesh [" + meshIndex.ToString() + "]";
-						uniqueMesh.transform.SetParent(transform, false);
-						mesh = uniqueMesh.mesh;
-					}
-					else
-					{
-						mesh = meshes[meshIndex].mesh;
-						mesh.Clear();
-					}
-
-					mesh.vertices = vertices;
-					mesh.colors = colors;
-					mesh.triangles = triangles;
-
-					mesh.RecalculateBounds();
-
-					++meshIndex;
-				}
-			}
-			else
-			{
-				_manifold = null;
-			}
-
-	#if UNITY_EDITOR
-			UnityEditor.EditorApplication.delayCall += () =>
-			{
-				if (this != null && gameObject != null)
-				{
-	#endif
-					while (meshIndex < meshes.Length)
-					{
-						DestroyImmediate(meshes[meshIndex++].gameObject);
-					}
-	#if UNITY_EDITOR
-				}
-			};
-	#endif
-
-			_invalidated = false;
+		public void OnAfterDeserialize()
+		{
+			_manifoldGenerator = (_serializableManifoldGenerator != null ? (IManifoldProvider)_serializableManifoldGenerator : null);
+			_centroidGenerator = (_serializableCentroidGenerator != null ? (IFaceAttributeProvider<Vector3>)_serializableCentroidGenerator : null);
+			_faceColors = (_serializableFaceColors != null ? (IFaceAttribute<Color>)_serializableFaceColors : null);
 		}
 	}
 }

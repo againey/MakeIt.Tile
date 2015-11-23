@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[ExecuteInEditMode]
 	public class PolyhedronGenerator : ManifoldGenerator
 	{
 		public RegularPolyhedron BasePolyhedron = RegularPolyhedron.Icosahedron;

@@ -2,7 +2,17 @@
 
 namespace Experilous.Topological
 {
-	public struct FaceAttribute<T> where T : new()
+	public interface IFaceAttribute<T> where T : new()
+	{
+		T this[int faceIndex] { get; set; }
+		T this[Topology.Face face] { get; set; }
+
+		int Count { get; }
+
+		void Clear();
+	}
+
+	public struct FaceAttribute<T> : IFaceAttribute<T> where T : new()
 	{
 		public T[] _values;
 
@@ -27,10 +37,10 @@ namespace Experilous.Topological
 			return new FaceAttribute<T>(_values);
 		}
 
-		public T this[int i]
+		public T this[int faceIndex]
 		{
-			get {  return _values[i]; }
-			set {  _values[i] = value; }
+			get {  return _values[faceIndex]; }
+			set {  _values[faceIndex] = value; }
 		}
 
 		public T this[Topology.Face face]
@@ -47,6 +57,16 @@ namespace Experilous.Topological
 		public void Clear()
 		{
 			System.Array.Clear(_values, 0, _values.Length);
+		}
+
+		public void Reset()
+		{
+			_values = null;
+		}
+
+		public bool isEmpty
+		{
+			get { return _values == null || _values.Length == 0; }
 		}
 	}
 }

@@ -2,7 +2,18 @@
 
 namespace Experilous.Topological
 {
-	public struct EdgeAttribute<T> where T : new()
+	public interface IEdgeAttribute<T> where T : new()
+	{
+		T this[int edgeIndex] { get; set; }
+		T this[Topology.VertexEdge edge] { get; set; }
+		T this[Topology.FaceEdge edge] { get; set; }
+
+		int Count { get; }
+
+		void Clear();
+	}
+
+	public struct EdgeAttribute<T> : IEdgeAttribute<T> where T : new()
 	{
 		public T[] _values;
 
@@ -27,10 +38,10 @@ namespace Experilous.Topological
 			return new EdgeAttribute<T>(_values);
 		}
 
-		public T this[int i]
+		public T this[int edgeIndex]
 		{
-			get {  return _values[i]; }
-			set {  _values[i] = value; }
+			get {  return _values[edgeIndex]; }
+			set {  _values[edgeIndex] = value; }
 		}
 
 		public T this[Topology.VertexEdge edge]

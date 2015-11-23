@@ -1,40 +1,25 @@
-﻿using UnityEngine;
-using UnityEngine.Events;
-using System.Collections.Generic;
+﻿using System;
+using UnityEngine;
 
 namespace Experilous.Topological
 {
 	[ExecuteInEditMode]
-	public abstract class ManifoldGenerator : MonoBehaviour
+	public abstract class ManifoldGenerator : RefreshableMonoBehaviour, IManifoldGenerator
 	{
 		private Manifold _manifold;
 
-		private bool _invalidated = true;
-
-		public Manifold manifold { get { return _manifold; } }
-
-		public void Invalidate()
+		public Manifold manifold
 		{
-			_invalidated = true;
-		}
-
-		void Awake()
-		{
-			Invalidate();
-		}
-
-		void OnValidate()
-		{
-			Invalidate();
-		}
-
-		void Update()
-		{
-			if (_invalidated)
+			get
 			{
-				_manifold = RebuildManifold();
-				_invalidated = false;
+				RefreshImmediatelyIfAwaiting();
+				return _manifold;
 			}
+		}
+
+		protected override void RefreshContent()
+		{
+			_manifold = RebuildManifold();
 		}
 
 		protected abstract Manifold RebuildManifold();
