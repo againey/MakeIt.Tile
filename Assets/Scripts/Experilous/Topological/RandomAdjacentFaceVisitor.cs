@@ -7,14 +7,16 @@ namespace Experilous.Topological
 	public class RandomAdjacentFaceVisitor : IEnumerable<Topology.Face>, IEnumerable<Topology.FaceEdge>
 	{
 		private readonly Topology _topology;
-		private List<int> _queuedEdgeIndices;
+		private readonly List<int> _queuedEdgeIndices;
 		private readonly BitArray _visitedFaces;
+		private readonly IRandomEngine _randomEngine;
 
-		public RandomAdjacentFaceVisitor(Topology topology)
+		public RandomAdjacentFaceVisitor(Topology topology, IRandomEngine randomEngine)
 		{
 			_topology = topology;
 			_queuedEdgeIndices = new List<int>();
 			_visitedFaces = new BitArray(_topology.faces.Count);
+			_randomEngine = randomEngine;
 		}
 
 		public void AddSeed(Topology.Vertex vertex)
@@ -98,23 +100,23 @@ namespace Experilous.Topological
 
 		public IEnumerator<Topology.Face> GetEnumerator()
 		{
-			return new FaceEnumerator(this);
+			return new FaceEnumerator(this, _randomEngine);
 		}
 
 		IEnumerator<Topology.FaceEdge> IEnumerable<Topology.FaceEdge>.GetEnumerator()
 		{
-			return new FaceEdgeEnumerator(this);
+			return new FaceEdgeEnumerator(this, _randomEngine);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return new FaceEnumerator(this);
+			return new FaceEnumerator(this, _randomEngine);
 		}
 
 		public class FaceEnumerator : FaceEdgeEnumerator, IEnumerator<Topology.Face>
 		{
-			public FaceEnumerator(RandomAdjacentFaceVisitor visitor)
-				: base(visitor)
+			public FaceEnumerator(RandomAdjacentFaceVisitor visitor, IRandomEngine randomEngine)
+				: base(visitor, randomEngine)
 			{
 			}
 
@@ -141,14 +143,14 @@ namespace Experilous.Topological
 			private readonly List<int> _queuedEdgeIndices;
 			private readonly BitArray _visitedFaces;
 			private Topology.FaceEdge _current;
-			private Random _random;
+			private readonly IRandomEngine _randomEngine;
 
-			public FaceEdgeEnumerator(RandomAdjacentFaceVisitor visitor)
+			public FaceEdgeEnumerator(RandomAdjacentFaceVisitor visitor, IRandomEngine randomEngine)
 			{
 				_topology = visitor._topology;
 				_queuedEdgeIndices = new List<int>(visitor._queuedEdgeIndices);
 				_visitedFaces = new BitArray(_topology.faces.Count);
-				_random = new Random();
+				_randomEngine = randomEngine;
 			}
 
 			public Topology.FaceEdge Current
@@ -175,7 +177,7 @@ namespace Experilous.Topological
 			{
 				while (_queuedEdgeIndices.Count > 0)
 				{
-					var queueIndex = _random.Next(_queuedEdgeIndices.Count);
+					var queueIndex = Experilous.Random.HalfOpenRange(_queuedEdgeIndices.Count, _randomEngine);
 					var lastIndex = _queuedEdgeIndices.Count - 1;
 					var edgeIndex = _queuedEdgeIndices[queueIndex];
 					var edge = _topology.faceEdges[edgeIndex];

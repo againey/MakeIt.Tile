@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
@@ -13,9 +15,11 @@ namespace Experilous.Topological
 		void Clear();
 	}
 
+	[Serializable]
 	public struct EdgeAttribute<T> : IEdgeAttribute<T> where T : new()
 	{
-		public T[] _values;
+		[SerializeField]
+		private T[] _values;
 
 		public EdgeAttribute(int edgeCount)
 		{
@@ -58,12 +62,27 @@ namespace Experilous.Topological
 
 		public int Count
 		{
-			get { return _values.Length; }
+			get { return (_values != null) ? _values.Length : 0; }
 		}
 
 		public void Clear()
 		{
 			System.Array.Clear(_values, 0, _values.Length);
+		}
+
+		public void Reset()
+		{
+			_values = null;
+		}
+
+		public bool isEmpty
+		{
+			get { return _values == null || _values.Length == 0; }
+		}
+
+		public T[] underlyingArray
+		{
+			get { return _values; }
 		}
 	}
 }

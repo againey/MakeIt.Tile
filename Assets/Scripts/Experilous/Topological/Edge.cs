@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using UnityEngine;
+using System;
 
 namespace Experilous.Topological
 {
 	public partial class Topology
 	{
+		[Serializable]
 		private struct EdgeData
 		{
 			// \             /
@@ -44,6 +45,7 @@ namespace Experilous.Topological
 			}
 		}
 
+		[SerializeField]
 		private EdgeData[] _edgeData;
 
 		public struct VertexEdge : IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>

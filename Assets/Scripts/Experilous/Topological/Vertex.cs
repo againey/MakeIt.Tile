@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using UnityEngine;
+using System;
 
 namespace Experilous.Topological
 {
 	public partial class Topology
 	{
+		[SerializeField]
 		private NodeData[] _vertexData;
 
 		public struct Vertex : IEquatable<Vertex>, IComparable<Vertex>

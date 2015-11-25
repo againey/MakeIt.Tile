@@ -212,7 +212,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceCenterIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceCenterIntersections(manifold, partitioning);
 	}
@@ -252,7 +252,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceVertexWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceVertexWeightedIntersections(manifold, partitioning);
 	}
@@ -292,7 +292,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceEdgeWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceEdgeWeightedIntersections(manifold, partitioning);
 	}
@@ -332,7 +332,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronExternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldExternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -372,7 +372,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronInternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldInternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -412,7 +412,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronRecedingRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldRecedingRayIntersections(manifold, partitioning, 1);
 	}
@@ -452,7 +452,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFailedRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFailedRayIntersections(manifold, partitioning, 1, 64);
 	}

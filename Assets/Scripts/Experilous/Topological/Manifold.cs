@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
+using System;
 
 namespace Experilous.Topological
 {
-	using VertexPositions = VertexAttribute<Vector3>;
+	[Serializable]
 	public class Manifold
 	{
+		[SerializeField]
 		private Topology _topology;
-		private VertexPositions _vertexPositions;
 
-		public Manifold(Topology topology, VertexPositions vertexPositions)
+		[SerializeField]
+		private VertexAttribute<Vector3> _vertexPositions;
+
+		public Manifold(Topology topology, VertexAttribute<Vector3> vertexPositions)
 		{
 			_topology = topology;
 			_vertexPositions = vertexPositions;
@@ -20,6 +24,6 @@ namespace Experilous.Topological
 		}
 
 		public Topology topology { get { return _topology; } set { _topology = value; } }
-		public VertexPositions vertexPositions { get { return _vertexPositions; } set { _vertexPositions = value; } }
+		public VertexAttribute<Vector3> vertexPositions { get { return _vertexPositions; } set { _vertexPositions = value; } }
 	}
 }

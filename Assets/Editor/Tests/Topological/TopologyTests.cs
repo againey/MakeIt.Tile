@@ -221,7 +221,7 @@ public class TopologyTests
 	[Test]
 	public void HexehedronComponentCountValidation()
 	{
-		var hexahedron = SphericalManifold.CreateHexahedron();
+		var hexahedron = SphericalManifold.CreateCube();
 		Assert.AreEqual(8, hexahedron.topology.vertices.Count);
 		Assert.AreEqual(24, hexahedron.topology.vertexEdges.Count);
 		Assert.AreEqual(24, hexahedron.topology.faceEdges.Count);
@@ -231,7 +231,7 @@ public class TopologyTests
 	[Test]
 	public void HexehedronComponentNeighborCountValidation()
 	{
-		var hexahedron = SphericalManifold.CreateHexahedron();
+		var hexahedron = SphericalManifold.CreateCube();
 		Assert.AreEqual(3, hexahedron.topology.vertices[0].neighborCount);
 		Assert.AreEqual(3, hexahedron.topology.vertices[1].neighborCount);
 		Assert.AreEqual(3, hexahedron.topology.vertices[2].neighborCount);
@@ -251,7 +251,7 @@ public class TopologyTests
 	[Test]
 	public void HexehedronVertexNeighborValidation()
 	{
-		var hexahedron = SphericalManifold.CreateHexahedron();
+		var hexahedron = SphericalManifold.CreateCube();
 
 		var vertexEdges = hexahedron.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -795,7 +795,7 @@ public class TopologyTests
 	[Test]
 	public void HexehedronSubdivisionDegree1()
 	{
-		var hexahedron = SphericalManifold.CreateHexahedron();
+		var hexahedron = SphericalManifold.CreateCube();
 		var subdivided = SphericalManifold.Subdivide(hexahedron, 1);
 		Assert.AreEqual(8 + 1*12 + 1*1*6 /*26*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 1*12 + 1*1*6) + (2*2 * 6) - 2) * 2 /*96*/, subdivided.topology.vertexEdges.Count);
@@ -825,7 +825,7 @@ public class TopologyTests
 	[Test]
 	public void HexehedronSubdivisionDegree2()
 	{
-		var hexahedron = SphericalManifold.CreateHexahedron();
+		var hexahedron = SphericalManifold.CreateCube();
 		var subdivided = SphericalManifold.Subdivide(hexahedron, 2);
 		Assert.AreEqual(8 + 2*12 + 2*2*6 /*56*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 2*12 + 2*2*6) + (3*3 * 6) - 2) * 2 /*216*/, subdivided.topology.vertexEdges.Count);
@@ -855,7 +855,7 @@ public class TopologyTests
 	[Test]
 	public void HexehedronSubdivisionDegree3()
 	{
-		var hexahedron = SphericalManifold.CreateHexahedron();
+		var hexahedron = SphericalManifold.CreateCube();
 		var subdivided = SphericalManifold.Subdivide(hexahedron, 3);
 		Assert.AreEqual(8 + 3*12 + 3*3*6 /*98*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 3*12 + 3*3*6) + (4*4 * 6) - 2) * 2 /*384*/, subdivided.topology.vertexEdges.Count);
@@ -885,7 +885,7 @@ public class TopologyTests
 	[Test]
 	public void HexehedronSubdivisionDegree4()
 	{
-		var hexahedron = SphericalManifold.CreateHexahedron();
+		var hexahedron = SphericalManifold.CreateCube();
 		var degree = 4;
 		var vertexCount = 8 + degree * 12 + degree * degree * 6; /*152*/
 		var faceCount = (degree + 1) * (degree + 1) * 6; /*150*/
@@ -919,7 +919,7 @@ public class TopologyTests
 	[Test]
 	public void HexehedronSubdivisionDegree5()
 	{
-		var hexahedron = SphericalManifold.CreateHexahedron();
+		var hexahedron = SphericalManifold.CreateCube();
 		var degree = 5;
 		var vertexCount = 8 + degree * 12 + degree * degree * 6; /*218*/
 		var faceCount = (degree + 1) * (degree + 1) * 6; /*216*/

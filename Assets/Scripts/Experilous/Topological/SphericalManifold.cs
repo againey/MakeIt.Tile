@@ -30,7 +30,7 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), vertexPositions);
 		}
 
-		public static Manifold CreateHexahedron()
+		public static Manifold CreateCube()
 		{
 			var builder = new Topology.VertexVerticesBuilder(8, 24, 6);
 

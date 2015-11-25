@@ -5,7 +5,7 @@ namespace Experilous.Topological
 {
 	public class PathMeshGenerator : UniqueMesh
 	{
-		public ManifoldGenerator ManifoldGenerator;
+		/*public ManifoldGenerator ManifoldGenerator;
 		public ManifoldCentroidGenerator CentroidGenerator;
 		public Color Color;
 
@@ -129,6 +129,6 @@ namespace Experilous.Topological
 		{
 			mesh.Clear();
 			mesh.RecalculateBounds();
-		}
+		}*/
 	}
 }
