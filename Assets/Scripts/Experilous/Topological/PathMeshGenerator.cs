@@ -5,11 +5,10 @@ namespace Experilous.Topological
 {
 	public class PathMeshGenerator : UniqueMesh
 	{
-		/*public ManifoldGenerator ManifoldGenerator;
-		public ManifoldCentroidGenerator CentroidGenerator;
+		public TopologyGenerator TopologyGenerator;
 		public Color Color;
 
-		private void AddFace(Topology.Face face, VertexAttribute<Vector3> vertexPositions, Vector3[] vertices, Color[] colors, int[] triangles, ref int meshVertex, ref int meshTriangle)
+		private void AddFace(Topology.Face face, Vector3[] vertexPositions, Vector3[] vertices, Color[] colors, int[] triangles, ref int meshVertex, ref int meshTriangle)
 		{
 			var neighborCount = face.neighborCount;
 			var firstEdge = face.firstEdge;
@@ -43,7 +42,7 @@ namespace Experilous.Topological
 
 		public void BuildPathMeshForFace(Topology.Face face)
 		{
-			var manifold = ManifoldGenerator.manifold;
+			var manifold = TopologyGenerator.manifold;
 
 			Vector3[] vertices = new Vector3[face.neighborCount + 1];
 			Color[] colors = new Color[face.neighborCount + 1];
@@ -63,16 +62,16 @@ namespace Experilous.Topological
 
 		public void BuildPathMeshBetweenFaces(Topology.Face face0, Topology.Face face1)
 		{
-			var manifold = ManifoldGenerator.manifold;
+			var manifold = TopologyGenerator.manifold;
 
 			int[] path;
-			if (!CentroidGenerator.Spherical)
+			if (TopologyGenerator.Projection != TopologyProjection.Spherical)
 			{
-				path = PathFinder.FindEuclideanPath(face0, face1, CentroidGenerator.centroids);
+				path = PathFinder.FindEuclideanPath(face0, face1, TopologyGenerator.centroids);
 			}
 			else
 			{
-				path = PathFinder.FindSphericalEuclideanPath(face0, face1, CentroidGenerator.centroids);
+				path = PathFinder.FindSphericalEuclideanPath(face0, face1, TopologyGenerator.centroids);
 			}
 
 			Vector3[] vertices;
@@ -129,6 +128,6 @@ namespace Experilous.Topological
 		{
 			mesh.Clear();
 			mesh.RecalculateBounds();
-		}*/
+		}
 	}
 }

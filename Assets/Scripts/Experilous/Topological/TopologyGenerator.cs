@@ -85,13 +85,13 @@ namespace Experilous.Topological
 		private Manifold _manifold;
 
 		[SerializeField]
-		private FaceAttribute<Vector3> _centroids;
-
-		//[SerializeField]
-		//private SphericalPartitioning _sphericalPartitioning;
+		private Vector3[] _centroids;
 
 		[SerializeField]
-		private FaceAttribute<int> _faceRegions;
+		private SphericalPartitioning _sphericalPartitioning;
+
+		[SerializeField]
+		private int[] _faceRegions;
 		[SerializeField]
 		private int _regionCount;
 		[SerializeField]
@@ -104,6 +104,13 @@ namespace Experilous.Topological
 				return 144;
 			}
 		}
+
+		public Manifold manifold { get { return _manifold; } }
+		public Vector3[] centroids { get { return _centroids; } }
+		public SphericalPartitioning sphericalPartitioning { get { return _sphericalPartitioning; } }
+		public int[] faceRegions { get { return _faceRegions; } }
+		public int regionCount { get { return _regionCount; } }
+		public List<Color> regionColors { get { return _regionColors; } }
 
 		public void Invalidate()
 		{
@@ -162,16 +169,16 @@ namespace Experilous.Topological
 				if (takeDual)
 				{
 					var topology = _manifold.topology.GetDualTopology();
-					var vertexPositions = new VertexAttribute<Vector3>(topology.vertices.Count);
+					var vertexPositions = new Vector3[topology.vertices.Count];
 
 					foreach (var face in _manifold.topology.faces)
 					{
 						var average = new Vector3();
 						foreach (var edge in face.edges)
 						{
-							average += _manifold.vertexPositions[edge.nextVertex];
+							average += _manifold.vertexPositions.Of(edge.nextVertex);
 						}
-						vertexPositions[face.index] = average.normalized;
+						vertexPositions[face] = average.normalized;
 					}
 
 					_manifold = new Manifold(topology, vertexPositions);
@@ -184,9 +191,9 @@ namespace Experilous.Topological
 					var perPassRandomizationFrequency = TopologyRandomizationFrequency / TopologyRandomizationPassCount;
 
 					var vertexPositions = _manifold.vertexPositions;
-					var regularityRelaxedPositions = new VertexAttribute<Vector3>(vertexPositions.Count);
-					var equalAreaRelaxedPositions = new VertexAttribute<Vector3>(vertexPositions.Count);
-					var centroidsBuffer = new FaceAttribute<Vector3>(_manifold.topology.faces.Count);
+					var regularityRelaxedPositions = new Vector3[vertexPositions.Length];
+					var equalAreaRelaxedPositions = new Vector3[vertexPositions.Length];
+					var centroidsBuffer = new Vector3[_manifold.topology.faces.Count];
 
 					var regularityWeight = TopologyRandomizationRelaxationRegularity;
 					var equalAreaWeight = (1f - TopologyRandomizationRelaxationRegularity);
@@ -208,7 +215,6 @@ namespace Experilous.Topological
 								twinEdge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors &&
 								edge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors &&
 								twinEdge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors;
-
 
 							if (verticesCanChange && facesCanChange)
 							{
@@ -249,7 +255,7 @@ namespace Experilous.Topological
 
 							float relaxationAmount = 0f;
 							var weightedRelaxedPositions = regularityRelaxedPositions;
-							for (int j = 0; j < vertexPositions.Count; ++j)
+							for (int j = 0; j < vertexPositions.Length; ++j)
 							{
 								var weightedRelaxedPosition = regularityRelaxedPositions[j] * regularityWeight + equalAreaRelaxedPositions[j] * equalAreaWeight;
 								relaxationAmount += (vertexPositions[j] - weightedRelaxedPosition).magnitude;
@@ -283,13 +289,13 @@ namespace Experilous.Topological
 				{
 					var topology = _manifold.topology;
 					var vertexPositions = _manifold.vertexPositions;
-					_centroids = new FaceAttribute<Vector3>(topology.faces.Count);
+					_centroids = new Vector3[topology.faces.Count];
 					foreach (var face in topology.faces)
 					{
 						var sum = new Vector3();
 						foreach (var edge in face.edges)
 						{
-							sum += vertexPositions[edge.nextVertex];
+							sum += vertexPositions.Of(edge.nextVertex);
 						}
 						_centroids[face] = sum;
 					}
@@ -305,13 +311,13 @@ namespace Experilous.Topological
 					{
 						foreach (var face in topology.faces)
 						{
-							_centroids[face] = _centroids[face].normalized;
+							_centroids[face].Normalize();
 						}
 					}
 				}
 				else
 				{
-					_centroids.Reset();
+					_centroids = null;
 				}
 
 				if (CalculateSpatialPartitioning)
@@ -321,17 +327,17 @@ namespace Experilous.Topological
 					}
 					else
 					{
-						//_sphericalPartitioning = new SphericalPartitioning(_manifold);
+						_sphericalPartitioning = new SphericalPartitioning(_manifold);
 					}
 				}
 				else
 				{
-					//_sphericalPartitioning = null;
+					_sphericalPartitioning = null;
 				}
 
 				if (GenerateRegions)
 				{
-					_faceRegions = new FaceAttribute<int>(_manifold.topology.faces.Count);
+					_faceRegions = new int[_manifold.topology.faces.Count];
 
 					var randomEngine = CreateRandomEngine(RegionRandomEngine, RegionRandomEngineSeed);
 
@@ -397,7 +403,7 @@ namespace Experilous.Topological
 				}
 				else
 				{
-					_faceRegions.Reset();
+					_faceRegions = null;
 					_regionCount = 0;
 					_regionColors = null;
 				}
@@ -448,12 +454,14 @@ namespace Experilous.Topological
 			}
 		}
 
-		private void BuildSubmeshes(Topology.FacesIndexer faces, VertexAttribute<Vector3> vertexPositions)
+		private void BuildSubmeshes(Topology.FacesIndexer faces, Vector3[] vertexPositions)
 		{
 		}
 
-		private void BuildSubmeshes(Topology.FacesIndexer faces, VertexAttribute<Vector3> vertexPositions, FaceAttribute<Vector3> centroidPositions)
+		private void BuildSubmeshes(Topology.FacesIndexer faces, Vector3[] vertexPositions, Vector3[] centroidPositions)
 		{
+			bool faceColorsExist = (_faceRegions != null && _faceRegions.Length > 0 && _regionColors != null && _regionColors.Count > 0);
+
 			var faceIndex = 0;
 			var faceCount = faces.Count;
 			while (faceIndex < faceCount)
@@ -485,7 +493,7 @@ namespace Experilous.Topological
 					var edge = face.firstEdge;
 					var neighborCount = face.neighborCount;
 					vertices[meshVertex] = centroidPositions[faceIndex];
-					colors[meshVertex] = (_faceRegions.isEmpty) ? new Color(1, 1, 1) : _regionColors[_faceRegions[face]];
+					colors[meshVertex] = (faceColorsExist) ?  _regionColors[_faceRegions[face]] : new Color(1, 1, 1);
 					for (int j = 0; j < neighborCount; ++j, edge = edge.next)
 					{
 						vertices[meshVertex + j + 1] = vertexPositions[edge.nextVertex];

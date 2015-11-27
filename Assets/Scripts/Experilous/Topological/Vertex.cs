@@ -36,6 +36,16 @@ namespace Experilous.Topological
 				}
 			}
 
+			public static implicit operator int(Vertex vertex)
+			{
+				return vertex._index;
+			}
+
+			public T Attribute<T>(T[] attributeArray)
+			{
+				return attributeArray[_index];
+			}
+
 			public struct VertexEdgesIndexer
 			{
 				private Topology _topology;
@@ -182,5 +192,13 @@ namespace Experilous.Topological
 		}
 
 		public VerticesIndexer vertices { get { return new VerticesIndexer(this); } }
+	}
+
+	public static class VertexExtensions
+	{
+		public static T Of<T>(this T[] attributArray, Topology.Vertex vertex)
+		{
+			return attributArray[vertex.index];
+		}
 	}
 }

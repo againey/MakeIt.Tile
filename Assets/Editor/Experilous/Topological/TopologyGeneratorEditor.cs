@@ -161,14 +161,14 @@ namespace Experilous.Topological
 			if (EditorGUILayout.BeginFadeGroup(_showTopologyRandomizationProperties.faded))
 			{
 				generator.TopologyRandomizationPassCount = EditorGUILayout.IntSlider("Randomization Pass Count", generator.TopologyRandomizationPassCount, 1, 10);
-				generator.TopologyRandomizationFrequency = EditorGUILayout.FloatField("Randomization Frequency", generator.TopologyRandomizationFrequency);
+				generator.TopologyRandomizationFrequency = EditorGUILayout.Slider("Randomization Frequency", generator.TopologyRandomizationFrequency, 0f, 1f);
 				generator.TopologyRandomizationMinimumVertexNeighbors = EditorGUILayout.IntSlider("Minimum Vertex Neighbors", generator.TopologyRandomizationMinimumVertexNeighbors, 1, 10);
 				generator.TopologyRandomizationMaximumVertexNeighbors = EditorGUILayout.IntSlider("Maximum Vertex Neighbors", generator.TopologyRandomizationMaximumVertexNeighbors, 1, 10);
 				generator.TopologyRandomizationMinimumFaceNeighbors = EditorGUILayout.IntSlider("Minimum Face Neighbors", generator.TopologyRandomizationMinimumFaceNeighbors, 1, 10);
 				generator.TopologyRandomizationMaximumFaceNeighbors = EditorGUILayout.IntSlider("Maximum Face Neighbors", generator.TopologyRandomizationMaximumFaceNeighbors, 1, 10);
 
-				generator.TopologyRandomizationRelaxationRegularity = EditorGUILayout.FloatField("Relaxation Relative Regularity", generator.TopologyRandomizationRelaxationRegularity);
-				generator.TopologyRandomizationRelaxationRelativePrecision = EditorGUILayout.FloatField("Relaxation Relative Precision", generator.TopologyRandomizationRelaxationRelativePrecision);
+				generator.TopologyRandomizationRelaxationRegularity = EditorGUILayout.Slider("Relaxation Relative Regularity", generator.TopologyRandomizationRelaxationRegularity, 0f, 1f);
+				generator.TopologyRandomizationRelaxationRelativePrecision = EditorGUILayout.Slider("Relaxation Relative Precision", generator.TopologyRandomizationRelaxationRelativePrecision, 0f, 1f);
 				generator.TopologyRandomizationMaximumRelaxationPassCount = EditorGUILayout.IntSlider("Maximum Relaxation Pass Count", generator.TopologyRandomizationMaximumRelaxationPassCount, 1, 100);
 				generator.TopologyRandomizationMaximumRepairPassCount = EditorGUILayout.IntSlider("Maximum Repair Pass Count", generator.TopologyRandomizationMaximumRepairPassCount, 1, 100);
 
@@ -176,7 +176,7 @@ namespace Experilous.Topological
 
 				EditorGUILayout.BeginHorizontal();
 				generator.TopologyRandomizationEngineSeed = EditorGUILayout.TextField("Randomization Seed", generator.TopologyRandomizationEngineSeed);
-				if (GUILayout.Button("Randomize"))
+				if (GUILayout.Button("Randomize", GUILayout.ExpandWidth(false)))
 				{
 					generator.TopologyRandomizationEngineSeed = Random.HexadecimalString(16);
 				}
@@ -202,7 +202,7 @@ namespace Experilous.Topological
 
 				EditorGUILayout.BeginHorizontal();
 				generator.RegionRandomEngineSeed = EditorGUILayout.TextField("Region Random Seed", generator.RegionRandomEngineSeed);
-				if (GUILayout.Button("Randomize"))
+				if (GUILayout.Button("Randomize", GUILayout.ExpandWidth(false)))
 				{
 					generator.RegionRandomEngineSeed = Random.HexadecimalString(16);
 				}
@@ -221,6 +221,8 @@ namespace Experilous.Topological
 			}
 			EditorGUILayout.EndFadeGroup();
 			EditorGUILayout.EndToggleGroup();
+
+			EditorGUILayout.Space();
 
 			if (GUILayout.Button("Regenerate"))
 			{

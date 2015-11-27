@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
+	[Serializable]
 	public class SphericalPartitioning
 	{
+		[Serializable]
 		private struct Partition
 		{
 			public Vector3 _normal;
@@ -28,7 +30,7 @@ namespace Experilous.Topological
 			{
 			}
 
-			public Partition(Topology.VertexEdge edge, VertexAttribute<Vector3> vertexPositions)
+			public Partition(Topology.VertexEdge edge, Vector3[] vertexPositions)
 				: this(vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.prevFace.index, edge.nextFace.index)
 			{
 			}
@@ -74,7 +76,10 @@ namespace Experilous.Topological
 			}
 		}
 
+		[SerializeField]
 		private Manifold _manifold;
+
+		[SerializeField]
 		private Partition[] _partitionBinaryTree;
 
 		public SphericalPartitioning(Manifold manifold)
@@ -138,7 +143,7 @@ namespace Experilous.Topological
 				partition._overPartitionIndex != 0 ? GetHeight(partition._overPartitionIndex) : 0);
 		}
 
-		private void PartitionEdge(Topology.VertexEdge edge, VertexAttribute<Vector3> vertexPositions, ref int nextPartitionIndex)
+		private void PartitionEdge(Topology.VertexEdge edge, Vector3[] vertexPositions, ref int nextPartitionIndex)
 		{
 			PartitionEdge(0, vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.index, edge.prevFace.index, edge.nextFace.index, ref nextPartitionIndex);
 		}

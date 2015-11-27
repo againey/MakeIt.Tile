@@ -40,6 +40,16 @@ namespace Experilous.Topological
 				}
 			}
 
+			public static implicit operator int(Face face)
+			{
+				return face._index;
+			}
+
+			public T Attribute<T>(T[] attributeArray)
+			{
+				return attributeArray[_index];
+			}
+
 			public struct FaceEdgesIndexer
 			{
 				private Topology _topology;
@@ -186,5 +196,13 @@ namespace Experilous.Topological
 		}
 
 		public FacesIndexer faces { get { return new FacesIndexer(this); } }
+	}
+
+	public static class FaceExtensions
+	{
+		public static T Of<T>(this T[] attributArray, Topology.Face face)
+		{
+			return attributArray[face.index];
+		}
 	}
 }

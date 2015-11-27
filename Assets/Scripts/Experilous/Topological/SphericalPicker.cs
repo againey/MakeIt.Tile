@@ -2,11 +2,11 @@
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using System;
-using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
 	[RequireComponent(typeof(Collider))]
+	[RequireComponent(typeof(TopologyGenerator))]
 	public class SphericalPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
 		public Camera Camera;
@@ -23,8 +23,8 @@ namespace Experilous.Topological
 		public class PickEndEvent : UnityEvent<Topology.Face, Topology.Face> { }
 		public PickEndEvent OnPickEnd;
 
-		//private Collider _collider = null;
-		//private SphericalPartitioningGenerator _partitionGenerator = null;
+		private Collider _collider = null;
+		private TopologyGenerator _topologyGenerator = null;
 
 		private bool _pickActive;
 		private Topology.Face? _pickStart;
@@ -32,37 +32,37 @@ namespace Experilous.Topological
 
 		void Start()
 		{
-			//_collider = GetComponent<Collider>();
-			//_partitionGenerator = GetComponent<SphericalPartitioningGenerator>();
+			_collider = GetComponent<Collider>();
+			_topologyGenerator = GetComponent<TopologyGenerator>();
 		}
 
 		void Update()
 		{
-			/*if (_pickActive && _partitionGenerator.partitioning != null)
+			if (_pickActive && _topologyGenerator.sphericalPartitioning != null)
 			{
 				var ray = Camera.ScreenPointToRay(Input.mousePosition);
 				RaycastHit raycastHit;
 				if (_collider.Raycast(ray, out raycastHit, float.PositiveInfinity))
 				{
-					var face = _partitionGenerator.partitioning.Intersect(raycastHit.point - transform.position);
+					var face = _topologyGenerator.sphericalPartitioning.Intersect(raycastHit.point - transform.position);
 					if (_pickEnd.Value != face)
 					{
 						_pickEnd = face;
 						OnPickChange.Invoke(_pickStart.Value, _pickEnd.Value);
 					}
 				}
-			}*/
+			}
 		}
 
 		public void OnPointerDown(PointerEventData eventData)
 		{
-			/*if (!_pickActive)
+			if (!_pickActive)
 			{
-				var face = _partitionGenerator.partitioning.Intersect(eventData.pointerCurrentRaycast.worldPosition - transform.position);
+				var face = _topologyGenerator.sphericalPartitioning.Intersect(eventData.pointerCurrentRaycast.worldPosition - transform.position);
 				_pickStart = _pickEnd = face;
 				_pickActive = true;
 				OnPickStart.Invoke(_pickStart.Value);
-			}*/
+			}
 		}
 
 		public void OnPointerUp(PointerEventData eventData)

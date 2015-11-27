@@ -65,7 +65,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldExternalRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new FaceAttribute<Vector3>(manifold.topology.faces.Count);
+		var centroids = new Vector3[manifold.topology.faces.Count];
 		foreach (var face in manifold.topology.faces)
 		{
 			var centroid = new Vector3();
@@ -102,7 +102,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldInternalRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new FaceAttribute<Vector3>(manifold.topology.faces.Count);
+		var centroids = new Vector3[manifold.topology.faces.Count];
 		foreach (var face in manifold.topology.faces)
 		{
 			var centroid = new Vector3();
@@ -138,7 +138,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldRecedingRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new FaceAttribute<Vector3>(manifold.topology.faces.Count);
+		var centroids = new Vector3[manifold.topology.faces.Count];
 		foreach (var face in manifold.topology.faces)
 		{
 			var centroid = new Vector3();
