@@ -27,17 +27,19 @@ namespace Experilous.Topological
 		{
 			new GUIContent("Planar"),
 			new GUIContent("Cylindrical"),
+			new GUIContent("Spherical"),
 		};
 
 		private static TopologyProjection[] _cylinderProjectionMapFrom =
 		{
 			TopologyProjection.Planar,
 			TopologyProjection.Cylindrical,
+			TopologyProjection.Spherical,
 		};
 
 		private static int[] _cylinderProjectionMapTo =
 		{
-			0, 1, 0, 0,
+			0, 1, 0, 2,
 		};
 
 		private static GUIContent[] _toroidProjectionOptions =
@@ -244,7 +246,9 @@ namespace Experilous.Topological
 			}
 
 			generator.ColumnCount = EditorGUILayout.IntField("Column Count", generator.ColumnCount);
-			generator.RowCount = EditorGUILayout.IntField("Column Count", generator.RowCount);
+			generator.RowCount = EditorGUILayout.IntField("Row Count", generator.RowCount);
+			generator.MaximumLatitude = EditorGUILayout.Slider("Maximum Latitude", generator.MaximumLatitude, 0f, 90f);
+			generator.ProjectionRegularity = EditorGUILayout.Slider("Regularity", generator.ProjectionRegularity, 0f, 1f);
 		}
 
 		private void OnInspectorGUI_Spherical(TopologyGenerator generator)

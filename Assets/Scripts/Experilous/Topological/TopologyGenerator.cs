@@ -50,8 +50,13 @@ namespace Experilous.Topological
 		public SphericalTopologyTiling SphericalTiling = SphericalTopologyTiling.Icosahedron;
 		public TopologyTileOrientation TileOrientation = TopologyTileOrientation.PointyTop;
 
+		// Flat Topologies
 		public int ColumnCount = 24;
 		public int RowCount = 24;
+		public float MaximumLatitude = 60f;
+		public float ProjectionRegularity = 0.5f;
+
+		// Spherical Topologies
 		public int SubdivisionDegree = 24;
 		public bool UseDualTopology = true;
 
@@ -183,247 +188,278 @@ namespace Experilous.Topological
 
 					_manifold = new Manifold(topology, vertexPositions);
 				}
-
-				if (RandomizeTopology && TopologyRandomizationPassCount > 0 && TopologyRandomizationFrequency > 0f)
+			}
+			else if (Classification == TopologyClassification.Cylinder && Projection == TopologyProjection.Spherical)
+			{
+				switch (FlatTiling)
 				{
-					var random = new Experilous.Random(CreateRandomEngine(TopologyRandomizationEngine, TopologyRandomizationEngineSeed));
-
-					var perPassRandomizationFrequency = TopologyRandomizationFrequency / TopologyRandomizationPassCount;
-
-					var vertexPositions = _manifold.vertexPositions;
-					var regularityRelaxedPositions = new Vector3[vertexPositions.Length];
-					var equalAreaRelaxedPositions = new Vector3[vertexPositions.Length];
-					var centroidsBuffer = new Vector3[_manifold.topology.faces.Count];
-
-					var regularityWeight = TopologyRandomizationRelaxationRegularity;
-					var equalAreaWeight = (1f - TopologyRandomizationRelaxationRegularity);
-
-					for (int topologyRandomizationPass = 0; topologyRandomizationPass < TopologyRandomizationPassCount; ++topologyRandomizationPass)
-					{
-						foreach (var edge in _manifold.topology.vertexEdges)
+					case FlatTopologyTiling.Triangular:
+						switch (TileOrientation)
 						{
-							var twinEdge = edge.twin;
+							case TopologyTileOrientation.FlatTop:
+								_manifold = CylindricalManifold.CreateFlatTopTriGridSphericalCylinder(ColumnCount, RowCount, MaximumLatitude * Mathf.Deg2Rad, ProjectionRegularity);
+								break;
+							case TopologyTileOrientation.PointyTop:
+								_manifold = CylindricalManifold.CreatePointyTopTriGridSphericalCylinder(ColumnCount, RowCount, MaximumLatitude * Mathf.Deg2Rad, ProjectionRegularity);
+								break;
+						}
+						break;
+					case FlatTopologyTiling.Quadrilateral:
+						_manifold = CylindricalManifold.CreateQuadGridSphericalCylinder(ColumnCount, RowCount, MaximumLatitude * Mathf.Deg2Rad, ProjectionRegularity);
+						break;
+					case FlatTopologyTiling.Hexagonal:
+						switch (TileOrientation)
+						{
+							case TopologyTileOrientation.FlatTop:
+								_manifold = CylindricalManifold.CreateFlatTopHexGridSphericalCylinder(ColumnCount, RowCount, MaximumLatitude * Mathf.Deg2Rad, ProjectionRegularity);
+								break;
+							case TopologyTileOrientation.PointyTop:
+								_manifold = CylindricalManifold.CreatePointyTopHexGridSphericalCylinder(ColumnCount, RowCount, MaximumLatitude * Mathf.Deg2Rad, ProjectionRegularity);
+								break;
+						}
+						break;
+				}
+			}
 
-							var verticesCanChange =
-								edge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors &&
-								twinEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors &&
-								edge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors &&
-								twinEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors;
+			if (RandomizeTopology && TopologyRandomizationPassCount > 0 && TopologyRandomizationFrequency > 0f)
+			{
+				var random = new Experilous.Random(CreateRandomEngine(TopologyRandomizationEngine, TopologyRandomizationEngineSeed));
 
-							var facesCanChange =
-								edge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors &&
-								twinEdge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors &&
-								edge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors &&
-								twinEdge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors;
+				var perPassRandomizationFrequency = TopologyRandomizationFrequency / TopologyRandomizationPassCount;
 
-							if (verticesCanChange && facesCanChange)
+				var vertexPositions = _manifold.vertexPositions;
+				var regularityRelaxedPositions = new Vector3[vertexPositions.Length];
+				var equalAreaRelaxedPositions = new Vector3[vertexPositions.Length];
+				var centroidsBuffer = new Vector3[_manifold.topology.faces.Count];
+
+				var regularityWeight = TopologyRandomizationRelaxationRegularity;
+				var equalAreaWeight = (1f - TopologyRandomizationRelaxationRegularity);
+
+				for (int topologyRandomizationPass = 0; topologyRandomizationPass < TopologyRandomizationPassCount; ++topologyRandomizationPass)
+				{
+					foreach (var edge in _manifold.topology.vertexEdges)
+					{
+						var twinEdge = edge.twin;
+
+						var verticesCanChange =
+							edge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors &&
+							twinEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors &&
+							edge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors &&
+							twinEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors;
+
+						var facesCanChange =
+							edge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors &&
+							twinEdge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors &&
+							edge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors &&
+							twinEdge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors;
+
+						if (verticesCanChange && facesCanChange)
+						{
+							var randomValue = random.HalfOpenFloatUnit();
+							if (randomValue < perPassRandomizationFrequency)
 							{
-								var randomValue = random.HalfOpenFloatUnit();
-								if (randomValue < perPassRandomizationFrequency)
+								if (randomValue < perPassRandomizationFrequency * 0.5f)
 								{
-									if (randomValue < perPassRandomizationFrequency * 0.5f)
-									{
-										_manifold.topology.SpinEdgeForward(edge);
-									}
-									else
-									{
-										_manifold.topology.SpinEdgeForward(edge.faceEdge);
-									}
+									_manifold.topology.SpinEdgeForward(edge);
 								}
-							}
-							else if (verticesCanChange || facesCanChange)
-							{
-								if (random.HalfOpenFloatUnit() < perPassRandomizationFrequency)
+								else
 								{
-									if (verticesCanChange)
-									{
-										_manifold.topology.SpinEdgeForward(edge);
-									}
-									else
-									{
-										_manifold.topology.SpinEdgeForward(edge.faceEdge);
-									}
+									_manifold.topology.SpinEdgeForward(edge.faceEdge);
 								}
 							}
 						}
-
-						float priorRelaxationAmount = 0f;
-						for (int i = 0; i < TopologyRandomizationMaximumRelaxationPassCount; ++i)
+						else if (verticesCanChange || facesCanChange)
 						{
-							SphericalManifold.RelaxForRegularity(_manifold, regularityRelaxedPositions);
-							SphericalManifold.RelaxForEqualArea(_manifold, equalAreaRelaxedPositions, centroidsBuffer);
-
-							float relaxationAmount = 0f;
-							var weightedRelaxedPositions = regularityRelaxedPositions;
-							for (int j = 0; j < vertexPositions.Length; ++j)
+							if (random.HalfOpenFloatUnit() < perPassRandomizationFrequency)
 							{
-								var weightedRelaxedPosition = regularityRelaxedPositions[j] * regularityWeight + equalAreaRelaxedPositions[j] * equalAreaWeight;
-								relaxationAmount += (vertexPositions[j] - weightedRelaxedPosition).magnitude;
-								weightedRelaxedPositions[j] = weightedRelaxedPosition;
+								if (verticesCanChange)
+								{
+									_manifold.topology.SpinEdgeForward(edge);
+								}
+								else
+								{
+									_manifold.topology.SpinEdgeForward(edge.faceEdge);
+								}
 							}
+						}
+					}
 
-							if (relaxationAmount == 0f || (priorRelaxationAmount != 0f && 1f - relaxationAmount / priorRelaxationAmount < TopologyRandomizationRelaxationRelativePrecision))
+					float priorRelaxationAmount = 0f;
+					for (int i = 0; i < TopologyRandomizationMaximumRelaxationPassCount; ++i)
+					{
+						SphericalManifold.RelaxForRegularity(_manifold, regularityRelaxedPositions);
+						SphericalManifold.RelaxForEqualArea(_manifold, equalAreaRelaxedPositions, centroidsBuffer);
+
+						float relaxationAmount = 0f;
+						var weightedRelaxedPositions = regularityRelaxedPositions;
+						for (int j = 0; j < vertexPositions.Length; ++j)
+						{
+							var weightedRelaxedPosition = regularityRelaxedPositions[j] * regularityWeight + equalAreaRelaxedPositions[j] * equalAreaWeight;
+							relaxationAmount += (vertexPositions[j] - weightedRelaxedPosition).magnitude;
+							weightedRelaxedPositions[j] = weightedRelaxedPosition;
+						}
+
+						if (relaxationAmount == 0f || (priorRelaxationAmount != 0f && 1f - relaxationAmount / priorRelaxationAmount < TopologyRandomizationRelaxationRelativePrecision))
+						{
+							break;
+						}
+
+						priorRelaxationAmount = relaxationAmount;
+
+						regularityRelaxedPositions = vertexPositions;
+						vertexPositions = weightedRelaxedPositions;
+
+						_manifold.vertexPositions = vertexPositions;
+
+						for (int j = 0; j < TopologyRandomizationMaximumRepairPassCount; ++j)
+						{
+							if (SphericalManifold.ValidateAndRepair(_manifold, 0.5f))
 							{
 								break;
 							}
-
-							priorRelaxationAmount = relaxationAmount;
-
-							regularityRelaxedPositions = vertexPositions;
-							vertexPositions = weightedRelaxedPositions;
-
-							_manifold.vertexPositions = vertexPositions;
-
-							for (int j = 0; j < TopologyRandomizationMaximumRepairPassCount; ++j)
-							{
-								if (SphericalManifold.ValidateAndRepair(_manifold, 0.5f))
-								{
-									break;
-								}
-							}
 						}
 					}
 				}
+			}
 
-				if (CalculateCentroids)
+			if (CalculateCentroids)
+			{
+				var topology = _manifold.topology;
+				var vertexPositions = _manifold.vertexPositions;
+				_centroids = new Vector3[topology.faces.Count];
+				foreach (var face in topology.faces)
 				{
-					var topology = _manifold.topology;
-					var vertexPositions = _manifold.vertexPositions;
-					_centroids = new Vector3[topology.faces.Count];
+					var sum = new Vector3();
+					foreach (var edge in face.edges)
+					{
+						sum += vertexPositions.Of(edge.nextVertex);
+					}
+					_centroids[face] = sum;
+				}
+
+				if (Projection != TopologyProjection.Spherical)
+				{
 					foreach (var face in topology.faces)
 					{
-						var sum = new Vector3();
-						foreach (var edge in face.edges)
-						{
-							sum += vertexPositions.Of(edge.nextVertex);
-						}
-						_centroids[face] = sum;
-					}
-
-					if (Projection != TopologyProjection.Spherical)
-					{
-						foreach (var face in topology.faces)
-						{
-							_centroids[face] /= face.edges.Count;
-						}
-					}
-					else
-					{
-						foreach (var face in topology.faces)
-						{
-							_centroids[face].Normalize();
-						}
+						_centroids[face] /= face.edges.Count;
 					}
 				}
 				else
 				{
-					_centroids = null;
-				}
-
-				if (CalculateSpatialPartitioning)
-				{
-					if (Projection != TopologyProjection.Spherical)
+					foreach (var face in topology.faces)
 					{
-					}
-					else
-					{
-						_sphericalPartitioning = new SphericalPartitioning(_manifold);
+						_centroids[face].Normalize();
 					}
 				}
-				else
-				{
-					_sphericalPartitioning = null;
-				}
-
-				if (GenerateRegions)
-				{
-					_faceRegions = new int[_manifold.topology.faces.Count];
-
-					var randomEngine = CreateRandomEngine(RegionRandomEngine, RegionRandomEngineSeed);
-
-					if (DesiredRegionCount == 1)
-					{
-						_regionCount = 1;
-
-						foreach (var face in _manifold.topology.faces)
-						{
-							_faceRegions[face] = 0;
-						}
-					}
-					else if (DesiredRegionCount >= _manifold.topology.faces.Count)
-					{
-						_regionCount = _manifold.topology.faces.Count;
-
-						foreach (var face in _manifold.topology.faces)
-						{
-							_faceRegions[face] = face.index;
-						}
-					}
-					else
-					{
-						var visitor = new RandomAdjacentFaceVisitor(_manifold.topology, randomEngine);
-
-						_regionCount = DesiredRegionCount;
-
-						var faces = _manifold.topology.faces;
-						int listIndex = 0;
-						int regionIndex = 0;
-						int remainingFaceCount = faces.Count;
-						int remainingRegionCount = _regionCount;
-						while (remainingRegionCount > 0)
-						{
-							if (Experilous.Random.HalfOpenRange(remainingFaceCount, randomEngine) < remainingRegionCount)
-							{
-								var faceIndex = faces[listIndex];
-								visitor.AddSeed(faceIndex);
-								_faceRegions[faceIndex] = regionIndex;
-								++regionIndex;
-								--remainingRegionCount;
-							}
-
-							++listIndex;
-							--remainingFaceCount;
-						}
-
-						foreach (var edge in (IEnumerable<Topology.FaceEdge>)visitor)
-						{
-							_faceRegions[edge.farFace] = _faceRegions[edge.nearFace];
-						}
-					}
-
-					_regionColors = new List<Color>(_regionCount);
-					while (_regionColors.Count < _regionCount)
-					{
-						_regionColors.Add(new Color(
-							Experilous.Random.ClosedFloatUnit(randomEngine),
-							Experilous.Random.ClosedFloatUnit(randomEngine),
-							Experilous.Random.ClosedFloatUnit(randomEngine)));
-					}
-
-				}
-				else
-				{
-					_faceRegions = null;
-					_regionCount = 0;
-					_regionColors = null;
-				}
-
-				ClearSubmeshes();
-
-				if (BuildMesh && SubmeshPrefab != null)
-				{
-					if (CalculateCentroids)
-					{
-						BuildSubmeshes(_manifold.topology.faces, _manifold.vertexPositions, _centroids);
-					}
-					else
-					{
-						BuildSubmeshes(_manifold.topology.faces, _manifold.vertexPositions);
-					}
-				}
-
-				ClearSubmeshCache();
 			}
+			else
+			{
+				_centroids = null;
+			}
+
+			if (CalculateSpatialPartitioning)
+			{
+				if (Projection != TopologyProjection.Spherical)
+				{
+				}
+				else
+				{
+					_sphericalPartitioning = new SphericalPartitioning(_manifold);
+				}
+			}
+			else
+			{
+				_sphericalPartitioning = null;
+			}
+
+			if (GenerateRegions)
+			{
+				_faceRegions = new int[_manifold.topology.faces.Count];
+
+				var randomEngine = CreateRandomEngine(RegionRandomEngine, RegionRandomEngineSeed);
+
+				if (DesiredRegionCount == 1)
+				{
+					_regionCount = 1;
+
+					foreach (var face in _manifold.topology.faces)
+					{
+						_faceRegions[face] = 0;
+					}
+				}
+				else if (DesiredRegionCount >= _manifold.topology.faces.Count)
+				{
+					_regionCount = _manifold.topology.faces.Count;
+
+					foreach (var face in _manifold.topology.faces)
+					{
+						_faceRegions[face] = face.index;
+					}
+				}
+				else
+				{
+					var visitor = new RandomAdjacentFaceVisitor(_manifold.topology, randomEngine);
+
+					_regionCount = DesiredRegionCount;
+
+					var faces = _manifold.topology.faces;
+					int listIndex = 0;
+					int regionIndex = 0;
+					int remainingFaceCount = faces.Count;
+					int remainingRegionCount = _regionCount;
+					while (remainingRegionCount > 0)
+					{
+						if (Experilous.Random.HalfOpenRange(remainingFaceCount, randomEngine) < remainingRegionCount)
+						{
+							var faceIndex = faces[listIndex];
+							visitor.AddSeed(faceIndex);
+							_faceRegions[faceIndex] = regionIndex;
+							++regionIndex;
+							--remainingRegionCount;
+						}
+
+						++listIndex;
+						--remainingFaceCount;
+					}
+
+					foreach (var edge in (IEnumerable<Topology.FaceEdge>)visitor)
+					{
+						_faceRegions[edge.farFace] = _faceRegions[edge.nearFace];
+					}
+				}
+
+				_regionColors = new List<Color>(_regionCount);
+				while (_regionColors.Count < _regionCount)
+				{
+					_regionColors.Add(new Color(
+						Experilous.Random.ClosedFloatUnit(randomEngine),
+						Experilous.Random.ClosedFloatUnit(randomEngine),
+						Experilous.Random.ClosedFloatUnit(randomEngine)));
+				}
+
+			}
+			else
+			{
+				_faceRegions = null;
+				_regionCount = 0;
+				_regionColors = null;
+			}
+
+			ClearSubmeshes();
+
+			if (BuildMesh && SubmeshPrefab != null)
+			{
+				if (CalculateCentroids)
+				{
+					BuildSubmeshes(_manifold.topology.faces, _manifold.vertexPositions, _centroids);
+				}
+				else
+				{
+					BuildSubmeshes(_manifold.topology.faces, _manifold.vertexPositions);
+				}
+			}
+
+			ClearSubmeshCache();
 
 			_invalidated = false;
 		}
