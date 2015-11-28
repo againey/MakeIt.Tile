@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	using VertexPositions = VertexAttribute<Vector3>;
-
 	public static class SphericalManifold
 	{
 		public static Manifold CreateTetrahedron()
@@ -16,7 +14,7 @@ namespace Experilous.Topological
 			var z1 = -Mathf.Sqrt(2f / 9f);
 			var x = Mathf.Sqrt(2f / 3f);
 
-			var vertexPositions = new VertexPositions(4);
+			var vertexPositions = new Vector3[4];
 			vertexPositions[ 0] = new Vector3( 0, +1,  0);
 			vertexPositions[ 1] = new Vector3( 0,  y, z0);
 			vertexPositions[ 2] = new Vector3(+x,  y, z1);
@@ -30,13 +28,13 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), vertexPositions);
 		}
 
-		public static Manifold CreateHexahedron()
+		public static Manifold CreateCube()
 		{
 			var builder = new Topology.VertexVerticesBuilder(8, 24, 6);
 
 			var a = 1f / Mathf.Sqrt(3f);
 
-			var vertexPositions = new VertexPositions(8);
+			var vertexPositions = new Vector3[8];
 			vertexPositions[ 0] = new Vector3(+a, +a, +a);
 			vertexPositions[ 1] = new Vector3(+a, +a, -a);
 			vertexPositions[ 2] = new Vector3(-a, +a, -a);
@@ -62,7 +60,7 @@ namespace Experilous.Topological
 		{
 			var builder = new Topology.VertexVerticesBuilder(6, 24, 8);
 
-			var vertexPositions = new VertexPositions(6);
+			var vertexPositions = new Vector3[6];
 			vertexPositions[ 0] = new Vector3( 0, +1,  0);
 			vertexPositions[ 1] = new Vector3(+1,  0,  0);
 			vertexPositions[ 2] = new Vector3( 0,  0, -1);
@@ -103,7 +101,7 @@ namespace Experilous.Topological
 			var z1 = cosLat * Mathf.Cos(longitude);
 			var z2 = cosLat * Mathf.Cos(longitude * 2.0f);
 
-			var vertexPositions = new VertexPositions(12);
+			var vertexPositions = new Vector3[12];
 			vertexPositions[ 0] = new Vector3(+x2,  y0, 0.0f);
 			vertexPositions[ 1] = new Vector3(+x2, +y1, +z0);
 			vertexPositions[ 2] = new Vector3(+x2, -y1, -z0);
@@ -497,7 +495,7 @@ namespace Experilous.Topological
 			var builder = new Topology.VertexVerticesBuilder();
 			var subdividedPositions = new List<Vector3>();
 
-			foreach (var vertex in topology.vertices)
+			foreach (var vertex in topology.internalVertices)
 			{
 				builder.AddVertex();
 				subdividedPositions.Add(positions[vertex]);
@@ -547,13 +545,13 @@ namespace Experilous.Topological
 			}
 
 			int maxNeighborCount = 0;
-			foreach (var vertex in topology.vertices)
+			foreach (var vertex in topology.internalVertices)
 			{
 				maxNeighborCount = Mathf.Max(maxNeighborCount, vertex.neighborCount);
 			}
 
 			var neighbors = new int[maxNeighborCount];
-			foreach (var vertex in topology.vertices)
+			foreach (var vertex in topology.internalVertices)
 			{
 				int i = 0;
 				foreach (var edge in vertex.edges)
@@ -563,7 +561,7 @@ namespace Experilous.Topological
 				builder.ExtendVertex(vertex.index, i, neighbors);
 			}
 
-			foreach (var face in topology.faces)
+			foreach (var face in topology.internalFaces)
 			{
 				if (face.neighborCount == 3)
 				{
@@ -579,51 +577,58 @@ namespace Experilous.Topological
 				}
 			}
 
-			return new Manifold(builder.BuildTopology(), new VertexPositions(subdividedPositions));
+			return new Manifold(builder.BuildTopology(), subdividedPositions.ToArray());
 		}
 
-		public static VertexPositions RelaxForRegularity(Manifold manifold)
+		public static Vector3[] RelaxForRegularity(Manifold manifold, bool lockBoundaryPositions)
 		{
-			return RelaxForRegularity(manifold, new VertexPositions(manifold.vertexPositions.Count));
+			return RelaxForRegularity(manifold, lockBoundaryPositions, new Vector3[manifold.vertexPositions.Length]);
 		}
 
-		public static VertexPositions RelaxForRegularity(Manifold manifold, VertexPositions relaxed)
+		public static Vector3[] RelaxForRegularity(Manifold manifold, bool lockBoundaryPositions, Vector3[] relaxed)
 		{
 			var original = manifold.vertexPositions;
-			if (relaxed.Count < original.Count) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
+			if (relaxed.Length < original.Length) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
 
-			relaxed.Clear();
+			System.Array.Clear(relaxed, 0, relaxed.Length);
 
-			foreach (var vertex in manifold.topology.vertices)
+			foreach (var vertex in manifold.topology.internalVertices)
 			{
-				foreach (var edge in vertex.edges)
+				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
 				{
-					relaxed[vertex] += original[edge.farVertex];
+					foreach (var edge in vertex.edges)
+					{
+						relaxed[vertex] += original[edge.farVertex];
+					}
+					relaxed[vertex].Normalize();
 				}
-				relaxed[vertex] = relaxed[vertex].normalized;
+				else
+				{
+					relaxed[vertex] = original[vertex];
+				}
 			}
 
 			return relaxed;
 		}
 
-		public static VertexPositions RelaxForEqualArea(Manifold manifold)
+		public static Vector3[] RelaxForEqualArea(Manifold manifold, bool lockBoundaryPositions)
 		{
-			return RelaxForEqualArea(manifold, new VertexPositions(manifold.vertexPositions.Count));
+			return RelaxForEqualArea(manifold, lockBoundaryPositions, new Vector3[manifold.vertexPositions.Length]);
 		}
 
-		public static VertexPositions RelaxForEqualArea(Manifold manifold, VertexPositions relaxed)
+		public static Vector3[] RelaxForEqualArea(Manifold manifold, bool lockBoundaryPositions, Vector3[] relaxed)
 		{
-			return RelaxForEqualArea(manifold, relaxed, new FaceAttribute<Vector3>(manifold.vertexPositions.Count));
+			return RelaxForEqualArea(manifold, lockBoundaryPositions, relaxed, new Vector3[manifold.vertexPositions.Length]);
 		}
 
-		public static VertexPositions RelaxForEqualArea(Manifold manifold, VertexPositions relaxed, FaceAttribute<Vector3> centroidsBuffer)
+		public static Vector3[] RelaxForEqualArea(Manifold manifold, bool lockBoundaryPositions, Vector3[] relaxed, Vector3[] centroids)
 		{
 			var original = manifold.vertexPositions;
-			if (relaxed.Count < original.Count) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
+			if (relaxed.Length < original.Length) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
 
-			var idealArea = 4f * Mathf.PI / manifold.topology.vertices.Count;
+			var idealArea = 4f * Mathf.PI / manifold.topology.internalVertices.Count;
 
-			centroidsBuffer.Clear();
+			System.Array.Clear(centroids, 0, centroids.Length);
 			foreach (var face in manifold.topology.faces)
 			{
 				var sum = new Vector3();
@@ -631,17 +636,16 @@ namespace Experilous.Topological
 				{
 					sum += original[edge.nextVertex];
 				}
-				centroidsBuffer[face] = sum.normalized;
+				centroids[face] = sum.normalized;
 			}
 
-			relaxed.Clear();
-
-			foreach (var vertex in manifold.topology.vertices)
+			System.Array.Clear(relaxed, 0, relaxed.Length);
+			foreach (var vertex in manifold.topology.internalVertices)
 			{
 				var center = original[vertex];
 				var firstEdge = vertex.firstEdge;
 				var prevDelta = (original[firstEdge.prev.farVertex] - center) * 0.5f;
-				var centroid = centroidsBuffer[firstEdge.prevFace];
+				var centroid = centroids[firstEdge.prevFace];
 				var edge = firstEdge;
 				float surroundingArea = 0;
 				do
@@ -651,7 +655,7 @@ namespace Experilous.Topological
 					surroundingArea += Vector3.Cross(prevDelta, centroidDelta).magnitude + Vector3.Cross(nextDelta, centroidDelta).magnitude;
 					prevDelta = nextDelta;
 					edge = edge.next;
-					centroid = centroidsBuffer[edge.prevFace];
+					centroid = centroids[edge.prevFace];
 				} while (edge != firstEdge);
 				var multiplier = idealArea / (surroundingArea * 0.5f);
 				do
@@ -661,53 +665,63 @@ namespace Experilous.Topological
 				} while (edge != firstEdge);
 			}
 
-			for (int i = 0; i < relaxed.Count; ++i)
+			foreach (var vertex in manifold.topology.internalVertices)
 			{
-				relaxed[i] = relaxed[i].normalized;
+				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
+				{
+					relaxed[vertex] = relaxed[vertex].normalized;
+				}
+				else
+				{
+					relaxed[vertex] = original[vertex];
+				}
 			}
 
 			return relaxed;
 		}
 
-		public static bool ValidateAndRepair(Manifold manifold, float adjustmentWeight)
+		public static bool ValidateAndRepair(Manifold manifold, float adjustmentWeight, bool lockBoundaryPositions)
 		{
 			bool repaired = false;
 			var vertexPositions = manifold.vertexPositions;
 			float originalWeight = 1f - adjustmentWeight;
-			foreach (var vertex in manifold.topology.vertices)
+			foreach (var vertex in manifold.topology.internalVertices)
 			{
-				var center = vertexPositions[vertex] * 3f; // Multiply by 3 to not have to divide centroid sums by 3 below.
-				var edge = vertex.firstEdge;
-				var p0 = vertexPositions[edge.farVertex];
-				edge = edge.next;
-				var p1 = vertexPositions[edge.farVertex];
-				edge = edge.next;
-				var centroid0 = (center + p0 + p1);
-				var firstEdge = edge;
-				do
+				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
 				{
-					var p2 = vertexPositions[edge.farVertex];
-					var centroid1 = (center + p1 + p2);
-					var normal = Vector3.Cross(centroid0 - center, centroid1 - center);
-					if (Vector3.Dot(normal, center) < 0f) goto repair;
-					p0 = p1;
-					p1 = p2;
-					centroid0 = centroid1;
+					var center = vertexPositions[vertex] * 3f; // Multiply by 3 to not have to divide centroid sums by 3 below.
+					var edge = vertex.firstEdge;
+					var p0 = vertexPositions[edge.farVertex];
 					edge = edge.next;
-				} while (edge != firstEdge);
-
-				continue;
-
-				repair: repaired = true;
-				var average = new Vector3();
-				edge = firstEdge;
-				do
-				{
-					average += vertexPositions[edge.farVertex];
+					var p1 = vertexPositions[edge.farVertex];
 					edge = edge.next;
-				} while (edge != firstEdge);
-				average /= vertex.neighborCount;
-				vertexPositions[vertex] = (center * originalWeight + average * adjustmentWeight).normalized;
+					var centroid0 = (center + p0 + p1);
+					var firstEdge = edge;
+					do
+					{
+						var p2 = vertexPositions[edge.farVertex];
+						var centroid1 = (center + p1 + p2);
+						var normal = Vector3.Cross(centroid0 - center, centroid1 - center);
+						if (Vector3.Dot(normal, center) < 0f) goto repair;
+						p0 = p1;
+						p1 = p2;
+						centroid0 = centroid1;
+						edge = edge.next;
+					} while (edge != firstEdge);
+
+					continue;
+
+					repair: repaired = true;
+					var average = new Vector3();
+					edge = firstEdge;
+					do
+					{
+						average += vertexPositions[edge.farVertex];
+						edge = edge.next;
+					} while (edge != firstEdge);
+					average /= vertex.neighborCount;
+					vertexPositions[vertex] = (center * originalWeight + average * adjustmentWeight).normalized;
+				}
 			}
 
 			return !repaired;
@@ -716,16 +730,16 @@ namespace Experilous.Topological
 		public static Manifold GetDualManifold(Manifold manifold)
 		{
 			var topology = manifold.topology.GetDualTopology();
-			var vertexPositions = new VertexAttribute<Vector3>(topology.vertices.Count);
+			var vertexPositions = new Vector3[topology.internalVertices.Count];
 
-			foreach (var face in manifold.topology.faces)
+			foreach (var face in manifold.topology.internalFaces)
 			{
 				var average = new Vector3();
 				foreach (var edge in face.edges)
 				{
 					average += manifold.vertexPositions[edge.nextVertex];
 				}
-				vertexPositions[face.index] = average.normalized;
+				vertexPositions[face] = average.normalized;
 			}
 
 			return new Manifold(topology, vertexPositions);

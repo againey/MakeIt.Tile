@@ -327,7 +327,7 @@ namespace Experilous.Topological
 
 			private void AddEdgeToVertex(NodeData[] vertexData, EdgeData[] edgeData, int vertex, int edge)
 			{
-				if (!vertexData[vertex].isEmpty)
+				if (vertexData[vertex].isInitialized)
 				{
 					var firstVertexEdge = vertexData[vertex].firstEdge;
 					var vertexEdge = firstVertexEdge;
@@ -350,19 +350,51 @@ namespace Experilous.Topological
 
 			private void PutEdgesInSequence(EdgeData[] edgeData, int edge0, int edge1)
 			{
-				var firstEdge = edgeData[edge0]._vNext;
-				if (firstEdge != edge1)
+				// Find out what comes immediately after edge0.
+				var afterEdge0 = edgeData[edge0]._vNext;
+				if (afterEdge0 != edge1)
 				{
-					var edge = firstEdge;
-					var nextEdge = edgeData[edge]._vNext;
+					// If it's not edge1, then search for edge1 and the edge that immediately preceeds it.
+					var beforeEdge1 = afterEdge0;
+					var nextEdge = edgeData[beforeEdge1]._vNext;
 					while (nextEdge != edge1)
 					{
-						edge = nextEdge;
-						nextEdge = edgeData[edge]._vNext;
+						beforeEdge1 = nextEdge;
+						nextEdge = edgeData[beforeEdge1]._vNext;
 					}
-					edgeData[edge]._vNext = edgeData[nextEdge]._vNext;
-					edgeData[nextEdge]._vNext = firstEdge;
-					edgeData[edge0]._vNext = edge1;
+					// The decision must be made whether to move edge0 to just before edge1, or move edge1
+					// to just after edge0.  The choice must avoid breaking an ordered relationship that
+					// has already been established previously.  It is known that any edge pointing to an
+					// edge that has an index smaller than edge1 has already been processed.  It is also
+					// known that the only two relations we care about are between beforeEdge0 and edge0,
+					// and edge1 and the edge after edge1.  The other two potential relations are not
+					// actually possible because we're in the process of establishing those relationships
+					// right now; they couldn't possibly have been established differently before.
+					// What that boils down to is that if edge0 is less than edge1, then we cannot move
+					// edge0 and must move edge1 instead; otherwise, it is safe to move edge0 (and
+					// undetermined and irrelevant whether it is safe to move edge1).
+					if (edge0 < edge1)
+					{
+						// Move edge1 to the location immediately after edge0.
+						edgeData[beforeEdge1]._vNext = edgeData[edge1]._vNext;
+						edgeData[edge1]._vNext = afterEdge0;
+						edgeData[edge0]._vNext = edge1;
+					}
+					else
+					{
+						// Move edge0 to the location immediately before edge1.
+						// To do so, find the edge that immediately preceeds it.
+						var beforeEdge0 = edge1;
+						nextEdge = edgeData[beforeEdge0]._vNext;
+						while (nextEdge != edge0)
+						{
+							beforeEdge0 = nextEdge;
+							nextEdge = edgeData[beforeEdge0]._vNext;
+						}
+						edgeData[beforeEdge0]._vNext = afterEdge0;
+						edgeData[beforeEdge1]._vNext = edge0;
+						edgeData[edge0]._vNext = edge1;
+					}
 				}
 			}
 
@@ -371,8 +403,8 @@ namespace Experilous.Topological
 				var topology = new Topology();
 
 				var vertexData = new NodeData[_maxVertexIndex + 1];
-				var interiorEdgeData = new EdgeData[_faceVertices.Count];
-				var faceData = new NodeData[_faceRoots.Count];
+				var internalEdgeData = new EdgeData[_faceVertices.Count];
+				var internalFaceData = new NodeData[_faceRoots.Count];
 
 				// Create all the edges with full vertex and face references, correct but
 				// unspecified-order vNext references, invalid twin references, and unset
@@ -385,11 +417,11 @@ namespace Experilous.Topological
 					var firstFaceVertex = faceVertex0;
 					do
 					{
-						interiorEdgeData[nextEdge]._vertex = _faceVertices[faceVertex0]._vertex;
-						interiorEdgeData[nextEdge]._face = face;
-						interiorEdgeData[nextEdge]._twin = -1;
+						internalEdgeData[nextEdge]._vertex = _faceVertices[faceVertex0]._vertex;
+						internalEdgeData[nextEdge]._face = face;
+						internalEdgeData[nextEdge]._twin = -1;
 
-						AddEdgeToVertex(vertexData, interiorEdgeData, _faceVertices[faceVertex1]._vertex, nextEdge);
+						AddEdgeToVertex(vertexData, internalEdgeData, _faceVertices[faceVertex1]._vertex, nextEdge);
 
 						++nextEdge;
 						faceVertex0 = faceVertex1;
@@ -400,7 +432,7 @@ namespace Experilous.Topological
 				int boundaryEdgeCount = 0;
 
 				// Use the limited information constructed in the prior loop to determine
-				// interior edge twins and count boundary edges.
+				// internal edge twins and count boundary edges.
 				int edge = 0;
 				for (int face = 0; face < _faceRoots.Count; ++face)
 				{
@@ -410,22 +442,22 @@ namespace Experilous.Topological
 					var firstFaceVertex = faceVertex0;
 					do
 					{
-						if (interiorEdgeData[edge]._twin == -1)
+						if (internalEdgeData[edge]._twin == -1)
 						{
 							var firstVertexEdge = vertexData[_faceVertices[faceVertex0]._vertex].firstEdge;
 							var vertexEdge = firstVertexEdge;
 							var targetVertex = _faceVertices[faceVertex1]._vertex;
-							while (interiorEdgeData[vertexEdge]._vertex != targetVertex)
+							while (internalEdgeData[vertexEdge]._vertex != targetVertex)
 							{
-								vertexEdge = interiorEdgeData[vertexEdge]._vNext;
+								vertexEdge = internalEdgeData[vertexEdge]._vNext;
 								if (vertexEdge == firstVertexEdge)
 								{
 									++boundaryEdgeCount;
 									goto nextFaceVertex;
 								}
 							}
-							interiorEdgeData[vertexEdge]._twin = edge;
-							interiorEdgeData[edge]._twin = vertexEdge;
+							internalEdgeData[vertexEdge]._twin = edge;
+							internalEdgeData[edge]._twin = vertexEdge;
 						}
 
 						nextFaceVertex:  ++edge;
@@ -438,14 +470,14 @@ namespace Experilous.Topological
 
 				if (boundaryEdgeCount == 0)
 				{
-					edgeData = interiorEdgeData;
+					edgeData = internalEdgeData;
 				}
 				else
 				{
 					// Finish the edge twin process by creating the boundary edges and
 					// setting their twins.
-					edgeData = new EdgeData[interiorEdgeData.Length + boundaryEdgeCount];
-					System.Array.Copy(interiorEdgeData, edgeData, interiorEdgeData.Length);
+					edgeData = new EdgeData[internalEdgeData.Length + boundaryEdgeCount];
+					System.Array.Copy(internalEdgeData, edgeData, internalEdgeData.Length);
 					edge = 0;
 					for (int face = 0; face < _faceRoots.Count; ++face)
 					{
@@ -505,13 +537,112 @@ namespace Experilous.Topological
 						faceVertex2 = _faceVertices[faceVertex1]._next;
 					} while (faceVertex0 != firstFaceVertex);
 
-					faceData[face] = new NodeData(neighborCount, edgeData[firstEdge]._twin);
+					internalFaceData[face] = new NodeData(neighborCount, edgeData[firstEdge]._twin);
 					edge = firstEdge + neighborCount;
+				}
+
+				edge = 0;
+				for (int face = 0; face < _faceRoots.Count; ++face)
+				{
+					int neighborCount = 0;
+
+					var faceVertex0 = _faceRoots[face];
+					var faceVertex1 = _faceVertices[faceVertex0]._next;
+					var faceVertex2 = _faceVertices[faceVertex1]._next;
+
+					var firstEdge = edge;
+					nextEdge = edge + 1;
+
+					var firstFaceVertex = faceVertex0;
+					do
+					{
+						if (edgeData[edgeData[nextEdge]._twin]._vNext != edge)
+							throw new System.InvalidOperationException();
+
+						++neighborCount;
+
+						edge = nextEdge;
+						nextEdge = (faceVertex2 != firstFaceVertex) ? edge + 1 : firstEdge;
+						faceVertex0 = faceVertex1;
+						faceVertex1 = faceVertex2;
+						faceVertex2 = _faceVertices[faceVertex1]._next;
+					} while (faceVertex0 != firstFaceVertex);
+
+					edge = firstEdge + neighborCount;
+				}
+
+				NodeData[] faceData;
+
+				if (boundaryEdgeCount == 0)
+				{
+					faceData = internalFaceData;
+				}
+				else
+				{
+					// Now that all vertex and edge relationships are established, locate all edges that don't have a
+					// face relationship specified (the boundary edges) and spin around each face to establish those
+					// edge -> face relationships and count the total number of external faces.
+					int faceIndex = internalFaceData.Length;
+					for (int edgeIndex = 0; edgeIndex < edgeData.Length; ++edgeIndex)
+					{
+						if (edgeData[edgeIndex]._face == -1)
+						{
+							// Starting with the current edge, follow the edge links appropriately to wind around the
+							// implicit face counter-clockwise and link the edges to the face.
+							var neighborCount = 0;
+							var twinEdgeIndex = edgeIndex;
+							var faceEdgeIndex = edgeData[edgeIndex]._twin;
+							do
+							{
+								edgeData[twinEdgeIndex]._face = faceIndex;
+								twinEdgeIndex = edgeData[faceEdgeIndex]._vNext;
+								var nextFaceEdgeIndex = edgeData[twinEdgeIndex]._twin;
+								edgeData[nextFaceEdgeIndex]._fNext = faceEdgeIndex;
+								faceEdgeIndex = nextFaceEdgeIndex;
+								++neighborCount;
+								if (neighborCount > vertexData.Length) throw new System.InvalidOperationException("Face neighbors were specified such that an external face was misconfigured.");
+							} while (twinEdgeIndex != edgeIndex);
+
+							++faceIndex;
+						}
+					}
+
+					// Allocate the array for face -> edge linkage, now that we know the number of faces, find the
+					// first edge of every face and count the face's neighbors.
+					faceData = new NodeData[faceIndex];
+					System.Array.Copy(internalFaceData, faceData, internalFaceData.Length);
+					faceIndex = internalFaceData.Length;
+					for (int edgeIndex = 0; edgeIndex < edgeData.Length; ++edgeIndex)
+					{
+						// Give the above loop, the face index of edges in their current order are guaranteed to be
+						// such that the all edges that refer to a face other than the re-incrementing face index
+						// must have already been processed earlier in the loop and can be skipped.
+						if (edgeData[edgeIndex]._face == faceIndex)
+						{
+							// Starting with the current edge, follow the edge links appropriately to wind around the
+							// implicit face clockwise and link the edges to the face.
+							var neighborCount = 0;
+							var faceEdgeIndex = edgeData[edgeIndex]._twin;
+							var firstFaceEdgeIndex = faceEdgeIndex;
+							do
+							{
+								faceEdgeIndex = edgeData[faceEdgeIndex]._fNext;
+								++neighborCount;
+								if (neighborCount > vertexData.Length) throw new System.InvalidOperationException("Face neighbors were specified such that an external face was misconfigured.");
+							} while (faceEdgeIndex != firstFaceEdgeIndex);
+
+							// Store the face count and link the face to the first edge.
+							faceData[faceIndex] = new NodeData(true, neighborCount, firstFaceEdgeIndex);
+							++faceIndex;
+						}
+					}
 				}
 
 				topology._vertexData = vertexData;
 				topology._edgeData = edgeData;
 				topology._faceData = faceData;
+				topology._firstExternalVertexIndex = vertexData.Length;
+				topology._firstExternalFaceIndex = internalFaceData.Length;
 
 				return topology;
 			}

@@ -94,7 +94,7 @@ namespace Experilous.Topological
 					var face = _halfEdges[halfEdge]._face;
 					topology._edgeData[halfEdge] = new EdgeData(twin, _forwardLinks[halfEdge]._vNext, _forwardLinks[halfEdge]._fNext, vertex, face);
 
-					if (vertex != -1 && topology._vertexData[vertex].isEmpty)
+					if (vertex != -1 && !topology._vertexData[vertex].isInitialized)
 					{
 						var neighborCount = 0;
 						var vertexEdge = twin;
@@ -107,7 +107,7 @@ namespace Experilous.Topological
 						topology._vertexData[vertex] = new NodeData(neighborCount, twin);
 					}
 
-					if (face != -1 && topology._faceData[face].isEmpty)
+					if (face != -1 && !topology._faceData[face].isInitialized)
 					{
 						var neighborCount = 0;
 						var faceEdge = twin;

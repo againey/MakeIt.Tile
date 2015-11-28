@@ -354,14 +354,13 @@ namespace Experilous.Topological
 					{
 						if (topology._edgeData[edgeIndex]._face == -1)
 						{
-							// Starting with the current edge, follow the edge links appropriatley to wind around the
-							// implicit face counter clockwise and link the edges to the face.
+							// Starting with the current edge, follow the edge links appropriately to wind around the
+							// implicit face counter-clockwise and link the edges to the face.
 							var neighborCount = 0;
 							var faceEdgeIndex = edgeIndex;
 							do
 							{
 								topology._edgeData[faceEdgeIndex]._face = faceIndex;
-								//topology._edgeData[faceEdgeIndex]._fNext = topology._edgeData[faceEdgeIndex]._vPrev;
 								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._twin]._vNext;
 								++neighborCount;
 								if (neighborCount > topology._vertexData.Length) throw new System.InvalidOperationException("Vertex neighbors were specified such that a face was misconfigured.");
@@ -382,7 +381,7 @@ namespace Experilous.Topological
 						// must have already been processed earlier in the loop and can be skipped.
 						if (topology._edgeData[edgeIndex]._face == faceIndex)
 						{
-							// Starting with the current edge, follow the edge links appropriatley to wind around the
+							// Starting with the current edge, follow the edge links appropriately to wind around the
 							// implicit face clockwise and link the edges to the face.
 							var neighborCount = 0;
 							var faceEdgeIndex = edgeIndex;
@@ -412,14 +411,13 @@ namespace Experilous.Topological
 						{
 							if (faceIndex == _faceCount) throw new System.InvalidOperationException("The actual number of faces does not match the number specified when the topology builder was first constructed.");
 
-							// Starting with the current edge, follow the edge links appropriatley to wind around the
+							// Starting with the current edge, follow the edge links appropriately to wind around the
 							// implicit face clockwise and link the edges to the face.
 							var neighborCount = 0;
 							var faceEdgeIndex = edgeIndex;
 							do
 							{
 								topology._edgeData[faceEdgeIndex]._face = faceIndex;
-								//topology._edgeData[faceEdgeIndex]._fNext = topology._edgeData[faceEdgeIndex]._vPrev;
 								faceEdgeIndex = topology._edgeData[topology._edgeData[faceEdgeIndex]._twin]._vNext;
 								++neighborCount;
 								if (neighborCount > topology._vertexData.Length) throw new System.InvalidOperationException("Vertex neighbors were specified such that a face was misconfigured.");
@@ -433,6 +431,9 @@ namespace Experilous.Topological
 
 					if (faceIndex != _faceCount) throw new System.InvalidOperationException("The actual number of faces does not match the number specified when the topology builder was first constructed.");
 				}
+
+				topology._firstExternalVertexIndex = topology._vertexData.Length;
+				topology._firstExternalFaceIndex = topology._faceData.Length;
 
 				return topology;
 			}

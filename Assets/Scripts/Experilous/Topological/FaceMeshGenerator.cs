@@ -5,7 +5,7 @@ namespace Experilous.Topological
 {
 	public class FaceMeshGenerator : UniqueMesh
 	{
-		public ManifoldGenerator ManifoldGenerator;
+		/*public ManifoldGenerator ManifoldGenerator;
 		public Color Color;
 
 		private void AddFace(Topology.Face face, VertexAttribute<Vector3> vertexPositions, Vector3[] vertices, Color[] colors, int[] triangles, ref int meshVertex, ref int meshTriangle)
@@ -87,6 +87,6 @@ namespace Experilous.Topological
 		{
 			mesh.Clear();
 			mesh.RecalculateBounds();
-		}
+		}*/
 	}
 }

@@ -1,27 +1,48 @@
-﻿using System;
+﻿using UnityEngine;
+using System;
 
 namespace Experilous.Topological
 {
+	[Serializable]
 	public partial class Topology
 	{
+		[Serializable]
 		private struct NodeData
 		{
+			[SerializeField]
 			private uint _data;
 
 			public NodeData(int neighborCount, int firstEdge)
 			{
-				_data = (((uint)neighborCount & 0xFF) << 24) | ((uint)firstEdge & 0xFFFFFF);
+				_data = (((uint)neighborCount & 0x7Fu) << 24) | ((uint)firstEdge & 0xFFFFFFu);
+			}
+
+			public NodeData(bool isExternal, int neighborCount, int firstEdge)
+			{
+				_data = (isExternal ? 0x80000000u : 0x00000000u) | (((uint)neighborCount & 0x7Fu) << 24) | ((uint)firstEdge & 0xFFFFFFu);
+			}
+
+			public bool isExternal
+			{
+				get
+				{
+					return (_data & 0x80000000u) != 0;
+				}
+				set
+				{
+					_data = (_data & 0x7FFFFFFFu) | (value ? 0x80000000u : 0x00000000u);
+				}
 			}
 
 			public int neighborCount
 			{
 				get
 				{
-					return (int)((_data >> 24) & 0xFF);
+					return (int)((_data >> 24) & 0x7Fu);
 				}
 				set
 				{
-					_data = (_data & 0xFFFFFF) | (((uint)value & 0xFF) << 24);
+					_data = (_data & 0x80FFFFFFu) | (((uint)value & 0x7Fu) << 24);
 				}
 			}
 
@@ -29,19 +50,19 @@ namespace Experilous.Topological
 			{
 				get
 				{
-					return (int)(_data & 0xFFFFFF);
+					return (int)(_data & 0x00FFFFFFu);
 				}
 				set
 				{
-					_data = (_data & 0xFF000000) | ((uint)value & 0xFFFFFF);
+					_data = (_data & 0xFF000000u) | ((uint)value & 0xFFFFFFu);
 				}
 			}
 
-			public bool isEmpty
+			public bool isInitialized
 			{
 				get
 				{
-					return _data == 0;
+					return _data != 0;
 				}
 			}
 
@@ -60,6 +81,8 @@ namespace Experilous.Topological
 			_vertexData = original._vertexData.Clone() as NodeData[];
 			_edgeData = original._edgeData.Clone() as EdgeData[];
 			_faceData = original._faceData.Clone() as NodeData[];
+			_firstExternalVertexIndex = original._firstExternalVertexIndex;
+			_firstExternalFaceIndex = original._firstExternalFaceIndex;
 		}
 
 		public Topology Clone()
@@ -94,6 +117,9 @@ namespace Experilous.Topological
 				dual._vertexData[i].firstEdge = dual._edgeData[dual._vertexData[i].firstEdge]._twin;
 			}
 
+			dual._firstExternalVertexIndex = _firstExternalFaceIndex;
+			dual._firstExternalFaceIndex = _firstExternalVertexIndex;
+
 			return dual;
 		}
 
@@ -126,14 +152,11 @@ namespace Experilous.Topological
 		// 2:  outer edge 2 points away from A
 		// Note:  inner edges point downward, outer edges point upward
 
-		private void PivotEdgeBackwardUnchecked(int edgeIndex)
+		private void PivotVertexEdgeBackwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
 		{
-			var twinEdgeIndex = _edgeData[edgeIndex]._twin;
-			var outerEdgeIndex2 = _edgeData[edgeIndex]._fNext;
-			var innerEdgeIndex1 = _edgeData[twinEdgeIndex]._vNext;
-			var outerEdgeIndex1 = _edgeData[innerEdgeIndex1]._twin;
 			var innerEdgeIndex0 = _edgeData[outerEdgeIndex1]._vNext;
 			var outerEdgeIndex0 = _edgeData[innerEdgeIndex0]._twin;
+			var outerEdgeIndex2 = _edgeData[edgeIndex]._fNext;
 
 			var prevFaceIndex = _edgeData[edgeIndex]._face;
 			var nextFaceIndex = _edgeData[twinEdgeIndex]._face;
@@ -161,14 +184,14 @@ namespace Experilous.Topological
 			_edgeData[outerEdgeIndex1]._fNext = outerEdgeIndex2;
 
 			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
-			_vertexData[oldVertexIndex].firstEdge = innerEdgeIndex1;
-			_faceData[prevFaceIndex].firstEdge = twinEdgeIndex;
+			if (oldVertexIndex != -1) _vertexData[oldVertexIndex].firstEdge = innerEdgeIndex1;
+			if (prevFaceIndex != -1) _faceData[prevFaceIndex].firstEdge = twinEdgeIndex;
 
 			// Adjust neighbor counts.
-			_vertexData[oldVertexIndex].neighborCount -= 1;
-			_vertexData[newVertexIndex].neighborCount += 1;
-			_faceData[prevFaceIndex].neighborCount -= 1;
-			_faceData[nextFaceIndex].neighborCount += 1;
+			if (oldVertexIndex != -1) _vertexData[oldVertexIndex].neighborCount -= 1;
+			if (newVertexIndex != -1) _vertexData[newVertexIndex].neighborCount += 1;
+			if (prevFaceIndex != -1) _faceData[prevFaceIndex].neighborCount -= 1;
+			if (nextFaceIndex != -1) _faceData[nextFaceIndex].neighborCount += 1;
 		}
 
 		// Pivot an edge clockwise around its implicit near vertex.
@@ -200,14 +223,11 @@ namespace Experilous.Topological
 		// 2:  outer edge 2 points away from B
 		// Note:  inner edges point downward, outer edges point upward
 
-		private void PivotEdgeForwardUnchecked(int edgeIndex)
+		private void PivotVertexEdgeForwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
 		{
-			var twinEdgeIndex = _edgeData[edgeIndex]._twin;
-			var outerEdgeIndex1 = _edgeData[edgeIndex]._fNext;
-			var outerEdgeIndex2 = _edgeData[outerEdgeIndex1]._fNext;
 			var innerEdgeIndex0 = _edgeData[twinEdgeIndex]._vNext;
 			var outerEdgeIndex0 = _edgeData[innerEdgeIndex0]._twin;
-			var innerEdgeIndex1 = _edgeData[outerEdgeIndex1]._twin;
+			var outerEdgeIndex2 = _edgeData[outerEdgeIndex1]._fNext;
 
 			var prevFaceIndex = _edgeData[edgeIndex]._face;
 			var nextFaceIndex = _edgeData[twinEdgeIndex]._face;
@@ -235,106 +255,208 @@ namespace Experilous.Topological
 			_edgeData[outerEdgeIndex1]._fNext = twinEdgeIndex;
 
 			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
-			_vertexData[oldVertexIndex].firstEdge = outerEdgeIndex1;
-			_faceData[nextFaceIndex].firstEdge = edgeIndex;
+			if (oldVertexIndex != -1) _vertexData[oldVertexIndex].firstEdge = outerEdgeIndex1;
+			if (nextFaceIndex != -1) _faceData[nextFaceIndex].firstEdge = edgeIndex;
 
 			// Adjust neighbor counts.
-			_vertexData[oldVertexIndex].neighborCount -= 1;
-			_vertexData[newVertexIndex].neighborCount += 1;
-			_faceData[nextFaceIndex].neighborCount -= 1;
-			_faceData[prevFaceIndex].neighborCount += 1;
+			if (oldVertexIndex != -1) _vertexData[oldVertexIndex].neighborCount -= 1;
+			if (newVertexIndex != -1) _vertexData[newVertexIndex].neighborCount += 1;
+			if (nextFaceIndex != -1) _faceData[nextFaceIndex].neighborCount -= 1;
+			if (prevFaceIndex != -1) _faceData[prevFaceIndex].neighborCount += 1;
+		}
+
+		private void PivotEdgeBackwardUnchecked(VertexEdge edge)
+		{
+			
+			int edgeIndex = edge.index;
+			var twinEdgeIndex = _edgeData[edgeIndex]._twin;
+			var innerEdgeIndex1 = _edgeData[twinEdgeIndex]._vNext;
+			var outerEdgeIndex1 = _edgeData[innerEdgeIndex1]._twin;
+			PivotVertexEdgeBackwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
+		}
+
+		private void PivotEdgeForwardUnchecked(VertexEdge edge)
+		{
+			int edgeIndex = edge.index;
+			int twinEdgeIndex = _edgeData[edgeIndex]._twin;
+			var outerEdgeIndex1 = _edgeData[edgeIndex]._fNext;
+			var innerEdgeIndex1 = _edgeData[outerEdgeIndex1]._twin;
+			PivotVertexEdgeForwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
+		}
+
+		// Pivoting around the near face of an edge ultimately results in a simple
+		// pivot of an edge around a vertex, except it's a different edge pivoting
+		// around a different vertex.  The original face edge becomes the edge
+		// along which the vertex edge slides its far vertex.
+
+		private void PivotEdgeBackwardUnchecked(FaceEdge edge)
+		{
+			var innerEdgeIndex1 = edge.index;
+			var outerEdgeIndex1 = _edgeData[innerEdgeIndex1]._twin;
+			var twinEdgeIndex = _edgeData[outerEdgeIndex1]._fNext;
+			var edgeIndex = _edgeData[twinEdgeIndex]._twin;
+			PivotVertexEdgeBackwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
+		}
+
+		private void PivotEdgeForwardUnchecked(FaceEdge edge)
+		{
+			var innerEdgeIndex1 = edge.index;
+			var outerEdgeIndex1 = _edgeData[innerEdgeIndex1]._twin;
+			var twinEdgeIndex = _edgeData[outerEdgeIndex1]._vNext;
+			var edgeIndex = _edgeData[twinEdgeIndex]._twin;
+			PivotVertexEdgeForwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
 		}
 
 		public bool CanPivotEdgeBackward(VertexEdge edge)
 		{
-			return edge.prevFace.neighborCount > 3;
+			// After pivoting, the edge's old far vertex and previous face will both have their
+			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			return edge.farVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2;
 		}
 
 		public bool CanPivotEdgeForward(VertexEdge edge)
 		{
-			return edge.nextFace.neighborCount > 3;
+			// After pivoting, the edge's old far vertex and next face will both have their
+			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			return edge.farVertex.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
 		public void PivotEdgeBackward(VertexEdge edge)
 		{
-			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge backward when its previous face has only three sides.");
-			PivotEdgeBackwardUnchecked(edge.index);
+			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge backward when either its far vertex or previous face has only two neighbors.");
+			PivotEdgeBackwardUnchecked(edge);
 		}
 
 		public void PivotEdgeForward(VertexEdge edge)
 		{
-			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge forward when its next face has only three sides.");
-			PivotEdgeForwardUnchecked(edge.index);
+			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge forward when either its far vertex or next face has only two neighbors.");
+			PivotEdgeForwardUnchecked(edge);
 		}
 
 		public bool CanSpinEdgeBackward(VertexEdge edge)
 		{
-			return !edge.isBoundary && edge.farVertex.neighborCount >= 3 && edge.nearVertex.neighborCount >= 3;
+			// After spinning, the edge's old near and far vertices will both have their
+			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			// The previous and next faces must also have more than 2 neighbors, or else
+			// things get really weird.
+			// Note that all face neighbor counts will remain stable.
+			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
 		public bool CanSpinEdgeForward(VertexEdge edge)
 		{
-			return !edge.isBoundary && edge.farVertex.neighborCount >= 3 && edge.nearVertex.neighborCount >= 3;
+			// After spinning, the edge's old near and far vertices will both have their
+			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			// The previous and next faces must also have more than 2 neighbors, or else
+			// things get really weird.
+			// Note that all face neighbor counts will remain stable.
+			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
 		public void SpinEdgeBackward(VertexEdge edge)
 		{
-			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge backward when it is a boundary edge or one of its vertices has only three neighbors.");
-			PivotEdgeBackwardUnchecked(edge.index);
-			PivotEdgeBackwardUnchecked(edge.twinIndex);
+			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge backward when either its far vertex or near vertex has only two neighbors.");
+			PivotEdgeBackwardUnchecked(edge);
+			PivotEdgeBackwardUnchecked(edge.twin);
 		}
 
 		public void SpinEdgeForward(VertexEdge edge)
 		{
-			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when it is a boundary edge or one of its vertices has only three neighbors.");
-			PivotEdgeForwardUnchecked(edge.index);
-			PivotEdgeForwardUnchecked(edge.twinIndex);
+			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when either its far vertex or near vertex has only two neighbors.");
+			PivotEdgeForwardUnchecked(edge);
+			PivotEdgeForwardUnchecked(edge.twin);
 		}
 
 		public bool CanPivotEdgeBackward(FaceEdge edge)
 		{
-			return edge.farFace.neighborCount > 3;
+			// After pivoting, the edge's old far face and prev vertex will both have their
+			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			return edge.farFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2;
 		}
 
 		public bool CanPivotEdgeForward(FaceEdge edge)
 		{
-			return edge.nearFace.neighborCount > 3;
+			// After pivoting, the edge's old far face and next vertex will both have their
+			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			return edge.farFace.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
 		public void PivotEdgeBackward(FaceEdge edge)
 		{
-			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a face edge backward when its far face has only three sides.");
-			PivotEdgeBackwardUnchecked(edge.index);
+			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a face edge backward when either its far face or previous vertex has only two neighbors.");
+			PivotEdgeBackwardUnchecked(edge);
 		}
 
 		public void PivotEdgeForward(FaceEdge edge)
 		{
-			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a face edge forward when its near face has only three sides.");
-			PivotEdgeForwardUnchecked(edge.index);
+			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a face edge backward when either its far face or next vertex has only two neighbors.");
+			PivotEdgeForwardUnchecked(edge);
 		}
 
 		public bool CanSpinEdgeBackward(FaceEdge edge)
 		{
-			return !edge.isBoundary && edge.prevVertex.neighborCount >= 3 && edge.nextVertex.neighborCount >= 3;
+			// After spinning, the edge's old near and far faces will both have their
+			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			// The previous and next vertices must also have more than 2 neighbors, or
+			// else things get really weird.
+			// Note that all vertex neighbor counts will remain stable.
+			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
 		public bool CanSpinEdgeForward(FaceEdge edge)
 		{
-			return !edge.isBoundary && edge.prevVertex.neighborCount >= 3 && edge.nextVertex.neighborCount >= 3;
+			// After spinning, the edge's old near and far faces will both have their
+			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			// The previous and next vertices must also have more than 2 neighbors, or
+			// else things get really weird.
+			// Note that all vertex neighbor counts will remain stable.
+			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
 		public void SpinEdgeBackward(FaceEdge edge)
 		{
-			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a face edge backward when it is a boundary edge or one of its vertices has only three neighbors.");
-			PivotEdgeBackwardUnchecked(edge.index);
-			PivotEdgeBackwardUnchecked(edge.twinIndex);
+			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a face edge backward when either its far face or near face has only two neighbors.");
+			PivotEdgeBackwardUnchecked(edge);
+			PivotEdgeBackwardUnchecked(edge.twin);
 		}
 
 		public void SpinEdgeForward(FaceEdge edge)
 		{
-			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a face edge forward when it is a boundary edge or one of its vertices has only three neighbors.");
-			PivotEdgeForwardUnchecked(edge.index);
-			PivotEdgeForwardUnchecked(edge.twinIndex);
+			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a face edge forward when either its far face or near face has only two neighbors.");
+			PivotEdgeForwardUnchecked(edge);
+			PivotEdgeForwardUnchecked(edge.twin);
+		}
+
+		public void CheckVerticesForInvalidEdgeCycles()
+		{
+			foreach (var vertex in vertices)
+			{
+				var edge = vertex.firstEdge.next;
+				for (int i = 1; i < vertex.neighborCount; ++i)
+				{
+					if (vertex.firstEdge == edge)
+						throw new System.InvalidOperationException(string.Format("The cycle of edges around vertex {0} returned back to the first edge earlier than was expected, {1} iterations rather than {2}.", vertex.index, i, vertex.neighborCount));
+					edge = edge.next;
+				}
+				if (vertex.firstEdge != edge)
+					throw new System.InvalidOperationException(string.Format("The cycle of edges around vertex {0}  did not return back to the first edge in the {1} iterations expected.", vertex.index, vertex.neighborCount));
+			}
+		}
+
+		public void CheckFacesForInvalidEdgeCycles()
+		{
+			foreach (var face in faces)
+			{
+				var edge = face.firstEdge.next;
+				for (int i = 1; i < face.neighborCount; ++i)
+				{
+					if (face.firstEdge == edge)
+						throw new System.InvalidOperationException(string.Format("The cycle of edges around face {0} returned back to the first edge earlier than was expected, {1} iterations rather than {2}.", face.index, i, face.neighborCount));
+					edge = edge.next;
+				}
+				if (face.firstEdge != edge)
+					throw new System.InvalidOperationException(string.Format("The cycle of edges around face {0} did not return back to the first edge in the {1} iterations expected.", face.index, face.neighborCount));
+			}
 		}
 	}
 }

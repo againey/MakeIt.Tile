@@ -8,7 +8,7 @@ public class SphericalPartitioningTests
 {
 	private void ManifoldFaceCenterIntersections(Manifold manifold, SphericalPartitioning partitioning)
 	{
-		foreach (var face in manifold.topology.faces)
+		foreach (var face in manifold.topology.internalFaces)
 		{
 			var centroid = new Vector3();
 			foreach (var edge in face.edges)
@@ -23,7 +23,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldFaceVertexWeightedIntersections(Manifold manifold, SphericalPartitioning partitioning)
 	{
-		foreach (var face in manifold.topology.faces)
+		foreach (var face in manifold.topology.internalFaces)
 		{
 			foreach (var firstEdge in face.edges)
 			{
@@ -43,7 +43,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldFaceEdgeWeightedIntersections(Manifold manifold, SphericalPartitioning partitioning)
 	{
-		foreach (var face in manifold.topology.faces)
+		foreach (var face in manifold.topology.internalFaces)
 		{
 			foreach (var firstEdge in face.edges)
 			{
@@ -65,8 +65,8 @@ public class SphericalPartitioningTests
 
 	private void ManifoldExternalRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new FaceAttribute<Vector3>(manifold.topology.faces.Count);
-		foreach (var face in manifold.topology.faces)
+		var centroids = new Vector3[manifold.topology.internalFaces.Count];
+		foreach (var face in manifold.topology.internalFaces)
 		{
 			var centroid = new Vector3();
 			foreach (var edge in face.edges)
@@ -78,9 +78,9 @@ public class SphericalPartitioningTests
 
 		var random = new System.Random(randomSeed);
 
-		foreach (var face0 in manifold.topology.faces)
+		foreach (var face0 in manifold.topology.internalFaces)
 		{
-			foreach (var face1 in manifold.topology.faces)
+			foreach (var face1 in manifold.topology.internalFaces)
 			{
 				if (face0 != face1)
 				{
@@ -102,8 +102,8 @@ public class SphericalPartitioningTests
 
 	private void ManifoldInternalRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new FaceAttribute<Vector3>(manifold.topology.faces.Count);
-		foreach (var face in manifold.topology.faces)
+		var centroids = new Vector3[manifold.topology.internalFaces.Count];
+		foreach (var face in manifold.topology.internalFaces)
 		{
 			var centroid = new Vector3();
 			foreach (var edge in face.edges)
@@ -115,9 +115,9 @@ public class SphericalPartitioningTests
 
 		var random = new System.Random(randomSeed);
 
-		foreach (var face0 in manifold.topology.faces)
+		foreach (var face0 in manifold.topology.internalFaces)
 		{
-			foreach (var face1 in manifold.topology.faces)
+			foreach (var face1 in manifold.topology.internalFaces)
 			{
 				if (face0 != face1)
 				{
@@ -138,8 +138,8 @@ public class SphericalPartitioningTests
 
 	private void ManifoldRecedingRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new FaceAttribute<Vector3>(manifold.topology.faces.Count);
-		foreach (var face in manifold.topology.faces)
+		var centroids = new Vector3[manifold.topology.internalFaces.Count];
+		foreach (var face in manifold.topology.internalFaces)
 		{
 			var centroid = new Vector3();
 			foreach (var edge in face.edges)
@@ -151,9 +151,9 @@ public class SphericalPartitioningTests
 
 		var random = new System.Random(randomSeed);
 
-		foreach (var face0 in manifold.topology.faces)
+		foreach (var face0 in manifold.topology.internalFaces)
 		{
-			foreach (var face1 in manifold.topology.faces)
+			foreach (var face1 in manifold.topology.internalFaces)
 			{
 				if (face0 != face1)
 				{
@@ -212,7 +212,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceCenterIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceCenterIntersections(manifold, partitioning);
 	}
@@ -252,7 +252,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceVertexWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceVertexWeightedIntersections(manifold, partitioning);
 	}
@@ -292,7 +292,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceEdgeWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceEdgeWeightedIntersections(manifold, partitioning);
 	}
@@ -332,7 +332,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronExternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldExternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -372,7 +372,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronInternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldInternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -412,7 +412,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronRecedingRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldRecedingRayIntersections(manifold, partitioning, 1);
 	}
@@ -452,7 +452,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFailedRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateHexahedron();
+		var manifold = SphericalManifold.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFailedRayIntersections(manifold, partitioning, 1, 64);
 	}

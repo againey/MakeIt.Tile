@@ -9,7 +9,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void MinimalPointyTopTriGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreatePointyTopTriGridCylinder(2, 1, 60, 0.5f);
+		var manifold = CylindricalManifold.CreatePointyTopTriGridSphericalCylinder(2, 1, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -17,7 +17,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void MinimalFlatTopTriGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreateFlatTopTriGridCylinder(3, 1, 60, 0.5f);
+		var manifold = CylindricalManifold.CreateFlatTopTriGridSphericalCylinder(3, 1, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -25,7 +25,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void MinimalQuadGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreateQuadGridCylinder(3, 1, 60, 0.5f);
+		var manifold = CylindricalManifold.CreateQuadGridSphericalCylinder(3, 1, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -33,7 +33,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void MinimalPointyTopHexGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreatePointyTopHexGridCylinder(3, 1, 60, 0.5f);
+		var manifold = CylindricalManifold.CreatePointyTopHexGridSphericalCylinder(3, 1, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -41,7 +41,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void MinimalFlatTopHexGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreateFlatTopHexGridCylinder(4, 2, 60, 0.5f);
+		var manifold = CylindricalManifold.CreateFlatTopHexGridSphericalCylinder(4, 2, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -49,7 +49,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void SmallPointyTopTriGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreatePointyTopTriGridCylinder(3, 2, 60, 0.5f);
+		var manifold = CylindricalManifold.CreatePointyTopTriGridSphericalCylinder(3, 2, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -57,7 +57,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void SmallFlatTopTriGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreateFlatTopTriGridCylinder(4, 2, 60, 0.5f);
+		var manifold = CylindricalManifold.CreateFlatTopTriGridSphericalCylinder(4, 2, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -65,7 +65,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void SmallQuadGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreateQuadGridCylinder(4, 2, 60, 0.5f);
+		var manifold = CylindricalManifold.CreateQuadGridSphericalCylinder(4, 2, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -73,7 +73,7 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void SmallPointyTopHexGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreatePointyTopHexGridCylinder(3, 2, 60, 0.5f);
+		var manifold = CylindricalManifold.CreatePointyTopHexGridSphericalCylinder(3, 2, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}
@@ -81,7 +81,47 @@ public class CylindricalManifoldGenerationTests
 	[Test]
 	public void SmallFlatTopHexGridCylinderEdgeCycleTest()
 	{
-		var manifold = CylindricalManifold.CreateFlatTopHexGridCylinder(4, 4, 60, 0.5f);
+		var manifold = CylindricalManifold.CreateFlatTopHexGridSphericalCylinder(4, 4, 60, 0.5f);
+		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
+		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
+	}
+
+	[Test]
+	public void LargePointyTopTriGridCylinderEdgeCycleTest()
+	{
+		var manifold = CylindricalManifold.CreatePointyTopTriGridSphericalCylinder(48, 24, 60, 0.5f);
+		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
+		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
+	}
+
+	[Test]
+	public void LargeFlatTopTriGridCylinderEdgeCycleTest()
+	{
+		var manifold = CylindricalManifold.CreateFlatTopTriGridSphericalCylinder(48, 24, 60, 0.5f);
+		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
+		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
+	}
+
+	[Test]
+	public void LargeQuadGridCylinderEdgeCycleTest()
+	{
+		var manifold = CylindricalManifold.CreateQuadGridSphericalCylinder(48, 24, 60, 0.5f);
+		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
+		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
+	}
+
+	[Test]
+	public void LargePointyTopHexGridCylinderEdgeCycleTest()
+	{
+		var manifold = CylindricalManifold.CreatePointyTopHexGridSphericalCylinder(48, 24, 60, 0.5f);
+		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
+		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
+	}
+
+	[Test]
+	public void LargeFlatTopHexGridCylinderEdgeCycleTest()
+	{
+		var manifold = CylindricalManifold.CreateFlatTopHexGridSphericalCylinder(48, 24, 60, 0.5f);
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold.topology);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold.topology);
 	}

@@ -56,10 +56,10 @@ namespace Experilous.Topological
 
 		public static int[] FindPath(Topology.Face source, Topology.Face target, CostHeuristicDelegate costHeuristic, CostDelegate cost)
 		{
-			if (!target.isValid) return new int[0];
+			if (target.isExternal) return new int[0];
 
 			var topology = source.topology;
-			var queue = new PriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.faces.Count)));
+			var queue = new PriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.internalFaces.Count)));
 			var openSet = new Dictionary<int, Node>();
 			var closedSet = new Dictionary<int, Node>();
 
@@ -84,7 +84,7 @@ namespace Experilous.Topological
 				}
 
 				closedSet.Add(node._faceIndex, node);
-				var face = topology.faces[node._faceIndex];
+				var face = topology.internalFaces[node._faceIndex];
 
 				foreach (var edge in face.edges)
 				{
@@ -116,7 +116,7 @@ namespace Experilous.Topological
 			return null;
 		}
 
-		public static int[] FindEuclideanPath(Topology.Face source, Topology.Face target, FaceAttribute<Vector3> facePositions)
+		public static int[] FindEuclideanPath(Topology.Face source, Topology.Face target, Vector3[] facePositions)
 		{
 			return FindPath(source, target,
 				(Topology.Face s, Topology.Face t, int pathLength) =>
@@ -130,7 +130,7 @@ namespace Experilous.Topological
 				});
 		}
 
-		public static int[] FindSphericalEuclideanPath(Topology.Face source, Topology.Face target, FaceAttribute<Vector3> facePositions)
+		public static int[] FindSphericalEuclideanPath(Topology.Face source, Topology.Face target, Vector3[] facePositions)
 		{
 			return FindPath(source, target,
 				(Topology.Face s, Topology.Face t, int pathLength) =>

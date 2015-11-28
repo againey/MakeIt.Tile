@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using UnityEngine;
+using System;
 
 namespace Experilous.Topological
 {
 	public partial class Topology
 	{
+		[Serializable]
 		private struct EdgeData
 		{
 			// \             /
@@ -44,6 +45,7 @@ namespace Experilous.Topological
 			}
 		}
 
+		[SerializeField]
 		private EdgeData[] _edgeData;
 
 		public struct VertexEdge : IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>
@@ -76,11 +78,21 @@ namespace Experilous.Topological
 			public Face prevFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
 			public Face nextFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
 
-			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
-			public bool isOuterBoundary { get { return _topology._edgeData[_index]._face == -1; } }
-			public bool isInnerBoundary { get { return _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
+			public bool isBoundary { get { return farVertex.isExternal != nearVertex.isExternal; } }
+			public bool isOuterBoundary { get { return farVertex.isExternal && !nearVertex.isExternal; } }
+			public bool isInnerBoundary { get { return nearVertex.isExternal && !farVertex.isExternal; } }
 
 			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
+
+			public static implicit operator int(VertexEdge edge)
+			{
+				return edge._index;
+			}
+
+			public T Attribute<T>(T[] attributeArray)
+			{
+				return attributeArray[_index];
+			}
 
 			public override bool Equals(object other) { return other is VertexEdge && _index == ((VertexEdge)other)._index || other is FaceEdge && _index == ((FaceEdge)other).index; }
 			public override int GetHashCode() { return _index.GetHashCode(); }
@@ -139,11 +151,21 @@ namespace Experilous.Topological
 			public Face nearFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
 			public Face farFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
 
-			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
-			public bool isOuterBoundary { get { return _topology._edgeData[_index]._face == -1; } }
-			public bool isInnerBoundary { get { return _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
+			public bool isBoundary { get { return farFace.isExternal != nearFace.isExternal; } }
+			public bool isOuterBoundary { get { return farFace.isExternal && !nearFace.isExternal; } }
+			public bool isInnerBoundary { get { return nearFace.isExternal && !farFace.isExternal; } }
 
 			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
+
+			public static implicit operator int(FaceEdge edge)
+			{
+				return edge._index;
+			}
+
+			public T Attribute<T>(T[] attributeArray)
+			{
+				return attributeArray[_index];
+			}
 
 			public override bool Equals(object other) { return other is FaceEdge && _index == ((FaceEdge)other)._index || other is VertexEdge && _index == ((VertexEdge)other).index; }
 			public override int GetHashCode() { return _index.GetHashCode(); }
@@ -217,5 +239,18 @@ namespace Experilous.Topological
 		}
 
 		public FaceEdgesIndexer faceEdges { get { return new FaceEdgesIndexer(this); } }
+	}
+
+	public static class EdgeExtensions
+	{
+		public static T Of<T>(this T[] attributArray, Topology.VertexEdge edge)
+		{
+			return attributArray[edge.index];
+		}
+
+		public static T Of<T>(this T[] attributArray, Topology.FaceEdge edge)
+		{
+			return attributArray[edge.index];
+		}
 	}
 }

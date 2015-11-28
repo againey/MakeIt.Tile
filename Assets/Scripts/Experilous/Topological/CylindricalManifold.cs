@@ -3,18 +3,16 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	using VertexPositions = VertexAttribute<Vector3>;
-
 	public static class CylindricalManifold
 	{
-		public static Manifold CreatePointyTopTriGridCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
+		public static Manifold CreatePointyTopTriGridSphericalCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
 		{
 			columnCount += columnCount % 2;
 			var builder = new Topology.FaceVerticesBuilder(columnCount * rowCount, columnCount * rowCount * 3 + columnCount * 2);
 
 			var columnPairCount = columnCount / 2;
 
-			var vertexPositions = new VertexPositions(columnPairCount * (rowCount + 2));
+			var vertexPositions = new Vector3[columnPairCount * (rowCount + 2)];
 
 			for (int y = 0; y < rowCount; ++y)
 			{
@@ -70,11 +68,11 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), vertexPositions);
 		}
 
-		public static Manifold CreateFlatTopTriGridCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
+		public static Manifold CreateFlatTopTriGridSphericalCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
 		{
 			var builder = new Topology.FaceVerticesBuilder(columnCount * rowCount * 2, columnCount * rowCount * 6 + columnCount * 2);
 
-			var vertexPositions = new VertexPositions(columnCount * rowCount + columnCount);
+			var vertexPositions = new Vector3[columnCount * rowCount + columnCount];
 
 			for (int y = 0; y < rowCount; ++y)
 			{
@@ -111,11 +109,11 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), vertexPositions);
 		}
 
-		public static Manifold CreateQuadGridCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
+		public static Manifold CreateQuadGridSphericalCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
 		{
 			var builder = new Topology.FaceVerticesBuilder(columnCount * rowCount, columnCount * rowCount * 4 + columnCount * 2);
 
-			var vertexPositions = new VertexPositions(columnCount * rowCount + columnCount);
+			var vertexPositions = new Vector3[columnCount * rowCount + columnCount];
 
 			for (int y = 0; y < rowCount; ++y)
 			{
@@ -148,10 +146,10 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), vertexPositions);
 		}
 
-		public static Manifold CreatePointyTopHexGridCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
+		public static Manifold CreatePointyTopHexGridSphericalCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
 		{
 			var builder = new Topology.FaceVerticesBuilder(columnCount * rowCount, columnCount * rowCount * 6 + columnCount * 4);
-			var vertexPositions = new VertexPositions(columnCount * 2 * (rowCount + 1));
+			var vertexPositions = new Vector3[columnCount * 2 * (rowCount + 1)];
 
 			for (int y = 0; y < rowCount; ++y)
 			{
@@ -198,13 +196,13 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), vertexPositions);
 		}
 
-		public static Manifold CreateFlatTopHexGridCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
+		public static Manifold CreateFlatTopHexGridSphericalCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
 		{
 			columnCount += columnCount % 2;
 			var columnPairCount = columnCount / 2;
 
 			var builder = new Topology.FaceVerticesBuilder(columnPairCount * rowCount, columnPairCount * rowCount * 6 + columnCount * 4);
-			var vertexPositions = new VertexPositions(columnCount * (rowCount + 2));
+			var vertexPositions = new Vector3[columnCount * (rowCount + 2)];
 
 			for (int y = 0; y < rowCount; ++y)
 			{
