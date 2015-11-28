@@ -192,6 +192,11 @@ namespace Experilous.Topological
 			EditorGUILayout.Space();
 
 			generator.CalculateCentroids = EditorGUILayout.Toggle("Calculate Centroids", generator.CalculateCentroids);
+			if (generator.CalculateCentroids)
+			{
+				generator.FlattenCentroids = EditorGUILayout.Toggle("Flatten Centroids", generator.FlattenCentroids);
+			}
+
 			generator.CalculateSpatialPartitioning = EditorGUILayout.Toggle("Calculate Spatial Partitioning", generator.CalculateSpatialPartitioning);
 
 			EditorGUILayout.Space();

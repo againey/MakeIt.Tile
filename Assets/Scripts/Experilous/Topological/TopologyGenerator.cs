@@ -76,6 +76,7 @@ namespace Experilous.Topological
 		public string TopologyRandomizationEngineSeed = "";
 
 		public bool CalculateCentroids = true;
+		public bool FlattenCentroids = true;
 		public bool CalculateSpatialPartitioning = true;
 
 		public bool GenerateRegions = false;
@@ -343,7 +344,7 @@ namespace Experilous.Topological
 					_centroids[face] = sum;
 				}
 
-				if (Projection != TopologyProjection.Spherical)
+				if (Projection != TopologyProjection.Spherical || FlattenCentroids == true)
 				{
 					foreach (var face in topology.faces)
 					{
