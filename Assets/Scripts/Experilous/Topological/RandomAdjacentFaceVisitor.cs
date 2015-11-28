@@ -15,7 +15,7 @@ namespace Experilous.Topological
 		{
 			_topology = topology;
 			_queuedEdgeIndices = new List<int>();
-			_visitedFaces = new BitArray(_topology.faces.Count);
+			_visitedFaces = new BitArray(_topology.internalFaces.Count);
 			_randomEngine = randomEngine;
 		}
 
@@ -149,7 +149,7 @@ namespace Experilous.Topological
 			{
 				_topology = visitor._topology;
 				_queuedEdgeIndices = new List<int>(visitor._queuedEdgeIndices);
-				_visitedFaces = new BitArray(_topology.faces.Count);
+				_visitedFaces = new BitArray(_topology.internalFaces.Count);
 				_randomEngine = randomEngine;
 			}
 
@@ -192,7 +192,7 @@ namespace Experilous.Topological
 						_current = edge;
 						foreach (var faceEdge in edge.farFace.edges)
 						{
-							if (faceEdge.farFace.isValid)
+							if (faceEdge.farFace.isInternal)
 							{
 								if (_visitedFaces[faceEdge.farFace.index] == false)
 								{

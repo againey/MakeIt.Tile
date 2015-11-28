@@ -8,6 +8,9 @@ namespace Experilous.Topological
 		[SerializeField]
 		private NodeData[] _vertexData;
 
+		[SerializeField]
+		private int _firstExternalVertexIndex;
+
 		public struct Vertex : IEquatable<Vertex>, IComparable<Vertex>
 		{
 			private Topology _topology;
@@ -22,15 +25,30 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
+			public bool isInternal { get { return !_topology._vertexData[_index].isExternal; } }
+			public bool isExternal { get { return _topology._vertexData[_index].isExternal; } }
 			public int neighborCount { get { return _topology._vertexData[_index].neighborCount; } }
 			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology._vertexData[_index].firstEdge); } }
 
-			public bool isBoundary
+			public bool isInitialized { get { return _topology != null; } }
+
+			public bool hasExternalVertexNeighbor
 			{
 				get
 				{
 					foreach (var edge in edges)
-						if (edge.prevFace.index == -1)
+						if (edge.farVertex.isExternal)
+							return true;
+					return false;
+				}
+			}
+
+			public bool hasExternalFaceNeighbor
+			{
+				get
+				{
+					foreach (var edge in edges)
+						if (edge.prevFace.isExternal)
 							return true;
 					return false;
 				}
@@ -173,25 +191,32 @@ namespace Experilous.Topological
 		public struct VerticesIndexer
 		{
 			private Topology _topology;
+			private int _first;
+			private int _last;
 
-			public VerticesIndexer(Topology topology){ _topology = topology; }
-			public Vertex this[int i] { get { return new Vertex(_topology, i); } }
-			public int Count { get { return _topology._vertexData.Length; } }
-			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology); }
+			public VerticesIndexer(Topology topology) { _topology = topology; _first = 0; _last = _topology._vertexData.Length; }
+			public VerticesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
+			public Vertex this[int i] { get { return new Vertex(_topology, _first + i); } }
+			public int Count { get { return _last - _first; } }
+			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology, _first, _last); }
 
 			public struct VertexEnumerator
 			{
 				private Topology _topology;
 				private int _index;
+				private int _next;
+				private int _last;
 
-				public VertexEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public VertexEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
 				public Vertex Current { get { return new Vertex(_topology, _index); } }
-				public bool MoveNext() { return (++_index < _topology._vertexData.Length); }
-				public void Reset() { _index = -1; }
+				public bool MoveNext() { return (_index = _next++) != _last; }
+				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
 		public VerticesIndexer vertices { get { return new VerticesIndexer(this); } }
+		public VerticesIndexer internalVertices { get { return new VerticesIndexer(this, 0, _firstExternalVertexIndex); } }
+		public VerticesIndexer externalVertices { get { return new VerticesIndexer(this, _firstExternalVertexIndex, _vertexData.Length); } }
 	}
 
 	public static class VertexExtensions

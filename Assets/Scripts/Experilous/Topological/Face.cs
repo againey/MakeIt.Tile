@@ -8,6 +8,9 @@ namespace Experilous.Topological
 		[SerializeField]
 		private NodeData[] _faceData;
 
+		[SerializeField]
+		private int _firstExternalFaceIndex;
+
 		public struct Face : IEquatable<Face>, IComparable<Face>
 		{
 			private Topology _topology;
@@ -22,19 +25,30 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
+			public bool isInternal { get { return !_topology._faceData[_index].isExternal; } }
+			public bool isExternal { get { return _topology._faceData[_index].isExternal; } }
 			public int neighborCount { get { return _topology._faceData[_index].neighborCount; } }
 			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceData[_index].firstEdge); } }
 
-			public bool isSet { get { return _topology != null; } }
-			public bool isFilled { get { return _index != -1; } }
-			public bool isValid { get { return _topology != null && index != -1; } }
+			public bool isInitialized { get { return _topology != null; } }
 
-			public bool isBoundary
+			public bool hasExternalVertexNeighbor
 			{
 				get
 				{
 					foreach (var edge in edges)
-						if (edge.farFace.index == -1)
+						if (edge.nextVertex.isExternal)
+							return true;
+					return false;
+				}
+			}
+
+			public bool hasExternalFaceNeighbor
+			{
+				get
+				{
+					foreach (var edge in edges)
+						if (edge.farFace.isExternal)
 							return true;
 					return false;
 				}
@@ -177,25 +191,32 @@ namespace Experilous.Topological
 		public struct FacesIndexer
 		{
 			private Topology _topology;
+			private int _first;
+			private int _last;
 
-			public FacesIndexer(Topology topology){ _topology = topology; }
-			public Face this[int i] { get { return new Face(_topology, i); } }
-			public int Count { get { return _topology._faceData.Length; } }
-			public FaceEnumerator GetEnumerator() { return new FaceEnumerator(_topology); }
+			public FacesIndexer(Topology topology) { _topology = topology; _first = 0; _last = _topology._faceData.Length; }
+			public FacesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
+			public Face this[int i] { get { return new Face(_topology, _first + i); } }
+			public int Count { get { return _last - _first; } }
+			public FaceEnumerator GetEnumerator() { return new FaceEnumerator(_topology, _first, _last); }
 
 			public struct FaceEnumerator
 			{
 				private Topology _topology;
 				private int _index;
+				private int _next;
+				private int _last;
 
-				public FaceEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public FaceEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
 				public Face Current { get { return new Face(_topology, _index); } }
-				public bool MoveNext() { return (++_index < _topology._faceData.Length); }
-				public void Reset() { _index = -1; }
+				public bool MoveNext() { return (_index = _next++) != _last; }
+				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
 		public FacesIndexer faces { get { return new FacesIndexer(this); } }
+		public FacesIndexer internalFaces { get { return new FacesIndexer(this, 0, _firstExternalFaceIndex); } }
+		public FacesIndexer externalFaces { get { return new FacesIndexer(this, _firstExternalFaceIndex, _faceData.Length); } }
 	}
 
 	public static class FaceExtensions

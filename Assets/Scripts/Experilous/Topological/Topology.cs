@@ -14,18 +14,35 @@ namespace Experilous.Topological
 
 			public NodeData(int neighborCount, int firstEdge)
 			{
-				_data = (((uint)neighborCount & 0xFF) << 24) | ((uint)firstEdge & 0xFFFFFF);
+				_data = (((uint)neighborCount & 0x7Fu) << 24) | ((uint)firstEdge & 0xFFFFFFu);
+			}
+
+			public NodeData(bool isExternal, int neighborCount, int firstEdge)
+			{
+				_data = (isExternal ? 0x80000000u : 0x00000000u) | (((uint)neighborCount & 0x7Fu) << 24) | ((uint)firstEdge & 0xFFFFFFu);
+			}
+
+			public bool isExternal
+			{
+				get
+				{
+					return (_data & 0x80000000u) != 0;
+				}
+				set
+				{
+					_data = (_data & 0x7FFFFFFFu) | (value ? 0x80000000u : 0x00000000u);
+				}
 			}
 
 			public int neighborCount
 			{
 				get
 				{
-					return (int)((_data >> 24) & 0xFF);
+					return (int)((_data >> 24) & 0x7Fu);
 				}
 				set
 				{
-					_data = (_data & 0xFFFFFF) | (((uint)value & 0xFF) << 24);
+					_data = (_data & 0x80FFFFFFu) | (((uint)value & 0x7Fu) << 24);
 				}
 			}
 
@@ -33,19 +50,19 @@ namespace Experilous.Topological
 			{
 				get
 				{
-					return (int)(_data & 0xFFFFFF);
+					return (int)(_data & 0x00FFFFFFu);
 				}
 				set
 				{
-					_data = (_data & 0xFF000000) | ((uint)value & 0xFFFFFF);
+					_data = (_data & 0xFF000000u) | ((uint)value & 0xFFFFFFu);
 				}
 			}
 
-			public bool isEmpty
+			public bool isInitialized
 			{
 				get
 				{
-					return _data == 0;
+					return _data != 0;
 				}
 			}
 
@@ -64,6 +81,8 @@ namespace Experilous.Topological
 			_vertexData = original._vertexData.Clone() as NodeData[];
 			_edgeData = original._edgeData.Clone() as EdgeData[];
 			_faceData = original._faceData.Clone() as NodeData[];
+			_firstExternalVertexIndex = original._firstExternalVertexIndex;
+			_firstExternalFaceIndex = original._firstExternalFaceIndex;
 		}
 
 		public Topology Clone()
@@ -97,6 +116,9 @@ namespace Experilous.Topological
 			{
 				dual._vertexData[i].firstEdge = dual._edgeData[dual._vertexData[i].firstEdge]._twin;
 			}
+
+			dual._firstExternalVertexIndex = _firstExternalFaceIndex;
+			dual._firstExternalFaceIndex = _firstExternalVertexIndex;
 
 			return dual;
 		}
@@ -315,16 +337,20 @@ namespace Experilous.Topological
 		{
 			// After spinning, the edge's old near and far vertices will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			// The previous and next faces must also have more than 2 neighbors, or else
+			// things get really weird.
 			// Note that all face neighbor counts will remain stable.
-			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2;
+			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
 		public bool CanSpinEdgeForward(VertexEdge edge)
 		{
 			// After spinning, the edge's old near and far vertices will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			// The previous and next faces must also have more than 2 neighbors, or else
+			// things get really weird.
 			// Note that all face neighbor counts will remain stable.
-			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2;
+			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
 		public void SpinEdgeBackward(VertexEdge edge)
@@ -371,16 +397,20 @@ namespace Experilous.Topological
 		{
 			// After spinning, the edge's old near and far faces will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			// The previous and next vertices must also have more than 2 neighbors, or
+			// else things get really weird.
 			// Note that all vertex neighbor counts will remain stable.
-			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2;
+			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
 		public bool CanSpinEdgeForward(FaceEdge edge)
 		{
 			// After spinning, the edge's old near and far faces will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
+			// The previous and next vertices must also have more than 2 neighbors, or
+			// else things get really weird.
 			// Note that all vertex neighbor counts will remain stable.
-			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2;
+			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
 		public void SpinEdgeBackward(FaceEdge edge)
@@ -395,6 +425,38 @@ namespace Experilous.Topological
 			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a face edge forward when either its far face or near face has only two neighbors.");
 			PivotEdgeForwardUnchecked(edge);
 			PivotEdgeForwardUnchecked(edge.twin);
+		}
+
+		public void CheckVerticesForInvalidEdgeCycles()
+		{
+			foreach (var vertex in vertices)
+			{
+				var edge = vertex.firstEdge.next;
+				for (int i = 1; i < vertex.neighborCount; ++i)
+				{
+					if (vertex.firstEdge == edge)
+						throw new System.InvalidOperationException(string.Format("The cycle of edges around vertex {0} returned back to the first edge earlier than was expected, {1} iterations rather than {2}.", vertex.index, i, vertex.neighborCount));
+					edge = edge.next;
+				}
+				if (vertex.firstEdge != edge)
+					throw new System.InvalidOperationException(string.Format("The cycle of edges around vertex {0}  did not return back to the first edge in the {1} iterations expected.", vertex.index, vertex.neighborCount));
+			}
+		}
+
+		public void CheckFacesForInvalidEdgeCycles()
+		{
+			foreach (var face in faces)
+			{
+				var edge = face.firstEdge.next;
+				for (int i = 1; i < face.neighborCount; ++i)
+				{
+					if (face.firstEdge == edge)
+						throw new System.InvalidOperationException(string.Format("The cycle of edges around face {0} returned back to the first edge earlier than was expected, {1} iterations rather than {2}.", face.index, i, face.neighborCount));
+					edge = edge.next;
+				}
+				if (face.firstEdge != edge)
+					throw new System.InvalidOperationException(string.Format("The cycle of edges around face {0} did not return back to the first edge in the {1} iterations expected.", face.index, face.neighborCount));
+			}
 		}
 	}
 }

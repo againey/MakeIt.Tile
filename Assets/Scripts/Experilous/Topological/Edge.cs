@@ -78,9 +78,9 @@ namespace Experilous.Topological
 			public Face prevFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
 			public Face nextFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
 
-			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
-			public bool isOuterBoundary { get { return _topology._edgeData[_index]._face == -1; } }
-			public bool isInnerBoundary { get { return _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
+			public bool isBoundary { get { return farVertex.isExternal != nearVertex.isExternal; } }
+			public bool isOuterBoundary { get { return farVertex.isExternal && !nearVertex.isExternal; } }
+			public bool isInnerBoundary { get { return nearVertex.isExternal && !farVertex.isExternal; } }
 
 			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
 
@@ -151,9 +151,9 @@ namespace Experilous.Topological
 			public Face nearFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
 			public Face farFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
 
-			public bool isBoundary { get { return _topology._edgeData[_index]._face == -1 || _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
-			public bool isOuterBoundary { get { return _topology._edgeData[_index]._face == -1; } }
-			public bool isInnerBoundary { get { return _topology._edgeData[_topology._edgeData[_index]._twin]._face == -1; } }
+			public bool isBoundary { get { return farFace.isExternal != nearFace.isExternal; } }
+			public bool isOuterBoundary { get { return farFace.isExternal && !nearFace.isExternal; } }
+			public bool isInnerBoundary { get { return nearFace.isExternal && !farFace.isExternal; } }
 
 			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
 

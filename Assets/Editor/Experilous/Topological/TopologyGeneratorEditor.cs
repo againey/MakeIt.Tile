@@ -174,6 +174,8 @@ namespace Experilous.Topological
 				generator.TopologyRandomizationMaximumRelaxationPassCount = EditorGUILayout.IntSlider("Maximum Relaxation Pass Count", generator.TopologyRandomizationMaximumRelaxationPassCount, 1, 100);
 				generator.TopologyRandomizationMaximumRepairPassCount = EditorGUILayout.IntSlider("Maximum Repair Pass Count", generator.TopologyRandomizationMaximumRepairPassCount, 1, 100);
 
+				generator.TopologyRandomizationLockBoundaryPositions = EditorGUILayout.Toggle("Lock Boundary Positions", generator.TopologyRandomizationLockBoundaryPositions);
+
 				generator.TopologyRandomizationEngine = (RandomEngineFactory)EditorGUILayout.ObjectField("Randomization Engine", generator.TopologyRandomizationEngine, typeof(RandomEngineFactory), true);
 
 				EditorGUILayout.BeginHorizontal();

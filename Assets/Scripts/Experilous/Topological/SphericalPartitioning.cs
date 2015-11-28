@@ -237,12 +237,12 @@ namespace Experilous.Topological
 			if (partition.IsUnder(centerRay))
 			{
 				if (partition._underPartitionIndex != 0) return Intersect(centerRay, partition._underPartitionIndex);
-				else return _manifold.topology.faces[partition._underFaceIndex];
+				else return _manifold.topology.internalFaces[partition._underFaceIndex];
 			}
 			else
 			{
 				if (partition._overPartitionIndex != 0) return Intersect(centerRay, partition._overPartitionIndex);
-				else return _manifold.topology.faces[partition._overFaceIndex];
+				else return _manifold.topology.internalFaces[partition._overFaceIndex];
 			}
 		}
 

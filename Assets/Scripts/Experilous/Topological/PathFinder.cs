@@ -56,10 +56,10 @@ namespace Experilous.Topological
 
 		public static int[] FindPath(Topology.Face source, Topology.Face target, CostHeuristicDelegate costHeuristic, CostDelegate cost)
 		{
-			if (!target.isValid) return new int[0];
+			if (target.isExternal) return new int[0];
 
 			var topology = source.topology;
-			var queue = new PriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.faces.Count)));
+			var queue = new PriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.internalFaces.Count)));
 			var openSet = new Dictionary<int, Node>();
 			var closedSet = new Dictionary<int, Node>();
 
@@ -84,7 +84,7 @@ namespace Experilous.Topological
 				}
 
 				closedSet.Add(node._faceIndex, node);
-				var face = topology.faces[node._faceIndex];
+				var face = topology.internalFaces[node._faceIndex];
 
 				foreach (var edge in face.edges)
 				{

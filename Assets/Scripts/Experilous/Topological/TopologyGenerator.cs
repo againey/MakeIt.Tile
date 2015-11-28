@@ -71,6 +71,7 @@ namespace Experilous.Topological
 		public float TopologyRandomizationRelaxationRelativePrecision = 0.05f;
 		public int TopologyRandomizationMaximumRelaxationPassCount = 20;
 		public int TopologyRandomizationMaximumRepairPassCount = 20;
+		public bool TopologyRandomizationLockBoundaryPositions = true;
 		public RandomEngineFactory TopologyRandomizationEngine = null;
 		public string TopologyRandomizationEngineSeed = "";
 
@@ -174,9 +175,9 @@ namespace Experilous.Topological
 				if (takeDual)
 				{
 					var topology = _manifold.topology.GetDualTopology();
-					var vertexPositions = new Vector3[topology.vertices.Count];
+					var vertexPositions = new Vector3[topology.internalVertices.Count];
 
-					foreach (var face in _manifold.topology.faces)
+					foreach (var face in _manifold.topology.internalFaces)
 					{
 						var average = new Vector3();
 						foreach (var edge in face.edges)
@@ -237,21 +238,26 @@ namespace Experilous.Topological
 
 				for (int topologyRandomizationPass = 0; topologyRandomizationPass < TopologyRandomizationPassCount; ++topologyRandomizationPass)
 				{
-					foreach (var edge in _manifold.topology.vertexEdges)
+					foreach (var vertexEdge in _manifold.topology.vertexEdges)
 					{
-						var twinEdge = edge.twin;
+						var twinVertexEdge = vertexEdge.twin;
+						var faceEdge = vertexEdge.faceEdge;
 
 						var verticesCanChange =
-							edge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors &&
-							twinEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors &&
-							edge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors &&
-							twinEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors;
+							_manifold.topology.CanSpinEdgeForward(vertexEdge) &&
+							(!TopologyRandomizationLockBoundaryPositions || !vertexEdge.isBoundary && !faceEdge.isBoundary && !vertexEdge.nearVertex.hasExternalFaceNeighbor && !vertexEdge.farVertex.hasExternalFaceNeighbor) &&
+							(vertexEdge.farVertex.isExternal || vertexEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors) &&
+							(twinVertexEdge.farVertex.isExternal || twinVertexEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors) &&
+							(faceEdge.next.nextVertex.isExternal || vertexEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors) &&
+							(faceEdge.twin.next.nextVertex.isExternal || twinVertexEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors);
 
 						var facesCanChange =
-							edge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors &&
-							twinEdge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors &&
-							edge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors &&
-							twinEdge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors;
+							_manifold.topology.CanSpinEdgeForward(faceEdge) &&
+							(!TopologyRandomizationLockBoundaryPositions || !vertexEdge.isBoundary && !faceEdge.isBoundary && !vertexEdge.nearVertex.hasExternalFaceNeighbor && !vertexEdge.farVertex.hasExternalFaceNeighbor) &&
+							(vertexEdge.prevFace.isExternal || vertexEdge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors) &&
+							(twinVertexEdge.prevFace.isExternal || twinVertexEdge.prevFace.neighborCount > TopologyRandomizationMinimumFaceNeighbors) &&
+							(vertexEdge.next.nextFace.isExternal || vertexEdge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors) &&
+							(twinVertexEdge.next.nextFace.isExternal || twinVertexEdge.next.nextFace.neighborCount < TopologyRandomizationMaximumFaceNeighbors);
 
 						if (verticesCanChange && facesCanChange)
 						{
@@ -260,11 +266,11 @@ namespace Experilous.Topological
 							{
 								if (randomValue < perPassRandomizationFrequency * 0.5f)
 								{
-									_manifold.topology.SpinEdgeForward(edge);
+									_manifold.topology.SpinEdgeForward(vertexEdge);
 								}
 								else
 								{
-									_manifold.topology.SpinEdgeForward(edge.faceEdge);
+									_manifold.topology.SpinEdgeForward(faceEdge);
 								}
 							}
 						}
@@ -274,11 +280,11 @@ namespace Experilous.Topological
 							{
 								if (verticesCanChange)
 								{
-									_manifold.topology.SpinEdgeForward(edge);
+									_manifold.topology.SpinEdgeForward(vertexEdge);
 								}
 								else
 								{
-									_manifold.topology.SpinEdgeForward(edge.faceEdge);
+									_manifold.topology.SpinEdgeForward(faceEdge);
 								}
 							}
 						}
@@ -287,8 +293,8 @@ namespace Experilous.Topological
 					float priorRelaxationAmount = 0f;
 					for (int i = 0; i < TopologyRandomizationMaximumRelaxationPassCount; ++i)
 					{
-						SphericalManifold.RelaxForRegularity(_manifold, regularityRelaxedPositions);
-						SphericalManifold.RelaxForEqualArea(_manifold, equalAreaRelaxedPositions, centroidsBuffer);
+						SphericalManifold.RelaxForRegularity(_manifold, TopologyRandomizationLockBoundaryPositions, regularityRelaxedPositions);
+						SphericalManifold.RelaxForEqualArea(_manifold, TopologyRandomizationLockBoundaryPositions, equalAreaRelaxedPositions, centroidsBuffer);
 
 						float relaxationAmount = 0f;
 						var weightedRelaxedPositions = regularityRelaxedPositions;
@@ -313,7 +319,7 @@ namespace Experilous.Topological
 
 						for (int j = 0; j < TopologyRandomizationMaximumRepairPassCount; ++j)
 						{
-							if (SphericalManifold.ValidateAndRepair(_manifold, 0.5f))
+							if (SphericalManifold.ValidateAndRepair(_manifold, 0.5f, TopologyRandomizationLockBoundaryPositions))
 							{
 								break;
 							}
@@ -374,7 +380,7 @@ namespace Experilous.Topological
 
 			if (GenerateRegions)
 			{
-				_faceRegions = new int[_manifold.topology.faces.Count];
+				_faceRegions = new int[_manifold.topology.internalFaces.Count];
 
 				var randomEngine = CreateRandomEngine(RegionRandomEngine, RegionRandomEngineSeed);
 
@@ -382,16 +388,16 @@ namespace Experilous.Topological
 				{
 					_regionCount = 1;
 
-					foreach (var face in _manifold.topology.faces)
+					foreach (var face in _manifold.topology.internalFaces)
 					{
 						_faceRegions[face] = 0;
 					}
 				}
-				else if (DesiredRegionCount >= _manifold.topology.faces.Count)
+				else if (DesiredRegionCount >= _manifold.topology.internalFaces.Count)
 				{
-					_regionCount = _manifold.topology.faces.Count;
+					_regionCount = _manifold.topology.internalFaces.Count;
 
-					foreach (var face in _manifold.topology.faces)
+					foreach (var face in _manifold.topology.internalFaces)
 					{
 						_faceRegions[face] = face.index;
 					}
@@ -402,8 +408,8 @@ namespace Experilous.Topological
 
 					_regionCount = DesiredRegionCount;
 
-					var faces = _manifold.topology.faces;
-					int listIndex = 0;
+					var faces = _manifold.topology.internalFaces;
+					int faceIndex = 0;
 					int regionIndex = 0;
 					int remainingFaceCount = faces.Count;
 					int remainingRegionCount = _regionCount;
@@ -411,14 +417,13 @@ namespace Experilous.Topological
 					{
 						if (Experilous.Random.HalfOpenRange(remainingFaceCount, randomEngine) < remainingRegionCount)
 						{
-							var faceIndex = faces[listIndex];
-							visitor.AddSeed(faceIndex);
+							visitor.AddSeed(faces[faceIndex]);
 							_faceRegions[faceIndex] = regionIndex;
 							++regionIndex;
 							--remainingRegionCount;
 						}
 
-						++listIndex;
+						++faceIndex;
 						--remainingFaceCount;
 					}
 
@@ -451,11 +456,11 @@ namespace Experilous.Topological
 			{
 				if (CalculateCentroids)
 				{
-					BuildSubmeshes(_manifold.topology.faces, _manifold.vertexPositions, _centroids);
+					BuildSubmeshes(_manifold.topology.internalFaces, _manifold.vertexPositions, _centroids);
 				}
 				else
 				{
-					BuildSubmeshes(_manifold.topology.faces, _manifold.vertexPositions);
+					BuildSubmeshes(_manifold.topology.internalFaces, _manifold.vertexPositions);
 				}
 			}
 

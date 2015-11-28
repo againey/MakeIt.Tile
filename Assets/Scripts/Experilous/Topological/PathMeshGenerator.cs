@@ -85,7 +85,7 @@ namespace Experilous.Topological
 
 				foreach (var faceIndex in path)
 				{
-					var neighborCount = manifold.topology.faces[faceIndex].neighborCount;
+					var neighborCount = manifold.topology.internalFaces[faceIndex].neighborCount;
 					meshVertex += neighborCount + 1;
 					meshTriangle += neighborCount * 3;
 				}
@@ -99,7 +99,7 @@ namespace Experilous.Topological
 
 				foreach (var faceIndex in path)
 				{
-					AddFace(manifold.topology.faces[faceIndex], manifold.vertexPositions, vertices, colors, triangles, ref meshVertex, ref meshTriangle);
+					AddFace(manifold.topology.internalFaces[faceIndex], manifold.vertexPositions, vertices, colors, triangles, ref meshVertex, ref meshTriangle);
 				}
 			}
 			else
