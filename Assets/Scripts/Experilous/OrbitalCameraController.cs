@@ -3,36 +3,50 @@
 namespace Experilous
 {
 	[ExecuteInEditMode]
-	[RequireComponent(typeof(Camera))]
 	public class OrbitalCameraController : MonoBehaviour
 	{
 		public Transform Origin;
 
-		public float MinimumLatitude = -89;
-		public float MaximumLatitude = 89;
+		[Range(-90f, 90f)]
+		public float MinimumLatitude = -80;
+		[Range(-90f, 90f)]
+		public float MaximumLatitude = 80;
+
 		public float SurfaceRadius = 1f;
 		public float MinimumRadius = 1.1f;
 		public float MaximumRadius = 2.2f;
+
+		[Range(0f, 90f)]
 		public float MinimumRadiusLookAtAngle = 0f;
+		[Range(0f, 90f)]
 		public float MaximumRadiusLookAtAngle = 0f;
 
+		[Range(-90f, 90f)]
 		public float Latitude = 0f;
-		public float Longitude = 0f;
-		public float Zoom = 0f;
-		public float ZoomVelocity = 1f;
-		public bool ScaleInputRate = true;
 
-		private Camera _camera;
+		[Range(0f, 360f)]
+		public float Longitude = 0f;
+
+		[Range(0f, 1f)]
+		public float Zoom = 0f;
+
+		public float ZoomVelocity = 1f;
+
+		public bool ScaleInputRate = true;
 
 		private float _zoomTarget = 0f;
 
-		private void Start()
-		{
-			_camera = GetComponent<Camera>();
-		}
-
 		private void Update()
 		{
+			if (MinimumLatitude > MaximumLatitude ||
+				SurfaceRadius <= 0f ||
+				SurfaceRadius >= MinimumRadius ||
+				MinimumRadius > MaximumRadius ||
+				ZoomVelocity <= 0f)
+			{
+				return;
+			}
+
 			var verticalInput = Input.GetAxis("Vertical");
 			var horizontalInput = Input.GetAxis("Horizontal");
 			var zoomInput = Input.GetAxis("Zoom");
@@ -53,7 +67,7 @@ namespace Experilous
 			var radiusTotalRange = MaximumRadius - SurfaceRadius;
 			var radiusUpperOverTotal = radiusUpperRange / radiusTotalRange;
 			var radiusLowerOverTotal = radiusLowerRange / radiusTotalRange;
-			var zoomScale = radiusUpperRange / (0.5f * radiusUpperOverTotal + radiusLowerOverTotal);
+			var zoomScale = 1f / (0.5f * radiusUpperOverTotal + radiusLowerOverTotal);
 			var invertedZoom = 1f - Zoom;
 
 			if (ScaleInputRate)
@@ -63,7 +77,7 @@ namespace Experilous
 				horizontalInput *= scaledRate;
 			}
 
-			Latitude = Mathf.Clamp(Latitude + verticalInput, MinimumLatitude, MaximumLatitude);
+			Latitude = Mathf.Clamp(Mathf.Clamp(Latitude + verticalInput, MinimumLatitude, MaximumLatitude), -89.9f, 89.9f);
 			var latitudeRadians = Latitude * Mathf.Deg2Rad;
 			var latitudeCosine = Mathf.Cos(latitudeRadians);
 
@@ -76,24 +90,41 @@ namespace Experilous
 			if (Longitude < 0) Longitude += 360f;
 			var longitudeRadians = Longitude * Mathf.Deg2Rad;
 
-			float d;
+			float cameraElevation;
 			if (ScaleInputRate)
 			{
-				var scaledZoom = invertedZoom * zoomScale;
-				d = (0.5f * invertedZoom * radiusUpperOverTotal + radiusLowerOverTotal) * scaledZoom + MinimumRadius;
+				var scaledZoom = invertedZoom * radiusUpperRange * zoomScale;
+				cameraElevation = (0.5f * invertedZoom * radiusUpperOverTotal + radiusLowerOverTotal) * scaledZoom + MinimumRadius;
 			}
 			else
 			{
-				d = radiusUpperRange * invertedZoom + MinimumRadius;
+				cameraElevation = radiusUpperRange * invertedZoom + MinimumRadius;
 			}
 
-			var x = Mathf.Cos(longitudeRadians) * latitudeCosine * d;
-			var y = Mathf.Sin(latitudeRadians) * d;
-			var z = Mathf.Sin(longitudeRadians) * latitudeCosine * d;
+			var cameraDirection = new Vector3(
+				Mathf.Cos(longitudeRadians) * latitudeCosine,
+				Mathf.Sin(latitudeRadians),
+				Mathf.Sin(longitudeRadians) * latitudeCosine);
 
-			transform.position = Origin.position + new Vector3(x, y, z);
-			transform.up = Origin.up;
-			transform.LookAt(Origin);
+			var cameraLookAt = cameraDirection * SurfaceRadius;
+			var cameraPosition = cameraDirection * cameraElevation;
+			var sideVector = Vector3.Cross(cameraDirection, Origin.up);
+			var cameraAngle = (Mathf.Min(MaximumRadiusLookAtAngle, 89.9f) - Mathf.Min(MinimumRadiusLookAtAngle, 89.9f)) * invertedZoom + MinimumRadiusLookAtAngle;
+			if (cameraAngle == 0f)
+			{
+				transform.position = Origin.position + cameraPosition;
+				transform.up = Vector3.Cross(sideVector, cameraPosition);
+				transform.LookAt(cameraLookAt, transform.up);
+			}
+			else
+			{
+				var adjustedUpVector = Vector3.Cross(sideVector, cameraDirection);
+				var angledCameraPosition = cameraLookAt + Vector3.Slerp(cameraPosition - cameraLookAt, adjustedUpVector * (SurfaceRadius - cameraElevation), cameraAngle / 90f);
+
+				transform.position = Origin.position + angledCameraPosition;
+				transform.up = Vector3.Cross(sideVector, angledCameraPosition);
+				transform.LookAt(cameraLookAt, transform.up);
+			}
 		}
 	}
 }
