@@ -64,14 +64,64 @@ namespace Experilous.Topological
 		{
 			var manifold = TopologyGenerator.manifold;
 
-			int[] path;
-			if (TopologyGenerator.Projection != TopologyProjection.Spherical)
+			int[] path = null;
+			if (TopologyGenerator.CalculateCentroids == true)
 			{
-				path = PathFinder.FindEuclideanPath(face0, face1, TopologyGenerator.centroids);
-			}
-			else
-			{
-				path = PathFinder.FindSphericalEuclideanPath(face0, face1, TopologyGenerator.centroids);
+				if (TopologyGenerator.GenerateRegions == false)
+				{
+					if (TopologyGenerator.Projection != TopologyProjection.Spherical)
+					{
+						path = PathFinder.FindEuclideanPath(face0, face1, TopologyGenerator.centroids);
+					}
+					else
+					{
+						path = PathFinder.FindSphericalEuclideanPath(face0, face1, TopologyGenerator.centroids);
+					}
+				}
+				else
+				{
+					float largestDistanceSquared = 0f;
+					foreach (var face in manifold.topology.internalFaces)
+					{
+						var facePosition = TopologyGenerator.centroids[face];
+						foreach (var edge in face.edges)
+						{
+							if (face.index < edge.farFace.index && edge.farFace.isInternal)
+							{
+								var delta = facePosition - TopologyGenerator.centroids[edge.farFace];
+								largestDistanceSquared = Mathf.Max(largestDistanceSquared, delta.sqrMagnitude);
+							}
+						}
+					}
+
+					float smallestInternalTravelCost = float.PositiveInfinity;
+					for (int i = 0; i < TopologyGenerator.regionCount; ++i)
+					{
+						smallestInternalTravelCost = Mathf.Min(smallestInternalTravelCost, TopologyGenerator.regionInternalTravelCosts[i]);
+					}
+
+					float optimisticHeuristicScale = smallestInternalTravelCost / Mathf.Sqrt(largestDistanceSquared);
+
+					path = PathFinder.FindPath(face0, face1, 
+						(Topology.Face s, Topology.Face t, int pathLength) =>
+						{
+							return (TopologyGenerator.centroids[s] - TopologyGenerator.centroids[t]).magnitude * optimisticHeuristicScale;
+						},
+						(Topology.FaceEdge edge, int pathLength) =>
+						{
+							if (edge.isOuterBoundary) return float.PositiveInfinity;
+							var sourceRegion = TopologyGenerator.faceRegions[edge.nearFace];
+							var targetRegion = TopologyGenerator.faceRegions[edge.farFace];
+							if (sourceRegion == targetRegion)
+							{
+								return TopologyGenerator.regionInternalTravelCosts[targetRegion];
+							}
+							else
+							{
+								return Mathf.Max(TopologyGenerator.regionBorderTravelCosts[sourceRegion], TopologyGenerator.regionBorderTravelCosts[targetRegion]);
+							}
+						});
+				}
 			}
 
 			Vector3[] vertices;

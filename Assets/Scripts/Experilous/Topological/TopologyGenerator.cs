@@ -102,7 +102,11 @@ namespace Experilous.Topological
 		[SerializeField]
 		private int _regionCount;
 		[SerializeField]
-		private List<Color> _regionColors;
+		private Color[] _regionColors;
+		[SerializeField]
+		private float[] _regionBorderTravelCosts;
+		[SerializeField]
+		private float[] _regionInternalTravelCosts;
 
 		public int ExpectedFaceCount
 		{
@@ -117,7 +121,9 @@ namespace Experilous.Topological
 		public SphericalPartitioning sphericalPartitioning { get { return _sphericalPartitioning; } }
 		public int[] faceRegions { get { return _faceRegions; } }
 		public int regionCount { get { return _regionCount; } }
-		public List<Color> regionColors { get { return _regionColors; } }
+		public Color[] regionColors { get { return _regionColors; } }
+		public float[] regionBorderTravelCosts { get { return _regionBorderTravelCosts; } }
+		public float[] regionInternalTravelCosts { get { return _regionInternalTravelCosts; } }
 
 		public void Invalidate()
 		{
@@ -434,21 +440,27 @@ namespace Experilous.Topological
 					}
 				}
 
-				_regionColors = new List<Color>(_regionCount);
-				while (_regionColors.Count < _regionCount)
+				_regionColors = new Color[_regionCount];
+				_regionBorderTravelCosts = new float[_regionCount];
+				_regionInternalTravelCosts = new float[_regionCount];
+				for (int i = 0; i < _regionCount; ++i)
 				{
-					_regionColors.Add(new Color(
+					_regionColors[i] = new Color(
 						Experilous.Random.ClosedFloatUnit(randomEngine),
 						Experilous.Random.ClosedFloatUnit(randomEngine),
-						Experilous.Random.ClosedFloatUnit(randomEngine)));
-				}
+						Experilous.Random.ClosedFloatUnit(randomEngine));
 
+					_regionInternalTravelCosts[i] = Experilous.Random.ClosedRange(1f, 4f, randomEngine);
+					_regionBorderTravelCosts[i] = _regionInternalTravelCosts[i] + Experilous.Random.ClosedRange(8f, 32f, randomEngine);
+				}
 			}
 			else
 			{
 				_faceRegions = null;
 				_regionCount = 0;
 				_regionColors = null;
+				_regionBorderTravelCosts = null;
+				_regionInternalTravelCosts = null;
 			}
 
 			ClearSubmeshes();
@@ -502,7 +514,7 @@ namespace Experilous.Topological
 
 		private void BuildSubmeshes(Topology.FacesIndexer faces, Vector3[] vertexPositions, Vector3[] centroidPositions)
 		{
-			bool faceColorsExist = (_faceRegions != null && _faceRegions.Length > 0 && _regionColors != null && _regionColors.Count > 0);
+			bool faceColorsExist = (_faceRegions != null && _faceRegions.Length > 0 && _regionCount > 0);
 
 			var faceIndex = 0;
 			var faceCount = faces.Count;
