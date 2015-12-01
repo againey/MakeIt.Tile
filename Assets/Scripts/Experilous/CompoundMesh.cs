@@ -55,8 +55,16 @@ namespace Experilous
 				if (_submeshCount == 1)
 				{
 					var firstSubmesh = _root;
-					_root = (_rootCache != null) ? _rootCache : new GameObject("Submeshes").transform;
-					_root.SetParent(transform);
+					if (_rootCache != null)
+					{
+						_root = _rootCache;
+						_rootCache = null;
+					}
+					else
+					{
+						_root = new GameObject("Submeshes").transform;
+					}
+					_root.SetParent(transform, false);
 					firstSubmesh.SetParent(_root, false);
 					firstSubmesh.name = "Submesh [0]";
 				}
