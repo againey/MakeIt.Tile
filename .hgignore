@@ -3,6 +3,7 @@ syntax: regexp
 ^Assets/UnityVS/
 ^Assets/UnityVS\.meta$
 ^Miscellaneous/Screenshots/
+^Miscellaneous/Videos/
 ^Library/
 ^Temp/
 ^Build/

@@ -76,6 +76,60 @@ namespace Experilous.Topological
 			0, 0, 0, 0,
 		};
 
+		private static GUIContent[] _nonSphereDistanceCalculationMethodOptions =
+		{
+			new GUIContent("None"),
+			new GUIContent("Breadth First, Euclidean, Cumulative"),
+			new GUIContent("Breadth First, Euclidean, From Root"),
+			new GUIContent("Depth First, Euclidean, Cumulative"),
+			new GUIContent("Depth First, Euclidean, From Root"),
+		};
+
+		private static TopologyDistanceCalculationMethod[] _nonSphereDistanceCalculationMethodMapFrom =
+		{
+			TopologyDistanceCalculationMethod.None,
+			TopologyDistanceCalculationMethod.BreadthFirstEuclideanCumulative,
+			TopologyDistanceCalculationMethod.BreadthFirstEuclideanFromRoot,
+			TopologyDistanceCalculationMethod.DepthFirstEuclideanCumulative,
+			TopologyDistanceCalculationMethod.DepthFirstEuclideanFromRoot,
+		};
+
+		private static int[] _nonSphereDistanceCalculationMethodMapTo =
+		{
+			0, 1, 2, 1, 2, 3, 4, 3, 4,
+		};
+
+		private static GUIContent[] _sphereDistanceCalculationMethodOptions =
+		{
+			new GUIContent("None"),
+			new GUIContent("Breadth First, Euclidean, Cumulative"),
+			new GUIContent("Breadth First, Euclidean, From Root"),
+			new GUIContent("Breadth First, Spherical, Cumulative"),
+			new GUIContent("Breadth First, Spherical, From Root"),
+			new GUIContent("Depth First, Euclidean, Cumulative"),
+			new GUIContent("Depth First, Euclidean, From Root"),
+			new GUIContent("Depth First, Spherical, Cumulative"),
+			new GUIContent("Depth First, Spherical, From Root"),
+		};
+
+		private static TopologyDistanceCalculationMethod[] _sphereDistanceCalculationMethodMapFrom =
+		{
+			TopologyDistanceCalculationMethod.None,
+			TopologyDistanceCalculationMethod.BreadthFirstEuclideanCumulative,
+			TopologyDistanceCalculationMethod.BreadthFirstEuclideanFromRoot,
+			TopologyDistanceCalculationMethod.BreadthFirstSphericalCumulative,
+			TopologyDistanceCalculationMethod.BreadthFirstSphericalFromRoot,
+			TopologyDistanceCalculationMethod.DepthFirstEuclideanCumulative,
+			TopologyDistanceCalculationMethod.DepthFirstEuclideanFromRoot,
+			TopologyDistanceCalculationMethod.DepthFirstSphericalCumulative,
+			TopologyDistanceCalculationMethod.DepthFirstSphericalFromRoot,
+		};
+
+		private static int[] _sphereDistanceCalculationMethodMapTo =
+		{
+			0, 1, 2, 3, 4, 5, 6, 7, 8,
+		};
+
 		private Experilous.Random _random = null;
 
 		private AnimBool _showTopologyRandomizationProperties;
@@ -219,6 +273,22 @@ namespace Experilous.Topological
 			}
 			EditorGUILayout.EndFadeGroup();
 			EditorGUILayout.EndToggleGroup();
+
+			EditorGUILayout.Space();
+
+			if (generator.Projection != TopologyProjection.Spherical)
+			{
+				generator.DistanceCalculationMethod = _nonSphereDistanceCalculationMethodMapFrom[EditorGUILayout.Popup(new GUIContent("Distance Calculation Method"), _nonSphereDistanceCalculationMethodMapTo[(int)generator.DistanceCalculationMethod], _nonSphereDistanceCalculationMethodOptions)];
+			}
+			else
+			{
+				generator.DistanceCalculationMethod = _sphereDistanceCalculationMethodMapFrom[EditorGUILayout.Popup(new GUIContent("Distance Calculation Method"), _sphereDistanceCalculationMethodMapTo[(int)generator.DistanceCalculationMethod], _sphereDistanceCalculationMethodOptions)];
+			}
+			
+			if (generator.DistanceCalculationMethod != TopologyDistanceCalculationMethod.None)
+			{
+				generator.DistanceCalculationRootFaceIndex = EditorGUILayout.IntSlider(generator.DistanceCalculationRootFaceIndex, 0, generator.ExpectedFaceCount - 1);
+			}
 
 			EditorGUILayout.Space();
 

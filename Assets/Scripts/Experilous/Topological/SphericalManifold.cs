@@ -744,5 +744,15 @@ namespace Experilous.Topological
 
 			return new Manifold(topology, vertexPositions);
 		}
+
+		public static float ArcLength(Vector3 lhs, Vector3 rhs)
+		{
+			return Mathf.Atan2(Vector3.Cross(lhs, rhs).magnitude, Vector3.Dot(lhs, rhs));
+		}
+
+		public static float ArcLength(Vector3 lhs, Vector3 rhs, float radius)
+		{
+			return Mathf.Atan2(Vector3.Cross(lhs, rhs).magnitude, Vector3.Dot(lhs, rhs)) * radius;
+		}
 	}
 }

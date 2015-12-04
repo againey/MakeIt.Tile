@@ -41,6 +41,19 @@ namespace Experilous.Topological
 		PointyTop,
 	}
 
+	public enum TopologyDistanceCalculationMethod
+	{
+		None,
+		BreadthFirstEuclideanCumulative,
+		BreadthFirstEuclideanFromRoot,
+		BreadthFirstSphericalCumulative,
+		BreadthFirstSphericalFromRoot,
+		DepthFirstEuclideanCumulative,
+		DepthFirstEuclideanFromRoot,
+		DepthFirstSphericalCumulative,
+		DepthFirstSphericalFromRoot,
+	}
+
 	[ExecuteInEditMode]
 	public class TopologyGenerator : CompoundMesh
 	{
@@ -84,35 +97,97 @@ namespace Experilous.Topological
 		public RandomEngineFactory RegionRandomEngine = null;
 		public string RegionRandomEngineSeed = "";
 
+		public TopologyDistanceCalculationMethod DistanceCalculationMethod;
+		public int DistanceCalculationRootFaceIndex;
+
 		public bool BuildMesh = true;
 
 		private bool _invalidated = false;
 
-		[SerializeField]
-		private Manifold _manifold;
+		[SerializeField] private Manifold _manifold;
 
-		[SerializeField]
-		private Vector3[] _centroids;
+		[SerializeField] private Vector3[] _centroids;
 
-		[SerializeField]
-		private SphericalPartitioning _sphericalPartitioning;
+		[SerializeField] private SphericalPartitioning _sphericalPartitioning;
 
-		[SerializeField]
-		private int[] _faceRegions;
-		[SerializeField]
-		private int _regionCount;
-		[SerializeField]
-		private Color[] _regionColors;
-		[SerializeField]
-		private float[] _regionBorderTravelCosts;
-		[SerializeField]
-		private float[] _regionInternalTravelCosts;
+		[SerializeField] private int[] _faceRegions;
+		[SerializeField] private int _regionCount;
+		[SerializeField] private Color[] _regionColors;
+		[SerializeField] private float[] _regionBorderTravelCosts;
+		[SerializeField] private float[] _regionInternalTravelCosts;
+
+		[SerializeField] private float[] _faceDistances;
+		[SerializeField] private float[] _faceOrders;
+
+		private int TriangularSubdividedVertexCount(int vertexCount, int edgeCount, int faceCount)
+		{
+			return vertexCount + edgeCount * SubdivisionDegree + faceCount * (SubdivisionDegree - 1) * SubdivisionDegree / 2;
+		}
+
+		private int TriangularSubdividedFaceCount(int faceCount)
+		{
+			return faceCount * (SubdivisionDegree + 1) * (SubdivisionDegree + 1);
+		}
+
+		private int QuadrilateralSubdividedVertexCount(int vertexCount, int edgeCount, int faceCount)
+		{
+			return vertexCount + edgeCount * SubdivisionDegree + faceCount * SubdivisionDegree * SubdivisionDegree;
+		}
+
+		private int QuadrilateralSubdividedFaceCount(int faceCount)
+		{
+			return faceCount * (SubdivisionDegree + 1) * (SubdivisionDegree + 1);
+		}
 
 		public int ExpectedFaceCount
 		{
 			get
 			{
-				return 144;
+				if (Classification == TopologyClassification.Sphere && Projection == TopologyProjection.Spherical)
+				{
+					switch (SphericalTiling)
+					{
+						case SphericalTopologyTiling.Tetrahedron:
+							if (!UseDualTopology)
+								return TriangularSubdividedFaceCount(4);
+							else
+								return TriangularSubdividedVertexCount(4, 6, 4);
+						case SphericalTopologyTiling.Cube:
+							if (!UseDualTopology)
+								return QuadrilateralSubdividedFaceCount(6);
+							else
+								return QuadrilateralSubdividedVertexCount(8, 12, 6);
+						case SphericalTopologyTiling.Octahedron:
+							if (!UseDualTopology)
+								return TriangularSubdividedFaceCount(8);
+							else
+								return TriangularSubdividedVertexCount(6, 12, 8);
+						case SphericalTopologyTiling.Dodecahedron:
+							if (!UseDualTopology)
+								return TriangularSubdividedVertexCount(12, 30, 20);
+							else
+								return TriangularSubdividedFaceCount(20);
+						case SphericalTopologyTiling.Icosahedron:
+							if (!UseDualTopology)
+								return TriangularSubdividedFaceCount(20);
+							else
+								return TriangularSubdividedVertexCount(12, 30, 20);
+					}
+				}
+				else if (Classification == TopologyClassification.Cylinder && Projection == TopologyProjection.Spherical)
+				{
+					switch (FlatTiling)
+					{
+						case FlatTopologyTiling.Triangular:
+							return ColumnCount * RowCount;
+						case FlatTopologyTiling.Quadrilateral:
+							return ColumnCount * RowCount;
+						case FlatTopologyTiling.Hexagonal:
+							return ColumnCount * RowCount;
+					}
+				}
+
+				return 0;
 			}
 		}
 
@@ -424,7 +499,7 @@ namespace Experilous.Topological
 					{
 						if (Experilous.Random.HalfOpenRange(remainingFaceCount, randomEngine) < remainingRegionCount)
 						{
-							visitor.AddSeed(faces[faceIndex]);
+							visitor.AddRoot(faces[faceIndex]);
 							_faceRegions[faceIndex] = regionIndex;
 							++regionIndex;
 							--remainingRegionCount;
@@ -461,6 +536,73 @@ namespace Experilous.Topological
 				_regionColors = null;
 				_regionBorderTravelCosts = null;
 				_regionInternalTravelCosts = null;
+			}
+
+			if (CalculateCentroids)
+			{
+				var rootFace = _manifold.topology.faces[Mathf.Clamp(DistanceCalculationRootFaceIndex, 0, _manifold.topology.internalFaces.Count - 1)];
+
+				IEnumerable<DistanceOrderedFaceVisitor.EdgeDistancePair> enumerable;
+				switch (DistanceCalculationMethod)
+				{
+					case TopologyDistanceCalculationMethod.BreadthFirstEuclideanCumulative:
+						enumerable = BreadthFirstFaceVisitor.CreateBasedOnCumulativeEuclideanDistance(_manifold.topology, rootFace, _centroids);
+						break;
+					case TopologyDistanceCalculationMethod.BreadthFirstEuclideanFromRoot:
+						enumerable = BreadthFirstFaceVisitor.CreateBasedOnRootEuclideanDistance(_manifold.topology, rootFace, _centroids);
+						break;
+					case TopologyDistanceCalculationMethod.BreadthFirstSphericalCumulative:
+						enumerable = BreadthFirstFaceVisitor.CreateBasedOnCumulativeSphericalDistance(_manifold.topology, rootFace, _centroids);
+						break;
+					case TopologyDistanceCalculationMethod.BreadthFirstSphericalFromRoot:
+						enumerable = BreadthFirstFaceVisitor.CreateBasedOnRootSphericalDistance(_manifold.topology, rootFace, _centroids);
+						break;
+					case TopologyDistanceCalculationMethod.DepthFirstEuclideanCumulative:
+						enumerable = DepthFirstFaceVisitor.CreateBasedOnCumulativeEuclideanDistance(_manifold.topology, rootFace, _centroids);
+						break;
+					case TopologyDistanceCalculationMethod.DepthFirstEuclideanFromRoot:
+						enumerable = DepthFirstFaceVisitor.CreateBasedOnRootEuclideanDistance(_manifold.topology, rootFace, _centroids);
+						break;
+					case TopologyDistanceCalculationMethod.DepthFirstSphericalCumulative:
+						enumerable = DepthFirstFaceVisitor.CreateBasedOnCumulativeSphericalDistance(_manifold.topology, rootFace, _centroids);
+						break;
+					case TopologyDistanceCalculationMethod.DepthFirstSphericalFromRoot:
+						enumerable = DepthFirstFaceVisitor.CreateBasedOnRootSphericalDistance(_manifold.topology, rootFace, _centroids);
+						break;
+					default:
+						enumerable = null;
+						break;
+				}
+
+				if (enumerable != null)
+				{
+					_faceDistances = new float[_manifold.topology.internalFaces.Count];
+					_faceOrders = new float[_manifold.topology.internalFaces.Count];
+
+					_faceDistances[rootFace.index] = 0f;
+					_faceOrders[rootFace.index] = 0f;
+
+					float i = 1f;
+					float divisor = _manifold.topology.internalFaces.Count - 1;
+
+					foreach (var edgeDistancePair in enumerable)
+					{
+						var faceIndex = edgeDistancePair.face.index;
+						_faceDistances[faceIndex] = edgeDistancePair.distance;
+						_faceOrders[faceIndex] = i / divisor;
+						++i;
+					}
+				}
+				else
+				{
+					_faceDistances = null;
+					_faceOrders = null;
+				}
+			}
+			else
+			{
+				_faceDistances = null;
+				_faceOrders = null;
 			}
 
 			ClearSubmeshes();
@@ -514,7 +656,25 @@ namespace Experilous.Topological
 
 		private void BuildSubmeshes(Topology.FacesIndexer faces, Vector3[] vertexPositions, Vector3[] centroidPositions)
 		{
-			bool faceColorsExist = (_faceRegions != null && _faceRegions.Length > 0 && _regionCount > 0);
+			System.Func<int, Color> faceColorGenerator;
+
+			if (_faceRegions != null && _faceRegions.Length > 0 && _regionCount > 0)
+			{
+				faceColorGenerator = (int i) => { return _regionColors[_faceRegions[i]]; };
+			}
+			else if (_faceOrders != null)
+			{
+				var maxDistance = 0f;
+				foreach (var face in _manifold.topology.internalFaces)
+				{
+					maxDistance = Mathf.Max(maxDistance, _faceDistances[face]);
+				}
+				faceColorGenerator = (int i) => { return new Color(_faceDistances[i] / maxDistance, _faceOrders[i], 0f); };
+			}
+			else
+			{
+				faceColorGenerator = (int i) => { return new Color(1f, 1f, 1f); };
+			}
 
 			var faceIndex = 0;
 			var faceCount = faces.Count;
@@ -547,7 +707,7 @@ namespace Experilous.Topological
 					var edge = face.firstEdge;
 					var neighborCount = face.neighborCount;
 					vertices[meshVertex] = centroidPositions[faceIndex];
-					colors[meshVertex] = (faceColorsExist) ?  _regionColors[_faceRegions[face]] : new Color(1, 1, 1);
+					colors[meshVertex] = faceColorGenerator(face.index);
 					for (int j = 0; j < neighborCount; ++j, edge = edge.next)
 					{
 						vertices[meshVertex + j + 1] = vertexPositions[edge.nextVertex];

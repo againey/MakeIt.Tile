@@ -19,7 +19,7 @@ namespace Experilous.Topological
 			_randomEngine = randomEngine;
 		}
 
-		public void AddSeed(Topology.Vertex vertex)
+		public void AddRoot(Topology.Vertex vertex)
 		{
 			foreach (var edge in vertex.edges)
 			{
@@ -38,7 +38,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public void AddSeed(Topology.VertexEdge edge)
+		public void AddRoot(Topology.VertexEdge edge)
 		{
 			_visitedFaces[edge.prevFace.index] = true;
 			_visitedFaces[edge.nextFace.index] = true;
@@ -60,7 +60,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public void AddSeed(Topology.FaceEdge edge)
+		public void AddRoot(Topology.FaceEdge edge)
 		{
 			_visitedFaces[edge.farFace.index] = true;
 			_visitedFaces[edge.nearFace.index] = true;
@@ -82,7 +82,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public void AddSeed(Topology.Face face)
+		public void AddRoot(Topology.Face face)
 		{
 			_visitedFaces[face.index] = true;
 			foreach (var edge in face.edges)
@@ -100,23 +100,23 @@ namespace Experilous.Topological
 
 		public IEnumerator<Topology.Face> GetEnumerator()
 		{
-			return new FaceEnumerator(this, _randomEngine);
+			return new FaceEnumerator(this);
 		}
 
 		IEnumerator<Topology.FaceEdge> IEnumerable<Topology.FaceEdge>.GetEnumerator()
 		{
-			return new FaceEdgeEnumerator(this, _randomEngine);
+			return new FaceEdgeEnumerator(this);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return new FaceEnumerator(this, _randomEngine);
+			return new FaceEnumerator(this);
 		}
 
 		public class FaceEnumerator : FaceEdgeEnumerator, IEnumerator<Topology.Face>
 		{
-			public FaceEnumerator(RandomAdjacentFaceVisitor visitor, IRandomEngine randomEngine)
-				: base(visitor, randomEngine)
+			public FaceEnumerator(RandomAdjacentFaceVisitor visitor)
+				: base(visitor)
 			{
 			}
 
@@ -145,12 +145,12 @@ namespace Experilous.Topological
 			private Topology.FaceEdge _current;
 			private readonly IRandomEngine _randomEngine;
 
-			public FaceEdgeEnumerator(RandomAdjacentFaceVisitor visitor, IRandomEngine randomEngine)
+			public FaceEdgeEnumerator(RandomAdjacentFaceVisitor visitor)
 			{
 				_topology = visitor._topology;
 				_queuedEdgeIndices = new List<int>(visitor._queuedEdgeIndices);
-				_visitedFaces = new BitArray(_topology.internalFaces.Count);
-				_randomEngine = randomEngine;
+				_visitedFaces = new BitArray(visitor._visitedFaces);
+				_randomEngine = visitor._randomEngine;
 			}
 
 			public Topology.FaceEdge Current
