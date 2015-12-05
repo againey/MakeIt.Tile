@@ -65,17 +65,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldExternalRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new Vector3[manifold.topology.internalFaces.Count];
-		foreach (var face in manifold.topology.internalFaces)
-		{
-			var centroid = new Vector3();
-			foreach (var edge in face.edges)
-			{
-				centroid += manifold.vertexPositions[edge.prevVertex];
-			}
-			centroids[face] = centroid.normalized;
-		}
-
+		var centroids = SphericalManifold.CalculateFaceCentroids(manifold);
 		var random = new System.Random(randomSeed);
 
 		foreach (var face0 in manifold.topology.internalFaces)
@@ -102,17 +92,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldInternalRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new Vector3[manifold.topology.internalFaces.Count];
-		foreach (var face in manifold.topology.internalFaces)
-		{
-			var centroid = new Vector3();
-			foreach (var edge in face.edges)
-			{
-				centroid += manifold.vertexPositions[edge.prevVertex];
-			}
-			centroids[face] = centroid.normalized;
-		}
-
+		var centroids = SphericalManifold.CalculateFaceCentroids(manifold);
 		var random = new System.Random(randomSeed);
 
 		foreach (var face0 in manifold.topology.internalFaces)
@@ -138,17 +118,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldRecedingRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = new Vector3[manifold.topology.internalFaces.Count];
-		foreach (var face in manifold.topology.internalFaces)
-		{
-			var centroid = new Vector3();
-			foreach (var edge in face.edges)
-			{
-				centroid += manifold.vertexPositions[edge.prevVertex];
-			}
-			centroids[face] = centroid.normalized;
-		}
-
+		var centroids = SphericalManifold.CalculateFaceCentroids(manifold);
 		var random = new System.Random(randomSeed);
 
 		foreach (var face0 in manifold.topology.internalFaces)

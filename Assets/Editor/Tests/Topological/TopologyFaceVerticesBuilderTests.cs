@@ -13,24 +13,24 @@ public class TopologyFaceVerticesBuilderTests
 		builder.AddFace(0, 1, 2);
 		var topology = builder.BuildTopology();
 
-		Assert.AreEqual(3, topology.internalVertices.Count);
+		Assert.AreEqual(3, topology.vertices.Count);
 		Assert.AreEqual(6, topology.vertexEdges.Count);
 		Assert.AreEqual(6, topology.faceEdges.Count);
 		Assert.AreEqual(1, topology.internalFaces.Count);
 
-		Assert.AreEqual(2, topology.internalVertices[0].neighborCount);
-		Assert.AreEqual(2, topology.internalVertices[1].neighborCount);
-		Assert.AreEqual(2, topology.internalVertices[2].neighborCount);
+		Assert.AreEqual(2, topology.vertices[0].neighborCount);
+		Assert.AreEqual(2, topology.vertices[1].neighborCount);
+		Assert.AreEqual(2, topology.vertices[2].neighborCount);
 
 		Assert.AreEqual(3, topology.internalFaces[0].neighborCount);
 
 		Topology.FaceEdge faceEdge;
 
-		Assert.IsTrue(topology.internalFaces[0].TryFindEdge(topology.internalVertices[0], out faceEdge));
+		Assert.IsTrue(topology.internalFaces[0].TryFindEdge(topology.vertices[0], out faceEdge));
 		Assert.AreEqual(faceEdge, faceEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], faceEdge.nextVertex);
-		Assert.AreEqual(topology.internalVertices[1], faceEdge.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[2], faceEdge.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[0], faceEdge.nextVertex);
+		Assert.AreEqual(topology.vertices[1], faceEdge.next.nextVertex);
+		Assert.AreEqual(topology.vertices[2], faceEdge.next.next.nextVertex);
 		Assert.IsTrue(faceEdge.isBoundary);
 		Assert.IsTrue(faceEdge.next.isBoundary);
 		Assert.IsTrue(faceEdge.next.next.isBoundary);
@@ -40,20 +40,20 @@ public class TopologyFaceVerticesBuilderTests
 
 		Topology.VertexEdge vertexEdge;
 
-		Assert.IsTrue(topology.internalVertices[0].TryFindEdge(topology.internalVertices[1], out vertexEdge));
+		Assert.IsTrue(topology.vertices[0].TryFindEdge(topology.vertices[1], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next);
-		Assert.AreEqual(topology.internalVertices[1], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[2], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[1], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[2], vertexEdge.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[1].TryFindEdge(topology.internalVertices[2], out vertexEdge));
+		Assert.IsTrue(topology.vertices[1].TryFindEdge(topology.vertices[2], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next);
-		Assert.AreEqual(topology.internalVertices[2], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[0], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[2], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[0], vertexEdge.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[2].TryFindEdge(topology.internalVertices[0], out vertexEdge));
+		Assert.IsTrue(topology.vertices[2].TryFindEdge(topology.vertices[0], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next);
-		Assert.AreEqual(topology.internalVertices[0], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[1], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[0], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[1], vertexEdge.next.farVertex);
 	}
 
 	[Test]
@@ -66,15 +66,15 @@ public class TopologyFaceVerticesBuilderTests
 		builder.AddFace(1, 3, 2);
 		var topology = builder.BuildTopology();
 
-		Assert.AreEqual(4, topology.internalVertices.Count);
+		Assert.AreEqual(4, topology.vertices.Count);
 		Assert.AreEqual(12, topology.vertexEdges.Count);
 		Assert.AreEqual(12, topology.faceEdges.Count);
 		Assert.AreEqual(4, topology.internalFaces.Count);
 
-		Assert.AreEqual(3, topology.internalVertices[0].neighborCount);
-		Assert.AreEqual(3, topology.internalVertices[1].neighborCount);
-		Assert.AreEqual(3, topology.internalVertices[2].neighborCount);
-		Assert.AreEqual(3, topology.internalVertices[3].neighborCount);
+		Assert.AreEqual(3, topology.vertices[0].neighborCount);
+		Assert.AreEqual(3, topology.vertices[1].neighborCount);
+		Assert.AreEqual(3, topology.vertices[2].neighborCount);
+		Assert.AreEqual(3, topology.vertices[3].neighborCount);
 
 		Assert.AreEqual(3, topology.internalFaces[0].neighborCount);
 		Assert.AreEqual(3, topology.internalFaces[1].neighborCount);
@@ -83,67 +83,67 @@ public class TopologyFaceVerticesBuilderTests
 
 		Topology.FaceEdge faceEdge;
 
-		Assert.IsTrue(topology.internalFaces[0].TryFindEdge(topology.internalVertices[0], out faceEdge));
+		Assert.IsTrue(topology.internalFaces[0].TryFindEdge(topology.vertices[0], out faceEdge));
 		Assert.AreEqual(faceEdge, faceEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], faceEdge.nextVertex);
-		Assert.AreEqual(topology.internalVertices[1], faceEdge.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[2], faceEdge.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[0], faceEdge.nextVertex);
+		Assert.AreEqual(topology.vertices[1], faceEdge.next.nextVertex);
+		Assert.AreEqual(topology.vertices[2], faceEdge.next.next.nextVertex);
 		Assert.IsFalse(faceEdge.isBoundary);
 		Assert.IsFalse(faceEdge.next.isBoundary);
 		Assert.IsFalse(faceEdge.next.next.isBoundary);
 
-		Assert.IsTrue(topology.internalFaces[1].TryFindEdge(topology.internalVertices[0], out faceEdge));
+		Assert.IsTrue(topology.internalFaces[1].TryFindEdge(topology.vertices[0], out faceEdge));
 		Assert.AreEqual(faceEdge, faceEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], faceEdge.nextVertex);
-		Assert.AreEqual(topology.internalVertices[2], faceEdge.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[3], faceEdge.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[0], faceEdge.nextVertex);
+		Assert.AreEqual(topology.vertices[2], faceEdge.next.nextVertex);
+		Assert.AreEqual(topology.vertices[3], faceEdge.next.next.nextVertex);
 		Assert.IsFalse(faceEdge.isBoundary);
 		Assert.IsFalse(faceEdge.next.isBoundary);
 		Assert.IsFalse(faceEdge.next.next.isBoundary);
 
-		Assert.IsTrue(topology.internalFaces[2].TryFindEdge(topology.internalVertices[0], out faceEdge));
+		Assert.IsTrue(topology.internalFaces[2].TryFindEdge(topology.vertices[0], out faceEdge));
 		Assert.AreEqual(faceEdge, faceEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], faceEdge.nextVertex);
-		Assert.AreEqual(topology.internalVertices[3], faceEdge.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[1], faceEdge.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[0], faceEdge.nextVertex);
+		Assert.AreEqual(topology.vertices[3], faceEdge.next.nextVertex);
+		Assert.AreEqual(topology.vertices[1], faceEdge.next.next.nextVertex);
 		Assert.IsFalse(faceEdge.isBoundary);
 		Assert.IsFalse(faceEdge.next.isBoundary);
 		Assert.IsFalse(faceEdge.next.next.isBoundary);
 
-		Assert.IsTrue(topology.internalFaces[3].TryFindEdge(topology.internalVertices[1], out faceEdge));
+		Assert.IsTrue(topology.internalFaces[3].TryFindEdge(topology.vertices[1], out faceEdge));
 		Assert.AreEqual(faceEdge, faceEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[1], faceEdge.nextVertex);
-		Assert.AreEqual(topology.internalVertices[3], faceEdge.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[2], faceEdge.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[1], faceEdge.nextVertex);
+		Assert.AreEqual(topology.vertices[3], faceEdge.next.nextVertex);
+		Assert.AreEqual(topology.vertices[2], faceEdge.next.next.nextVertex);
 		Assert.IsFalse(faceEdge.isBoundary);
 		Assert.IsFalse(faceEdge.next.isBoundary);
 		Assert.IsFalse(faceEdge.next.next.isBoundary);
 
 		Topology.VertexEdge vertexEdge;
 
-		Assert.IsTrue(topology.internalVertices[0].TryFindEdge(topology.internalVertices[1], out vertexEdge));
+		Assert.IsTrue(topology.vertices[0].TryFindEdge(topology.vertices[1], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[1], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[2], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[3], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[1], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[2], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[3], vertexEdge.next.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[1].TryFindEdge(topology.internalVertices[0], out vertexEdge));
+		Assert.IsTrue(topology.vertices[1].TryFindEdge(topology.vertices[0], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[3], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[2], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[0], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[3], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[2], vertexEdge.next.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[2].TryFindEdge(topology.internalVertices[0], out vertexEdge));
+		Assert.IsTrue(topology.vertices[2].TryFindEdge(topology.vertices[0], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[1], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[3], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[0], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[1], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[3], vertexEdge.next.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[3].TryFindEdge(topology.internalVertices[0], out vertexEdge));
+		Assert.IsTrue(topology.vertices[3].TryFindEdge(topology.vertices[0], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[2], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[1], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[0], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[2], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[1], vertexEdge.next.next.farVertex);
 	}
 
 	[Test]
@@ -155,17 +155,17 @@ public class TopologyFaceVerticesBuilderTests
 		builder.AddFace(4, 5, 1, 0);
 		var topology = builder.BuildTopology();
 
-		Assert.AreEqual(6, topology.internalVertices.Count);
+		Assert.AreEqual(6, topology.vertices.Count);
 		Assert.AreEqual(18, topology.vertexEdges.Count);
 		Assert.AreEqual(18, topology.faceEdges.Count);
 		Assert.AreEqual(3, topology.internalFaces.Count);
 
-		Assert.AreEqual(3, topology.internalVertices[0].neighborCount);
-		Assert.AreEqual(3, topology.internalVertices[1].neighborCount);
-		Assert.AreEqual(3, topology.internalVertices[2].neighborCount);
-		Assert.AreEqual(3, topology.internalVertices[3].neighborCount);
-		Assert.AreEqual(3, topology.internalVertices[4].neighborCount);
-		Assert.AreEqual(3, topology.internalVertices[5].neighborCount);
+		Assert.AreEqual(3, topology.vertices[0].neighborCount);
+		Assert.AreEqual(3, topology.vertices[1].neighborCount);
+		Assert.AreEqual(3, topology.vertices[2].neighborCount);
+		Assert.AreEqual(3, topology.vertices[3].neighborCount);
+		Assert.AreEqual(3, topology.vertices[4].neighborCount);
+		Assert.AreEqual(3, topology.vertices[5].neighborCount);
 
 		Assert.AreEqual(4, topology.internalFaces[0].neighborCount);
 		Assert.AreEqual(4, topology.internalFaces[1].neighborCount);
@@ -173,34 +173,34 @@ public class TopologyFaceVerticesBuilderTests
 
 		Topology.FaceEdge faceEdge;
 
-		Assert.IsTrue(topology.internalFaces[0].TryFindEdge(topology.internalVertices[0], out faceEdge));
+		Assert.IsTrue(topology.internalFaces[0].TryFindEdge(topology.vertices[0], out faceEdge));
 		Assert.AreEqual(faceEdge, faceEdge.next.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], faceEdge.nextVertex);
-		Assert.AreEqual(topology.internalVertices[1], faceEdge.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[3], faceEdge.next.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[2], faceEdge.next.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[0], faceEdge.nextVertex);
+		Assert.AreEqual(topology.vertices[1], faceEdge.next.nextVertex);
+		Assert.AreEqual(topology.vertices[3], faceEdge.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[2], faceEdge.next.next.next.nextVertex);
 		Assert.IsTrue(faceEdge.isBoundary);
 		Assert.IsFalse(faceEdge.next.isBoundary);
 		Assert.IsTrue(faceEdge.next.next.isBoundary);
 		Assert.IsFalse(faceEdge.next.next.next.isBoundary);
 
-		Assert.IsTrue(topology.internalFaces[1].TryFindEdge(topology.internalVertices[2], out faceEdge));
+		Assert.IsTrue(topology.internalFaces[1].TryFindEdge(topology.vertices[2], out faceEdge));
 		Assert.AreEqual(faceEdge, faceEdge.next.next.next.next);
-		Assert.AreEqual(topology.internalVertices[2], faceEdge.nextVertex);
-		Assert.AreEqual(topology.internalVertices[3], faceEdge.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[5], faceEdge.next.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[4], faceEdge.next.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[2], faceEdge.nextVertex);
+		Assert.AreEqual(topology.vertices[3], faceEdge.next.nextVertex);
+		Assert.AreEqual(topology.vertices[5], faceEdge.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[4], faceEdge.next.next.next.nextVertex);
 		Assert.IsTrue(faceEdge.isBoundary);
 		Assert.IsFalse(faceEdge.next.isBoundary);
 		Assert.IsTrue(faceEdge.next.next.isBoundary);
 		Assert.IsFalse(faceEdge.next.next.next.isBoundary);
 
-		Assert.IsTrue(topology.internalFaces[2].TryFindEdge(topology.internalVertices[4], out faceEdge));
+		Assert.IsTrue(topology.internalFaces[2].TryFindEdge(topology.vertices[4], out faceEdge));
 		Assert.AreEqual(faceEdge, faceEdge.next.next.next.next);
-		Assert.AreEqual(topology.internalVertices[4], faceEdge.nextVertex);
-		Assert.AreEqual(topology.internalVertices[5], faceEdge.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[1], faceEdge.next.next.nextVertex);
-		Assert.AreEqual(topology.internalVertices[0], faceEdge.next.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[4], faceEdge.nextVertex);
+		Assert.AreEqual(topology.vertices[5], faceEdge.next.nextVertex);
+		Assert.AreEqual(topology.vertices[1], faceEdge.next.next.nextVertex);
+		Assert.AreEqual(topology.vertices[0], faceEdge.next.next.next.nextVertex);
 		Assert.IsTrue(faceEdge.isBoundary);
 		Assert.IsFalse(faceEdge.next.isBoundary);
 		Assert.IsTrue(faceEdge.next.next.isBoundary);
@@ -208,41 +208,41 @@ public class TopologyFaceVerticesBuilderTests
 
 		Topology.VertexEdge vertexEdge;
 
-		Assert.IsTrue(topology.internalVertices[0].TryFindEdge(topology.internalVertices[1], out vertexEdge));
+		Assert.IsTrue(topology.vertices[0].TryFindEdge(topology.vertices[1], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[1], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[2], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[4], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[1], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[2], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[4], vertexEdge.next.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[1].TryFindEdge(topology.internalVertices[0], out vertexEdge));
+		Assert.IsTrue(topology.vertices[1].TryFindEdge(topology.vertices[0], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[0], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[5], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[3], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[0], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[5], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[3], vertexEdge.next.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[2].TryFindEdge(topology.internalVertices[3], out vertexEdge));
+		Assert.IsTrue(topology.vertices[2].TryFindEdge(topology.vertices[3], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[3], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[4], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[0], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[3], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[4], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[0], vertexEdge.next.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[3].TryFindEdge(topology.internalVertices[2], out vertexEdge));
+		Assert.IsTrue(topology.vertices[3].TryFindEdge(topology.vertices[2], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[2], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[1], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[5], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[2], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[1], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[5], vertexEdge.next.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[4].TryFindEdge(topology.internalVertices[5], out vertexEdge));
+		Assert.IsTrue(topology.vertices[4].TryFindEdge(topology.vertices[5], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[5], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[0], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[2], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[5], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[0], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[2], vertexEdge.next.next.farVertex);
 
-		Assert.IsTrue(topology.internalVertices[5].TryFindEdge(topology.internalVertices[4], out vertexEdge));
+		Assert.IsTrue(topology.vertices[5].TryFindEdge(topology.vertices[4], out vertexEdge));
 		Assert.AreEqual(vertexEdge, vertexEdge.next.next.next);
-		Assert.AreEqual(topology.internalVertices[4], vertexEdge.farVertex);
-		Assert.AreEqual(topology.internalVertices[3], vertexEdge.next.farVertex);
-		Assert.AreEqual(topology.internalVertices[1], vertexEdge.next.next.farVertex);
+		Assert.AreEqual(topology.vertices[4], vertexEdge.farVertex);
+		Assert.AreEqual(topology.vertices[3], vertexEdge.next.farVertex);
+		Assert.AreEqual(topology.vertices[1], vertexEdge.next.next.farVertex);
 	}
 
 	[Test]
@@ -270,8 +270,6 @@ public class TopologyFaceVerticesBuilderTests
 		var topology = builder.BuildTopology();
 
 		Assert.AreEqual(9, topology.vertices.Count);
-		Assert.AreEqual(9, topology.internalVertices.Count);
-		Assert.AreEqual(0, topology.externalVertices.Count);
 
 		Assert.AreEqual(24, topology.vertexEdges.Count);
 		Assert.AreEqual(24, topology.faceEdges.Count);
@@ -367,8 +365,6 @@ public class TopologyFaceVerticesBuilderTests
 		var topology = builder.BuildTopology();
 
 		Assert.AreEqual(16, topology.vertices.Count);
-		Assert.AreEqual(16, topology.internalVertices.Count);
-		Assert.AreEqual(0, topology.externalVertices.Count);
 
 		Assert.AreEqual(48, topology.vertexEdges.Count);
 		Assert.AreEqual(48, topology.faceEdges.Count);
@@ -423,8 +419,6 @@ public class TopologyFaceVerticesBuilderTests
 		var topology = builder.BuildTopology();
 
 		Assert.AreEqual(8192, topology.vertices.Count);
-		Assert.AreEqual(8192, topology.internalVertices.Count);
-		Assert.AreEqual(0, topology.externalVertices.Count);
 
 		Assert.AreEqual(24576, topology.vertexEdges.Count);
 		Assert.AreEqual(24576, topology.faceEdges.Count);

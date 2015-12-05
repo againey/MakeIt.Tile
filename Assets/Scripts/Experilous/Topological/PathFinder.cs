@@ -137,14 +137,14 @@ namespace Experilous.Topological
 				{
 					var sourcePosition = facePositions[s];
 					var targetPosition = facePositions[t];
-					return SphericalManifold.ArcLength(sourcePosition, targetPosition);
+					return SphericalManifold.AngleBetweenUnitVectors(sourcePosition, targetPosition);
 				},
 				(Topology.FaceEdge edge, int pathLength) =>
 				{
 					if (edge.isOuterBoundary) return float.PositiveInfinity;
 					var sourcePosition = facePositions[edge.nearFace];
 					var targetPosition = facePositions[edge.farFace];
-					return SphericalManifold.ArcLength(sourcePosition, targetPosition);
+					return SphericalManifold.AngleBetweenUnitVectors(sourcePosition, targetPosition);
 				});
 		}
 	}

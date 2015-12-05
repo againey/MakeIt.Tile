@@ -6,10 +6,9 @@ namespace Experilous.Topological
 	public partial class Topology
 	{
 		[SerializeField]
-		private NodeData[] _vertexData;
-
+		private ushort[] _vertexNeighborCounts;
 		[SerializeField]
-		private int _firstExternalVertexIndex;
+		private int[] _vertexFirstEdgeIndices;
 
 		public struct Vertex : IEquatable<Vertex>, IComparable<Vertex>
 		{
@@ -25,23 +24,10 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public bool isInternal { get { return !_topology._vertexData[_index].isExternal; } }
-			public bool isExternal { get { return _topology._vertexData[_index].isExternal; } }
-			public int neighborCount { get { return _topology._vertexData[_index].neighborCount; } }
-			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology._vertexData[_index].firstEdge); } }
+			public int neighborCount { get { return _topology._vertexNeighborCounts[_index]; } }
+			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology._vertexFirstEdgeIndices[_index]); } }
 
 			public bool isInitialized { get { return _topology != null; } }
-
-			public bool hasExternalVertexNeighbor
-			{
-				get
-				{
-					foreach (var edge in edges)
-						if (edge.farVertex.isExternal)
-							return true;
-					return false;
-				}
-			}
 
 			public bool hasExternalFaceNeighbor
 			{
@@ -75,7 +61,7 @@ namespace Experilous.Topological
 					_index = index;
 				}
 
-				public int Count { get { return _topology._vertexData[_index].neighborCount; } }
+				public int Count { get { return _topology._vertexNeighborCounts[_index]; } }
 				
 				public struct VertexEdgeEnumerator
 				{
@@ -117,7 +103,7 @@ namespace Experilous.Topological
 
 				public VertexEdgeEnumerator GetEnumerator()
 				{
-					return new VertexEdgeEnumerator(_topology, _topology._vertexData[_index].firstEdge);
+					return new VertexEdgeEnumerator(_topology, _topology._vertexFirstEdgeIndices[_index]);
 				}
 			}
 
@@ -191,32 +177,25 @@ namespace Experilous.Topological
 		public struct VerticesIndexer
 		{
 			private Topology _topology;
-			private int _first;
-			private int _last;
 
-			public VerticesIndexer(Topology topology) { _topology = topology; _first = 0; _last = _topology._vertexData.Length; }
-			public VerticesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
-			public Vertex this[int i] { get { return new Vertex(_topology, _first + i); } }
-			public int Count { get { return _last - _first; } }
-			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology, _first, _last); }
+			public VerticesIndexer(Topology topology) { _topology = topology; }
+			public Vertex this[int i] { get { return new Vertex(_topology, i); } }
+			public int Count { get { return _topology._vertexFirstEdgeIndices.Length; } }
+			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology); }
 
 			public struct VertexEnumerator
 			{
 				private Topology _topology;
-				private int _index;
-				private int _next;
-				private int _last;
+				private int _current;
 
-				public VertexEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
-				public Vertex Current { get { return new Vertex(_topology, _index); } }
-				public bool MoveNext() { return (_index = _next++) != _last; }
+				public VertexEnumerator(Topology topology) { _topology = topology; _current = -1; }
+				public Vertex Current { get { return new Vertex(_topology, _current); } }
+				public bool MoveNext() { return ++_current < _topology._vertexFirstEdgeIndices.Length; }
 				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
 		public VerticesIndexer vertices { get { return new VerticesIndexer(this); } }
-		public VerticesIndexer internalVertices { get { return new VerticesIndexer(this, 0, _firstExternalVertexIndex); } }
-		public VerticesIndexer externalVertices { get { return new VerticesIndexer(this, _firstExternalVertexIndex, _vertexData.Length); } }
 	}
 
 	public static class VertexExtensions
@@ -225,5 +204,11 @@ namespace Experilous.Topological
 		{
 			return attributArray[vertex.index];
 		}
+	}
+
+	public interface IVertexAttribute<T> where T : new()
+	{
+		T this[int i] { get; set; }
+		T this[Topology.Vertex v] { get; set; }
 	}
 }

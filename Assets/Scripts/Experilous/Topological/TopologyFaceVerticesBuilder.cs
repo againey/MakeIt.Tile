@@ -325,11 +325,11 @@ namespace Experilous.Topological
 				_maxVertexIndex = UnityEngine.Mathf.Max(_maxVertexIndex, UnityEngine.Mathf.Max(vertices));
 			}
 
-			private void AddEdgeToVertex(NodeData[] vertexData, EdgeData[] edgeData, int vertex, int edge)
+			private void AddEdgeToVertex(ushort[] vertexNeighborCounts, int[] vertexFirstEdgeIndices, EdgeData[] edgeData, int vertex, int edge)
 			{
-				if (vertexData[vertex].isInitialized)
+				if (vertexNeighborCounts[vertex] != 0)
 				{
-					var firstVertexEdge = vertexData[vertex].firstEdge;
+					var firstVertexEdge = vertexFirstEdgeIndices[vertex];
 					var vertexEdge = firstVertexEdge;
 					var nextVertexEdge = edgeData[vertexEdge]._vNext;
 					while (nextVertexEdge != firstVertexEdge)
@@ -339,11 +339,12 @@ namespace Experilous.Topological
 					}
 					edgeData[vertexEdge]._vNext = edge;
 					edgeData[edge]._vNext = firstVertexEdge;
-					vertexData[vertex].neighborCount += 1;
+					vertexNeighborCounts[vertex] += 1;
 				}
 				else
 				{
-					vertexData[vertex] = new NodeData(1, edge);
+					vertexNeighborCounts[vertex] = 1;
+					vertexFirstEdgeIndices[vertex] = edge;
 					edgeData[edge]._vNext = edge;
 				}
 			}
@@ -400,11 +401,11 @@ namespace Experilous.Topological
 
 			public Topology BuildTopology()
 			{
-				var topology = new Topology();
-
-				var vertexData = new NodeData[_maxVertexIndex + 1];
+				var vertexNeighborCounts = new ushort[_maxVertexIndex + 1];
+				var vertexFirstEdgeIndices = new int[_maxVertexIndex + 1];
 				var internalEdgeData = new EdgeData[_faceVertices.Count];
-				var internalFaceData = new NodeData[_faceRoots.Count];
+				var internalFaceNeighborCounts = new ushort[_faceRoots.Count];
+				var internalFaceFirstEdgeIndices = new int[_faceRoots.Count];
 
 				// Create all the edges with full vertex and face references, correct but
 				// unspecified-order vNext references, invalid twin references, and unset
@@ -421,7 +422,7 @@ namespace Experilous.Topological
 						internalEdgeData[nextEdge]._face = face;
 						internalEdgeData[nextEdge]._twin = -1;
 
-						AddEdgeToVertex(vertexData, internalEdgeData, _faceVertices[faceVertex1]._vertex, nextEdge);
+						AddEdgeToVertex(vertexNeighborCounts, vertexFirstEdgeIndices, internalEdgeData, _faceVertices[faceVertex1]._vertex, nextEdge);
 
 						++nextEdge;
 						faceVertex0 = faceVertex1;
@@ -444,7 +445,7 @@ namespace Experilous.Topological
 					{
 						if (internalEdgeData[edge]._twin == -1)
 						{
-							var firstVertexEdge = vertexData[_faceVertices[faceVertex0]._vertex].firstEdge;
+							var firstVertexEdge = vertexFirstEdgeIndices[_faceVertices[faceVertex0]._vertex];
 							var vertexEdge = firstVertexEdge;
 							var targetVertex = _faceVertices[faceVertex1]._vertex;
 							while (internalEdgeData[vertexEdge]._vertex != targetVertex)
@@ -493,7 +494,7 @@ namespace Experilous.Topological
 								edgeData[nextEdge]._vertex = _faceVertices[faceVertex1]._vertex;
 								edgeData[nextEdge]._face = -1;
 
-								AddEdgeToVertex(vertexData, edgeData, _faceVertices[faceVertex0]._vertex, nextEdge);
+								AddEdgeToVertex(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, _faceVertices[faceVertex0]._vertex, nextEdge);
 
 								edgeData[nextEdge]._twin = edge;
 								edgeData[edge]._twin = nextEdge;
@@ -537,7 +538,8 @@ namespace Experilous.Topological
 						faceVertex2 = _faceVertices[faceVertex1]._next;
 					} while (faceVertex0 != firstFaceVertex);
 
-					internalFaceData[face] = new NodeData(neighborCount, edgeData[firstEdge]._twin);
+					internalFaceNeighborCounts[face] = (ushort)(0x0000u | (neighborCount & 0x7FFFu));
+					internalFaceFirstEdgeIndices[face] = edgeData[firstEdge]._twin;
 					edge = firstEdge + neighborCount;
 				}
 
@@ -571,18 +573,20 @@ namespace Experilous.Topological
 					edge = firstEdge + neighborCount;
 				}
 
-				NodeData[] faceData;
+				ushort[] faceNeighborCounts;
+				int[] faceFirstEdgeIndices;
 
 				if (boundaryEdgeCount == 0)
 				{
-					faceData = internalFaceData;
+					faceNeighborCounts = internalFaceNeighborCounts;
+					faceFirstEdgeIndices = internalFaceFirstEdgeIndices;
 				}
 				else
 				{
 					// Now that all vertex and edge relationships are established, locate all edges that don't have a
 					// face relationship specified (the boundary edges) and spin around each face to establish those
 					// edge -> face relationships and count the total number of external faces.
-					int faceIndex = internalFaceData.Length;
+					int faceIndex = internalFaceFirstEdgeIndices.Length;
 					for (int edgeIndex = 0; edgeIndex < edgeData.Length; ++edgeIndex)
 					{
 						if (edgeData[edgeIndex]._face == -1)
@@ -600,7 +604,7 @@ namespace Experilous.Topological
 								edgeData[nextFaceEdgeIndex]._fNext = faceEdgeIndex;
 								faceEdgeIndex = nextFaceEdgeIndex;
 								++neighborCount;
-								if (neighborCount > vertexData.Length) throw new System.InvalidOperationException("Face neighbors were specified such that an external face was misconfigured.");
+								if (neighborCount > vertexFirstEdgeIndices.Length) throw new System.InvalidOperationException("Face neighbors were specified such that an external face was misconfigured.");
 							} while (twinEdgeIndex != edgeIndex);
 
 							++faceIndex;
@@ -609,9 +613,11 @@ namespace Experilous.Topological
 
 					// Allocate the array for face -> edge linkage, now that we know the number of faces, find the
 					// first edge of every face and count the face's neighbors.
-					faceData = new NodeData[faceIndex];
-					System.Array.Copy(internalFaceData, faceData, internalFaceData.Length);
-					faceIndex = internalFaceData.Length;
+					faceNeighborCounts = new ushort[faceIndex];
+					faceFirstEdgeIndices = new int[faceIndex];
+					System.Array.Copy(internalFaceNeighborCounts, faceNeighborCounts, internalFaceNeighborCounts.Length);
+					System.Array.Copy(internalFaceFirstEdgeIndices, faceFirstEdgeIndices, internalFaceFirstEdgeIndices.Length);
+					faceIndex = internalFaceFirstEdgeIndices.Length;
 					for (int edgeIndex = 0; edgeIndex < edgeData.Length; ++edgeIndex)
 					{
 						// Give the above loop, the face index of edges in their current order are guaranteed to be
@@ -628,21 +634,26 @@ namespace Experilous.Topological
 							{
 								faceEdgeIndex = edgeData[faceEdgeIndex]._fNext;
 								++neighborCount;
-								if (neighborCount > vertexData.Length) throw new System.InvalidOperationException("Face neighbors were specified such that an external face was misconfigured.");
+								if (neighborCount > vertexFirstEdgeIndices.Length) throw new System.InvalidOperationException("Face neighbors were specified such that an external face was misconfigured.");
 							} while (faceEdgeIndex != firstFaceEdgeIndex);
 
 							// Store the face count and link the face to the first edge.
-							faceData[faceIndex] = new NodeData(true, neighborCount, firstFaceEdgeIndex);
+							faceNeighborCounts[faceIndex] = (ushort)(0x8000u | (neighborCount & 0x7FFFu));
+							faceFirstEdgeIndices[faceIndex] = firstFaceEdgeIndex;
 							++faceIndex;
 						}
 					}
 				}
 
-				topology._vertexData = vertexData;
+				var topology = new Topology();
+
+				topology._vertexNeighborCounts = vertexNeighborCounts;
+				topology._vertexFirstEdgeIndices = vertexFirstEdgeIndices;
 				topology._edgeData = edgeData;
-				topology._faceData = faceData;
-				topology._firstExternalVertexIndex = vertexData.Length;
-				topology._firstExternalFaceIndex = internalFaceData.Length;
+				topology._faceNeighborCounts = faceNeighborCounts;
+				topology._faceFirstEdgeIndices = faceFirstEdgeIndices;
+				topology._firstExternalEdgeIndex = internalEdgeData.Length;
+				topology._firstExternalFaceIndex = internalFaceFirstEdgeIndices.Length;
 
 				return topology;
 			}

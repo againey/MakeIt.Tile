@@ -58,7 +58,7 @@ namespace Experilous.Topological
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
-				return priorDistance + SphericalManifold.ArcLength(faceCentroids[edge.nearFace], faceCentroids[edge.farFace]);
+				return priorDistance + SphericalManifold.AngleBetweenUnitVectors(faceCentroids[edge.nearFace], faceCentroids[edge.farFace]);
 			};
 		}
 
@@ -66,7 +66,7 @@ namespace Experilous.Topological
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
-				return SphericalManifold.ArcLength(faceCentroids[root], faceCentroids[edge.farFace]);
+				return SphericalManifold.AngleBetweenUnitVectors(faceCentroids[root], faceCentroids[edge.farFace]);
 			};
 		}
 

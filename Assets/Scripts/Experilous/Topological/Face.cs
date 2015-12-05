@@ -6,7 +6,9 @@ namespace Experilous.Topological
 	public partial class Topology
 	{
 		[SerializeField]
-		private NodeData[] _faceData;
+		private ushort[] _faceNeighborCounts;
+		[SerializeField]
+		private int[] _faceFirstEdgeIndices;
 
 		[SerializeField]
 		private int _firstExternalFaceIndex;
@@ -25,23 +27,12 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public bool isInternal { get { return !_topology._faceData[_index].isExternal; } }
-			public bool isExternal { get { return _topology._faceData[_index].isExternal; } }
-			public int neighborCount { get { return _topology._faceData[_index].neighborCount; } }
-			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceData[_index].firstEdge); } }
+			public bool isInternal { get { return (_topology._faceNeighborCounts[_index] & 0x8000u) == 0x0000u; } }
+			public bool isExternal { get { return (_topology._faceNeighborCounts[_index] & 0x8000u) == 0x8000u; } }
+			public int neighborCount { get { return (int)(_topology._faceNeighborCounts[_index] & 0x7FFFu); } }
+			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceFirstEdgeIndices[_index]); } }
 
 			public bool isInitialized { get { return _topology != null; } }
-
-			public bool hasExternalVertexNeighbor
-			{
-				get
-				{
-					foreach (var edge in edges)
-						if (edge.nextVertex.isExternal)
-							return true;
-					return false;
-				}
-			}
 
 			public bool hasExternalFaceNeighbor
 			{
@@ -75,7 +66,7 @@ namespace Experilous.Topological
 					_index = index;
 				}
 
-				public int Count { get { return _topology._faceData[_index].neighborCount; } }
+				public int Count { get { return (int)(_topology._faceNeighborCounts[_index] & 0x7FFFu); } }
 				
 				public struct FaceEdgeEnumerator
 				{
@@ -117,7 +108,7 @@ namespace Experilous.Topological
 
 				public FaceEdgeEnumerator GetEnumerator()
 				{
-					return new FaceEdgeEnumerator(_topology, _topology._faceData[_index].firstEdge);
+					return new FaceEdgeEnumerator(_topology, _topology._faceFirstEdgeIndices[_index]);
 				}
 			}
 
@@ -194,7 +185,7 @@ namespace Experilous.Topological
 			private int _first;
 			private int _last;
 
-			public FacesIndexer(Topology topology) { _topology = topology; _first = 0; _last = _topology._faceData.Length; }
+			public FacesIndexer(Topology topology) { _topology = topology; _first = 0; _last = _topology._faceFirstEdgeIndices.Length; }
 			public FacesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
 			public Face this[int i] { get { return new Face(_topology, _first + i); } }
 			public int Count { get { return _last - _first; } }
@@ -216,7 +207,7 @@ namespace Experilous.Topological
 
 		public FacesIndexer faces { get { return new FacesIndexer(this); } }
 		public FacesIndexer internalFaces { get { return new FacesIndexer(this, 0, _firstExternalFaceIndex); } }
-		public FacesIndexer externalFaces { get { return new FacesIndexer(this, _firstExternalFaceIndex, _faceData.Length); } }
+		public FacesIndexer externalFaces { get { return new FacesIndexer(this, _firstExternalFaceIndex, _faceFirstEdgeIndices.Length); } }
 	}
 
 	public static class FaceExtensions
@@ -225,5 +216,11 @@ namespace Experilous.Topological
 		{
 			return attributArray[face.index];
 		}
+	}
+
+	public interface IFaceAttribute<T> where T : new()
+	{
+		T this[int i] { get; set; }
+		T this[Topology.Face f] { get; set; }
 	}
 }

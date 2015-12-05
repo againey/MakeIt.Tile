@@ -48,6 +48,9 @@ namespace Experilous.Topological
 		[SerializeField]
 		private EdgeData[] _edgeData;
 
+		[SerializeField]
+		private int _firstExternalEdgeIndex;
+
 		public struct VertexEdge : IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>
 		{
 			private Topology _topology;
@@ -78,9 +81,11 @@ namespace Experilous.Topological
 			public Face prevFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
 			public Face nextFace { get { return new Face(_topology, _topology._edgeData[_topology._edgeData[_index]._twin]._face); } }
 
-			public bool isBoundary { get { return farVertex.isExternal != nearVertex.isExternal; } }
-			public bool isOuterBoundary { get { return farVertex.isExternal && !nearVertex.isExternal; } }
-			public bool isInnerBoundary { get { return nearVertex.isExternal && !farVertex.isExternal; } }
+			public bool isBoundary { get { return prevFace.isExternal != nextFace.isExternal; } }
+			public bool isOuterBoundary { get { return prevFace.isExternal; } }
+			public bool isInnerBoundary { get { return nextFace.isExternal; } }
+			public bool isInternal { get { return nextFace.isInternal; } }
+			public bool isExternal { get { return prevFace.isExternal; } }
 
 			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
 
@@ -152,8 +157,10 @@ namespace Experilous.Topological
 			public Face farFace { get { return new Face(_topology, _topology._edgeData[_index]._face); } }
 
 			public bool isBoundary { get { return farFace.isExternal != nearFace.isExternal; } }
-			public bool isOuterBoundary { get { return farFace.isExternal && !nearFace.isExternal; } }
-			public bool isInnerBoundary { get { return nearFace.isExternal && !farFace.isExternal; } }
+			public bool isOuterBoundary { get { return farFace.isExternal; } }
+			public bool isInnerBoundary { get { return nearFace.isExternal; } }
+			public bool isInternal { get { return nearFace.isInternal; } }
+			public bool isExternal { get { return farFace.isExternal; } }
 
 			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
 
@@ -197,48 +204,62 @@ namespace Experilous.Topological
 		public struct VertexEdgesIndexer
 		{
 			private Topology _topology;
+			private int _first;
+			private int _last;
 
-			public VertexEdgesIndexer(Topology topology){ _topology = topology; }
-			public VertexEdge this[int i] { get { return new VertexEdge(_topology, i); } }
-			public int Count { get { return _topology._edgeData.Length; } }
-			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology); }
+			public VertexEdgesIndexer(Topology topology){ _topology = topology; _first = 0; _last = _topology._edgeData.Length; }
+			public VertexEdgesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
+			public VertexEdge this[int i] { get { return new VertexEdge(_topology, _first + i); } }
+			public int Count { get { return _last - _first; } }
+			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology, _first, _last); }
 
 			public struct EdgeEnumerator
 			{
 				private Topology _topology;
 				private int _index;
+				private int _next;
+				private int _last;
 
-				public EdgeEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public EdgeEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
 				public VertexEdge Current { get { return new VertexEdge(_topology, _index); } }
-				public bool MoveNext() { return (++_index < _topology._edgeData.Length); }
-				public void Reset() { _index = -1; }
+				public bool MoveNext() { return (_index = _next++) != _last; }
+				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
 		public VertexEdgesIndexer vertexEdges { get { return new VertexEdgesIndexer(this); } }
+		public VertexEdgesIndexer internalVertexEdges { get { return new VertexEdgesIndexer(this, 0, _firstExternalEdgeIndex); } }
+		public VertexEdgesIndexer externalVertexEdges { get { return new VertexEdgesIndexer(this, _firstExternalEdgeIndex, _edgeData.Length); } }
 
 		public struct FaceEdgesIndexer
 		{
 			private Topology _topology;
+			private int _first;
+			private int _last;
 
-			public FaceEdgesIndexer(Topology topology){ _topology = topology; }
-			public FaceEdge this[int i] { get { return new FaceEdge(_topology, i); } }
-			public int Count { get { return _topology._edgeData.Length; } }
-			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology); }
+			public FaceEdgesIndexer(Topology topology){ _topology = topology; _first = 0; _last = _topology._edgeData.Length; }
+			public FaceEdgesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
+			public FaceEdge this[int i] { get { return new FaceEdge(_topology, _first + i); } }
+			public int Count { get { return _last - _first; } }
+			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology, _first, _last); }
 
 			public struct EdgeEnumerator
 			{
 				private Topology _topology;
 				private int _index;
+				private int _next;
+				private int _last;
 
-				public EdgeEnumerator(Topology topology) { _topology = topology; _index = -1; }
+				public EdgeEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
 				public FaceEdge Current { get { return new FaceEdge(_topology, _index); } }
-				public bool MoveNext() { return (++_index < _topology._edgeData.Length); }
-				public void Reset() { _index = -1; }
+				public bool MoveNext() { return (_index = _next++) != _last; }
+				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
 		public FaceEdgesIndexer faceEdges { get { return new FaceEdgesIndexer(this); } }
+		public FaceEdgesIndexer internalFaceEdges { get { return new FaceEdgesIndexer(this, 0, _firstExternalEdgeIndex); } }
+		public FaceEdgesIndexer externalFaceEdges { get { return new FaceEdgesIndexer(this, _firstExternalEdgeIndex, _edgeData.Length); } }
 	}
 
 	public static class EdgeExtensions
@@ -252,5 +273,12 @@ namespace Experilous.Topological
 		{
 			return attributArray[edge.index];
 		}
+	}
+
+	public interface IEdgeAttribute<T> where T : new()
+	{
+		T this[int i] { get; set; }
+		T this[Topology.VertexEdge e] { get; set; }
+		T this[Topology.FaceEdge e] { get; set; }
 	}
 }

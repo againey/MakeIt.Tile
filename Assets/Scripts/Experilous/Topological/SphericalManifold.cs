@@ -131,6 +131,249 @@ namespace Experilous.Topological
 			return new Manifold(builder.BuildTopology(), vertexPositions);
 		}
 
+		private static Topology.FacesIndexer GetFaces(Manifold manifold, bool includeExternalFaces)
+		{
+			return !includeExternalFaces ? manifold.topology.internalFaces : manifold.topology.faces;
+		}
+
+		private static Topology.FaceEdgesIndexer GetFaceEdges(Manifold manifold, bool includeExternalFaces)
+		{
+			return !includeExternalFaces ? manifold.topology.internalFaceEdges : manifold.topology.faceEdges;
+		}
+
+		private static Vector3[] CalculateFaceCentroids(Topology.FacesIndexer faces, Vector3[] vertexPositions, Vector3[] centroids)
+		{
+			foreach (var face in faces)
+			{
+				var centroid = new Vector3(0f, 0f, 0f);
+				foreach (var edge in face.edges)
+				{
+					centroid += vertexPositions[edge.nextVertex];
+				}
+				centroids[face] = centroid.normalized;
+			}
+
+			return centroids;
+		}
+
+		public static Vector3[] CalculateFaceCentroids(Manifold manifold)
+		{
+			return CalculateFaceCentroids(manifold, false);
+		}
+		
+		public static Vector3[] CalculateFaceCentroids(Manifold manifold, bool includeExternalFaces)
+		{
+			var faces = GetFaces(manifold, includeExternalFaces);
+			return CalculateFaceCentroids(faces, manifold.vertexPositions, new Vector3[faces.Count]);
+		}
+
+		public static Vector3[] CalculateFaceCentroids(Manifold manifold, bool includeExternalFaces, Vector3[] centroids)
+		{
+			var faces = GetFaces(manifold, includeExternalFaces);
+			if (centroids.Length < faces.Count) throw new System.ArgumentException("The supplied centroid buffer was not large enough to store the centroids of all faces.");
+			return CalculateFaceCentroids(faces, manifold.vertexPositions, centroids);
+		}
+
+		public static Vector3[] CalculateFaceNormals(Manifold manifold)
+		{
+			return CalculateFaceCentroids(manifold, false);
+		}
+		
+		public static Vector3[] CalculateFaceNormals(Manifold manifold, bool includeExternalFaces)
+		{
+			return CalculateFaceCentroids(manifold, includeExternalFaces);
+		}
+
+		public static float[] CalculateFaceAreas(Manifold manifold)
+		{
+			return CalculateFaceAreas(manifold, CalculateFaceAngles(manifold, false), false);
+		}
+		
+		public static float[] CalculateFaceAreas(Manifold manifold, bool includeExternalFaces)
+		{
+			return CalculateFaceAreas(manifold, CalculateFaceAngles(manifold, includeExternalFaces), includeExternalFaces);
+		}
+
+		public static float[] CalculateFaceAreas(Manifold manifold, float[] faceAngles)
+		{
+			return CalculateFaceAreas(manifold, faceAngles, false);
+		}
+		
+		public static float[] CalculateFaceAreas(Manifold manifold, float[] faceAngles, bool includeExternalFaces)
+		{
+			var faces = GetFaces(manifold, includeExternalFaces);
+			var areas = new float[faces.Count];
+
+			foreach (var face in faces)
+			{
+				float angleSum = 0f;
+				foreach (var edge in face.edges)
+				{
+					angleSum += faceAngles[edge];
+				}
+				areas[face] = angleSum - Mathf.PI;
+			}
+
+			return areas;
+		}
+
+		public static float[] CalculateVertexAreas(Manifold manifold)
+		{
+			return CalculateVertexAreas(manifold, CalculateCentroidAngles(manifold, CalculateFaceCentroids(manifold, true)));
+		}
+		
+		public static float[] CalculateVertexAreas(Manifold manifold, Vector3[] centroids)
+		{
+			return CalculateVertexAreas(manifold, CalculateCentroidAngles(manifold, centroids));
+		}
+
+		public static float[] CalculateVertexAreas(Manifold manifold, float[] centroidAngles)
+		{
+			var vertices = manifold.topology.vertices;
+			var areas = new float[vertices.Count];
+
+			foreach (var vertex in vertices)
+			{
+				float angleSum = 0f;
+				foreach (var edge in vertex.edges)
+				{
+					angleSum += centroidAngles[edge];
+				}
+				areas[vertex] = angleSum - Mathf.PI;
+			}
+
+			return areas;
+		}
+
+		public static float[] CalculateVertexAngles(Manifold manifold)
+		{
+			var edges = manifold.topology.vertexEdges;
+			var angles = new float[edges.Count];
+			var vertexPositions = manifold.vertexPositions;
+
+			foreach (var edge in edges)
+			{
+				var p0 = vertexPositions[edge.next.farVertex];
+				var p1 = vertexPositions[edge.nearVertex];
+				var p2 = vertexPositions[edge.farVertex];
+				var v1 = Vector3.Cross(Vector3.Cross(p0, p1 - p0), p0).normalized;
+				var v2 = Vector3.Cross(Vector3.Cross(p0, p2 - p0), p0).normalized;
+				angles[edge] = AngleBetweenUnitVectors(v1, v2);
+			}
+
+			return angles;
+		}
+
+		public static float[] CalculateFaceAngles(Manifold manifold)
+		{
+			return CalculateFaceAngles(manifold, false);
+		}
+
+		public static float[] CalculateFaceAngles(Manifold manifold, bool includeExternalFaces)
+		{
+			var edges = GetFaceEdges(manifold, includeExternalFaces);
+			var angles = new float[edges.Count];
+			var vertexPositions = manifold.vertexPositions;
+
+			foreach (var edge in edges)
+			{
+				var p0 = vertexPositions[edge.prev.prevVertex];
+				var p1 = vertexPositions[edge.prevVertex];
+				var p2 = vertexPositions[edge.nextVertex];
+				var v1 = Vector3.Cross(Vector3.Cross(p0, p1 - p0), p0).normalized;
+				var v2 = Vector3.Cross(Vector3.Cross(p0, p2 - p0), p0).normalized;
+				angles[edge] = AngleBetweenUnitVectors(v1, v2);
+			}
+
+			return angles;
+		}
+
+		public static float[] CalculateCentroidAngles(Manifold manifold)
+		{
+			return CalculateCentroidAngles(manifold, CalculateFaceCentroids(manifold, true));
+		}
+
+		public static float[] CalculateCentroidAngles(Manifold manifold, Vector3[] centroids)
+		{
+			var edges = manifold.topology.vertexEdges;
+			var angles = new float[edges.Count];
+
+			foreach (var edge in edges)
+			{
+				var p0 = centroids[edge.prevFace];
+				var p1 = centroids[edge.nextFace];
+				var p2 = centroids[edge.next.nextFace];
+				var v1 = Vector3.Cross(Vector3.Cross(p0, p1 - p0), p0).normalized;
+				var v2 = Vector3.Cross(Vector3.Cross(p0, p2 - p0), p0).normalized;
+				angles[edge] = AngleBetweenUnitVectors(v1, v2);
+			}
+
+			return angles;
+		}
+
+		public static float[] CalculateVertexEdgeLengths(Manifold manifold)
+		{
+			var edges = manifold.topology.vertexEdges;
+			var edgeLengths = new float[edges.Count];
+			var vertexPositions = manifold.vertexPositions;
+
+			foreach (var edge in edges)
+			{
+				edgeLengths[edge] = AngleBetweenUnitVectors(vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex]);
+			}
+
+			return edgeLengths;
+		}
+
+		public static Vector3[] CalculateVertexEdgeMidpoints(Manifold manifold)
+		{
+			var edges = manifold.topology.vertexEdges;
+			var midpoints = new Vector3[edges.Count];
+			var vertexPositions = manifold.vertexPositions;
+
+			foreach (var edge in edges)
+			{
+				midpoints[edge] = (vertexPositions[edge.nearVertex] + vertexPositions[edge.farVertex]).normalized;
+			}
+
+			return midpoints;
+		}
+
+		public static float[] CalculateFaceEdgeLengths(Manifold manifold)
+		{
+			return CalculateFaceEdgeLengths(manifold, CalculateFaceCentroids(manifold, false), Mathf.Infinity);
+		}
+
+		public static float[] CalculateFaceEdgeLengths(Manifold manifold, float boundaryLength)
+		{
+			return CalculateFaceEdgeLengths(manifold, CalculateFaceCentroids(manifold, false), boundaryLength);
+		}
+
+		public static float[] CalculateFaceEdgeLengths(Manifold manifold, Vector3[] centroids)
+		{
+			return CalculateFaceEdgeLengths(manifold, centroids, Mathf.Infinity);
+		}
+
+		public static float[] CalculateFaceEdgeLengths(Manifold manifold, Vector3[] centroids, float boundaryLength)
+		{
+			var edges = manifold.topology.faceEdges;
+			var edgeLengths = new float[edges.Count];
+
+			foreach (var edge in edges)
+			{
+				if (!edge.isBoundary)
+				{
+					edgeLengths[edge] = AngleBetweenUnitVectors(centroids[edge.nearFace], centroids[edge.farFace]);
+				}
+				else
+				{
+					edgeLengths[edge] = boundaryLength;
+				}
+			}
+
+			return edgeLengths;
+		}
+
 		private static Vector3 Slerp(Vector3 p0, Vector3 p1, float t)
 		{
 			var omega = Mathf.Acos(Vector3.Dot(p0, p1));
@@ -495,7 +738,7 @@ namespace Experilous.Topological
 			var builder = new Topology.VertexVerticesBuilder();
 			var subdividedPositions = new List<Vector3>();
 
-			foreach (var vertex in topology.internalVertices)
+			foreach (var vertex in topology.vertices)
 			{
 				builder.AddVertex();
 				subdividedPositions.Add(positions[vertex]);
@@ -545,13 +788,13 @@ namespace Experilous.Topological
 			}
 
 			int maxNeighborCount = 0;
-			foreach (var vertex in topology.internalVertices)
+			foreach (var vertex in topology.vertices)
 			{
 				maxNeighborCount = Mathf.Max(maxNeighborCount, vertex.neighborCount);
 			}
 
 			var neighbors = new int[maxNeighborCount];
-			foreach (var vertex in topology.internalVertices)
+			foreach (var vertex in topology.vertices)
 			{
 				int i = 0;
 				foreach (var edge in vertex.edges)
@@ -592,7 +835,7 @@ namespace Experilous.Topological
 
 			System.Array.Clear(relaxed, 0, relaxed.Length);
 
-			foreach (var vertex in manifold.topology.internalVertices)
+			foreach (var vertex in manifold.topology.vertices)
 			{
 				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
 				{
@@ -626,21 +869,12 @@ namespace Experilous.Topological
 			var original = manifold.vertexPositions;
 			if (relaxed.Length < original.Length) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
 
-			var idealArea = 4f * Mathf.PI / manifold.topology.internalVertices.Count;
+			var idealArea = 4f * Mathf.PI / manifold.topology.vertices.Count;
 
-			System.Array.Clear(centroids, 0, centroids.Length);
-			foreach (var face in manifold.topology.faces)
-			{
-				var sum = new Vector3();
-				foreach (var edge in face.edges)
-				{
-					sum += original[edge.nextVertex];
-				}
-				centroids[face] = sum.normalized;
-			}
+			CalculateFaceCentroids(manifold, true, centroids);
 
 			System.Array.Clear(relaxed, 0, relaxed.Length);
-			foreach (var vertex in manifold.topology.internalVertices)
+			foreach (var vertex in manifold.topology.vertices)
 			{
 				var center = original[vertex];
 				var firstEdge = vertex.firstEdge;
@@ -665,7 +899,7 @@ namespace Experilous.Topological
 				} while (edge != firstEdge);
 			}
 
-			foreach (var vertex in manifold.topology.internalVertices)
+			foreach (var vertex in manifold.topology.vertices)
 			{
 				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
 				{
@@ -685,7 +919,7 @@ namespace Experilous.Topological
 			bool repaired = false;
 			var vertexPositions = manifold.vertexPositions;
 			float originalWeight = 1f - adjustmentWeight;
-			foreach (var vertex in manifold.topology.internalVertices)
+			foreach (var vertex in manifold.topology.vertices)
 			{
 				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
 				{
@@ -730,7 +964,7 @@ namespace Experilous.Topological
 		public static Manifold GetDualManifold(Manifold manifold)
 		{
 			var topology = manifold.topology.GetDualTopology();
-			var vertexPositions = new Vector3[topology.internalVertices.Count];
+			var vertexPositions = new Vector3[topology.vertices.Count];
 
 			foreach (var face in manifold.topology.internalFaces)
 			{
@@ -745,7 +979,7 @@ namespace Experilous.Topological
 			return new Manifold(topology, vertexPositions);
 		}
 
-		public static float ArcLength(Vector3 lhs, Vector3 rhs)
+		public static float AngleBetweenUnitVectors(Vector3 lhs, Vector3 rhs)
 		{
 			return Mathf.Atan2(Vector3.Cross(lhs, rhs).magnitude, Vector3.Dot(lhs, rhs));
 		}

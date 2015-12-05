@@ -71,7 +71,7 @@ public class TopologyTests
 	public void TetrahedronComponentCountValidation()
 	{
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
-		Assert.AreEqual(4, tetrahedron.topology.internalVertices.Count);
+		Assert.AreEqual(4, tetrahedron.topology.vertices.Count);
 		Assert.AreEqual(12, tetrahedron.topology.vertexEdges.Count);
 		Assert.AreEqual(12, tetrahedron.topology.faceEdges.Count);
 		Assert.AreEqual(4, tetrahedron.topology.internalFaces.Count);
@@ -81,10 +81,10 @@ public class TopologyTests
 	public void TetrahedronComponentNeighborCountValidation()
 	{
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
-		Assert.AreEqual(3, tetrahedron.topology.internalVertices[0].neighborCount);
-		Assert.AreEqual(3, tetrahedron.topology.internalVertices[1].neighborCount);
-		Assert.AreEqual(3, tetrahedron.topology.internalVertices[2].neighborCount);
-		Assert.AreEqual(3, tetrahedron.topology.internalVertices[3].neighborCount);
+		Assert.AreEqual(3, tetrahedron.topology.vertices[0].neighborCount);
+		Assert.AreEqual(3, tetrahedron.topology.vertices[1].neighborCount);
+		Assert.AreEqual(3, tetrahedron.topology.vertices[2].neighborCount);
+		Assert.AreEqual(3, tetrahedron.topology.vertices[3].neighborCount);
 		Assert.AreEqual(3, tetrahedron.topology.internalFaces[0].neighborCount);
 		Assert.AreEqual(3, tetrahedron.topology.internalFaces[1].neighborCount);
 		Assert.AreEqual(3, tetrahedron.topology.internalFaces[2].neighborCount);
@@ -96,7 +96,7 @@ public class TopologyTests
 	{
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
 
-		var vertexEdges = tetrahedron.topology.internalVertices[0].edges.GetEnumerator();
+		var vertexEdges = tetrahedron.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -105,7 +105,7 @@ public class TopologyTests
 		Assert.AreEqual(3, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = tetrahedron.topology.internalVertices[1].edges.GetEnumerator();
+		vertexEdges = tetrahedron.topology.vertices[1].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -114,7 +114,7 @@ public class TopologyTests
 		Assert.AreEqual(2, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = tetrahedron.topology.internalVertices[2].edges.GetEnumerator();
+		vertexEdges = tetrahedron.topology.vertices[2].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -123,7 +123,7 @@ public class TopologyTests
 		Assert.AreEqual(3, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = tetrahedron.topology.internalVertices[3].edges.GetEnumerator();
+		vertexEdges = tetrahedron.topology.vertices[3].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -138,7 +138,7 @@ public class TopologyTests
 	{
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
 
-		var vertex0 = tetrahedron.topology.internalVertices[0];
+		var vertex0 = tetrahedron.topology.vertices[0];
 		var vertexEdge = vertex0.firstEdge;
 		var vertex1 = vertexEdge.farVertex;
 		var vertex2 = vertexEdge.next.farVertex;
@@ -166,7 +166,7 @@ public class TopologyTests
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
 		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
-		vertex0 = tetrahedron.topology.internalVertices[1];
+		vertex0 = tetrahedron.topology.vertices[1];
 		vertexEdge = vertex0.firstEdge;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
@@ -194,7 +194,7 @@ public class TopologyTests
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
 		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
-		vertex0 = tetrahedron.topology.internalVertices[2];
+		vertex0 = tetrahedron.topology.vertices[2];
 		vertexEdge = vertex0.firstEdge;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
@@ -222,7 +222,7 @@ public class TopologyTests
 		Assert.AreEqual(vertex0, faceEdge.next.next.nextVertex);
 		Assert.AreEqual(vertexEdge.next, faceEdge.next.next.twin);
 
-		vertex0 = tetrahedron.topology.internalVertices[3];
+		vertex0 = tetrahedron.topology.vertices[3];
 		vertexEdge = vertex0.firstEdge;
 		vertex1 = vertexEdge.farVertex;
 		vertex2 = vertexEdge.next.farVertex;
@@ -255,7 +255,7 @@ public class TopologyTests
 	public void HexehedronComponentCountValidation()
 	{
 		var hexahedron = SphericalManifold.CreateCube();
-		Assert.AreEqual(8, hexahedron.topology.internalVertices.Count);
+		Assert.AreEqual(8, hexahedron.topology.vertices.Count);
 		Assert.AreEqual(24, hexahedron.topology.vertexEdges.Count);
 		Assert.AreEqual(24, hexahedron.topology.faceEdges.Count);
 		Assert.AreEqual(6, hexahedron.topology.internalFaces.Count);
@@ -265,14 +265,14 @@ public class TopologyTests
 	public void HexehedronComponentNeighborCountValidation()
 	{
 		var hexahedron = SphericalManifold.CreateCube();
-		Assert.AreEqual(3, hexahedron.topology.internalVertices[0].neighborCount);
-		Assert.AreEqual(3, hexahedron.topology.internalVertices[1].neighborCount);
-		Assert.AreEqual(3, hexahedron.topology.internalVertices[2].neighborCount);
-		Assert.AreEqual(3, hexahedron.topology.internalVertices[3].neighborCount);
-		Assert.AreEqual(3, hexahedron.topology.internalVertices[4].neighborCount);
-		Assert.AreEqual(3, hexahedron.topology.internalVertices[5].neighborCount);
-		Assert.AreEqual(3, hexahedron.topology.internalVertices[6].neighborCount);
-		Assert.AreEqual(3, hexahedron.topology.internalVertices[7].neighborCount);
+		Assert.AreEqual(3, hexahedron.topology.vertices[0].neighborCount);
+		Assert.AreEqual(3, hexahedron.topology.vertices[1].neighborCount);
+		Assert.AreEqual(3, hexahedron.topology.vertices[2].neighborCount);
+		Assert.AreEqual(3, hexahedron.topology.vertices[3].neighborCount);
+		Assert.AreEqual(3, hexahedron.topology.vertices[4].neighborCount);
+		Assert.AreEqual(3, hexahedron.topology.vertices[5].neighborCount);
+		Assert.AreEqual(3, hexahedron.topology.vertices[6].neighborCount);
+		Assert.AreEqual(3, hexahedron.topology.vertices[7].neighborCount);
 		Assert.AreEqual(4, hexahedron.topology.internalFaces[0].neighborCount);
 		Assert.AreEqual(4, hexahedron.topology.internalFaces[1].neighborCount);
 		Assert.AreEqual(4, hexahedron.topology.internalFaces[2].neighborCount);
@@ -286,7 +286,7 @@ public class TopologyTests
 	{
 		var hexahedron = SphericalManifold.CreateCube();
 
-		var vertexEdges = hexahedron.topology.internalVertices[0].edges.GetEnumerator();
+		var vertexEdges = hexahedron.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -295,7 +295,7 @@ public class TopologyTests
 		Assert.AreEqual(4, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = hexahedron.topology.internalVertices[1].edges.GetEnumerator();
+		vertexEdges = hexahedron.topology.vertices[1].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -304,7 +304,7 @@ public class TopologyTests
 		Assert.AreEqual(2, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = hexahedron.topology.internalVertices[2].edges.GetEnumerator();
+		vertexEdges = hexahedron.topology.vertices[2].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -313,7 +313,7 @@ public class TopologyTests
 		Assert.AreEqual(3, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = hexahedron.topology.internalVertices[3].edges.GetEnumerator();
+		vertexEdges = hexahedron.topology.vertices[3].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -322,7 +322,7 @@ public class TopologyTests
 		Assert.AreEqual(7, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = hexahedron.topology.internalVertices[4].edges.GetEnumerator();
+		vertexEdges = hexahedron.topology.vertices[4].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -331,7 +331,7 @@ public class TopologyTests
 		Assert.AreEqual(5, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = hexahedron.topology.internalVertices[5].edges.GetEnumerator();
+		vertexEdges = hexahedron.topology.vertices[5].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -340,7 +340,7 @@ public class TopologyTests
 		Assert.AreEqual(6, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = hexahedron.topology.internalVertices[6].edges.GetEnumerator();
+		vertexEdges = hexahedron.topology.vertices[6].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(2, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -349,7 +349,7 @@ public class TopologyTests
 		Assert.AreEqual(7, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = hexahedron.topology.internalVertices[7].edges.GetEnumerator();
+		vertexEdges = hexahedron.topology.vertices[7].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(3, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -363,7 +363,7 @@ public class TopologyTests
 	public void OctahedronComponentCountValidation()
 	{
 		var octahedron = SphericalManifold.CreateOctahedron();
-		Assert.AreEqual(6, octahedron.topology.internalVertices.Count);
+		Assert.AreEqual(6, octahedron.topology.vertices.Count);
 		Assert.AreEqual(24, octahedron.topology.vertexEdges.Count);
 		Assert.AreEqual(24, octahedron.topology.faceEdges.Count);
 		Assert.AreEqual(8, octahedron.topology.internalFaces.Count);
@@ -373,12 +373,12 @@ public class TopologyTests
 	public void OctahedronComponentNeighborCountValidation()
 	{
 		var octahedron = SphericalManifold.CreateOctahedron();
-		Assert.AreEqual(4, octahedron.topology.internalVertices[0].neighborCount);
-		Assert.AreEqual(4, octahedron.topology.internalVertices[1].neighborCount);
-		Assert.AreEqual(4, octahedron.topology.internalVertices[2].neighborCount);
-		Assert.AreEqual(4, octahedron.topology.internalVertices[3].neighborCount);
-		Assert.AreEqual(4, octahedron.topology.internalVertices[4].neighborCount);
-		Assert.AreEqual(4, octahedron.topology.internalVertices[5].neighborCount);
+		Assert.AreEqual(4, octahedron.topology.vertices[0].neighborCount);
+		Assert.AreEqual(4, octahedron.topology.vertices[1].neighborCount);
+		Assert.AreEqual(4, octahedron.topology.vertices[2].neighborCount);
+		Assert.AreEqual(4, octahedron.topology.vertices[3].neighborCount);
+		Assert.AreEqual(4, octahedron.topology.vertices[4].neighborCount);
+		Assert.AreEqual(4, octahedron.topology.vertices[5].neighborCount);
 		Assert.AreEqual(3, octahedron.topology.internalFaces[0].neighborCount);
 		Assert.AreEqual(3, octahedron.topology.internalFaces[1].neighborCount);
 		Assert.AreEqual(3, octahedron.topology.internalFaces[2].neighborCount);
@@ -394,7 +394,7 @@ public class TopologyTests
 	{
 		var octahedron = SphericalManifold.CreateOctahedron();
 
-		var vertexEdges = octahedron.topology.internalVertices[0].edges.GetEnumerator();
+		var vertexEdges = octahedron.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -405,7 +405,7 @@ public class TopologyTests
 		Assert.AreEqual(4, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = octahedron.topology.internalVertices[1].edges.GetEnumerator();
+		vertexEdges = octahedron.topology.vertices[1].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -416,7 +416,7 @@ public class TopologyTests
 		Assert.AreEqual(2, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = octahedron.topology.internalVertices[2].edges.GetEnumerator();
+		vertexEdges = octahedron.topology.vertices[2].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -427,7 +427,7 @@ public class TopologyTests
 		Assert.AreEqual(3, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = octahedron.topology.internalVertices[3].edges.GetEnumerator();
+		vertexEdges = octahedron.topology.vertices[3].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -438,7 +438,7 @@ public class TopologyTests
 		Assert.AreEqual(4, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = octahedron.topology.internalVertices[4].edges.GetEnumerator();
+		vertexEdges = octahedron.topology.vertices[4].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -449,7 +449,7 @@ public class TopologyTests
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = octahedron.topology.internalVertices[5].edges.GetEnumerator();
+		vertexEdges = octahedron.topology.vertices[5].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -465,7 +465,7 @@ public class TopologyTests
 	public void IcosahedronComponentCountValidation()
 	{
 		var icosahedron = SphericalManifold.CreateIcosahedron();
-		Assert.AreEqual(12, icosahedron.topology.internalVertices.Count);
+		Assert.AreEqual(12, icosahedron.topology.vertices.Count);
 		Assert.AreEqual(60, icosahedron.topology.vertexEdges.Count);
 		Assert.AreEqual(60, icosahedron.topology.faceEdges.Count);
 		Assert.AreEqual(20, icosahedron.topology.internalFaces.Count);
@@ -475,18 +475,18 @@ public class TopologyTests
 	public void IcosahedronComponentNeighborCountValidation()
 	{
 		var icosahedron = SphericalManifold.CreateIcosahedron();
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[0].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[1].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[2].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[3].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[4].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[5].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[6].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[7].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[8].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[9].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[10].neighborCount);
-		Assert.AreEqual(5, icosahedron.topology.internalVertices[11].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[0].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[1].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[2].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[3].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[4].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[5].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[6].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[7].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[8].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[9].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[10].neighborCount);
+		Assert.AreEqual(5, icosahedron.topology.vertices[11].neighborCount);
 		Assert.AreEqual(3, icosahedron.topology.internalFaces[0].neighborCount);
 		Assert.AreEqual(3, icosahedron.topology.internalFaces[1].neighborCount);
 		Assert.AreEqual(3, icosahedron.topology.internalFaces[2].neighborCount);
@@ -514,7 +514,7 @@ public class TopologyTests
 	{
 		var icosahedron = SphericalManifold.CreateIcosahedron();
 
-		var vertexEdges = icosahedron.topology.internalVertices[0].edges.GetEnumerator();
+		var vertexEdges = icosahedron.topology.vertices[0].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -527,7 +527,7 @@ public class TopologyTests
 		Assert.AreEqual(10, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[1].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[1].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -540,7 +540,7 @@ public class TopologyTests
 		Assert.AreEqual(8, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[2].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[2].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(3, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -553,7 +553,7 @@ public class TopologyTests
 		Assert.AreEqual(9, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[3].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[3].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(2, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -566,7 +566,7 @@ public class TopologyTests
 		Assert.AreEqual(11, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[4].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[4].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -579,7 +579,7 @@ public class TopologyTests
 		Assert.AreEqual(5, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[5].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[5].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -592,7 +592,7 @@ public class TopologyTests
 		Assert.AreEqual(10, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[6].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[6].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -605,7 +605,7 @@ public class TopologyTests
 		Assert.AreEqual(8, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[7].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[7].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -618,7 +618,7 @@ public class TopologyTests
 		Assert.AreEqual(6, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[8].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[8].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -631,7 +631,7 @@ public class TopologyTests
 		Assert.AreEqual(4, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[9].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[9].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(2, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -644,7 +644,7 @@ public class TopologyTests
 		Assert.AreEqual(3, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[10].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[10].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(0, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -657,7 +657,7 @@ public class TopologyTests
 		Assert.AreEqual(1, vertexEdges.Current.farVertex.index);
 		Assert.IsFalse(vertexEdges.MoveNext());
 
-		vertexEdges = icosahedron.topology.internalVertices[11].edges.GetEnumerator();
+		vertexEdges = icosahedron.topology.vertices[11].edges.GetEnumerator();
 		Assert.IsTrue(vertexEdges.MoveNext());
 		Assert.AreEqual(2, vertexEdges.Current.farVertex.index);
 		Assert.IsTrue(vertexEdges.MoveNext());
@@ -676,13 +676,13 @@ public class TopologyTests
 	{
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		var subdivided = SphericalManifold.Subdivide(tetrahedron, 1);
-		Assert.AreEqual(10, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(10, subdivided.topology.vertices.Count);
 		Assert.AreEqual(48, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(48, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(16, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -706,13 +706,13 @@ public class TopologyTests
 	{
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		var subdivided = SphericalManifold.Subdivide(tetrahedron, 2);
-		Assert.AreEqual(20, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(20, subdivided.topology.vertices.Count);
 		Assert.AreEqual(108, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(108, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(36, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -736,13 +736,13 @@ public class TopologyTests
 	{
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		var subdivided = SphericalManifold.Subdivide(tetrahedron, 3);
-		Assert.AreEqual(4 + 3*6 + 3*4 /*34*/, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(4 + 3*6 + 3*4 /*34*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((4 + 3*6 + 3*4) + (4*4 * 4) - 2) * 2 /*192*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((4 + 3*6 + 3*4) + (4*4 * 4) - 2) * 2 /*192*/, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(4*4 * 4 /*64*/, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -766,13 +766,13 @@ public class TopologyTests
 	{
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		var subdivided = SphericalManifold.Subdivide(tetrahedron, 4);
-		Assert.AreEqual(4 + 4*6 + 6*4 /*52*/, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(4 + 4*6 + 6*4 /*52*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((4 + 4*6 + 6*4) + (5*5 * 4) - 2) * 2 /*300*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((4 + 4*6 + 6*4) + (5*5 * 4) - 2) * 2 /*300*/, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(5*5 * 4 /*100*/, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -800,13 +800,13 @@ public class TopologyTests
 		var faceCount = (degree + 1) * (degree + 1) * 4; /*144*/
 		var edgeCount = (vertexCount + faceCount - 2) * 2; /*432*/
 		var subdivided = SphericalManifold.Subdivide(tetrahedron, degree);
-		Assert.AreEqual(vertexCount, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(vertexCount, subdivided.topology.vertices.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(faceCount, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -830,13 +830,13 @@ public class TopologyTests
 	{
 		var hexahedron = SphericalManifold.CreateCube();
 		var subdivided = SphericalManifold.Subdivide(hexahedron, 1);
-		Assert.AreEqual(8 + 1*12 + 1*1*6 /*26*/, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(8 + 1*12 + 1*1*6 /*26*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 1*12 + 1*1*6) + (2*2 * 6) - 2) * 2 /*96*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((8 + 1*12 + 1*1*6) + (2*2 * 6) - 2) * 2 /*96*/, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(2*2 * 6 /*24*/, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -860,13 +860,13 @@ public class TopologyTests
 	{
 		var hexahedron = SphericalManifold.CreateCube();
 		var subdivided = SphericalManifold.Subdivide(hexahedron, 2);
-		Assert.AreEqual(8 + 2*12 + 2*2*6 /*56*/, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(8 + 2*12 + 2*2*6 /*56*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 2*12 + 2*2*6) + (3*3 * 6) - 2) * 2 /*216*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((8 + 2*12 + 2*2*6) + (3*3 * 6) - 2) * 2 /*216*/, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(3*3 * 6 /*54*/, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -890,13 +890,13 @@ public class TopologyTests
 	{
 		var hexahedron = SphericalManifold.CreateCube();
 		var subdivided = SphericalManifold.Subdivide(hexahedron, 3);
-		Assert.AreEqual(8 + 3*12 + 3*3*6 /*98*/, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(8 + 3*12 + 3*3*6 /*98*/, subdivided.topology.vertices.Count);
 		Assert.AreEqual(((8 + 3*12 + 3*3*6) + (4*4 * 6) - 2) * 2 /*384*/, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(((8 + 3*12 + 3*3*6) + (4*4 * 6) - 2) * 2 /*384*/, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(4*4 * 6 /*96*/, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -924,13 +924,13 @@ public class TopologyTests
 		var faceCount = (degree + 1) * (degree + 1) * 6; /*150*/
 		var edgeCount = (vertexCount + faceCount - 2) * 2; /*384*/
 		var subdivided = SphericalManifold.Subdivide(hexahedron, degree);
-		Assert.AreEqual(vertexCount, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(vertexCount, subdivided.topology.vertices.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(faceCount, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -958,13 +958,13 @@ public class TopologyTests
 		var faceCount = (degree + 1) * (degree + 1) * 6; /*216*/
 		var edgeCount = (vertexCount + faceCount - 2) * 2; /*864*/
 		var subdivided = SphericalManifold.Subdivide(hexahedron, degree);
-		Assert.AreEqual(vertexCount, subdivided.topology.internalVertices.Count);
+		Assert.AreEqual(vertexCount, subdivided.topology.vertices.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.vertexEdges.Count);
 		Assert.AreEqual(edgeCount, subdivided.topology.faceEdges.Count);
 		Assert.AreEqual(faceCount, subdivided.topology.internalFaces.Count);
 
 		var vertexNeighborCountFrequencies = new Dictionary<int, int>();
-		foreach (var vertex in subdivided.topology.internalVertices)
+		foreach (var vertex in subdivided.topology.vertices)
 		{
 			if (!vertexNeighborCountFrequencies.ContainsKey(vertex.neighborCount)) vertexNeighborCountFrequencies.Add(vertex.neighborCount, 0);
 			vertexNeighborCountFrequencies[vertex.neighborCount] += 1;
@@ -989,7 +989,7 @@ public class TopologyTests
 		var tetrahedron = SphericalManifold.CreateTetrahedron();
 		var dual = tetrahedron.topology.GetDualTopology();
 
-		foreach (var vertex in tetrahedron.topology.internalVertices)
+		foreach (var vertex in tetrahedron.topology.vertices)
 		{
 			var edge = vertex.firstEdge;
 			var dualFace = dual.internalFaces[vertex.index];
@@ -1010,10 +1010,10 @@ public class TopologyTests
 	{
 		var octahedron = SphericalManifold.CreateOctahedron().topology;
 
-		var oldVertex0 = octahedron.internalVertices[2];
-		var oldVertex1 = octahedron.internalVertices[3];
-		var newVertex0 = octahedron.internalVertices[0];
-		var newVertex1 = octahedron.internalVertices[5];
+		var oldVertex0 = octahedron.vertices[2];
+		var oldVertex1 = octahedron.vertices[3];
+		var newVertex0 = octahedron.vertices[0];
+		var newVertex1 = octahedron.vertices[5];
 
 		Assert.AreEqual(4, oldVertex0.neighborCount);
 		Assert.AreEqual(4, oldVertex1.neighborCount);

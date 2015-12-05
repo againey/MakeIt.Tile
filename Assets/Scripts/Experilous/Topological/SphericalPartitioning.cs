@@ -131,8 +131,6 @@ namespace Experilous.Topological
 			{
 				TruncateBinaryTree(nextPartitionIndex);
 			}
-			
-			//Debug.LogFormat("{0:n0}, {1}, {2}, {3:n0}", edges.Count / 2, Mathf.CeilToInt(Mathf.Log(edges.Count / 2) / Mathf.Log(2f)), GetHeight(0), nextPartitionIndex);
 		}
 
 		private int GetHeight(int partitionIndex)

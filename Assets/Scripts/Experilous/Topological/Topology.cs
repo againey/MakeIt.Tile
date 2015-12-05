@@ -6,82 +6,18 @@ namespace Experilous.Topological
 	[Serializable]
 	public partial class Topology
 	{
-		[Serializable]
-		private struct NodeData
-		{
-			[SerializeField]
-			private uint _data;
-
-			public NodeData(int neighborCount, int firstEdge)
-			{
-				_data = (((uint)neighborCount & 0x7Fu) << 24) | ((uint)firstEdge & 0xFFFFFFu);
-			}
-
-			public NodeData(bool isExternal, int neighborCount, int firstEdge)
-			{
-				_data = (isExternal ? 0x80000000u : 0x00000000u) | (((uint)neighborCount & 0x7Fu) << 24) | ((uint)firstEdge & 0xFFFFFFu);
-			}
-
-			public bool isExternal
-			{
-				get
-				{
-					return (_data & 0x80000000u) != 0;
-				}
-				set
-				{
-					_data = (_data & 0x7FFFFFFFu) | (value ? 0x80000000u : 0x00000000u);
-				}
-			}
-
-			public int neighborCount
-			{
-				get
-				{
-					return (int)((_data >> 24) & 0x7Fu);
-				}
-				set
-				{
-					_data = (_data & 0x80FFFFFFu) | (((uint)value & 0x7Fu) << 24);
-				}
-			}
-
-			public int firstEdge
-			{
-				get
-				{
-					return (int)(_data & 0x00FFFFFFu);
-				}
-				set
-				{
-					_data = (_data & 0xFF000000u) | ((uint)value & 0xFFFFFFu);
-				}
-			}
-
-			public bool isInitialized
-			{
-				get
-				{
-					return _data != 0;
-				}
-			}
-
-			public override string ToString()
-			{
-				return string.Format("NodeData ({0}, {1})", neighborCount, firstEdge);
-			}
-		}
-
 		public Topology()
 		{
 		}
 
 		public Topology(Topology original)
 		{
-			_vertexData = original._vertexData.Clone() as NodeData[];
+			_vertexNeighborCounts = original._vertexNeighborCounts.Clone() as ushort[];
+			_vertexFirstEdgeIndices = original._vertexFirstEdgeIndices.Clone() as int[];
 			_edgeData = original._edgeData.Clone() as EdgeData[];
-			_faceData = original._faceData.Clone() as NodeData[];
-			_firstExternalVertexIndex = original._firstExternalVertexIndex;
+			_faceNeighborCounts = original._faceNeighborCounts.Clone() as ushort[];
+			_faceFirstEdgeIndices = original._faceFirstEdgeIndices.Clone() as int[];
+			_firstExternalEdgeIndex = original._firstExternalEdgeIndex;
 			_firstExternalFaceIndex = original._firstExternalFaceIndex;
 		}
 
@@ -92,9 +28,13 @@ namespace Experilous.Topological
 
 		public Topology GetDualTopology()
 		{
+			if (_firstExternalFaceIndex < _faceFirstEdgeIndices.Length) throw new InvalidOperationException("A dual topology cannot be derived from a topology with external faces.");
+
 			var dual = new Topology();
-			dual._vertexData = _faceData.Clone() as NodeData[];
-			dual._faceData = _vertexData.Clone() as NodeData[];
+			dual._vertexNeighborCounts = _faceNeighborCounts.Clone() as ushort[];
+			dual._vertexFirstEdgeIndices = _faceFirstEdgeIndices.Clone() as int[];
+			dual._faceNeighborCounts = _vertexNeighborCounts.Clone() as ushort[];
+			dual._faceFirstEdgeIndices = _vertexFirstEdgeIndices.Clone() as int[];
 
 			dual._edgeData = new EdgeData[_edgeData.Length];
 			for (int i = 0; i < _edgeData.Length; ++i)
@@ -112,13 +52,13 @@ namespace Experilous.Topological
 			// Due to rotations, face data (which had been vertex data) still points to the same edges,
 			// but vertex data (which had been face data) is now backwards, pointing to edges which
 			// point back at the vertex; this needs to be reversed by setting first edges to their twins.
-			for (int i = 0; i < dual._vertexData.Length; ++i)
+			for (int i = 0; i < dual._vertexFirstEdgeIndices.Length; ++i)
 			{
-				dual._vertexData[i].firstEdge = dual._edgeData[dual._vertexData[i].firstEdge]._twin;
+				dual._vertexFirstEdgeIndices[i] = dual._edgeData[dual._vertexFirstEdgeIndices[i]]._twin;
 			}
 
-			dual._firstExternalVertexIndex = _firstExternalFaceIndex;
-			dual._firstExternalFaceIndex = _firstExternalVertexIndex;
+			dual._firstExternalEdgeIndex = _edgeData.Length;
+			dual._firstExternalFaceIndex = _vertexFirstEdgeIndices.Length;
 
 			return dual;
 		}
@@ -184,14 +124,14 @@ namespace Experilous.Topological
 			_edgeData[outerEdgeIndex1]._fNext = outerEdgeIndex2;
 
 			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
-			if (oldVertexIndex != -1) _vertexData[oldVertexIndex].firstEdge = innerEdgeIndex1;
-			if (prevFaceIndex != -1) _faceData[prevFaceIndex].firstEdge = twinEdgeIndex;
+			if (oldVertexIndex != -1) _vertexFirstEdgeIndices[oldVertexIndex] = innerEdgeIndex1;
+			if (prevFaceIndex != -1) _faceFirstEdgeIndices[prevFaceIndex] = twinEdgeIndex;
 
 			// Adjust neighbor counts.
-			if (oldVertexIndex != -1) _vertexData[oldVertexIndex].neighborCount -= 1;
-			if (newVertexIndex != -1) _vertexData[newVertexIndex].neighborCount += 1;
-			if (prevFaceIndex != -1) _faceData[prevFaceIndex].neighborCount -= 1;
-			if (nextFaceIndex != -1) _faceData[nextFaceIndex].neighborCount += 1;
+			if (oldVertexIndex != -1) _vertexNeighborCounts[oldVertexIndex] -= 1;
+			if (newVertexIndex != -1) _vertexNeighborCounts[newVertexIndex] += 1;
+			if (prevFaceIndex != -1) _faceNeighborCounts[prevFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
+			if (nextFaceIndex != -1) _faceNeighborCounts[nextFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 		}
 
 		// Pivot an edge clockwise around its implicit near vertex.
@@ -255,14 +195,14 @@ namespace Experilous.Topological
 			_edgeData[outerEdgeIndex1]._fNext = twinEdgeIndex;
 
 			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
-			if (oldVertexIndex != -1) _vertexData[oldVertexIndex].firstEdge = outerEdgeIndex1;
-			if (nextFaceIndex != -1) _faceData[nextFaceIndex].firstEdge = edgeIndex;
+			if (oldVertexIndex != -1) _vertexFirstEdgeIndices[oldVertexIndex] = outerEdgeIndex1;
+			if (nextFaceIndex != -1) _faceFirstEdgeIndices[nextFaceIndex] = edgeIndex;
 
 			// Adjust neighbor counts.
-			if (oldVertexIndex != -1) _vertexData[oldVertexIndex].neighborCount -= 1;
-			if (newVertexIndex != -1) _vertexData[newVertexIndex].neighborCount += 1;
-			if (nextFaceIndex != -1) _faceData[nextFaceIndex].neighborCount -= 1;
-			if (prevFaceIndex != -1) _faceData[prevFaceIndex].neighborCount += 1;
+			if (oldVertexIndex != -1) _vertexNeighborCounts[oldVertexIndex] -= 1;
+			if (newVertexIndex != -1) _vertexNeighborCounts[newVertexIndex] += 1;
+			if (nextFaceIndex != -1) _faceNeighborCounts[nextFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
+			if (prevFaceIndex != -1) _faceNeighborCounts[prevFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 		}
 
 		private void PivotEdgeBackwardUnchecked(VertexEdge edge)

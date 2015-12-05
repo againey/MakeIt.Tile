@@ -257,7 +257,7 @@ namespace Experilous.Topological
 				if (takeDual)
 				{
 					var topology = _manifold.topology.GetDualTopology();
-					var vertexPositions = new Vector3[topology.internalVertices.Count];
+					var vertexPositions = new Vector3[topology.vertices.Count];
 
 					foreach (var face in _manifold.topology.internalFaces)
 					{
@@ -328,10 +328,10 @@ namespace Experilous.Topological
 						var verticesCanChange =
 							_manifold.topology.CanSpinEdgeForward(vertexEdge) &&
 							(!TopologyRandomizationLockBoundaryPositions || !vertexEdge.isBoundary && !faceEdge.isBoundary && !vertexEdge.nearVertex.hasExternalFaceNeighbor && !vertexEdge.farVertex.hasExternalFaceNeighbor) &&
-							(vertexEdge.farVertex.isExternal || vertexEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors) &&
-							(twinVertexEdge.farVertex.isExternal || twinVertexEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors) &&
-							(faceEdge.next.nextVertex.isExternal || vertexEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors) &&
-							(faceEdge.twin.next.nextVertex.isExternal || twinVertexEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors);
+							vertexEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors &&
+							twinVertexEdge.farVertex.neighborCount > TopologyRandomizationMinimumVertexNeighbors &&
+							vertexEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors &&
+							twinVertexEdge.faceEdge.next.nextVertex.neighborCount < TopologyRandomizationMaximumVertexNeighbors;
 
 						var facesCanChange =
 							_manifold.topology.CanSpinEdgeForward(faceEdge) &&
@@ -412,32 +412,13 @@ namespace Experilous.Topological
 
 			if (CalculateCentroids)
 			{
-				var topology = _manifold.topology;
-				var vertexPositions = _manifold.vertexPositions;
-				_centroids = new Vector3[topology.faces.Count];
-				foreach (var face in topology.faces)
-				{
-					var sum = new Vector3();
-					foreach (var edge in face.edges)
-					{
-						sum += vertexPositions.Of(edge.nextVertex);
-					}
-					_centroids[face] = sum;
-				}
-
 				if (Projection != TopologyProjection.Spherical || FlattenCentroids == true)
 				{
-					foreach (var face in topology.faces)
-					{
-						_centroids[face] /= face.edges.Count;
-					}
+					_centroids = Manifold.CalculateFaceCentroids(_manifold);
 				}
 				else
 				{
-					foreach (var face in topology.faces)
-					{
-						_centroids[face].Normalize();
-					}
+					_centroids = SphericalManifold.CalculateFaceCentroids(_manifold);
 				}
 			}
 			else
