@@ -1,4 +1,6 @@
-﻿namespace Experilous
+﻿using UnityEngine;
+
+namespace Experilous
 {
 	public class Random
 	{
@@ -155,6 +157,17 @@
 		public float ClosedFloatUnit()
 		{
 			return ClosedFloatUnit(_engine);
+		}
+
+		public static Vector2 UnitVector2(IRandomEngine engine)
+		{
+			var angle = HalfOpenRange(0f, Mathf.PI * 2f, engine);
+			return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+		}
+
+		public Vector2 UnitVector2()
+		{
+			return UnitVector2(_engine);
 		}
 
 		public string HexadecimalString(int length)
