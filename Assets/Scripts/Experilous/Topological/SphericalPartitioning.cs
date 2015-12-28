@@ -86,7 +86,7 @@ namespace Experilous.Topological
 		{
 			_manifold = manifold;
 
-			var edges = manifold.topology.vertexEdges;
+			var edges = manifold.vertexEdges;
 			var positions = manifold.vertexPositions;
 			_partitionBinaryTree = new Partition[edges.Count];
 
@@ -235,12 +235,12 @@ namespace Experilous.Topological
 			if (partition.IsUnder(centerRay))
 			{
 				if (partition._underPartitionIndex != 0) return Intersect(centerRay, partition._underPartitionIndex);
-				else return _manifold.topology.internalFaces[partition._underFaceIndex];
+				else return _manifold.internalFaces[partition._underFaceIndex];
 			}
 			else
 			{
 				if (partition._overPartitionIndex != 0) return Intersect(centerRay, partition._overPartitionIndex);
-				else return _manifold.topology.internalFaces[partition._overFaceIndex];
+				else return _manifold.internalFaces[partition._overFaceIndex];
 			}
 		}
 

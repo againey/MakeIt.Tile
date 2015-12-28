@@ -8,7 +8,7 @@ public class SphericalPartitioningTests
 {
 	private void ManifoldFaceCenterIntersections(Manifold manifold, SphericalPartitioning partitioning)
 	{
-		foreach (var face in manifold.topology.internalFaces)
+		foreach (var face in manifold.internalFaces)
 		{
 			var centroid = new Vector3();
 			foreach (var edge in face.edges)
@@ -23,7 +23,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldFaceVertexWeightedIntersections(Manifold manifold, SphericalPartitioning partitioning)
 	{
-		foreach (var face in manifold.topology.internalFaces)
+		foreach (var face in manifold.internalFaces)
 		{
 			foreach (var firstEdge in face.edges)
 			{
@@ -43,7 +43,7 @@ public class SphericalPartitioningTests
 
 	private void ManifoldFaceEdgeWeightedIntersections(Manifold manifold, SphericalPartitioning partitioning)
 	{
-		foreach (var face in manifold.topology.internalFaces)
+		foreach (var face in manifold.internalFaces)
 		{
 			foreach (var firstEdge in face.edges)
 			{
@@ -65,12 +65,12 @@ public class SphericalPartitioningTests
 
 	private void ManifoldExternalRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = SphericalManifold.CalculateFaceCentroids(manifold);
+		var centroids = SphericalManifoldUtility.CalculateFaceCentroids(manifold);
 		var random = new System.Random(randomSeed);
 
-		foreach (var face0 in manifold.topology.internalFaces)
+		foreach (var face0 in manifold.internalFaces)
 		{
-			foreach (var face1 in manifold.topology.internalFaces)
+			foreach (var face1 in manifold.internalFaces)
 			{
 				if (face0 != face1)
 				{
@@ -92,12 +92,12 @@ public class SphericalPartitioningTests
 
 	private void ManifoldInternalRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = SphericalManifold.CalculateFaceCentroids(manifold);
+		var centroids = SphericalManifoldUtility.CalculateFaceCentroids(manifold);
 		var random = new System.Random(randomSeed);
 
-		foreach (var face0 in manifold.topology.internalFaces)
+		foreach (var face0 in manifold.internalFaces)
 		{
-			foreach (var face1 in manifold.topology.internalFaces)
+			foreach (var face1 in manifold.internalFaces)
 			{
 				if (face0 != face1)
 				{
@@ -118,12 +118,12 @@ public class SphericalPartitioningTests
 
 	private void ManifoldRecedingRayIntersections(Manifold manifold, SphericalPartitioning partitioning, int randomSeed)
 	{
-		var centroids = SphericalManifold.CalculateFaceCentroids(manifold);
+		var centroids = SphericalManifoldUtility.CalculateFaceCentroids(manifold);
 		var random = new System.Random(randomSeed);
 
-		foreach (var face0 in manifold.topology.internalFaces)
+		foreach (var face0 in manifold.internalFaces)
 		{
-			foreach (var face1 in manifold.topology.internalFaces)
+			foreach (var face1 in manifold.internalFaces)
 			{
 				if (face0 != face1)
 				{
@@ -174,7 +174,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void TetrahedronFaceCenterIntersections()
 	{
-		var manifold = SphericalManifold.CreateTetrahedron();
+		var manifold = SphericalManifoldUtility.CreateTetrahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceCenterIntersections(manifold, partitioning);
 	}
@@ -182,7 +182,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceCenterIntersections()
 	{
-		var manifold = SphericalManifold.CreateCube();
+		var manifold = SphericalManifoldUtility.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceCenterIntersections(manifold, partitioning);
 	}
@@ -190,7 +190,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void OctahedronFaceCenterIntersections()
 	{
-		var manifold = SphericalManifold.CreateOctahedron();
+		var manifold = SphericalManifoldUtility.CreateOctahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceCenterIntersections(manifold, partitioning);
 	}
@@ -198,7 +198,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void DodecahedronFaceCenterIntersections()
 	{
-		var manifold = SphericalManifold.CreateDodecahedron();
+		var manifold = SphericalManifoldUtility.CreateDodecahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceCenterIntersections(manifold, partitioning);
 	}
@@ -206,7 +206,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void IcosahedronFaceCenterIntersections()
 	{
-		var manifold = SphericalManifold.CreateIcosahedron();
+		var manifold = SphericalManifoldUtility.CreateIcosahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceCenterIntersections(manifold, partitioning);
 	}
@@ -214,7 +214,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void TetrahedronFaceVertexWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateTetrahedron();
+		var manifold = SphericalManifoldUtility.CreateTetrahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceVertexWeightedIntersections(manifold, partitioning);
 	}
@@ -222,7 +222,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceVertexWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateCube();
+		var manifold = SphericalManifoldUtility.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceVertexWeightedIntersections(manifold, partitioning);
 	}
@@ -230,7 +230,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void OctahedronFaceVertexWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateOctahedron();
+		var manifold = SphericalManifoldUtility.CreateOctahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceVertexWeightedIntersections(manifold, partitioning);
 	}
@@ -238,7 +238,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void DodecahedronFaceVertexWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateDodecahedron();
+		var manifold = SphericalManifoldUtility.CreateDodecahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceVertexWeightedIntersections(manifold, partitioning);
 	}
@@ -246,7 +246,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void IcosahedronFaceVertexWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateIcosahedron();
+		var manifold = SphericalManifoldUtility.CreateIcosahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceVertexWeightedIntersections(manifold, partitioning);
 	}
@@ -254,7 +254,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void TetrahedronFaceEdgeWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateTetrahedron();
+		var manifold = SphericalManifoldUtility.CreateTetrahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceEdgeWeightedIntersections(manifold, partitioning);
 	}
@@ -262,7 +262,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFaceEdgeWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateCube();
+		var manifold = SphericalManifoldUtility.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceEdgeWeightedIntersections(manifold, partitioning);
 	}
@@ -270,7 +270,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void OctahedronFaceEdgeWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateOctahedron();
+		var manifold = SphericalManifoldUtility.CreateOctahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceEdgeWeightedIntersections(manifold, partitioning);
 	}
@@ -278,7 +278,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void DodecahedronFaceEdgeWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateDodecahedron();
+		var manifold = SphericalManifoldUtility.CreateDodecahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceEdgeWeightedIntersections(manifold, partitioning);
 	}
@@ -286,7 +286,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void IcosahedronFaceEdgeWeightedIntersections()
 	{
-		var manifold = SphericalManifold.CreateIcosahedron();
+		var manifold = SphericalManifoldUtility.CreateIcosahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFaceEdgeWeightedIntersections(manifold, partitioning);
 	}
@@ -294,7 +294,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void TetrahedronExternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateTetrahedron();
+		var manifold = SphericalManifoldUtility.CreateTetrahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldExternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -302,7 +302,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronExternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateCube();
+		var manifold = SphericalManifoldUtility.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldExternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -310,7 +310,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void OctahedronExternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateOctahedron();
+		var manifold = SphericalManifoldUtility.CreateOctahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldExternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -318,7 +318,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void DodecahedronExternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateDodecahedron();
+		var manifold = SphericalManifoldUtility.CreateDodecahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldExternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -326,7 +326,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void IcosahedronExternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateIcosahedron();
+		var manifold = SphericalManifoldUtility.CreateIcosahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldExternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -334,7 +334,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void TetrahedronInternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateTetrahedron();
+		var manifold = SphericalManifoldUtility.CreateTetrahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldInternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -342,7 +342,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronInternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateCube();
+		var manifold = SphericalManifoldUtility.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldInternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -350,7 +350,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void OctahedronInternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateOctahedron();
+		var manifold = SphericalManifoldUtility.CreateOctahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldInternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -358,7 +358,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void DodecahedronInternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateDodecahedron();
+		var manifold = SphericalManifoldUtility.CreateDodecahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldInternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -366,7 +366,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void IcosahedronInternalRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateIcosahedron();
+		var manifold = SphericalManifoldUtility.CreateIcosahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldInternalRayIntersections(manifold, partitioning, 1);
 	}
@@ -374,7 +374,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void TetrahedronRecedingRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateTetrahedron();
+		var manifold = SphericalManifoldUtility.CreateTetrahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldRecedingRayIntersections(manifold, partitioning, 1);
 	}
@@ -382,7 +382,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronRecedingRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateCube();
+		var manifold = SphericalManifoldUtility.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldRecedingRayIntersections(manifold, partitioning, 1);
 	}
@@ -390,7 +390,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void OctahedronRecedingRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateOctahedron();
+		var manifold = SphericalManifoldUtility.CreateOctahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldRecedingRayIntersections(manifold, partitioning, 1);
 	}
@@ -398,7 +398,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void DodecahedronRecedingRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateDodecahedron();
+		var manifold = SphericalManifoldUtility.CreateDodecahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldRecedingRayIntersections(manifold, partitioning, 1);
 	}
@@ -406,7 +406,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void IcosahedronRecedingRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateIcosahedron();
+		var manifold = SphericalManifoldUtility.CreateIcosahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldRecedingRayIntersections(manifold, partitioning, 1);
 	}
@@ -414,7 +414,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void TetrahedronFailedRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateTetrahedron();
+		var manifold = SphericalManifoldUtility.CreateTetrahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFailedRayIntersections(manifold, partitioning, 1, 64);
 	}
@@ -422,7 +422,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void HexahedronFailedRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateCube();
+		var manifold = SphericalManifoldUtility.CreateCube();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFailedRayIntersections(manifold, partitioning, 1, 64);
 	}
@@ -430,7 +430,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void OctahedronFailedRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateOctahedron();
+		var manifold = SphericalManifoldUtility.CreateOctahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFailedRayIntersections(manifold, partitioning, 1, 64);
 	}
@@ -438,7 +438,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void DodecahedronFailedRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateDodecahedron();
+		var manifold = SphericalManifoldUtility.CreateDodecahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFailedRayIntersections(manifold, partitioning, 1, 64);
 	}
@@ -446,7 +446,7 @@ public class SphericalPartitioningTests
 	[Test]
 	public void IcosahedronFailedRayIntersections()
 	{
-		var manifold = SphericalManifold.CreateIcosahedron();
+		var manifold = SphericalManifoldUtility.CreateIcosahedron();
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFailedRayIntersections(manifold, partitioning, 1, 64);
 	}

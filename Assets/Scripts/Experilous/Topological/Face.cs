@@ -6,12 +6,12 @@ namespace Experilous.Topological
 	public partial class Topology
 	{
 		[SerializeField]
-		private ushort[] _faceNeighborCounts;
+		protected ushort[] _faceNeighborCounts;
 		[SerializeField]
-		private int[] _faceFirstEdgeIndices;
+		protected int[] _faceFirstEdgeIndices;
 
 		[SerializeField]
-		private int _firstExternalFaceIndex;
+		protected int _firstExternalFaceIndex;
 
 		public struct Face : IEquatable<Face>, IComparable<Face>
 		{

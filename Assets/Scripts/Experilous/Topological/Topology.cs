@@ -12,6 +12,11 @@ namespace Experilous.Topological
 
 		public Topology(Topology original)
 		{
+			CloneFields(original);
+		}
+
+		protected void CloneFields(Topology original)
+		{
 			_vertexNeighborCounts = original._vertexNeighborCounts.Clone() as ushort[];
 			_vertexFirstEdgeIndices = original._vertexFirstEdgeIndices.Clone() as int[];
 			_edgeData = original._edgeData.Clone() as EdgeData[];
@@ -26,41 +31,43 @@ namespace Experilous.Topological
 			return new Topology(this);
 		}
 
-		public Topology GetDualTopology()
+		public virtual void MakeDual()
 		{
 			if (_firstExternalFaceIndex < _faceFirstEdgeIndices.Length) throw new InvalidOperationException("A dual topology cannot be derived from a topology with external faces.");
 
-			var dual = new Topology();
-			dual._vertexNeighborCounts = _faceNeighborCounts.Clone() as ushort[];
-			dual._vertexFirstEdgeIndices = _faceFirstEdgeIndices.Clone() as int[];
-			dual._faceNeighborCounts = _vertexNeighborCounts.Clone() as ushort[];
-			dual._faceFirstEdgeIndices = _vertexFirstEdgeIndices.Clone() as int[];
+			Utility.Swap(ref _vertexNeighborCounts, ref _faceNeighborCounts);
+			Utility.Swap(ref _vertexFirstEdgeIndices, ref _faceFirstEdgeIndices);
 
-			dual._edgeData = new EdgeData[_edgeData.Length];
+			_firstExternalFaceIndex = _faceFirstEdgeIndices.Length;
+
+			var dualEdgeData = new EdgeData[_edgeData.Length];
 			for (int i = 0; i < _edgeData.Length; ++i)
 			{
 				// Edges rotate clockwise to point at next faces becoming far vertices, with their
 				// side toward far vertices becoming prev faces.
-				dual._edgeData[i] = new EdgeData(
+				dualEdgeData[i] = new EdgeData(
 					_edgeData[i]._twin, // twin remains the same
 					_edgeData[_edgeData[_edgeData[i]._twin]._fNext]._twin, // vNext becomes twin of vPrev, where vPrev is the fNext of twin
 					_edgeData[i]._vNext, // fNext becomes what vNext had been
 					_edgeData[_edgeData[i]._twin]._face, // far vertex becomes what had been next face
 					_edgeData[i]._vertex); // prev face becomes what had been far vertex
 			}
+			_edgeData = dualEdgeData;
 
 			// Due to rotations, face data (which had been vertex data) still points to the same edges,
 			// but vertex data (which had been face data) is now backwards, pointing to edges which
 			// point back at the vertex; this needs to be reversed by setting first edges to their twins.
-			for (int i = 0; i < dual._vertexFirstEdgeIndices.Length; ++i)
+			for (int i = 0; i < _vertexFirstEdgeIndices.Length; ++i)
 			{
-				dual._vertexFirstEdgeIndices[i] = dual._edgeData[dual._vertexFirstEdgeIndices[i]]._twin;
+				_vertexFirstEdgeIndices[i] = _edgeData[_vertexFirstEdgeIndices[i]]._twin;
 			}
+		}
 
-			dual._firstExternalEdgeIndex = _edgeData.Length;
-			dual._firstExternalFaceIndex = _vertexFirstEdgeIndices.Length;
-
-			return dual;
+		public virtual Topology GetDualTopology()
+		{
+			var clone = Clone();
+			clone.MakeDual();
+			return clone;
 		}
 
 		// Pivot an edge counter-clockwise around its implicit near vertex.
@@ -92,7 +99,7 @@ namespace Experilous.Topological
 		// 2:  outer edge 2 points away from A
 		// Note:  inner edges point downward, outer edges point upward
 
-		private void PivotVertexEdgeBackwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
+		protected void PivotVertexEdgeBackwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
 		{
 			var innerEdgeIndex0 = _edgeData[outerEdgeIndex1]._vNext;
 			var outerEdgeIndex0 = _edgeData[innerEdgeIndex0]._twin;
@@ -163,7 +170,7 @@ namespace Experilous.Topological
 		// 2:  outer edge 2 points away from B
 		// Note:  inner edges point downward, outer edges point upward
 
-		private void PivotVertexEdgeForwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
+		protected void PivotVertexEdgeForwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
 		{
 			var innerEdgeIndex0 = _edgeData[twinEdgeIndex]._vNext;
 			var outerEdgeIndex0 = _edgeData[innerEdgeIndex0]._twin;
@@ -205,7 +212,7 @@ namespace Experilous.Topological
 			if (prevFaceIndex != -1) _faceNeighborCounts[prevFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 		}
 
-		private void PivotEdgeBackwardUnchecked(VertexEdge edge)
+		protected void PivotEdgeBackwardUnchecked(VertexEdge edge)
 		{
 			
 			int edgeIndex = edge.index;
@@ -215,7 +222,7 @@ namespace Experilous.Topological
 			PivotVertexEdgeBackwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
 		}
 
-		private void PivotEdgeForwardUnchecked(VertexEdge edge)
+		protected void PivotEdgeForwardUnchecked(VertexEdge edge)
 		{
 			int edgeIndex = edge.index;
 			int twinEdgeIndex = _edgeData[edgeIndex]._twin;
@@ -229,7 +236,7 @@ namespace Experilous.Topological
 		// around a different vertex.  The original face edge becomes the edge
 		// along which the vertex edge slides its far vertex.
 
-		private void PivotEdgeBackwardUnchecked(FaceEdge edge)
+		protected void PivotEdgeBackwardUnchecked(FaceEdge edge)
 		{
 			var innerEdgeIndex1 = edge.index;
 			var outerEdgeIndex1 = _edgeData[innerEdgeIndex1]._twin;
@@ -238,7 +245,7 @@ namespace Experilous.Topological
 			PivotVertexEdgeBackwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
 		}
 
-		private void PivotEdgeForwardUnchecked(FaceEdge edge)
+		protected void PivotEdgeForwardUnchecked(FaceEdge edge)
 		{
 			var innerEdgeIndex1 = edge.index;
 			var outerEdgeIndex1 = _edgeData[innerEdgeIndex1]._twin;

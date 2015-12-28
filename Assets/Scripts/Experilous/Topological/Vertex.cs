@@ -6,9 +6,9 @@ namespace Experilous.Topological
 	public partial class Topology
 	{
 		[SerializeField]
-		private ushort[] _vertexNeighborCounts;
+		protected ushort[] _vertexNeighborCounts;
 		[SerializeField]
-		private int[] _vertexFirstEdgeIndices;
+		protected int[] _vertexFirstEdgeIndices;
 
 		public struct Vertex : IEquatable<Vertex>, IComparable<Vertex>
 		{

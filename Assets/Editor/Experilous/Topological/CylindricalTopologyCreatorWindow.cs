@@ -188,7 +188,6 @@ namespace Experilous.Topological
 
 		private void RandomizeTopology(Manifold manifold)
 		{
-			var topology = manifold.topology;
 			var vertexPositions = manifold.vertexPositions;
 
 			var randomEngine = new NativeRandomEngine(RandomEngineFactory.Hash(_topologyRandomizationEngineSeed));
@@ -201,7 +200,7 @@ namespace Experilous.Topological
 
 				relaxIterationFunction = () =>
 				{
-					SphericalManifold.RelaxForRegularity(manifold, _topologyRandomizationLockBoundaryPositions, regularityRelaxedPositions);
+					SphericalManifoldUtility.RelaxForRegularity(manifold, _topologyRandomizationLockBoundaryPositions, regularityRelaxedPositions);
 
 					float relaxationAmount = 0f;
 					for (int j = 0; j < vertexPositions.Length; ++j)
@@ -218,11 +217,11 @@ namespace Experilous.Topological
 			else if (_topologyRandomizationRelaxationRegularity == 1f)
 			{
 				var equalAreaRelaxedPositions = new Vector3[vertexPositions.Length];
-				var centroidsBuffer = new Vector3[topology.faces.Count];
+				var centroidsBuffer = new Vector3[manifold.faces.Count];
 
 				relaxIterationFunction = () =>
 				{
-					SphericalManifold.RelaxForEqualArea(manifold, _topologyRandomizationLockBoundaryPositions, equalAreaRelaxedPositions, centroidsBuffer);
+					SphericalManifoldUtility.RelaxForEqualArea(manifold, _topologyRandomizationLockBoundaryPositions, equalAreaRelaxedPositions, centroidsBuffer);
 
 					float relaxationAmount = 0f;
 					for (int j = 0; j < vertexPositions.Length; ++j)
@@ -240,15 +239,15 @@ namespace Experilous.Topological
 			{
 				var regularityRelaxedPositions = new Vector3[vertexPositions.Length];
 				var equalAreaRelaxedPositions = new Vector3[vertexPositions.Length];
-				var centroidsBuffer = new Vector3[topology.faces.Count];
+				var centroidsBuffer = new Vector3[manifold.faces.Count];
 
 				var regularityWeight = _topologyRandomizationRelaxationRegularity;
 				var equalAreaWeight = 1f - _topologyRandomizationRelaxationRegularity;
 
 				relaxIterationFunction = () =>
 				{
-					SphericalManifold.RelaxForRegularity(manifold, _topologyRandomizationLockBoundaryPositions, regularityRelaxedPositions);
-					SphericalManifold.RelaxForEqualArea(manifold, _topologyRandomizationLockBoundaryPositions, equalAreaRelaxedPositions, centroidsBuffer);
+					SphericalManifoldUtility.RelaxForRegularity(manifold, _topologyRandomizationLockBoundaryPositions, regularityRelaxedPositions);
+					SphericalManifoldUtility.RelaxForEqualArea(manifold, _topologyRandomizationLockBoundaryPositions, equalAreaRelaxedPositions, centroidsBuffer);
 
 					float relaxationAmount = 0f;
 					var weightedRelaxedPositions = regularityRelaxedPositions;
@@ -270,7 +269,7 @@ namespace Experilous.Topological
 
 			System.Func<bool> repairFunction = () =>
 			{
-				return SphericalManifold.ValidateAndRepair(manifold, 0.5f, _topologyRandomizationLockBoundaryPositions);
+				return SphericalManifoldUtility.ValidateAndRepair(manifold, 0.5f, _topologyRandomizationLockBoundaryPositions);
 			};
 
 			var relaxFunction = TopologyRandomizer.CreateRelaxationLoopFunction(
@@ -281,7 +280,7 @@ namespace Experilous.Topological
 				repairFunction);
 
 			TopologyRandomizer.Randomize(
-				manifold.topology,
+				manifold,
 				_topologyRandomizationPassCount,
 				_topologyRandomizationFrequency,
 				_topologyRandomizationMinVertexNeighbors,
@@ -315,26 +314,26 @@ namespace Experilous.Topological
 					switch (_tileOrientation)
 					{
 						case TileOrientation.FlatTop:
-							manifold = CylindricalManifold.CreateFlatTopTriGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
+							manifold = CylindricalManifoldUtility.CreateFlatTopTriGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
 							break;
 						case TileOrientation.PointyTop:
-							manifold = CylindricalManifold.CreatePointyTopTriGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
+							manifold = CylindricalManifoldUtility.CreatePointyTopTriGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
 							break;
 						default:
 							throw new System.InvalidOperationException("Unexpected tile orientation value.");
 					}
 					break;
 				case Tiling.Quadrilateral:
-					manifold = CylindricalManifold.CreateQuadGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
+					manifold = CylindricalManifoldUtility.CreateQuadGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
 					break;
 				case Tiling.Hexagonal:
 					switch (_tileOrientation)
 					{
 						case TileOrientation.FlatTop:
-							manifold = CylindricalManifold.CreateFlatTopHexGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
+							manifold = CylindricalManifoldUtility.CreateFlatTopHexGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
 							break;
 						case TileOrientation.PointyTop:
-							manifold = CylindricalManifold.CreatePointyTopHexGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
+							manifold = CylindricalManifoldUtility.CreatePointyTopHexGridSphericalCylinder(_columnCount, _rowCount, _maxLatitude * Mathf.Deg2Rad, _projectionRegularity);
 							break;
 						default:
 							throw new System.InvalidOperationException("Unexpected tile orientation value.");
@@ -346,18 +345,18 @@ namespace Experilous.Topological
 
 			if (_randomizeTopology) RandomizeTopology(manifold);
 
-			GetOrAddComponent<TopologyProvider>(gameObject).topology = manifold.topology;
+			GetOrAddComponent<TopologyProvider>(gameObject).topology = manifold;
 			GetOrAddComponent<VertexPositionsProvider>(gameObject).vertexPositions = manifold.vertexPositions;
 
 			if (_calculateCentroids)
 			{
 				if (_flattenCentroids)
 				{
-					GetOrAddComponent<FaceCentroidsProvider>(gameObject).faceCentroids = Manifold.CalculateFaceCentroids(manifold);
+					GetOrAddComponent<FaceCentroidsProvider>(gameObject).faceCentroids = manifold.CalculateFaceCentroids();
 				}
 				else
 				{
-					GetOrAddComponent<FaceCentroidsProvider>(gameObject).faceCentroids = SphericalManifold.CalculateFaceCentroids(manifold);
+					GetOrAddComponent<FaceCentroidsProvider>(gameObject).faceCentroids = SphericalManifoldUtility.CalculateFaceCentroids(manifold);
 				}
 			}
 			else
@@ -393,7 +392,7 @@ namespace Experilous.Topological
 				{
 					var centroids = gameObject.GetComponent<FaceCentroidsProvider>().faceCentroids;
 					System.Func<int, Color> faceColorGenerator = (int faceIndex) => { return new Color(1f, 1f, 1f); };
-					meshes = MeshGenerator.GenerateSubmeshes(manifold.topology.internalFaces, manifold.vertexPositions, centroids, centroids, faceColorGenerator);
+					meshes = MeshGenerator.GenerateSubmeshes(manifold.internalFaces, manifold.vertexPositions, centroids, centroids, faceColorGenerator);
 
 					if (meshes.Length == 1)
 					{

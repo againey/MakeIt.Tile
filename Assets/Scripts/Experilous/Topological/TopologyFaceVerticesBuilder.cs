@@ -399,7 +399,7 @@ namespace Experilous.Topological
 				}
 			}
 
-			public Topology BuildTopology()
+			public TTopology BuildTopology<TTopology>() where TTopology : Topology, new()
 			{
 				var vertexNeighborCounts = new ushort[_maxVertexIndex + 1];
 				var vertexFirstEdgeIndices = new int[_maxVertexIndex + 1];
@@ -645,7 +645,7 @@ namespace Experilous.Topological
 					}
 				}
 
-				var topology = new Topology();
+				var topology = new TTopology();
 
 				topology._vertexNeighborCounts = vertexNeighborCounts;
 				topology._vertexFirstEdgeIndices = vertexFirstEdgeIndices;

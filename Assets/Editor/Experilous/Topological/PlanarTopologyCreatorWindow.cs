@@ -293,7 +293,7 @@ namespace Experilous.Topological
 				repairFunction);
 
 			TopologyRandomizer.Randomize(
-				manifold.topology,
+				manifold,
 				_topologyRandomizationPassCount,
 				_topologyRandomizationFrequency,
 				_topologyRandomizationMinVertexNeighbors,
@@ -319,7 +319,7 @@ namespace Experilous.Topological
 
 		private void UpdateGameObject(GameObject gameObject)
 		{
-			Manifold manifold;
+			WrapAroundManifold manifold;
 			Vector3[] repetitionAxes = null;
 			EdgeWrapData[] edgeWrapData = null;
 
@@ -329,26 +329,26 @@ namespace Experilous.Topological
 					switch (_tileOrientation)
 					{
 						case TileOrientation.FlatTop:
-							manifold = PlanarManifold.CreateFlatTopTriGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
+							manifold = PlanarManifoldUtility.CreateFlatTopTriGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
 							break;
 						case TileOrientation.PointyTop:
-							manifold = PlanarManifold.CreatePointyTopTriGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
+							manifold = PlanarManifoldUtility.CreatePointyTopTriGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
 							break;
 						default:
 							throw new System.InvalidOperationException("Unexpected tile orientation value.");
 					}
 					break;
 				case Tiling.Quadrilateral:
-					manifold = PlanarManifold.CreateQuadGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround, out repetitionAxes, out edgeWrapData);
+					manifold = PlanarManifoldUtility.CreateQuadGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround, out repetitionAxes, out edgeWrapData);
 					break;
 				case Tiling.Hexagonal:
 					switch (_tileOrientation)
 					{
 						case TileOrientation.FlatTop:
-							manifold = PlanarManifold.CreateFlatTopHexGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
+							manifold = PlanarManifoldUtility.CreateFlatTopHexGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
 							break;
 						case TileOrientation.PointyTop:
-							manifold = PlanarManifold.CreatePointyTopHexGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
+							manifold = PlanarManifoldUtility.CreatePointyTopHexGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
 							break;
 						default:
 							throw new System.InvalidOperationException("Unexpected tile orientation value.");
@@ -360,12 +360,12 @@ namespace Experilous.Topological
 
 			if (_randomizeTopology) RandomizeTopology(manifold);
 
-			GetOrAddComponent<TopologyProvider>(gameObject).topology = manifold.topology;
+			GetOrAddComponent<TopologyProvider>(gameObject).topology = manifold;
 			GetOrAddComponent<VertexPositionsProvider>(gameObject).vertexPositions = manifold.vertexPositions;
 
 			if (_calculateCentroids)
 			{
-				GetOrAddComponent<FaceCentroidsProvider>(gameObject).faceCentroids = Manifold.CalculateFaceCentroids(manifold, repetitionAxes, edgeWrapData);
+				GetOrAddComponent<FaceCentroidsProvider>(gameObject).faceCentroids = manifold.CalculateFaceCentroids();
 			}
 			else
 			{
@@ -415,7 +415,7 @@ namespace Experilous.Topological
 						DestroyComponents<MeshRenderer>(gameObject);
 						DestroyComponents<MeshFilter>(gameObject);
 
-						var mapper = PlanarManifold.CreateQuadGridFaceMapper(_columnCount, _rowCount);
+						var mapper = PlanarManifoldUtility.CreateQuadGridFaceMapper(_columnCount, _rowCount);
 
 						var submeshIndex = 0;
 
@@ -424,10 +424,10 @@ namespace Experilous.Topological
 							for (int x = 0; x < _horizontalMeshSegments; ++x)
 							{
 								var facesIndexer = mapper.GetRangeIndexer(
-									manifold.topology,
+									manifold,
 									new CartesianIndex2D(_columnCount * x / _horizontalMeshSegments, _rowCount * y / _verticalMeshSegments),
 									new CartesianIndex2D(_columnCount * (x + 1) / _horizontalMeshSegments - 1, _rowCount * (y + 1) / _verticalMeshSegments - 1));
-								meshes = MeshGenerator.GenerateSubmeshes(facesIndexer, manifold.vertexPositions, repetitionAxes, edgeWrapData, centroids, centroids, faceColorGenerator);
+								meshes = MeshGenerator.GenerateSubmeshes(manifold, facesIndexer, centroids, centroids, faceColorGenerator);
 
 								for (int i = 0; i < meshes.Length; ++i)
 								{
@@ -455,7 +455,7 @@ namespace Experilous.Topological
 					}
 					else
 					{
-						meshes = MeshGenerator.GenerateSubmeshes(manifold.topology.internalFaces, manifold.vertexPositions, repetitionAxes, edgeWrapData, centroids, centroids, faceColorGenerator);
+						meshes = MeshGenerator.GenerateSubmeshes(manifold, manifold.internalFaces, centroids, centroids, faceColorGenerator);
 
 						if (meshes.Length == 1)
 						{

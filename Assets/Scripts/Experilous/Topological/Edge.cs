@@ -6,7 +6,7 @@ namespace Experilous.Topological
 	public partial class Topology
 	{
 		[Serializable]
-		private struct EdgeData
+		protected struct EdgeData
 		{
 			// \             /
 			//  \     F     /
@@ -46,10 +46,10 @@ namespace Experilous.Topological
 		}
 
 		[SerializeField]
-		private EdgeData[] _edgeData;
+		protected EdgeData[] _edgeData;
 
 		[SerializeField]
-		private int _firstExternalEdgeIndex;
+		protected int _firstExternalEdgeIndex;
 
 		public struct VertexEdge : IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>
 		{

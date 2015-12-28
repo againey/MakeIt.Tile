@@ -277,7 +277,7 @@ namespace Experilous.Topological
 				_vertexNeighbors.Add(new VertexNeighbor(nextneighborIndex, neighbors[iEnd]));
 			}
 
-			public Topology BuildTopology()
+			public TTopology BuildTopology<TTopology>() where TTopology : Topology, new()
 			{
 				if (_vertexCount != -1 && _vertexRoots.Count != _vertexCount) throw new System.InvalidOperationException("The actual number of vertices does not match the number specified when the topology builder was first constructed.");
 				if (_edgeCount != -1 && _vertexNeighbors.Count != _edgeCount) throw new System.InvalidOperationException("The actual number of edges does not match the number specified when the topology builder was first constructed.");
@@ -439,7 +439,7 @@ namespace Experilous.Topological
 					if (faceIndex != _faceCount) throw new System.InvalidOperationException("The actual number of faces does not match the number specified when the topology builder was first constructed.");
 				}
 
-				var topology = new Topology();
+				var topology = new TTopology();
 
 				topology._vertexNeighborCounts = vertexNeighborCounts;
 				topology._vertexFirstEdgeIndices = vertexFirstEdgeIndices;
