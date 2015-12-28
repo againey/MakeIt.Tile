@@ -179,7 +179,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public struct FacesIndexer
+		public struct FacesIndexer : IFacesIndexer
 		{
 			private Topology _topology;
 			private int _first;
@@ -210,11 +210,102 @@ namespace Experilous.Topological
 		public FacesIndexer externalFaces { get { return new FacesIndexer(this, _firstExternalFaceIndex, _faceFirstEdgeIndices.Length); } }
 	}
 
+	public interface IFacesIndexer
+	{
+		Topology.Face this[int i] { get; }
+		int Count { get; }
+	}
+
+	public struct CartesianIndex2D
+	{
+		public int x;
+		public int y;
+
+		public CartesianIndex2D(int x, int y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	public class CartesianQuadFaceMapper
+	{
+		private int _horizontalStride;
+		private int _verticalStride;
+		private int _originIndex;
+
+		public CartesianQuadFaceMapper(int verticalStride)
+		{
+			_horizontalStride = 1;
+			_verticalStride = verticalStride;
+			_originIndex = 0;
+		}
+
+		public CartesianQuadFaceMapper(int horizontalStride, int verticalStride, int originIndex)
+		{
+			_horizontalStride = horizontalStride;
+			_verticalStride = verticalStride;
+			_originIndex = originIndex;
+		}
+
+		public CartesianIndex2D MapToCartesian(int faceIndex)
+		{
+			return new CartesianIndex2D(-1, -1); //TODO
+		}
+
+		public int MapFromCartesian(CartesianIndex2D cartesianIndex)
+		{
+			return _originIndex + cartesianIndex.x * _horizontalStride + cartesianIndex.y * _verticalStride;
+		}
+
+		public struct RangeIndexer : IFacesIndexer
+		{
+			private Topology _topology;
+			private int _minorCount;
+			private int _count;
+			private int _minorStride;
+			private int _majorStride;
+			private int _originIndex;
+
+			public RangeIndexer(Topology topology, int minorCount, int count, int minorStride, int majorStride, int originIndex)
+			{
+				_topology = topology;
+				_minorCount = minorCount;
+				_count = count;
+				_minorStride = minorStride;
+				_majorStride = majorStride;
+				_originIndex = originIndex;
+			}
+
+			public Topology.Face this[int i] { get { return new Topology.Face(_topology, _originIndex + (i % _minorCount) * _minorStride + (i / _minorCount) * _majorStride); } }
+			public int Count { get { return _count; } }
+		}
+
+		public IFacesIndexer GetRangeIndexer(Topology topology, CartesianIndex2D startCorner, CartesianIndex2D endCorner)
+		{
+			//TODO negatives
+			var originIndex = MapFromCartesian(startCorner);
+			var minorCount = endCorner.x - startCorner.x + 1;
+			var count = minorCount * (endCorner.y - startCorner.y + 1);
+			return new RangeIndexer(topology, minorCount, count, 1, _verticalStride, originIndex);
+		}
+	}
+
 	public static class FaceExtensions
 	{
 		public static T Of<T>(this T[] attributArray, Topology.Face face)
 		{
 			return attributArray[face.index];
+		}
+
+		public static Topology.Face GetFace(this Topology topology, CartesianIndex2D cartesianIndex, CartesianQuadFaceMapper mapper)
+		{
+			return topology.faces[mapper.MapFromCartesian(cartesianIndex)];
+		}
+
+		public static CartesianIndex2D GetCartesianIndex(this Topology.Face face, CartesianQuadFaceMapper mapper)
+		{
+			return mapper.MapToCartesian(face.index);
 		}
 	}
 

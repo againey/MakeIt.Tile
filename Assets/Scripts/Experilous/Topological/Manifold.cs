@@ -60,6 +60,30 @@ namespace Experilous.Topological
 			return centroids;
 		}
 
+		public static Vector3[] CalculateFaceCentroids(Manifold manifold, Vector3[] repetitionAxes, EdgeWrapData[] edgeWrapData)
+		{
+			return CalculateFaceCentroids(manifold, repetitionAxes, edgeWrapData, false);
+		}
+		
+		public static Vector3[] CalculateFaceCentroids(Manifold manifold, Vector3[] repetitionAxes, EdgeWrapData[] edgeWrapData, bool includeExternalFaces)
+		{
+			var faces = GetFaces(manifold, includeExternalFaces);
+			var centroids = new Vector3[faces.Count];
+			var vertexPositions = manifold.vertexPositions;
+
+			foreach (var face in faces)
+			{
+				var centroid = new Vector3(0f, 0f, 0f);
+				foreach (var edge in face.edges)
+				{
+					centroid += PlanarManifold.GetFaceVertexPosition(edge, vertexPositions, edgeWrapData, repetitionAxes);
+				}
+				centroids[face] = centroid / face.neighborCount;
+			}
+
+			return centroids;
+		}
+
 		public static Vector3[] CalculateFaceNormals(Manifold manifold)
 		{
 			return CalculateFaceNormals(manifold, false);

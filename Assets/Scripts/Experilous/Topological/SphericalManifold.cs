@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
+	public enum SphericalPolyhedron
+	{
+		Tetrahedron,
+		Cube,
+		Octahedron,
+		Dodecahedron,
+		Icosahedron,
+	}
+
 	public static class SphericalManifold
 	{
 		public static Manifold CreateTetrahedron()
@@ -129,6 +138,71 @@ namespace Experilous.Topological
 			builder.AddVertex( 2,  3,  7, 10,  5);
 
 			return new Manifold(builder.BuildTopology(), vertexPositions);
+		}
+
+		public static Manifold Create(SphericalPolyhedron basePolyhedron, int subdivisionDegree, bool useDualPolyhedron)
+		{
+			if (subdivisionDegree < 0) throw new System.ArgumentOutOfRangeException("subdivisionDegree", subdivisionDegree, "The subdivision degree for creating a spherical manifold cannot be negative.");
+
+			Manifold manifold;
+
+			switch (basePolyhedron)
+			{
+				case SphericalPolyhedron.Tetrahedron:
+					manifold = CreateTetrahedron();
+					break;
+				case SphericalPolyhedron.Cube:
+					manifold = CreateCube();
+					break;
+				case SphericalPolyhedron.Octahedron:
+					manifold = CreateOctahedron();
+					break;
+				case SphericalPolyhedron.Dodecahedron:
+					if (subdivisionDegree == 0)
+					{
+						manifold = CreateDodecahedron();
+					}
+					else
+					{
+						manifold = CreateIcosahedron();
+					}
+					break;
+				case SphericalPolyhedron.Icosahedron:
+					manifold = CreateIcosahedron();
+					break;
+				default:
+					throw new System.ArgumentException("An unrecognized spherical polyhedron was provided.", "polyhedron");
+			}
+
+			if (subdivisionDegree > 0)
+			{
+				manifold = Subdivide(manifold, subdivisionDegree);
+			}
+
+			if (basePolyhedron == SphericalPolyhedron.Dodecahedron && subdivisionDegree > 0)
+			{
+				useDualPolyhedron = !useDualPolyhedron;
+			}
+
+			if (useDualPolyhedron)
+			{
+				var topology = manifold.topology.GetDualTopology();
+				var vertexPositions = new Vector3[topology.vertices.Count];
+
+				foreach (var face in manifold.topology.internalFaces)
+				{
+					var average = new Vector3();
+					foreach (var edge in face.edges)
+					{
+						average += manifold.vertexPositions.Of(edge.nextVertex);
+					}
+					vertexPositions[face] = average.normalized;
+				}
+
+				manifold = new Manifold(topology, vertexPositions);
+			}
+
+			return manifold;
 		}
 
 		private static Topology.FacesIndexer GetFaces(Manifold manifold, bool includeExternalFaces)
