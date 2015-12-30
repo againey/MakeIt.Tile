@@ -72,6 +72,11 @@ namespace Experilous.Topological
 			return meshes.ToArray();
 		}
 
+		public static Mesh[] GenerateSubmeshes(Manifold manifold, IFacesIndexer faces, Vector3[] centroidPositions, Vector3[] faceNormals, System.Func<int, Color> faceColorGenerator)
+		{
+			return GenerateSubmeshes(faces, manifold.vertexPositions, centroidPositions, faceNormals, faceColorGenerator);
+		}
+
 		public static Mesh[] GenerateSubmeshes(WrapAroundManifold manifold, IFacesIndexer faces, Vector3[] centroidPositions, Vector3[] faceNormals, System.Func<int, Color> faceColorGenerator)
 		{
 			List<Mesh> meshes = new List<Mesh>();

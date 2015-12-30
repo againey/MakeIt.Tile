@@ -319,36 +319,47 @@ namespace Experilous.Topological
 
 		private void UpdateGameObject(GameObject gameObject)
 		{
-			WrapAroundManifold manifold;
-			Vector3[] repetitionAxes = null;
-			EdgeWrapData[] edgeWrapData = null;
-
 			switch (_tiling)
 			{
 				case Tiling.Triangular:
 					switch (_tileOrientation)
 					{
 						case TileOrientation.FlatTop:
-							manifold = PlanarManifoldUtility.CreateFlatTopTriGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
+							//manifold = PlanarManifoldUtility.CreateFlatTopTriGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
 							break;
 						case TileOrientation.PointyTop:
-							manifold = PlanarManifoldUtility.CreatePointyTopTriGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
+							//manifold = PlanarManifoldUtility.CreatePointyTopTriGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
 							break;
 						default:
 							throw new System.InvalidOperationException("Unexpected tile orientation value.");
 					}
 					break;
 				case Tiling.Quadrilateral:
-					manifold = PlanarManifoldUtility.CreateQuadGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround, out repetitionAxes, out edgeWrapData);
+					if (_horizontalWrapAround && _verticalWrapAround)
+					{
+						UpdateGameObject(gameObject, PlanarManifoldUtility.CreateFullWrapAroundQuadGrid(_columnCount, _rowCount));
+					}
+					else if (_horizontalWrapAround)
+					{
+						UpdateGameObject(gameObject, PlanarManifoldUtility.CreateHorizontalWrapAroundQuadGrid(_columnCount, _rowCount));
+					}
+					else if (_verticalWrapAround)
+					{
+						UpdateGameObject(gameObject, PlanarManifoldUtility.CreateVerticalWrapAroundQuadGrid(_columnCount, _rowCount));
+					}
+					else
+					{
+						UpdateGameObject(gameObject, PlanarManifoldUtility.CreateQuadGrid(_columnCount, _rowCount));
+					}
 					break;
 				case Tiling.Hexagonal:
 					switch (_tileOrientation)
 					{
 						case TileOrientation.FlatTop:
-							manifold = PlanarManifoldUtility.CreateFlatTopHexGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
+							//manifold = PlanarManifoldUtility.CreateFlatTopHexGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
 							break;
 						case TileOrientation.PointyTop:
-							manifold = PlanarManifoldUtility.CreatePointyTopHexGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
+							//manifold = PlanarManifoldUtility.CreatePointyTopHexGrid(_columnCount, _rowCount, _horizontalWrapAround, _verticalWrapAround);
 							break;
 						default:
 							throw new System.InvalidOperationException("Unexpected tile orientation value.");
@@ -357,7 +368,10 @@ namespace Experilous.Topological
 				default:
 					throw new System.InvalidOperationException("Unexpected tiling value.");
 			}
+		}
 
+		private void UpdateGameObject<TManifold>(GameObject gameObject, TManifold manifold) where TManifold : Manifold
+		{
 			if (_randomizeTopology) RandomizeTopology(manifold);
 
 			GetOrAddComponent<TopologyProvider>(gameObject).topology = manifold;
@@ -372,14 +386,14 @@ namespace Experilous.Topological
 				DestroyComponents<FaceCentroidsProvider>(gameObject);
 			}
 
-			/*if (_calculateSpatialPartitioning)
+			if (_calculateSpatialPartitioning)
 			{
-				GetOrAddComponent<SphericalPartitioningProvider>(gameObject).partitioning = new SphericalPartitioning(manifold);
+				GetOrAddComponent<PlanarPartitioningProvider>(gameObject).partitioning = new PlanarPartitioning(manifold);
 			}
 			else
 			{
-				DestroyComponents<SphericalPartitioningProvider>(gameObject);
-			}*/
+				DestroyComponents<PlanarPartitioningProvider>(gameObject);
+			}
 
 			Mesh[] meshes = null;
 

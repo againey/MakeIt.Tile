@@ -5,18 +5,62 @@ namespace Experilous.Topological
 {
 	public static class PlanarManifoldUtility
 	{
-		public static WrapAroundManifold CreatePointyTopTriGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
+		public static Manifold CreatePointyTopTriGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
 		{
 			return null;
 		}
 
-		public static WrapAroundManifold CreateFlatTopTriGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
+		public static Manifold CreateFlatTopTriGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
 		{
 			return null;
 		}
 
-		public static WrapAroundManifold CreateQuadGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround, out Vector3[] repetitionAxes, out EdgeWrapData[] edgeWrapData)
+		public static Manifold CreateQuadGrid(int columnCount, int rowCount)
 		{
+			var builder = new Topology.FaceVerticesBuilder(columnCount * rowCount, columnCount * rowCount * 4 + columnCount * 2);
+
+			var vertexColumnCount = columnCount + 1;
+			var vertexRowCount = rowCount + 1;
+
+			var vertexPositions = new Vector3[vertexColumnCount * vertexRowCount];
+
+			for (int y = 0; y < rowCount; ++y)
+			{
+				var v0 = y * vertexColumnCount;
+				var v1 = v0 + vertexColumnCount;
+				for (int x = 1; x <= columnCount; ++x)
+				{
+					builder.AddFace(v0 + x - 1, v1 + x - 1, v1 + x, v0 + x);
+				}
+			}
+
+			for (int y = 0; y < vertexRowCount; ++y)
+			{
+				var v = y * vertexColumnCount;
+				for (int x = 0; x < vertexColumnCount; ++x)
+				{
+					vertexPositions[v + x] = new Vector3(x, y, 0f);
+				}
+			}
+
+			var manifold = builder.BuildTopology<Manifold>();
+			manifold.vertexPositions = vertexPositions;
+			return manifold;
+		}
+
+		public static Manifold CreateQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
+		{
+			mapper = new CartesianQuadFaceMapper(columnCount);
+			return CreateQuadGrid(columnCount, rowCount);
+		}
+
+		private static WrapAroundManifold CreateQuadGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
+		{
+			if (!horizontalWrapAround && !verticalWrapAround)
+			{
+				throw new System.ArgumentException("At least one of horizontal and vertical wrap-around must be enabled.  To create a grid with no wrap, use the function with no wrap-around parameters.", "horizontalWrapAround");
+			}
+
 			var builder = new Topology.FaceVerticesBuilder(columnCount * rowCount, columnCount * rowCount * 4 + columnCount * 2);
 
 			var vertexColumnCount = columnCount + (horizontalWrapAround ? 0 : 1);
@@ -26,7 +70,6 @@ namespace Experilous.Topological
 
 			var internalEdgeCount = columnCount * rowCount * 4;
 			var externalEdgeCount = (horizontalWrapAround ? 0 : rowCount * 2) + (verticalWrapAround ? 0 : columnCount * 2);
-			edgeWrapData = new EdgeWrapData[internalEdgeCount + externalEdgeCount];
 
 			System.Action<int, int> buildRow;
 			if (horizontalWrapAround)
@@ -84,10 +127,11 @@ namespace Experilous.Topological
 
 			var manifold = builder.BuildTopology<WrapAroundManifold>();
 			manifold.vertexPositions = vertexPositions;
+			manifold.edgeWrapData = new EdgeWrapData[internalEdgeCount + externalEdgeCount];
 
 			if (horizontalWrapAround && verticalWrapAround)
 			{
-				repetitionAxes = new Vector3[3]
+				manifold.repetitionAxes = new Vector3[3]
 				{
 					new Vector3(0f, 0f, 0f),
 					new Vector3(0f, +rowCount, 0f),
@@ -96,7 +140,7 @@ namespace Experilous.Topological
 			}
 			else if (horizontalWrapAround)
 			{
-				repetitionAxes = new Vector3[2]
+				manifold.repetitionAxes = new Vector3[2]
 				{
 					new Vector3(0f, 0f, 0f),
 					new Vector3(+columnCount, 0f, 0f),
@@ -104,15 +148,11 @@ namespace Experilous.Topological
 			}
 			else if (verticalWrapAround)
 			{
-				repetitionAxes = new Vector3[2]
+				manifold.repetitionAxes = new Vector3[2]
 				{
 					new Vector3(0f, 0f, 0f),
 					new Vector3(0f, +rowCount, 0f),
 				};
-			}
-			else
-			{
-				repetitionAxes = null;
 			}
 
 			if (horizontalWrapAround)
@@ -126,8 +166,8 @@ namespace Experilous.Topological
 					{
 						if (edge.farFace.index == faceIndex + faceIndexOffset)
 						{
-							edgeWrapData[edge] = new EdgeWrapData(axis, true);
-							edgeWrapData[edge.twin] = new EdgeWrapData(axis, false);
+							manifold.edgeWrapData[edge] = new EdgeWrapData(axis, true);
+							manifold.edgeWrapData[edge.twin] = new EdgeWrapData(axis, false);
 							break;
 						}
 					}
@@ -145,8 +185,8 @@ namespace Experilous.Topological
 					{
 						if (edge.farFace.index == faceIndex + faceIndexOffset)
 						{
-							edgeWrapData[edge] = new EdgeWrapData(axis, true);
-							edgeWrapData[edge.twin] = new EdgeWrapData(axis, false);
+							manifold.edgeWrapData[edge] = new EdgeWrapData(axis, true);
+							manifold.edgeWrapData[edge.twin] = new EdgeWrapData(axis, false);
 							break;
 						}
 					}
@@ -167,16 +207,43 @@ namespace Experilous.Topological
 				}
 			}*/
 
-			manifold.vertexPositions = vertexPositions;
-			manifold.repetitionAxes = repetitionAxes;
-			manifold.edgeWrapData = edgeWrapData;
 			return manifold;
 		}
 
-		public static WrapAroundManifold CreateQuadGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround, out Vector3[] repetitionAxes, out EdgeWrapData[] edgeWrapData, out CartesianQuadFaceMapper mapper)
+		private static WrapAroundManifold CreateQuadGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround, out CartesianQuadFaceMapper mapper)
 		{
-			mapper = new CartesianQuadFaceMapper(columnCount);
-			return CreateQuadGrid(columnCount, rowCount, horizontalWrapAround, verticalWrapAround, out repetitionAxes, out edgeWrapData);
+			mapper = new CartesianQuadFaceMapper(columnCount); //TODO create mapper that includes wrap-around logic
+			return CreateQuadGrid(columnCount, rowCount, horizontalWrapAround, verticalWrapAround);
+		}
+
+		public static WrapAroundManifold CreateHorizontalWrapAroundQuadGrid(int columnCount, int rowCount)
+		{
+			return CreateQuadGrid(columnCount, rowCount, true, false);
+		}
+
+		public static WrapAroundManifold CreateVerticalWrapAroundQuadGrid(int columnCount, int rowCount)
+		{
+			return CreateQuadGrid(columnCount, rowCount, false, true);
+		}
+
+		public static WrapAroundManifold CreateFullWrapAroundQuadGrid(int columnCount, int rowCount)
+		{
+			return CreateQuadGrid(columnCount, rowCount, true, true);
+		}
+
+		public static WrapAroundManifold CreateHorizontalWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
+		{
+			return CreateQuadGrid(columnCount, rowCount, true, false, out mapper);
+		}
+
+		public static WrapAroundManifold CreateVerticalWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
+		{
+			return CreateQuadGrid(columnCount, rowCount, false, true, out mapper);
+		}
+
+		public static WrapAroundManifold CreateFullWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
+		{
+			return CreateQuadGrid(columnCount, rowCount, true, true, out mapper);
 		}
 
 		public static CartesianQuadFaceMapper CreateQuadGridFaceMapper(int columnCount, int rowCount)
@@ -184,12 +251,12 @@ namespace Experilous.Topological
 			return new CartesianQuadFaceMapper(columnCount);
 		}
 
-		public static WrapAroundManifold CreatePointyTopHexGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
+		public static Manifold CreatePointyTopHexGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
 		{
 			return null;
 		}
 
-		public static WrapAroundManifold CreateFlatTopHexGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
+		public static Manifold CreateFlatTopHexGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
 		{
 			return null;
 		}
