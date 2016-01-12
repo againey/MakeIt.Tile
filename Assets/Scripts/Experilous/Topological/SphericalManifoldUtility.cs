@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	public enum SphericalPolyhedron
+	public enum SphericalPolyhedrons
 	{
 		Tetrahedron,
 		Cube,
@@ -35,7 +35,7 @@ namespace Experilous.Topological
 			builder.AddVertex(0, 2, 1);
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
@@ -65,7 +65,7 @@ namespace Experilous.Topological
 			builder.AddVertex(3, 6, 4);
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
@@ -89,7 +89,7 @@ namespace Experilous.Topological
 			builder.AddVertex(1, 4, 3, 2);
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
@@ -144,11 +144,11 @@ namespace Experilous.Topological
 			builder.AddVertex( 2,  3,  7, 10,  5);
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
-		public static Manifold Create(SphericalPolyhedron basePolyhedron, int subdivisionDegree, bool useDualPolyhedron)
+		public static Manifold Create(SphericalPolyhedrons basePolyhedron, int subdivisionDegree, bool useDualPolyhedron)
 		{
 			if (subdivisionDegree < 0) throw new System.ArgumentOutOfRangeException("subdivisionDegree", subdivisionDegree, "The subdivision degree for creating a spherical manifold cannot be negative.");
 
@@ -156,16 +156,16 @@ namespace Experilous.Topological
 
 			switch (basePolyhedron)
 			{
-				case SphericalPolyhedron.Tetrahedron:
+				case SphericalPolyhedrons.Tetrahedron:
 					manifold = CreateTetrahedron();
 					break;
-				case SphericalPolyhedron.Cube:
+				case SphericalPolyhedrons.Cube:
 					manifold = CreateCube();
 					break;
-				case SphericalPolyhedron.Octahedron:
+				case SphericalPolyhedrons.Octahedron:
 					manifold = CreateOctahedron();
 					break;
-				case SphericalPolyhedron.Dodecahedron:
+				case SphericalPolyhedrons.Dodecahedron:
 					if (subdivisionDegree == 0)
 					{
 						manifold = CreateDodecahedron();
@@ -175,11 +175,11 @@ namespace Experilous.Topological
 						manifold = CreateIcosahedron();
 					}
 					break;
-				case SphericalPolyhedron.Icosahedron:
+				case SphericalPolyhedrons.Icosahedron:
 					manifold = CreateIcosahedron();
 					break;
 				default:
-					throw new System.ArgumentException("An unrecognized spherical polyhedron was provided.", "polyhedron");
+					throw new System.NotImplementedException("An unrecognized spherical polyhedron was provided.");
 			}
 
 			if (subdivisionDegree > 0)
@@ -187,7 +187,7 @@ namespace Experilous.Topological
 				manifold = Subdivide(manifold, subdivisionDegree);
 			}
 
-			if (basePolyhedron == SphericalPolyhedron.Dodecahedron && subdivisionDegree > 0)
+			if (basePolyhedron == SphericalPolyhedrons.Dodecahedron && subdivisionDegree > 0)
 			{
 				useDualPolyhedron = !useDualPolyhedron;
 			}
@@ -210,7 +210,7 @@ namespace Experilous.Topological
 			return !includeExternalFaces ? manifold.internalFaceEdges : manifold.faceEdges;
 		}
 
-		private static Vector3[] CalculateFaceCentroids(Topology.FacesIndexer faces, Vector3[] vertexPositions, Vector3[] centroids)
+		public static Vector3[] CalculateFaceCentroids(Topology.FacesIndexer faces, Vector3[] vertexPositions, Vector3[] centroids)
 		{
 			foreach (var face in faces)
 			{
@@ -225,6 +225,11 @@ namespace Experilous.Topological
 			return centroids;
 		}
 
+		public static Vector3[] CalculateFaceCentroids(Topology.FacesIndexer faces, Vector3[] vertexPositions)
+		{
+			return CalculateFaceCentroids(faces, vertexPositions, new Vector3[faces.Count]);
+		}
+
 		public static Vector3[] CalculateFaceCentroids(Manifold manifold)
 		{
 			return CalculateFaceCentroids(manifold, false);
@@ -233,16 +238,41 @@ namespace Experilous.Topological
 		public static Vector3[] CalculateFaceCentroids(Manifold manifold, bool includeExternalFaces)
 		{
 			var faces = GetFaces(manifold, includeExternalFaces);
-			return CalculateFaceCentroids(faces, manifold.vertexPositions, new Vector3[faces.Count]);
+			return CalculateFaceCentroids(faces, manifold.vertexPositions.array, new Vector3[faces.Count]);
 		}
 
 		public static Vector3[] CalculateFaceCentroids(Manifold manifold, bool includeExternalFaces, Vector3[] centroids)
 		{
 			var faces = GetFaces(manifold, includeExternalFaces);
 			if (centroids.Length < faces.Count) throw new System.ArgumentException("The supplied centroid buffer was not large enough to store the centroids of all faces.");
-			return CalculateFaceCentroids(faces, manifold.vertexPositions, centroids);
+			return CalculateFaceCentroids(faces, manifold.vertexPositions.array, centroids);
 		}
 
+		public static Vector3[] CalculateVertexNormalsFromVertexPositions(Vector3[] vertexPositions)
+		{
+			var vertexNormals = new Vector3[vertexPositions.Length];
+			for (int i = 0; i < vertexPositions.Length; ++i)
+			{
+				vertexNormals[i] = vertexPositions[i].normalized;
+			}
+			return vertexNormals;
+		}
+		
+		public static Vector3[] CalculateFaceNormalsFromVertexPositions(Topology.FacesIndexer faces, Vector3[] vertexPositions)
+		{
+			return CalculateFaceCentroids(faces, vertexPositions);
+		}
+		
+		public static Vector3[] CalculateFaceNormalsFromFacePositions(Vector3[] facePositions)
+		{
+			var faceNormals = new Vector3[facePositions.Length];
+			for (int i = 0; i < facePositions.Length; ++i)
+			{
+				faceNormals[i] = facePositions[i].normalized;
+			}
+			return faceNormals;
+		}
+		
 		public static Vector3[] CalculateFaceNormals(Manifold manifold)
 		{
 			return CalculateFaceCentroids(manifold, false);
@@ -889,7 +919,7 @@ namespace Experilous.Topological
 			}
 
 			var subdividedManifold = builder.BuildTopology<Manifold>();
-			subdividedManifold.vertexPositions = subdividedPositions.ToArray();
+			subdividedManifold.vertexPositions = Vector3VertexAttribute.CreateInstance(subdividedPositions.ToArray(), "Vertex Positions");
 			return subdividedManifold;
 		}
 
@@ -901,7 +931,7 @@ namespace Experilous.Topological
 		public static Vector3[] RelaxForRegularity(Manifold manifold, bool lockBoundaryPositions, Vector3[] relaxed)
 		{
 			var original = manifold.vertexPositions;
-			if (relaxed.Length < original.Length) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
+			if (relaxed.Length < original.array.Length) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
 
 			System.Array.Clear(relaxed, 0, relaxed.Length);
 
@@ -937,7 +967,7 @@ namespace Experilous.Topological
 		public static Vector3[] RelaxForEqualArea(Manifold manifold, bool lockBoundaryPositions, Vector3[] relaxed, Vector3[] centroids)
 		{
 			var original = manifold.vertexPositions;
-			if (relaxed.Length < original.Length) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
+			if (relaxed.Length < original.array.Length) throw new System.ArgumentException("The buffer provided for relaxed vertex positions was not large enough given the number of vertices in the given manifold.");
 
 			var idealArea = 4f * Mathf.PI / manifold.vertices.Count;
 

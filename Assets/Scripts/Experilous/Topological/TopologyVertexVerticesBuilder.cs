@@ -439,7 +439,7 @@ namespace Experilous.Topological
 					if (faceIndex != _faceCount) throw new System.InvalidOperationException("The actual number of faces does not match the number specified when the topology builder was first constructed.");
 				}
 
-				var topology = new TTopology();
+				var topology = CreateInstance<TTopology>();
 
 				topology._vertexNeighborCounts = vertexNeighborCounts;
 				topology._vertexFirstEdgeIndices = vertexFirstEdgeIndices;

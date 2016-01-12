@@ -7,7 +7,7 @@ namespace Experilous.Topological
 	public class Manifold : Topology
 	{
 		[SerializeField]
-		protected Vector3[] _vertexPositions;
+		protected Vector3VertexAttribute _vertexPositions;
 
 		public Manifold()
 		{
@@ -21,7 +21,7 @@ namespace Experilous.Topological
 		protected void CloneFields(Manifold original)
 		{
 			base.CloneFields(original);
-			_vertexPositions = original._vertexPositions.Clone() as Vector3[];
+			_vertexPositions = Vector3VertexAttribute.CreateInstance(original._vertexPositions.array, original._vertexPositions.name);
 		}
 
 		public new Manifold Clone()
@@ -29,7 +29,7 @@ namespace Experilous.Topological
 			return new Manifold(this);
 		}
 
-		public Vector3[] vertexPositions { get { return _vertexPositions; } set { _vertexPositions = value; } }
+		public Vector3VertexAttribute vertexPositions { get { return _vertexPositions; } set { _vertexPositions = value; } }
 
 		protected FacesIndexer GetFaces(bool includeExternalFaces)
 		{
@@ -41,14 +41,8 @@ namespace Experilous.Topological
 			return !includeExternalFaces ? internalFaceEdges : faceEdges;
 		}
 
-		public Vector3[] CalculateFaceCentroids()
+		public static Vector3[] CalculateFaceCentroids(FacesIndexer faces, Vector3[] vertexPositions)
 		{
-			return CalculateFaceCentroids(false);
-		}
-		
-		public virtual Vector3[] CalculateFaceCentroids(bool includeExternalFaces)
-		{
-			var faces = GetFaces(includeExternalFaces);
 			var centroids = new Vector3[faces.Count];
 
 			foreach (var face in faces)
@@ -56,12 +50,166 @@ namespace Experilous.Topological
 				var centroid = new Vector3(0f, 0f, 0f);
 				foreach (var edge in face.edges)
 				{
-					centroid += _vertexPositions[edge.nextVertex];
+					centroid += vertexPositions[edge.nextVertex];
 				}
 				centroids[face] = centroid / face.neighborCount;
 			}
 
 			return centroids;
+		}
+
+		public Vector3[] CalculateFaceCentroids()
+		{
+			return CalculateFaceCentroids(false);
+		}
+		
+		public virtual Vector3[] CalculateFaceCentroids(bool includeExternalFaces)
+		{
+			return CalculateFaceCentroids(GetFaces(includeExternalFaces), _vertexPositions.array);
+		}
+
+		public static Vector3[] CalculateVertexNormalsFromVertexPositions(VerticesIndexer vertices, Vector3[] vertexPositions)
+		{
+			var normals = new Vector3[vertices.Count];
+
+			foreach (var vertex in vertices)
+			{
+				var normalSum = new Vector3(0f, 0f, 0f);
+				var vertexPosition = vertexPositions[vertex];
+
+				var edge = vertex.firstEdge;
+				var p0 = vertexPositions[edge.farVertex];
+				edge = edge.next;
+				var firstEdge = edge;
+				do
+				{
+					var p1 = vertexPositions[edge.farVertex];
+					normalSum += Vector3.Cross(p0 - vertexPosition, p1 - vertexPosition);
+					edge = edge.next;
+				} while (edge != firstEdge);
+
+				normals[vertex] = normalSum.normalized;
+			}
+
+			return normals;
+		}
+
+		public static Vector3[] CalculateVertexNormalsFromFacePositions(VerticesIndexer vertices, Vector3[] facePositions)
+		{
+			var normals = new Vector3[vertices.Count];
+
+			foreach (var vertex in vertices)
+			{
+				var normalSum = new Vector3(0f, 0f, 0f);
+
+				var edge = vertex.firstEdge;
+				var p0 = facePositions[edge.prevFace];
+				edge = edge.next;
+				var p1 = facePositions[edge.prevFace];
+				edge = edge.next;
+				var firstEdge = edge;
+				do
+				{
+					var p2 = facePositions[edge.prevFace];
+					normalSum += Vector3.Cross(p0 - p1, p2 - p1);
+					edge = edge.next;
+				} while (edge != firstEdge);
+
+				normals[vertex] = normalSum.normalized;
+			}
+
+			return normals;
+		}
+
+		public static Vector3[] CalculateVertexNormalsFromFaceNormals(VerticesIndexer vertices, Vector3[] faceNormals)
+		{
+			var normals = new Vector3[vertices.Count];
+
+			foreach (var vertex in vertices)
+			{
+				var normalSum = new Vector3(0f, 0f, 0f);
+
+				foreach (var edge in vertex.edges)
+				{
+					normalSum += faceNormals[edge.prevFace];
+				}
+
+				normals[vertex] = normalSum.normalized;
+			}
+
+			return normals;
+		}
+
+		public static Vector3[] CalculateFaceNormalsFromFacePositions(FacesIndexer faces, Vector3[] facePositions)
+		{
+			var normals = new Vector3[faces.Count];
+
+			foreach (var face in faces)
+			{
+				var normalSum = new Vector3(0f, 0f, 0f);
+				var facePosition = facePositions[face];
+
+				var edge = face.firstEdge;
+				var p0 = facePositions[edge.farFace];
+				edge = edge.next;
+				var firstEdge = edge;
+				do
+				{
+					var p1 = facePositions[edge.farFace];
+					normalSum += Vector3.Cross(p0 - facePosition, p1 - facePosition);
+					edge = edge.next;
+				} while (edge != firstEdge);
+
+				normals[face] = normalSum.normalized;
+			}
+
+			return normals;
+		}
+
+		public static Vector3[] CalculateFaceNormalsFromVertexPositions(FacesIndexer faces, Vector3[] vertexPositions)
+		{
+			var normals = new Vector3[faces.Count];
+
+			foreach (var face in faces)
+			{
+				var normalSum = new Vector3(0f, 0f, 0f);
+
+				var edge = face.firstEdge;
+				var p0 = vertexPositions[edge.nextVertex];
+				edge = edge.next;
+				var p1 = vertexPositions[edge.nextVertex];
+				edge = edge.next;
+				var firstEdge = edge;
+				do
+				{
+					var p2 = vertexPositions[edge.nextVertex];
+					normalSum += Vector3.Cross(p0 - p1, p2 - p1);
+					edge = edge.next;
+				} while (edge != firstEdge);
+
+				normals[face] = normalSum.normalized;
+			}
+
+			return normals;
+		}
+
+		public static Vector3[] CalculateFaceNormalsFromVertexNormals(FacesIndexer faces, Vector3[] vertexNormals)
+		{
+			var normals = new Vector3[faces.Count];
+
+			foreach (var face in faces)
+			{
+				var normalSum = new Vector3(0f, 0f, 0f);
+
+				foreach (var edge in face.edges)
+				{
+					normalSum += vertexNormals[edge.nextVertex];
+				}
+
+				normals[face] = normalSum.normalized;
+			}
+
+			return normals;
 		}
 
 		public Vector3[] CalculateFaceNormals()
@@ -351,7 +499,7 @@ namespace Experilous.Topological
 		public virtual void MakeDual(Vector3[] facePositions)
 		{
 			base.MakeDual();
-			_vertexPositions = facePositions;
+			_vertexPositions.array = facePositions;
 		}
 
 		public override Topology GetDualTopology()

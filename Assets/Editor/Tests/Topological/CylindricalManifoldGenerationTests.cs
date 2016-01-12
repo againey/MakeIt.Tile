@@ -6,6 +6,7 @@ using Experilous.Topological;
 
 public class CylindricalManifoldGenerationTests
 {
+#if false
 	[Test]
 	public void MinimalPointyTopTriGridCylinderEdgeCycleTest()
 	{
@@ -125,4 +126,5 @@ public class CylindricalManifoldGenerationTests
 		TopologyTests.CheckVerticesForInvalidEdgeCycles(manifold);
 		TopologyTests.CheckFacesForInvalidEdgeCycles(manifold);
 	}
+#endif
 }

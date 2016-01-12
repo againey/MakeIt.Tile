@@ -3,37 +3,51 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	public class WrapAroundManifold : Manifold
+	public class PlanarWrapAroundManifold : Manifold
 	{
 		[SerializeField]
-		protected Vector3[] _repetitionAxes;
+		protected Vector2[] _repetitionAxes;
 
 		[SerializeField]
-		protected EdgeWrapData[] _edgeWrapData;
+		protected EdgeWrapDataEdgeAttribute _edgeWrapData;
 
-		public WrapAroundManifold()
+		public PlanarWrapAroundManifold()
 		{
 		}
 
-		public WrapAroundManifold(WrapAroundManifold original)
+		public PlanarWrapAroundManifold(PlanarWrapAroundManifold original)
 		{
 			CloneFields(original);
 		}
 
-		protected void CloneFields(WrapAroundManifold original)
+		protected void CloneFields(PlanarWrapAroundManifold original)
 		{
 			base.CloneFields(original);
-			_repetitionAxes = original._repetitionAxes.Clone() as Vector3[];
-			_edgeWrapData = original._edgeWrapData.Clone() as EdgeWrapData[];
+			_repetitionAxes = original._repetitionAxes.Clone() as Vector2[];
+			_edgeWrapData = EdgeWrapDataEdgeAttribute.CreateInstance(original._edgeWrapData.array, original._edgeWrapData.name);
 		}
 
-		public new WrapAroundManifold Clone()
+		public new PlanarWrapAroundManifold Clone()
 		{
-			return new WrapAroundManifold(this);
+			return new PlanarWrapAroundManifold(this);
 		}
 
-		public Vector3[] repetitionAxes { get { return _repetitionAxes; } set { _repetitionAxes = value; } }
-		public EdgeWrapData[] edgeWrapData { get { return _edgeWrapData; } set { _edgeWrapData = value; } }
+		public Vector2[] repetitionAxes { get { return _repetitionAxes; } set { _repetitionAxes = value; } }
+		public EdgeWrapDataEdgeAttribute edgeWrapData { get { return _edgeWrapData; } set { _edgeWrapData = value; } }
+
+		private Vector3 AddRepetitionAxis(Vector3 position, int repetitionAxis)
+		{
+			position.x += _repetitionAxes[repetitionAxis].x;
+			position.y += _repetitionAxes[repetitionAxis].y;
+			return position;
+		}
+
+		private Vector3 AddRepetitionAxis(Vector3 position, int repetitionAxis0, int repetitionAxis1)
+		{
+			position.x += _repetitionAxes[repetitionAxis0].x + _repetitionAxes[repetitionAxis1].x;
+			position.y += _repetitionAxes[repetitionAxis0].y + _repetitionAxes[repetitionAxis1].y;
+			return position;
+		}
 
 		public Vector3 GetFaceVertexPosition(FaceEdge prevEdge)
 		{
@@ -49,18 +63,18 @@ namespace Experilous.Topological
 				}
 				else
 				{
-					return canonicalPosition + repetitionAxes[nextEdgeWrapData.repetitionAxis];
+					return AddRepetitionAxis(canonicalPosition, nextEdgeWrapData.repetitionAxis);
 				}
 			}
 			else
 			{
 				if (!nextEdgeWrapData.isWrapped || nextEdgeWrapData.isNegatedAxis)
 				{
-					return canonicalPosition + repetitionAxes[prevEdgeWrapData.repetitionAxis];
+					return AddRepetitionAxis(canonicalPosition, prevEdgeWrapData.repetitionAxis);
 				}
 				else
 				{
-					return canonicalPosition + repetitionAxes[prevEdgeWrapData.repetitionAxis] + repetitionAxes[nextEdgeWrapData.repetitionAxis];
+					return AddRepetitionAxis(canonicalPosition, prevEdgeWrapData.repetitionAxis, nextEdgeWrapData.repetitionAxis);
 				}
 			}
 		}

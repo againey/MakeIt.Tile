@@ -200,9 +200,19 @@ namespace Experilous.Topological
 
 	public static class VertexExtensions
 	{
-		public static T Of<T>(this T[] attributArray, Topology.Vertex vertex)
+		public static T Of<T>(this T[] attributeArray, Topology.Vertex vertex)
 		{
-			return attributArray[vertex.index];
+			return attributeArray[vertex.index];
+		}
+
+		public static T Of<T>(this VertexAttribute<T> attribute, Topology.Vertex vertex) where T : new()
+		{
+			return attribute.array[vertex.index];
+		}
+
+		public static T Of<T>(this IVertexAttribute<T> attribute, Topology.Vertex vertex) where T : new()
+		{
+			return attribute[vertex.index];
 		}
 	}
 
@@ -210,5 +220,55 @@ namespace Experilous.Topological
 	{
 		T this[int i] { get; set; }
 		T this[Topology.Vertex v] { get; set; }
+		int Length { get; }
+	}
+
+	public class VertexAttribute<T> : ScriptableObject, IVertexAttribute<T> where T : new()
+	{
+		public T[] array;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : VertexAttribute<T>
+		{
+			return CreateInstance<TDerived>();
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : VertexAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.array = array;
+			return attribute;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : VertexAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.array = array;
+			attribute.name = name;
+			return attribute;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : VertexAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.name = name;
+			return attribute;
+		}
+
+		public T this[int i]
+		{
+			get { return array[i]; }
+			set { array[i] = value; }
+		}
+
+		public T this[Topology.Vertex v]
+		{
+			get { return array[v.index]; }
+			set { array[v.index] = value; }
+		}
+
+		public int Length
+		{
+			get { return array.Length; }
+		}
 	}
 }

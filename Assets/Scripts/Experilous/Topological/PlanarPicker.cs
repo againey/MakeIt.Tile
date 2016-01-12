@@ -6,10 +6,10 @@ using System;
 namespace Experilous.Topological
 {
 	[RequireComponent(typeof(Collider))]
-	[RequireComponent(typeof(PlanarPartitioningProvider))]
 	public class PlanarPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
-		public Camera Camera;
+		public new Camera camera;
+		public PlanarPartitioning partitioning;
 
 		[Serializable]
 		public class PickStartEvent : UnityEvent<Topology.Face> { }
@@ -24,7 +24,6 @@ namespace Experilous.Topological
 		public PickEndEvent OnPickEnd;
 
 		private Collider _collider = null;
-		private PlanarPartitioning _partitioning = null;
 
 		private bool _pickActive;
 		private Topology.Face? _pickStart;
@@ -33,19 +32,18 @@ namespace Experilous.Topological
 		void Start()
 		{
 			_collider = GetComponent<Collider>();
-			_partitioning = GetComponent<PlanarPartitioningProvider>().partitioning;
 		}
 
 		void Update()
 		{
-			if (_pickActive && _partitioning != null)
+			if (_pickActive && partitioning != null)
 			{
-				var ray = Camera.ScreenPointToRay(Input.mousePosition);
+				var ray = camera.ScreenPointToRay(Input.mousePosition);
 				RaycastHit raycastHit;
 				if (_collider.Raycast(ray, out raycastHit, float.PositiveInfinity))
 				{
-					var face = _partitioning.Intersect(raycastHit.point - transform.position);
-					if (_pickEnd.Value != face)
+					var face = partitioning.Intersect(raycastHit.point - transform.position);
+					if (face.isInitialized && _pickEnd.Value != face)
 					{
 						_pickEnd = face;
 						OnPickChange.Invoke(_pickStart.Value, _pickEnd.Value);
@@ -58,10 +56,13 @@ namespace Experilous.Topological
 		{
 			if (!_pickActive)
 			{
-				var face = _partitioning.Intersect(eventData.pointerCurrentRaycast.worldPosition - transform.position);
-				_pickStart = _pickEnd = face;
-				_pickActive = true;
-				OnPickStart.Invoke(_pickStart.Value);
+				var face = partitioning.Intersect(eventData.pointerCurrentRaycast.worldPosition - transform.position);
+				if (face.isInitialized)
+				{
+					_pickStart = _pickEnd = face;
+					_pickActive = true;
+					OnPickStart.Invoke(_pickStart.Value);
+				}
 			}
 		}
 

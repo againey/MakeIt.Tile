@@ -264,14 +264,34 @@ namespace Experilous.Topological
 
 	public static class EdgeExtensions
 	{
-		public static T Of<T>(this T[] attributArray, Topology.VertexEdge edge)
+		public static T Of<T>(this T[] attributeArray, Topology.VertexEdge edge)
 		{
-			return attributArray[edge.index];
+			return attributeArray[edge.index];
 		}
 
-		public static T Of<T>(this T[] attributArray, Topology.FaceEdge edge)
+		public static T Of<T>(this T[] attributeArray, Topology.FaceEdge edge)
 		{
-			return attributArray[edge.index];
+			return attributeArray[edge.index];
+		}
+
+		public static T Of<T>(this EdgeAttribute<T> attribute, Topology.VertexEdge edge) where T : new()
+		{
+			return attribute.array[edge.index];
+		}
+
+		public static T Of<T>(this EdgeAttribute<T> attribute, Topology.FaceEdge edge) where T : new()
+		{
+			return attribute.array[edge.index];
+		}
+
+		public static T Of<T>(this IEdgeAttribute<T> attribute, Topology.VertexEdge edge) where T : new()
+		{
+			return attribute[edge.index];
+		}
+
+		public static T Of<T>(this IEdgeAttribute<T> attribute, Topology.FaceEdge edge) where T : new()
+		{
+			return attribute[edge.index];
 		}
 	}
 
@@ -280,5 +300,61 @@ namespace Experilous.Topological
 		T this[int i] { get; set; }
 		T this[Topology.VertexEdge e] { get; set; }
 		T this[Topology.FaceEdge e] { get; set; }
+		int Length { get; }
+	}
+
+	public class EdgeAttribute<T> : ScriptableObject, IEdgeAttribute<T> where T : new()
+	{
+		public T[] array;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : EdgeAttribute<T>
+		{
+			return CreateInstance<TDerived>();
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : EdgeAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.array = array;
+			return attribute;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : EdgeAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.array = array;
+			attribute.name = name;
+			return attribute;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : EdgeAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.name = name;
+			return attribute;
+		}
+
+		public T this[int i]
+		{
+			get { return array[i]; }
+			set { array[i] = value; }
+		}
+
+		public T this[Topology.VertexEdge e]
+		{
+			get { return array[e.index]; }
+			set { array[e.index] = value; }
+		}
+
+		public T this[Topology.FaceEdge e]
+		{
+			get { return array[e.index]; }
+			set { array[e.index] = value; }
+		}
+
+		public int Length
+		{
+			get { return array.Length; }
+		}
 	}
 }

@@ -6,6 +6,7 @@ using Experilous.Topological;
 
 public class SphericalPartitioningTests
 {
+	/*
 	private void ManifoldFaceCenterIntersections(Manifold manifold, SphericalPartitioning partitioning)
 	{
 		foreach (var face in manifold.internalFaces)
@@ -450,4 +451,5 @@ public class SphericalPartitioningTests
 		var partitioning = new SphericalPartitioning(manifold);
 		ManifoldFailedRayIntersections(manifold, partitioning, 1, 64);
 	}
+	*/
 }

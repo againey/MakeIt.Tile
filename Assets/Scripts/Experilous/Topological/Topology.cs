@@ -4,7 +4,7 @@ using System;
 namespace Experilous.Topological
 {
 	[Serializable]
-	public partial class Topology
+	public partial class Topology : ScriptableObject
 	{
 		public Topology()
 		{

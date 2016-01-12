@@ -6,6 +6,7 @@ using Experilous.Topological;
 
 public class TopologyFaceVerticesBuilderTests
 {
+#if false
 	[Test]
 	public void TriangleTest()
 	{
@@ -435,4 +436,5 @@ public class TopologyFaceVerticesBuilderTests
 		Assert.AreEqual(4096, topology.externalFaces[0].neighborCount);
 		Assert.AreEqual(4096, topology.externalFaces[1].neighborCount);
 	}
+#endif
 }

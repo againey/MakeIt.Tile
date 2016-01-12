@@ -44,7 +44,7 @@ namespace Experilous.Topological
 			}
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
@@ -54,7 +54,7 @@ namespace Experilous.Topological
 			return CreateQuadGrid(columnCount, rowCount);
 		}
 
-		private static WrapAroundManifold CreateQuadGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
+		private static PlanarWrapAroundManifold CreateQuadGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround)
 		{
 			if (!horizontalWrapAround && !verticalWrapAround)
 			{
@@ -125,33 +125,33 @@ namespace Experilous.Topological
 				}
 			}
 
-			var manifold = builder.BuildTopology<WrapAroundManifold>();
-			manifold.vertexPositions = vertexPositions;
-			manifold.edgeWrapData = new EdgeWrapData[internalEdgeCount + externalEdgeCount];
+			var manifold = builder.BuildTopology<PlanarWrapAroundManifold>();
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
+			manifold.edgeWrapData = EdgeWrapDataEdgeAttribute.CreateInstance(new EdgeWrapData[internalEdgeCount + externalEdgeCount], "Edge Wrap Data");
 
 			if (horizontalWrapAround && verticalWrapAround)
 			{
-				manifold.repetitionAxes = new Vector3[3]
+				manifold.repetitionAxes = new Vector2[3]
 				{
-					new Vector3(0f, 0f, 0f),
-					new Vector3(0f, +rowCount, 0f),
-					new Vector3(+columnCount, 0f, 0f),
+					new Vector2(0f, 0f),
+					new Vector2(0f, +rowCount),
+					new Vector2(+columnCount, 0f),
 				};
 			}
 			else if (horizontalWrapAround)
 			{
-				manifold.repetitionAxes = new Vector3[2]
+				manifold.repetitionAxes = new Vector2[2]
 				{
-					new Vector3(0f, 0f, 0f),
-					new Vector3(+columnCount, 0f, 0f),
+					new Vector2(0f, 0f),
+					new Vector2(+columnCount, 0f),
 				};
 			}
 			else if (verticalWrapAround)
 			{
-				manifold.repetitionAxes = new Vector3[2]
+				manifold.repetitionAxes = new Vector2[2]
 				{
-					new Vector3(0f, 0f, 0f),
-					new Vector3(0f, +rowCount, 0f),
+					new Vector2(0f, 0f),
+					new Vector2(0f, +rowCount),
 				};
 			}
 
@@ -210,38 +210,38 @@ namespace Experilous.Topological
 			return manifold;
 		}
 
-		private static WrapAroundManifold CreateQuadGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround, out CartesianQuadFaceMapper mapper)
+		private static PlanarWrapAroundManifold CreateQuadGrid(int columnCount, int rowCount, bool horizontalWrapAround, bool verticalWrapAround, out CartesianQuadFaceMapper mapper)
 		{
 			mapper = new CartesianQuadFaceMapper(columnCount); //TODO create mapper that includes wrap-around logic
 			return CreateQuadGrid(columnCount, rowCount, horizontalWrapAround, verticalWrapAround);
 		}
 
-		public static WrapAroundManifold CreateHorizontalWrapAroundQuadGrid(int columnCount, int rowCount)
+		public static PlanarWrapAroundManifold CreateHorizontalWrapAroundQuadGrid(int columnCount, int rowCount)
 		{
 			return CreateQuadGrid(columnCount, rowCount, true, false);
 		}
 
-		public static WrapAroundManifold CreateVerticalWrapAroundQuadGrid(int columnCount, int rowCount)
+		public static PlanarWrapAroundManifold CreateVerticalWrapAroundQuadGrid(int columnCount, int rowCount)
 		{
 			return CreateQuadGrid(columnCount, rowCount, false, true);
 		}
 
-		public static WrapAroundManifold CreateFullWrapAroundQuadGrid(int columnCount, int rowCount)
+		public static PlanarWrapAroundManifold CreateFullWrapAroundQuadGrid(int columnCount, int rowCount)
 		{
 			return CreateQuadGrid(columnCount, rowCount, true, true);
 		}
 
-		public static WrapAroundManifold CreateHorizontalWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
+		public static PlanarWrapAroundManifold CreateHorizontalWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
 		{
 			return CreateQuadGrid(columnCount, rowCount, true, false, out mapper);
 		}
 
-		public static WrapAroundManifold CreateVerticalWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
+		public static PlanarWrapAroundManifold CreateVerticalWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
 		{
 			return CreateQuadGrid(columnCount, rowCount, false, true, out mapper);
 		}
 
-		public static WrapAroundManifold CreateFullWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
+		public static PlanarWrapAroundManifold CreateFullWrapAroundQuadGrid(int columnCount, int rowCount, out CartesianQuadFaceMapper mapper)
 		{
 			return CreateQuadGrid(columnCount, rowCount, true, true, out mapper);
 		}

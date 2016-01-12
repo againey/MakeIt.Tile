@@ -6,6 +6,7 @@ using Experilous.Topological;
 
 public class TopologyTests
 {
+#if false
 	public static void CheckVerticesForInvalidEdgeCycles(Topology topology)
 	{
 		foreach (var vertex in topology.vertices)
@@ -1077,4 +1078,5 @@ public class TopologyTests
 		Assert.AreEqual(oldVertex1, faceEdge1.next.nextVertex);
 		Assert.AreEqual(newVertex0, faceEdge1.next.next.nextVertex);
 	}
+#endif
 }

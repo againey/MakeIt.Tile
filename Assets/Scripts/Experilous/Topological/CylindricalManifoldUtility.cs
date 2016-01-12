@@ -66,7 +66,7 @@ namespace Experilous.Topological
 			}
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
@@ -109,7 +109,7 @@ namespace Experilous.Topological
 			}
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
@@ -148,7 +148,7 @@ namespace Experilous.Topological
 			}
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
@@ -200,7 +200,7 @@ namespace Experilous.Topological
 			}
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 
@@ -270,7 +270,7 @@ namespace Experilous.Topological
 			}
 
 			var manifold = builder.BuildTopology<Manifold>();
-			manifold.vertexPositions = vertexPositions;
+			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
 		}
 	}

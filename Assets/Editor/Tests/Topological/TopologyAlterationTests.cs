@@ -6,6 +6,7 @@ using Experilous.Topological;
 
 public class TopologyAlterationTests
 {
+#if false
 	[Test]
 	public void SpinEdgeForwardThrowsOnBoundaryVerticesWithTwoNeighbors()
 	{
@@ -305,4 +306,5 @@ public class TopologyAlterationTests
 		Assert.AreEqual(topology.vertices[1], edgeToSpin.twin.faceEdge.next.next.next.nextVertex);
 		Assert.AreEqual(topology.vertices[4], edgeToSpin.twin.faceEdge.next.next.next.next.nextVertex);
 	}
+#endif
 }

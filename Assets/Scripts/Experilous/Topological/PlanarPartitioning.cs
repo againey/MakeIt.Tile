@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Experilous.Topological
 {
 	[Serializable]
-	public class PlanarPartitioning
+	public class PlanarPartitioning : ScriptableObject
 	{
 		[Serializable]
 		private struct Partition
@@ -35,11 +35,6 @@ namespace Experilous.Topological
 
 			private Partition(Vector3 p0, Vector3 p1, int underFaceIndex, int overFaceIndex)
 				: this(IgnoreZ(p0), GetNormal(IgnoreZ(p1) - IgnoreZ(p0)), underFaceIndex, overFaceIndex)
-			{
-			}
-
-			public Partition(Topology.VertexEdge edge, Vector3[] vertexPositions)
-				: this(vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.prevFace.index, edge.nextFace.index)
 			{
 			}
 
@@ -94,18 +89,14 @@ namespace Experilous.Topological
 			}
 		}
 
-		[SerializeField]
-		private Manifold _manifold;
+		[SerializeField] protected Topology _topology;
+		[SerializeField] private Partition[] _partitionBinaryTree;
 
-		[SerializeField]
-		private Partition[] _partitionBinaryTree;
-
-		public PlanarPartitioning(Manifold manifold)
+		protected PlanarPartitioning Initialize(Topology topology, Vector3[] vertexPositions)
 		{
-			_manifold = manifold;
+			_topology = topology;
 
-			var edges = manifold.vertexEdges;
-			var positions = manifold.vertexPositions;
+			var edges = _topology.faceEdges;
 			_partitionBinaryTree = new Partition[edges.Count];
 
 			int edgesProcessed = 0;
@@ -126,7 +117,8 @@ namespace Experilous.Topological
 				++edgesProcessed;
 				if (edges[edgeIndex] < edges[edgeIndex].twin)
 				{
-					_partitionBinaryTree[0] = new Partition(edges[edgeIndex], positions);
+					var edge = edges[edgeIndex];
+					_partitionBinaryTree[0] = Partition.FromEndPoints(GetVertexPosition(edge.prev, vertexPositions), GetVertexPosition(edge, vertexPositions), edge.farFace.index, edge.nearFace.index);
 					edgeIndex = (edgeIndex + increment) % edges.Count;
 					break;
 				}
@@ -140,7 +132,7 @@ namespace Experilous.Topological
 				++edgesProcessed;
 				if (edges[edgeIndex] < edges[edgeIndex].twin)
 				{
-					PartitionEdge(edges[edgeIndex], positions, ref nextPartitionIndex);
+					PartitionEdge(edges[edgeIndex], vertexPositions, ref nextPartitionIndex);
 				}
 				edgeIndex = (edgeIndex + increment) % edges.Count;
 			}
@@ -149,11 +141,35 @@ namespace Experilous.Topological
 			{
 				TruncateBinaryTree(nextPartitionIndex);
 			}
+
+			return this;
 		}
 
-		private static Vector2 IgnoreZ(Vector3 v)
+		protected PlanarPartitioning Initialize(Topology topology, Vector3[] vertexPositions, string name)
+		{
+			Initialize(topology, vertexPositions);
+			this.name = name;
+			return this;
+		}
+
+		public static PlanarPartitioning CreateInstance(Topology topology, Vector3[] vertexPositions)
+		{
+			return CreateInstance<PlanarPartitioning>().Initialize(topology, vertexPositions);
+		}
+
+		public static PlanarPartitioning CreateInstance(Topology topology, Vector3[] vertexPositions, string name)
+		{
+			return CreateInstance<PlanarPartitioning>().Initialize(topology, vertexPositions, name);
+		}
+
+		protected static Vector2 IgnoreZ(Vector3 v)
 		{
 			return new Vector2(v.x, v.y);
+		}
+
+		protected virtual Vector2 GetVertexPosition(Topology.FaceEdge edge, Vector3[] vertexPositions)
+		{
+			return IgnoreZ(vertexPositions[edge.nextVertex]);
 		}
 
 		private int GetHeight(int partitionIndex)
@@ -164,12 +180,12 @@ namespace Experilous.Topological
 				partition._overPartitionIndex != 0 ? GetHeight(partition._overPartitionIndex) : 0);
 		}
 
-		private void PartitionEdge(Topology.VertexEdge edge, Vector3[] vertexPositions, ref int nextPartitionIndex)
+		protected virtual void PartitionEdge(Topology.FaceEdge edge, Vector3[] vertexPositions, ref int nextPartitionIndex)
 		{
-			PartitionEdge(0, IgnoreZ(vertexPositions[edge.nearVertex]), IgnoreZ(vertexPositions[edge.farVertex]), edge.index, edge.prevFace.index, edge.nextFace.index, ref nextPartitionIndex);
+			PartitionEdge(0, GetVertexPosition(edge.prev, vertexPositions), GetVertexPosition(edge, vertexPositions), edge.index, edge.farFace.index, edge.nearFace.index, ref nextPartitionIndex);
 		}
 
-		private void PartitionEdge(int partitionIndex, Vector2 p0, Vector2 p1, int edgeIndex, int underFaceIndex, int overFaceIndex, ref int nextPartitionIndex)
+		protected void PartitionEdge(int partitionIndex, Vector2 p0, Vector2 p1, int edgeIndex, int underFaceIndex, int overFaceIndex, ref int nextPartitionIndex)
 		{
 			var partition = _partitionBinaryTree[partitionIndex];
 			var relation = partition.Compare(p0, 0.0001f) * 3 + partition.Compare(p1, 0.0001f);
@@ -252,22 +268,22 @@ namespace Experilous.Topological
 			_partitionBinaryTree = truncatedPartitionBinaryTree;
 		}
 
-		private Topology.Face Intersect(Vector2 point, int partitionIndex)
+		protected Topology.Face Intersect(Vector2 point, int partitionIndex)
 		{
 			var partition = _partitionBinaryTree[partitionIndex];
 			if (partition.IsUnder(point))
 			{
 				if (partition._underPartitionIndex != 0) return Intersect(point, partition._underPartitionIndex);
-				else return _manifold.internalFaces[partition._underFaceIndex];
+				else return _topology.internalFaces[partition._underFaceIndex];
 			}
 			else
 			{
 				if (partition._overPartitionIndex != 0) return Intersect(point, partition._overPartitionIndex);
-				else return _manifold.internalFaces[partition._overFaceIndex];
+				else return _topology.internalFaces[partition._overFaceIndex];
 			}
 		}
 
-		public Topology.Face Intersect(Vector2 point)
+		public virtual Topology.Face Intersect(Vector2 point)
 		{
 			return Intersect(point, 0);
 		}

@@ -6,25 +6,21 @@ using System;
 namespace Experilous.Topological
 {
 	[RequireComponent(typeof(Collider))]
-	[RequireComponent(typeof(SphericalPartitioningProvider))]
 	public class SphericalPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
-		public Camera Camera;
+		public new Camera camera;
+		public SphericalPartitioning partitioning;
 
-		[Serializable]
-		public class PickStartEvent : UnityEvent<Topology.Face> { }
+		[Serializable] public class PickStartEvent : UnityEvent<Topology.Face> { }
 		public PickStartEvent OnPickStart;
 
-		[Serializable]
-		public class PickChangeEvent : UnityEvent<Topology.Face, Topology.Face> { }
+		[Serializable] public class PickChangeEvent : UnityEvent<Topology.Face, Topology.Face> { }
 		public PickChangeEvent OnPickChange;
 
-		[Serializable]
-		public class PickEndEvent : UnityEvent<Topology.Face, Topology.Face> { }
+		[Serializable] public class PickEndEvent : UnityEvent<Topology.Face, Topology.Face> { }
 		public PickEndEvent OnPickEnd;
 
 		private Collider _collider = null;
-		private SphericalPartitioning _partitioning = null;
 
 		private bool _pickActive;
 		private Topology.Face? _pickStart;
@@ -33,18 +29,17 @@ namespace Experilous.Topological
 		void Start()
 		{
 			_collider = GetComponent<Collider>();
-			_partitioning = GetComponent<SphericalPartitioningProvider>().partitioning;
 		}
 
 		void Update()
 		{
-			if (_pickActive && _partitioning != null)
+			if (_pickActive && partitioning != null)
 			{
-				var ray = Camera.ScreenPointToRay(Input.mousePosition);
+				var ray = camera.ScreenPointToRay(Input.mousePosition);
 				RaycastHit raycastHit;
 				if (_collider.Raycast(ray, out raycastHit, float.PositiveInfinity))
 				{
-					var face = _partitioning.Intersect(raycastHit.point - transform.position);
+					var face = partitioning.Intersect(raycastHit.point - transform.position);
 					if (_pickEnd.Value != face)
 					{
 						_pickEnd = face;
@@ -58,7 +53,7 @@ namespace Experilous.Topological
 		{
 			if (!_pickActive)
 			{
-				var face = _partitioning.Intersect(eventData.pointerCurrentRaycast.worldPosition - transform.position);
+				var face = partitioning.Intersect(eventData.pointerCurrentRaycast.worldPosition - transform.position);
 				_pickStart = _pickEnd = face;
 				_pickActive = true;
 				OnPickStart.Invoke(_pickStart.Value);

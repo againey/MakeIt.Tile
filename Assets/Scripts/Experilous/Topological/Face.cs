@@ -293,9 +293,19 @@ namespace Experilous.Topological
 
 	public static class FaceExtensions
 	{
-		public static T Of<T>(this T[] attributArray, Topology.Face face)
+		public static T Of<T>(this T[] attributeArray, Topology.Face face)
 		{
-			return attributArray[face.index];
+			return attributeArray[face.index];
+		}
+
+		public static T Of<T>(this FaceAttribute<T> attribute, Topology.Face face) where T : new()
+		{
+			return attribute.array[face.index];
+		}
+
+		public static T Of<T>(this IFaceAttribute<T> attribute, Topology.Face face) where T : new()
+		{
+			return attribute[face.index];
 		}
 
 		public static Topology.Face GetFace(this Topology topology, CartesianIndex2D cartesianIndex, CartesianQuadFaceMapper mapper)
@@ -313,5 +323,81 @@ namespace Experilous.Topological
 	{
 		T this[int i] { get; set; }
 		T this[Topology.Face f] { get; set; }
+		int Length { get; }
+	}
+
+	public class FaceAttribute<T> : ScriptableObject, IFaceAttribute<T> where T : new()
+	{
+		public T[] array;
+
+		protected FaceAttribute()
+		{
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : FaceAttribute<T>
+		{
+			return CreateInstance<TDerived>();
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : FaceAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.array = array;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : FaceAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.array = array;
+			instance.name = name;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : FaceAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.name = name;
+			return instance;
+		}
+
+		public T this[int i]
+		{
+			get { return array[i]; }
+			set { array[i] = value; }
+		}
+
+		public T this[Topology.Face v]
+		{
+			get { return array[v.index]; }
+			set { array[v.index] = value; }
+		}
+
+		public int Length
+		{
+			get { return array.Length; }
+		}
+	}
+
+	public abstract class FaceIndexer2D : ScriptableObject
+	{
+		public struct Coordinate
+		{
+			public int x;
+			public int y;
+
+			public Coordinate(int x, int y)
+			{
+				this.x = x;
+				this.y = y;
+			}
+		}
+
+		public abstract Topology.Face GetFace(int x, int y);
+		public abstract Topology.Face GetFace(Coordinate coordinate);
+		public abstract int GetFaceIndex(int x, int y);
+		public abstract int GetFaceIndex(Coordinate coordinate);
+		public abstract Coordinate GetCoordinate(int faceIndex);
+		public abstract Coordinate GetCoordinate(Topology.Face face);
 	}
 }

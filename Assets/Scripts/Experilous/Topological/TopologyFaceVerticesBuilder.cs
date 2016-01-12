@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
+using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
@@ -645,7 +646,8 @@ namespace Experilous.Topological
 					}
 				}
 
-				var topology = new TTopology();
+				//var topology = new TTopology();
+				var topology = CreateInstance<TTopology>();
 
 				topology._vertexNeighborCounts = vertexNeighborCounts;
 				topology._vertexFirstEdgeIndices = vertexFirstEdgeIndices;
