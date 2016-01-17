@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
+#if false
 	public class PlanarWrapAroundManifold : Manifold
 	{
 		[SerializeField]
@@ -53,7 +54,7 @@ namespace Experilous.Topological
 		{
 			var prevEdgeWrapData = _edgeWrapData[prevEdge];
 			var nextEdgeWrapData = _edgeWrapData[prevEdge.next];
-			var canonicalPosition = _vertexPositions[prevEdge.nextVertex];
+			var canonicalPosition = vertexPositions[prevEdge.nextVertex];
 
 			if (!prevEdgeWrapData.isWrapped || prevEdgeWrapData.isNegatedAxis)
 			{
@@ -219,44 +220,5 @@ namespace Experilous.Topological
 		//public override float[] CalculateVertexEdgeLengths()
 		//public override Vector3[] CalculateVertexEdgeMidpoints()
 	}
-
-	public struct EdgeWrapData
-	{
-		private byte _data;
-
-		[System.Flags]
-		public enum Flags : byte
-		{
-			None = (byte)0x00u,
-			RepetitionAxisBits = (byte)0x03u, //0b00000011
-			UnusedBits = (byte)0x38u, //0b01111100
-			IsNegatedAxis = (byte)0x80u, //0b10000000
-		}
-
-		public EdgeWrapData(int repetitionAxis, bool isNegatedAxis)
-		{
-			_data = (byte)
-			(
-				(repetitionAxis & (int)Flags.RepetitionAxisBits) |
-				(isNegatedAxis ? (int)Flags.IsNegatedAxis : 0)
-			);
-		}
-
-		public bool isWrapped
-		{
-			get { return (_data & (int)Flags.RepetitionAxisBits) != 0; }
-		}
-
-		public int repetitionAxis
-		{
-			get { return _data & (int)Flags.RepetitionAxisBits; }
-			set { _data = (byte)((_data & ~(int)Flags.RepetitionAxisBits) | (value & (int)Flags.RepetitionAxisBits)); }
-		}
-
-		public bool isNegatedAxis
-		{
-			get { return (_data & (int)Flags.IsNegatedAxis) != 0; }
-			set { _data = (byte)((_data & ~(int)Flags.IsNegatedAxis) | (value ? (int)Flags.IsNegatedAxis : 0)); }
-		}
-	}
+#endif
 }

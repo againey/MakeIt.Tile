@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
+#if false
 	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(TopologyCategory), "Planar Wrap-Around Manifold")]
 	public class PlanarWrapAroundManifoldGenerator : AssetGenerator
 	{
@@ -29,9 +30,10 @@ namespace Experilous.Topological
 		public int rows = 64;
 		public PlanarTwoAxisWrapAroundOptions planarTwoAxisWrapAroundOption = PlanarTwoAxisWrapAroundOptions.Both;
 
-		public GeneratedAsset topology;
-		public GeneratedAsset vertexPositions;
-		public GeneratedAsset edgeWrapData;
+		public TopologyGeneratedAsset topology;
+		public Vector3VertexAttributeGeneratedAsset vertexPositions;
+		public EdgeWrapDataEdgeAttributeGeneratedAsset edgeWrapData;
+		public FaceIndexer2DGeneratedAsset faceIndexer;
 
 		public static PlanarWrapAroundManifoldGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
 		{
@@ -65,10 +67,12 @@ namespace Experilous.Topological
 				if (topology == null) topology = TopologyGeneratedAsset.CreateDefaultInstance(this, "Topology");
 				if (vertexPositions == null) vertexPositions = Vector3VertexAttributeGeneratedAsset.CreateDefaultInstance(this, "Vertex Positions");
 				if (edgeWrapData == null) edgeWrapData = EdgeWrapDataEdgeAttributeGeneratedAsset.CreateDefaultInstance(this, "Edge Wrap Data");
+				if (faceIndexer == null) faceIndexer = FaceIndexer2DGeneratedAsset.CreateOptionalInstance(this, "Face Indexer");
 
 				yield return topology;
 				yield return vertexPositions;
 				yield return edgeWrapData;
+				yield return faceIndexer;
 			}
 		}
 
@@ -81,6 +85,7 @@ namespace Experilous.Topological
 		public override void Generate(string location, string name)
 		{
 			PlanarWrapAroundManifold manifold;
+
 			switch (planarTileShape)
 			{
 				case PlanarTileShapes.Rectangular:
@@ -100,15 +105,28 @@ namespace Experilous.Topological
 					}
 					break;
 				default:
-					topology = null;
-					vertexPositions = null;
-					edgeWrapData = null;
-					return;
+					throw new System.NotImplementedException();
 			}
 
 			topology.SetGeneratedInstance(location, name, manifold);
 			vertexPositions.SetGeneratedInstance(location, name, manifold.vertexPositions);
 			edgeWrapData.SetGeneratedInstance(location, name, manifold.edgeWrapData);
+
+			if (faceIndexer.isEnabled)
+			{
+				switch (planarTileShape)
+				{
+					case PlanarTileShapes.Rectangular:
+						faceIndexer.SetGeneratedInstance(location, name, PlanarManifoldUtility.CreateQuadGridFaceIndexer2D(topology.generatedInstance, columns, rows));
+						break;
+					default:
+						throw new System.NotImplementedException();
+				}
+			}
+			else
+			{
+				faceIndexer.ClearGeneratedInstance();
+			}
 		}
 
 		public override bool CanGenerate()
@@ -116,4 +134,5 @@ namespace Experilous.Topological
 			return true;
 		}
 	}
+#endif
 }

@@ -14,6 +14,7 @@ namespace Experilous.Topological
 
 		[SerializeField] private string _generatePath = null;
 		[SerializeField] private string _generateName = null;
+		private string _latestAssetPath = null;
 
 		[System.Serializable]
 		public class AssetGeneratorEditorState
@@ -40,6 +41,20 @@ namespace Experilous.Topological
 
 		private static Dictionary<System.Type, List<AddGeneratorCategoryGUI>> _addGeneratorCategoryGUIs = new Dictionary<System.Type, List<AddGeneratorCategoryGUI>>();
 
+		protected string GenerateNameAndPathFromAssetPath(string assetPath, out string name, out string path)
+		{
+			name = Path.GetFileNameWithoutExtension(assetPath);
+
+			if (name.EndsWith(_generatorBundle.nameSuffix))
+			{
+				name = name.Substring(0, name.Length - _generatorBundle.nameSuffix.Length);
+			}
+
+			path = AssetUtility.TrimProjectPath(Path.GetDirectoryName(assetPath));
+
+			return assetPath;
+		}
+
 		protected void OnEnable()
 		{
 			if (_generatorBundle == null)
@@ -52,19 +67,7 @@ namespace Experilous.Topological
 			{
 				if (AssetDatabase.Contains(_generatorBundle))
 				{
-					var assetPath = AssetUtility.GetFullCanonicalAssetPath(_generatorBundle);
-
-					_generateName = Path.GetFileNameWithoutExtension(assetPath);
-
-					if (_generateName.EndsWith(_generatorBundle.nameSuffix))
-					{
-						_generateName = _generateName.Substring(0, _generateName.Length - _generatorBundle.nameSuffix.Length);
-					}
-
-					if (_generatePath == null)
-					{
-						_generatePath = AssetUtility.TrimProjectPath(Path.GetDirectoryName(assetPath));
-					}
+					_latestAssetPath = GenerateNameAndPathFromAssetPath(AssetUtility.GetFullCanonicalAssetPath(_generatorBundle), out _generateName, out _generatePath);
 				}
 				else
 				{
@@ -96,6 +99,35 @@ namespace Experilous.Topological
 
 		protected void OnDisable()
 		{
+		}
+
+		protected void OnUpdate()
+		{
+			if (_latestAssetPath != null)
+			{
+				if (AssetDatabase.Contains(_generatorBundle))
+				{
+					string name;
+					string path;
+					var assetPath = AssetUtility.GetFullCanonicalAssetPath(_generatorBundle);
+					GenerateNameAndPathFromAssetPath(AssetUtility.GetFullCanonicalAssetPath(_generatorBundle), out name, out path);
+
+					if (assetPath != _latestAssetPath)
+					{
+						_generateName = name;
+						_generatePath = path;
+						_latestAssetPath = assetPath;
+					}
+					else if (_generateName != name || _generatePath != path)
+					{
+						_latestAssetPath = null;
+					}
+				}
+				else
+				{
+					_latestAssetPath = null;
+				}
+			}
 		}
 
 		private void InitializeStyles()

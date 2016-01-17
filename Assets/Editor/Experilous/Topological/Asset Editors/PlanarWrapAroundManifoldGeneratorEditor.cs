@@ -3,6 +3,7 @@ using UnityEditor;
 
 namespace Experilous.Topological
 {
+#if false
 	[CustomEditor(typeof(PlanarWrapAroundManifoldGenerator))]
 	public class PlanarWrapAroundManifoldGeneratorEditor : AssetGeneratorEditor
 	{
@@ -28,4 +29,5 @@ namespace Experilous.Topological
 			generator.planarTwoAxisWrapAroundOption = (PlanarWrapAroundManifoldGenerator.PlanarTwoAxisWrapAroundOptions)EditorGUILayout.EnumPopup("Wrap Around", generator.planarTwoAxisWrapAroundOption);
 		}
 	}
+#endif
 }

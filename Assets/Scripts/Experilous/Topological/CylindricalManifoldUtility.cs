@@ -5,7 +5,7 @@ namespace Experilous.Topological
 {
 	public static class CylindricalManifoldUtility
 	{
-		public static Manifold CreatePointyTopTriGridSphericalCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
+		/*public static Manifold CreatePointyTopTriGridSphericalCylinder(int columnCount, int rowCount, float maxLatitude, float regularity)
 		{
 			columnCount += columnCount % 2;
 			var builder = new Topology.FaceVerticesBuilder(columnCount * rowCount, columnCount * rowCount * 3 + columnCount * 2);
@@ -272,6 +272,6 @@ namespace Experilous.Topological
 			var manifold = builder.BuildTopology<Manifold>();
 			manifold.vertexPositions = Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions");
 			return manifold;
-		}
+		}*/
 	}
 }

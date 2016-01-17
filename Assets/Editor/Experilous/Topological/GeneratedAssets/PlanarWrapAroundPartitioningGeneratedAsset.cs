@@ -2,6 +2,7 @@
 
 namespace Experilous.Topological
 {
+#if false
 	public class PlanarWrapAroundPartitioningGeneratedAsset : GenericGeneratedAsset<PlanarWrapAroundPartitioning>
 	{
 		public static PlanarWrapAroundPartitioningGeneratedAsset CreateDefaultInstance(AssetGenerator assetGenerator, string name)
@@ -14,4 +15,5 @@ namespace Experilous.Topological
 			return CreateOptionalInstance<PlanarWrapAroundPartitioningGeneratedAsset>(assetGenerator, name, enabled);
 		}
 	}
+#endif
 }

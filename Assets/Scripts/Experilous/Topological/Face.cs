@@ -1,18 +1,11 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
 	public partial class Topology
 	{
-		[SerializeField]
-		protected ushort[] _faceNeighborCounts;
-		[SerializeField]
-		protected int[] _faceFirstEdgeIndices;
-
-		[SerializeField]
-		protected int _firstExternalFaceIndex;
-
 		public struct Face : IEquatable<Face>, IComparable<Face>
 		{
 			private Topology _topology;
@@ -179,7 +172,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public struct FacesIndexer : IFacesIndexer
+		public struct FacesIndexer
 		{
 			private Topology _topology;
 			private int _first;
@@ -210,143 +203,100 @@ namespace Experilous.Topological
 		public FacesIndexer externalFaces { get { return new FacesIndexer(this, _firstExternalFaceIndex, _faceFirstEdgeIndices.Length); } }
 	}
 
-	public interface IFacesIndexer
+	public interface IFaceAttribute<T> : IList<T>
 	{
-		Topology.Face this[int i] { get; }
-		int Count { get; }
-	}
-
-	public struct CartesianIndex2D
-	{
-		public int x;
-		public int y;
-
-		public CartesianIndex2D(int x, int y)
-		{
-			this.x = x;
-			this.y = y;
-		}
-	}
-
-	public class CartesianQuadFaceMapper
-	{
-		private int _horizontalStride;
-		private int _verticalStride;
-		private int _originIndex;
-
-		public CartesianQuadFaceMapper(int verticalStride)
-		{
-			_horizontalStride = 1;
-			_verticalStride = verticalStride;
-			_originIndex = 0;
-		}
-
-		public CartesianQuadFaceMapper(int horizontalStride, int verticalStride, int originIndex)
-		{
-			_horizontalStride = horizontalStride;
-			_verticalStride = verticalStride;
-			_originIndex = originIndex;
-		}
-
-		public CartesianIndex2D MapToCartesian(int faceIndex)
-		{
-			return new CartesianIndex2D(-1, -1); //TODO
-		}
-
-		public int MapFromCartesian(CartesianIndex2D cartesianIndex)
-		{
-			return _originIndex + cartesianIndex.x * _horizontalStride + cartesianIndex.y * _verticalStride;
-		}
-
-		public struct RangeIndexer : IFacesIndexer
-		{
-			private Topology _topology;
-			private int _minorCount;
-			private int _count;
-			private int _minorStride;
-			private int _majorStride;
-			private int _originIndex;
-
-			public RangeIndexer(Topology topology, int minorCount, int count, int minorStride, int majorStride, int originIndex)
-			{
-				_topology = topology;
-				_minorCount = minorCount;
-				_count = count;
-				_minorStride = minorStride;
-				_majorStride = majorStride;
-				_originIndex = originIndex;
-			}
-
-			public Topology.Face this[int i] { get { return new Topology.Face(_topology, _originIndex + (i % _minorCount) * _minorStride + (i / _minorCount) * _majorStride); } }
-			public int Count { get { return _count; } }
-		}
-
-		public IFacesIndexer GetRangeIndexer(Topology topology, CartesianIndex2D startCorner, CartesianIndex2D endCorner)
-		{
-			//TODO negatives
-			var originIndex = MapFromCartesian(startCorner);
-			var minorCount = endCorner.x - startCorner.x + 1;
-			var count = minorCount * (endCorner.y - startCorner.y + 1);
-			return new RangeIndexer(topology, minorCount, count, 1, _verticalStride, originIndex);
-		}
-	}
-
-	public static class FaceExtensions
-	{
-		public static T Of<T>(this T[] attributeArray, Topology.Face face)
-		{
-			return attributeArray[face.index];
-		}
-
-		public static T Of<T>(this FaceAttribute<T> attribute, Topology.Face face) where T : new()
-		{
-			return attribute.array[face.index];
-		}
-
-		public static T Of<T>(this IFaceAttribute<T> attribute, Topology.Face face) where T : new()
-		{
-			return attribute[face.index];
-		}
-
-		public static Topology.Face GetFace(this Topology topology, CartesianIndex2D cartesianIndex, CartesianQuadFaceMapper mapper)
-		{
-			return topology.faces[mapper.MapFromCartesian(cartesianIndex)];
-		}
-
-		public static CartesianIndex2D GetCartesianIndex(this Topology.Face face, CartesianQuadFaceMapper mapper)
-		{
-			return mapper.MapToCartesian(face.index);
-		}
-	}
-
-	public interface IFaceAttribute<T> where T : new()
-	{
-		T this[int i] { get; set; }
 		T this[Topology.Face f] { get; set; }
-		int Length { get; }
 	}
 
-	public class FaceAttribute<T> : ScriptableObject, IFaceAttribute<T> where T : new()
+	public abstract class FaceAttribute<T> : ScriptableObject, IFaceAttribute<T>
 	{
-		public T[] array;
+		public abstract T this[int i] { get; set; }
+		public abstract T this[Topology.Face f] { get; set; }
 
-		protected FaceAttribute()
-		{
-		}
+		public virtual int Count { get { throw new NotSupportedException(); } }
+		public virtual bool IsReadOnly { get { return true; } }
+		public virtual void Add(T item) { throw new NotSupportedException(); }
+		public virtual void Clear() { throw new NotSupportedException(); }
+		public virtual bool Contains(T item) { throw new NotSupportedException(); }
+		public virtual void CopyTo(T[] array, int arrayIndex) { throw new NotSupportedException(); }
+		public virtual IEnumerator<T> GetEnumerator() { throw new NotSupportedException(); }
+		public virtual int IndexOf(T item) { throw new NotSupportedException(); }
+		public virtual void Insert(int index, T item) { throw new NotSupportedException(); }
+		public virtual bool Remove(T item) { throw new NotSupportedException(); }
+		public virtual void RemoveAt(int index) { throw new NotSupportedException(); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+	}
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : FaceAttribute<T>
+	public class FaceConstantAttribute<T> : FaceAttribute<T> where T : new()
+	{
+		public T constant;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : FaceConstantAttribute<T>
 		{
 			return CreateInstance<TDerived>();
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : FaceAttribute<T>
+		protected static TDerived CreateDerivedInstance<TDerived>(T constant) where TDerived : FaceConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.constant = constant;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T constant, string name) where TDerived : FaceConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.constant = constant;
+			instance.name = name;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : FaceConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.name = name;
+			return instance;
+		}
+
+		protected TDerived CloneDerived<TDerived>() where TDerived : FaceConstantAttribute<T>
+		{
+			var clone = CreateInstance<TDerived>();
+			clone.constant = constant;
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
+		public override T this[int i]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant face attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.Face f]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant face attribute cannot be changed."); }
+		}
+	}
+
+	public class FaceArrayAttribute<T> : FaceAttribute<T> where T : new()
+	{
+		public T[] array;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : FaceArrayAttribute<T>
+		{
+			return CreateInstance<TDerived>();
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : FaceArrayAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
 			instance.array = array;
 			return instance;
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : FaceAttribute<T>
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : FaceArrayAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
 			instance.array = array;
@@ -354,50 +304,38 @@ namespace Experilous.Topological
 			return instance;
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : FaceAttribute<T>
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : FaceArrayAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
 			instance.name = name;
 			return instance;
 		}
 
-		public T this[int i]
+		protected TDerived CloneDerived<TDerived>() where TDerived : FaceArrayAttribute<T>
+		{
+			var clone = CreateInstance<TDerived>();
+			clone.array = (T[])array.Clone();
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
+		public override T this[int i]
 		{
 			get { return array[i]; }
 			set { array[i] = value; }
 		}
 
-		public T this[Topology.Face v]
+		public override T this[Topology.Face f]
 		{
-			get { return array[v.index]; }
-			set { array[v.index] = value; }
+			get { return array[f.index]; }
+			set { array[f.index] = value; }
 		}
 
-		public int Length
-		{
-			get { return array.Length; }
-		}
-	}
-
-	public abstract class FaceIndexer2D : ScriptableObject
-	{
-		public struct Coordinate
-		{
-			public int x;
-			public int y;
-
-			public Coordinate(int x, int y)
-			{
-				this.x = x;
-				this.y = y;
-			}
-		}
-
-		public abstract Topology.Face GetFace(int x, int y);
-		public abstract Topology.Face GetFace(Coordinate coordinate);
-		public abstract int GetFaceIndex(int x, int y);
-		public abstract int GetFaceIndex(Coordinate coordinate);
-		public abstract Coordinate GetCoordinate(int faceIndex);
-		public abstract Coordinate GetCoordinate(Topology.Face face);
+		public override int Count { get { return array.Length; } }
+		public override bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+		public override void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+		public override IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+		public override int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
 	}
 }

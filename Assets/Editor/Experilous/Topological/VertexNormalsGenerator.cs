@@ -80,27 +80,26 @@ namespace Experilous.Topological
 
 		public override void Generate(string location, string name)
 		{
-			Vector3[] faceNormalsArray;
+			var vertexNormals = Vector3FaceAttribute.CreateInstance(new Vector3[topology.generatedInstance.vertices.Count], "Vertex Normals");
 			switch (calculationMethod)
 			{
 				case CalculationMethod.FromVertexPositions:
-					faceNormalsArray = Manifold.CalculateVertexNormalsFromVertexPositions(topology.generatedInstance.vertices, vertexPositions.generatedInstance.array);
+					VertexAttributeUtility.CalculateVertexNormalsFromVertexPositions(topology.generatedInstance.vertices, vertexPositions.generatedInstance, vertexNormals);
 					break;
 				case CalculationMethod.FromFacePositions:
-					faceNormalsArray = Manifold.CalculateVertexNormalsFromFacePositions(topology.generatedInstance.vertices, facePositions.generatedInstance.array);
+					VertexAttributeUtility.CalculateVertexNormalsFromFacePositions(topology.generatedInstance.vertices, facePositions.generatedInstance, vertexNormals);
 					break;
 				case CalculationMethod.FromFaceNormals:
-					faceNormalsArray = Manifold.CalculateVertexNormalsFromFaceNormals(topology.generatedInstance.vertices, faceNormals.generatedInstance.array);
+					VertexAttributeUtility.CalculateVertexNormalsFromFaceNormals(topology.generatedInstance.vertices, this.faceNormals.generatedInstance, vertexNormals);
 					break;
 				case CalculationMethod.FromSphericalVertexPositions:
-					faceNormalsArray = SphericalManifoldUtility.CalculateVertexNormalsFromVertexPositions(vertexPositions.generatedInstance.array);
+					VertexAttributeUtility.CalculateSphericalVertexNormalsFromVertexPositions(topology.generatedInstance.vertices, vertexPositions.generatedInstance, vertexNormals);
 					break;
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			var instance = Vector3FaceAttribute.CreateInstance(faceNormalsArray, "Face Normals");
-			faceNormals.SetGeneratedInstance(location, name, instance);
+			this.vertexNormals.SetGeneratedInstance(location, name, faceNormals);
 		}
 
 		public override bool CanGenerate()

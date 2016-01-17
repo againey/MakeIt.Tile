@@ -5,143 +5,139 @@ namespace Experilous.Topological
 {
 	public static class MeshGenerator
 	{
-		public static Mesh[] GenerateSubmeshes(IFacesIndexer faces, Vector3[] vertexPositions, Vector3[] centroidPositions, Vector3[] faceNormals, System.Func<int, Color> faceColorGenerator)
+		public static IEnumerable<Mesh> GenerateSubmeshes(
+			Topology.FacesIndexer faces,
+			IList<Vector3> vertexPositions,
+			IList<Vector3> centroidPositions = null,
+			IList<Vector3> faceNormals = null,
+			IList<Color> faceColors = null,
+			int maxVerticesPerSubmesh = 65534)
 		{
-			List<Mesh> meshes = new List<Mesh>();
+			var vertices = new List<Vector3>();
+			var colors = new List<Color>();
+			var normals = new List<Vector3>();
+			var triangles = new List<int>();
 
-			var i = 0;
-			var faceCount = faces.Count;
-			while (i < faceCount)
+			foreach (var face in faces)
 			{
-				var endFaceIndex = i;
-				var meshVertexCount = 0;
-				var meshTriangleCount = 0;
-				while (endFaceIndex < faceCount)
+				if (vertices.Count + face.neighborCount + 1 > maxVerticesPerSubmesh)
 				{
-					var face = faces[endFaceIndex];
-					var neighborCount = face.neighborCount;
-					var faceVertexCount = neighborCount + 1;
-					if (meshVertexCount + faceVertexCount > 65534) break;
-					++endFaceIndex;
-					meshVertexCount += faceVertexCount;
-					meshTriangleCount += neighborCount;
+					yield return ConvertToMesh(vertices, colors, normals, triangles);
 				}
 
-				Vector3[] vertices = new Vector3[meshVertexCount];
-				Color[] colors = new Color[meshVertexCount];
-				Vector3[] normals = new Vector3[meshVertexCount];
-				int[] triangles = new int[meshTriangleCount * 3];
-
-				int meshVertex = 0;
-				int meshTriangle = 0;
-
-				while (i < endFaceIndex)
-				{
-					var face = faces[i];
-					var edge = face.firstEdge;
-					var neighborCount = face.neighborCount;
-					vertices[meshVertex] = centroidPositions[face];
-					colors[meshVertex] = faceColorGenerator(face.index);
-					normals[meshVertex] = faceNormals[face];
-					for (int j = 0; j < neighborCount; ++j, edge = edge.next)
-					{
-						vertices[meshVertex + j + 1] = vertexPositions[edge.nextVertex];
-						colors[meshVertex + j + 1] = new Color(0, 0, 0);
-						normals[meshVertex + j + 1] = faceNormals[face];
-						triangles[meshTriangle + j * 3 + 0] = meshVertex;
-						triangles[meshTriangle + j * 3 + 1] = meshVertex + 1 + j;
-						triangles[meshTriangle + j * 3 + 2] = meshVertex + 1 + (j + 1) % neighborCount;
-					}
-					meshVertex += neighborCount + 1;
-					meshTriangle += neighborCount * 3;
-					++i;
-				}
-
-				var mesh = new Mesh();
-
-				mesh.vertices = vertices;
-				mesh.colors = colors;
-				mesh.normals = normals;
-				mesh.triangles = triangles;
-
-				mesh.RecalculateBounds();
-
-				meshes.Add(mesh);
+				AddToMesh(face, vertexPositions, centroidPositions, faceNormals, faceColors, vertices, colors, normals, triangles);
 			}
 
-			return meshes.ToArray();
-		}
-
-		public static Mesh[] GenerateSubmeshes(Manifold manifold, IFacesIndexer faces, Vector3[] centroidPositions, Vector3[] faceNormals, System.Func<int, Color> faceColorGenerator)
-		{
-			return GenerateSubmeshes(faces, manifold.vertexPositions.array, centroidPositions, faceNormals, faceColorGenerator);
-		}
-
-		public static Mesh[] GenerateSubmeshes(PlanarWrapAroundManifold manifold, IFacesIndexer faces, Vector3[] centroidPositions, Vector3[] faceNormals, System.Func<int, Color> faceColorGenerator)
-		{
-			List<Mesh> meshes = new List<Mesh>();
-
-			var i = 0;
-			var faceCount = faces.Count;
-			while (i < faceCount)
+			if (vertices.Count > 0)
 			{
-				var endFaceIndex = i;
-				var meshVertexCount = 0;
-				var meshTriangleCount = 0;
-				while (endFaceIndex < faceCount)
-				{
-					var face = faces[endFaceIndex];
-					var neighborCount = face.neighborCount;
-					var faceVertexCount = neighborCount + 1;
-					if (meshVertexCount + faceVertexCount > 65534) break;
-					++endFaceIndex;
-					meshVertexCount += faceVertexCount;
-					meshTriangleCount += neighborCount;
-				}
-
-				Vector3[] vertices = new Vector3[meshVertexCount];
-				Color[] colors = new Color[meshVertexCount];
-				Vector3[] normals = new Vector3[meshVertexCount];
-				int[] triangles = new int[meshTriangleCount * 3];
-
-				int meshVertex = 0;
-				int meshTriangle = 0;
-
-				while (i < endFaceIndex)
-				{
-					var face = faces[i];
-					var edge = face.firstEdge;
-					var neighborCount = face.neighborCount;
-					vertices[meshVertex] = centroidPositions[face];
-					colors[meshVertex] = faceColorGenerator(face.index);
-					normals[meshVertex] = faceNormals[face];
-					for (int j = 0; j < neighborCount; ++j, edge = edge.next)
-					{
-						vertices[meshVertex + j + 1] = manifold.GetFaceVertexPosition(edge);
-						colors[meshVertex + j + 1] = new Color(0, 0, 0);
-						normals[meshVertex + j + 1] = faceNormals[face];
-						triangles[meshTriangle + j * 3 + 0] = meshVertex;
-						triangles[meshTriangle + j * 3 + 1] = meshVertex + 1 + j;
-						triangles[meshTriangle + j * 3 + 2] = meshVertex + 1 + (j + 1) % neighborCount;
-					}
-					meshVertex += neighborCount + 1;
-					meshTriangle += neighborCount * 3;
-					++i;
-				}
-
-				var mesh = new Mesh();
-
-				mesh.vertices = vertices;
-				mesh.colors = colors;
-				mesh.normals = normals;
-				mesh.triangles = triangles;
-
-				mesh.RecalculateBounds();
-
-				meshes.Add(mesh);
+				yield return ConvertToMesh(vertices, colors, normals, triangles);
 			}
-
-			return meshes.ToArray();
 		}
+
+		public static IEnumerable<Mesh> GenerateSubmeshes(
+			FaceIndexer2D faceIndexer,
+			int columnCount,
+			int rowCount,
+			Index2D lowestIndex,
+			int horizontalPartitions,
+			int verticalPartitions,
+			IList<Vector3> vertexPositions,
+			IList<Vector3> centroidPositions = null,
+			IList<Vector3> faceNormals = null,
+			IList<Color> faceColors = null,
+			int maxVerticesPerSubmesh = 65534)
+		{
+			var vertices = new List<Vector3>();
+			var colors = new List<Color>();
+			var normals = new List<Vector3>();
+			var triangles = new List<int>();
+
+			// The outer two loops iterate over each of the rectangular partitions.
+			for (int yPartition = 0; yPartition < verticalPartitions; ++yPartition)
+			{
+				var yMin = rowCount * yPartition / verticalPartitions;
+				var yMax = rowCount * (yPartition + 1) / verticalPartitions;
+
+				for (int xPartition = 0; xPartition < horizontalPartitions; ++xPartition)
+				{
+					var xMin = columnCount * xPartition / horizontalPartitions;
+					var xMax = columnCount * (xPartition + 1) / horizontalPartitions;
+
+					// The inner two loops iterate over each face within a single partition.
+					for (int y = yMin; y < yMax; ++y)
+					{
+						for (int x = xMin; x < xMax; ++x)
+						{
+							var face = faceIndexer.GetFace(x, y);
+
+							if (vertices.Count + face.neighborCount + 1 > maxVerticesPerSubmesh)
+							{
+								yield return ConvertToMesh(vertices, colors, normals, triangles);
+							}
+
+							AddToMesh(face, vertexPositions, centroidPositions, faceNormals, faceColors, vertices, colors, normals, triangles);
+						}
+					}
+
+					// At the end of every partition, push the remaining triangles out as a new
+					// mesh before starting on the next partition.  Ideally, this will be the only
+					// place where the mesh is creating, meaning that each partition is under the
+					// maximum number of vertices per mesh.
+					if (vertices.Count > 0)
+					{
+						yield return ConvertToMesh(vertices, colors, normals, triangles);
+					}
+				}
+			}
+		}
+
+		#region Private Helper Functions
+
+		private static void AddToMesh(Topology.Face face,
+			IList<Vector3> vertexPositions,
+			IList<Vector3> centroidPositions,
+			IList<Vector3> faceNormals,
+			IList<Color> faceColors,
+			List<Vector3> vertices, List<Color> colors, List<Vector3> normals, List<int> triangles)
+		{
+			var firstVertexIndex = vertices.Count;
+
+			vertices.Add(centroidPositions[face]);
+			colors.Add(faceColors[face]);
+			normals.Add(faceNormals[face]);
+
+			var neighborCount = face.neighborCount;
+			var edge = face.firstEdge;
+			for (int j = 0; j < neighborCount; ++j, edge = edge.next)
+			{
+				vertices.Add(vertexPositions[edge.nextVertex]);
+				colors.Add(new Color(0, 0, 0));
+				normals.Add(faceNormals[face]);
+				triangles.Add(firstVertexIndex);
+				triangles.Add(firstVertexIndex + 1 + j);
+				triangles.Add(firstVertexIndex + 1 + (j + 1) % neighborCount);
+			}
+		}
+
+		private static Mesh ConvertToMesh(List<Vector3> vertices, List<Color> colors, List<Vector3> normals, List<int> triangles)
+		{
+			var mesh = new Mesh();
+
+			mesh.vertices = vertices.ToArray();
+			mesh.colors = colors.ToArray();
+			mesh.normals = normals.ToArray();
+			mesh.triangles = triangles.ToArray();
+
+			vertices.Clear();
+			colors.Clear();
+			normals.Clear();
+			triangles.Clear();
+
+			mesh.RecalculateBounds();
+
+			return mesh;
+		}
+
+		#endregion
 	}
 }

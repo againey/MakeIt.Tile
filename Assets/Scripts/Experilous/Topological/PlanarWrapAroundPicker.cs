@@ -5,6 +5,7 @@ using System;
 
 namespace Experilous.Topological
 {
+#if false
 	[RequireComponent(typeof(Collider))]
 	public class PlanarWrapAroundPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
@@ -91,4 +92,5 @@ namespace Experilous.Topological
 			Debug.LogFormat("Pick End:  {0} -> {1}", pickStart, pickEnd);
 		}
 	}
+#endif
 }

@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
 	public partial class Topology
 	{
 		[Serializable]
-		protected struct EdgeData
+		public struct EdgeData
 		{
 			// \             /
 			//  \     F     /
@@ -44,12 +45,6 @@ namespace Experilous.Topological
 				return string.Format("EdgeData ({0}, {1}, {2}, {3}, {4})", _twin, _vNext, _fNext, _vertex, _face);
 			}
 		}
-
-		[SerializeField]
-		protected EdgeData[] _edgeData;
-
-		[SerializeField]
-		protected int _firstExternalEdgeIndex;
 
 		public struct VertexEdge : IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>
 		{
@@ -262,64 +257,108 @@ namespace Experilous.Topological
 		public FaceEdgesIndexer externalFaceEdges { get { return new FaceEdgesIndexer(this, _firstExternalEdgeIndex, _edgeData.Length); } }
 	}
 
-	public static class EdgeExtensions
+	public interface IEdgeAttribute<T> : IList<T>
 	{
-		public static T Of<T>(this T[] attributeArray, Topology.VertexEdge edge)
-		{
-			return attributeArray[edge.index];
-		}
-
-		public static T Of<T>(this T[] attributeArray, Topology.FaceEdge edge)
-		{
-			return attributeArray[edge.index];
-		}
-
-		public static T Of<T>(this EdgeAttribute<T> attribute, Topology.VertexEdge edge) where T : new()
-		{
-			return attribute.array[edge.index];
-		}
-
-		public static T Of<T>(this EdgeAttribute<T> attribute, Topology.FaceEdge edge) where T : new()
-		{
-			return attribute.array[edge.index];
-		}
-
-		public static T Of<T>(this IEdgeAttribute<T> attribute, Topology.VertexEdge edge) where T : new()
-		{
-			return attribute[edge.index];
-		}
-
-		public static T Of<T>(this IEdgeAttribute<T> attribute, Topology.FaceEdge edge) where T : new()
-		{
-			return attribute[edge.index];
-		}
-	}
-
-	public interface IEdgeAttribute<T> where T : new()
-	{
-		T this[int i] { get; set; }
 		T this[Topology.VertexEdge e] { get; set; }
 		T this[Topology.FaceEdge e] { get; set; }
-		int Length { get; }
 	}
 
-	public class EdgeAttribute<T> : ScriptableObject, IEdgeAttribute<T> where T : new()
+	public abstract class EdgeAttribute<T> : ScriptableObject, IEdgeAttribute<T>
 	{
-		public T[] array;
+		public abstract T this[int i] { get; set; }
+		public abstract T this[Topology.VertexEdge e] { get; set; }
+		public abstract T this[Topology.FaceEdge e] { get; set; }
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : EdgeAttribute<T>
+		public virtual int Count { get { throw new NotSupportedException(); } }
+		public virtual bool IsReadOnly { get { return true; } }
+		public virtual void Add(T item) { throw new NotSupportedException(); }
+		public virtual void Clear() { throw new NotSupportedException(); }
+		public virtual bool Contains(T item) { throw new NotSupportedException(); }
+		public virtual void CopyTo(T[] array, int arrayIndex) { throw new NotSupportedException(); }
+		public virtual IEnumerator<T> GetEnumerator() { throw new NotSupportedException(); }
+		public virtual int IndexOf(T item) { throw new NotSupportedException(); }
+		public virtual void Insert(int index, T item) { throw new NotSupportedException(); }
+		public virtual bool Remove(T item) { throw new NotSupportedException(); }
+		public virtual void RemoveAt(int index) { throw new NotSupportedException(); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+	}
+
+	public class EdgeConstantAttribute<T> : EdgeAttribute<T> where T : new()
+	{
+		public T constant;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : EdgeConstantAttribute<T>
 		{
 			return CreateInstance<TDerived>();
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : EdgeAttribute<T>
+		protected static TDerived CreateDerivedInstance<TDerived>(T constant) where TDerived : EdgeConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.constant = constant;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T constant, string name) where TDerived : EdgeConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.constant = constant;
+			instance.name = name;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : EdgeConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.name = name;
+			return instance;
+		}
+
+		protected TDerived CloneDerived<TDerived>() where TDerived : EdgeConstantAttribute<T>
+		{
+			var clone = CreateInstance<TDerived>();
+			clone.constant = constant;
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
+		public override T this[int i]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant edge attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.VertexEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant edge attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.FaceEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant edge attribute cannot be changed."); }
+		}
+	}
+
+	public class EdgeArrayAttribute<T> : EdgeAttribute<T> where T : new()
+	{
+		public T[] array;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : EdgeArrayAttribute<T>
+		{
+			return CreateInstance<TDerived>();
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : EdgeArrayAttribute<T>
 		{
 			var attribute = CreateInstance<TDerived>();
 			attribute.array = array;
 			return attribute;
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : EdgeAttribute<T>
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : EdgeArrayAttribute<T>
 		{
 			var attribute = CreateInstance<TDerived>();
 			attribute.array = array;
@@ -327,34 +366,44 @@ namespace Experilous.Topological
 			return attribute;
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : EdgeAttribute<T>
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : EdgeArrayAttribute<T>
 		{
 			var attribute = CreateInstance<TDerived>();
 			attribute.name = name;
 			return attribute;
 		}
 
-		public T this[int i]
+		protected TDerived CloneDerived<TDerived>() where TDerived : EdgeArrayAttribute<T>
+		{
+			var clone = CreateInstance<TDerived>();
+			clone.array = (T[])array.Clone();
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
+		public override T this[int i]
 		{
 			get { return array[i]; }
 			set { array[i] = value; }
 		}
 
-		public T this[Topology.VertexEdge e]
+		public override T this[Topology.VertexEdge e]
 		{
 			get { return array[e.index]; }
 			set { array[e.index] = value; }
 		}
 
-		public T this[Topology.FaceEdge e]
+		public override T this[Topology.FaceEdge e]
 		{
 			get { return array[e.index]; }
 			set { array[e.index] = value; }
 		}
 
-		public int Length
-		{
-			get { return array.Length; }
-		}
+		public override int Count { get { return array.Length; } }
+		public override bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+		public override void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+		public override IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+		public override int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
 	}
 }

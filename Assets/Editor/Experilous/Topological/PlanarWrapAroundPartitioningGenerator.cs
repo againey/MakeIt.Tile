@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
+#if false
 	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(UtilitiesCategory), "Planar Wrap-Around Partitioning")]
 	public class PlanarWrapAroundPartitioningGenerator : AssetGenerator
 	{
@@ -61,4 +62,5 @@ namespace Experilous.Topological
 				vertexPositions != null;
 		}
 	}
+#endif
 }

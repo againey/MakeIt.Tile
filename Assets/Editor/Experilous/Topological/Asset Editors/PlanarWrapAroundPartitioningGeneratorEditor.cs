@@ -2,6 +2,7 @@
 
 namespace Experilous.Topological
 {
+#if false
 	[CustomEditor(typeof(PlanarWrapAroundPartitioningGenerator))]
 	public class PlanarWrapAroundPartitioningGeneratorEditor : AssetGeneratorEditor
 	{
@@ -13,4 +14,5 @@ namespace Experilous.Topological
 			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false);
 		}
 	}
+#endif
 }

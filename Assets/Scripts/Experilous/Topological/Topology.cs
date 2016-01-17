@@ -3,32 +3,62 @@ using System;
 
 namespace Experilous.Topological
 {
-	[Serializable]
-	public partial class Topology : ScriptableObject
+	public partial class Topology : ScriptableObject, ICloneable
 	{
-		public Topology()
+		[SerializeField] protected ushort[] _vertexNeighborCounts;
+		[SerializeField] protected int[] _vertexFirstEdgeIndices;
+
+		[SerializeField] protected EdgeData[] _edgeData;
+
+		[SerializeField] protected ushort[] _faceNeighborCounts;
+		[SerializeField] protected int[] _faceFirstEdgeIndices;
+
+		[SerializeField] protected int _firstExternalEdgeIndex;
+		[SerializeField] protected int _firstExternalFaceIndex;
+
+		public static Topology CreateInstance(ushort[] vertexNeighborCounts, int[] vertexFirstEdgeIndices, EdgeData[] edgeData, ushort[] faceNeighborCounts, int[] faceFirstEdgeIndices)
 		{
+			return CreateInstance(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, edgeData.Length, faceNeighborCounts.Length);
 		}
 
-		public Topology(Topology original)
+		public static Topology CreateInstance(ushort[] vertexNeighborCounts, int[] vertexFirstEdgeIndices, EdgeData[] edgeData, ushort[] faceNeighborCounts, int[] faceFirstEdgeIndices, string name)
 		{
-			CloneFields(original);
+			return CreateInstance(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, edgeData.Length, faceNeighborCounts.Length, name);
 		}
 
-		protected void CloneFields(Topology original)
+		public static Topology CreateInstance(ushort[] vertexNeighborCounts, int[] vertexFirstEdgeIndices, EdgeData[] edgeData, ushort[] faceNeighborCounts, int[] faceFirstEdgeIndices, int firstExternalEdgeIndex, int firstExternalFaceIndex, string name)
 		{
-			_vertexNeighborCounts = original._vertexNeighborCounts.Clone() as ushort[];
-			_vertexFirstEdgeIndices = original._vertexFirstEdgeIndices.Clone() as int[];
-			_edgeData = original._edgeData.Clone() as EdgeData[];
-			_faceNeighborCounts = original._faceNeighborCounts.Clone() as ushort[];
-			_faceFirstEdgeIndices = original._faceFirstEdgeIndices.Clone() as int[];
-			_firstExternalEdgeIndex = original._firstExternalEdgeIndex;
-			_firstExternalFaceIndex = original._firstExternalFaceIndex;
+			var instance = CreateInstance(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, firstExternalEdgeIndex, firstExternalFaceIndex);
+			instance.name = name;
+			return instance;
 		}
 
-		public Topology Clone()
+		public static Topology CreateInstance(ushort[] vertexNeighborCounts, int[] vertexFirstEdgeIndices, EdgeData[] edgeData, ushort[] faceNeighborCounts, int[] faceFirstEdgeIndices, int firstExternalEdgeIndex, int firstExternalFaceIndex)
 		{
-			return new Topology(this);
+			var instance = CreateInstance<Topology>();
+			instance._vertexNeighborCounts = vertexNeighborCounts;
+			instance._vertexFirstEdgeIndices = vertexFirstEdgeIndices;
+			instance._edgeData = edgeData;
+			instance._faceNeighborCounts = faceNeighborCounts;
+			instance._faceFirstEdgeIndices = faceFirstEdgeIndices;
+			instance._firstExternalEdgeIndex = firstExternalEdgeIndex;
+			instance._firstExternalFaceIndex = firstExternalFaceIndex;
+			return instance;
+		}
+
+		public virtual object Clone()
+		{
+			var clone = CreateInstance(
+				_vertexNeighborCounts.Clone() as ushort[],
+				_vertexFirstEdgeIndices.Clone() as int[],
+				_edgeData.Clone() as EdgeData[],
+				_faceNeighborCounts.Clone() as ushort[],
+				_faceFirstEdgeIndices.Clone() as int[],
+				_firstExternalEdgeIndex,
+				_firstExternalFaceIndex);
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
 		}
 
 		public virtual void MakeDual()
@@ -65,7 +95,7 @@ namespace Experilous.Topological
 
 		public virtual Topology GetDualTopology()
 		{
-			var clone = Clone();
+			var clone = (Topology)Clone();
 			clone.MakeDual();
 			return clone;
 		}

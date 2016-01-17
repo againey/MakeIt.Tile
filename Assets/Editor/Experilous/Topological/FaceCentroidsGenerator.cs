@@ -58,21 +58,20 @@ namespace Experilous.Topological
 
 		public override void Generate(string location, string name)
 		{
-			Vector3[] faceCentroidsArray;
+			var faceCentroids = Vector3FaceAttribute.CreateInstance(new Vector3[topology.generatedInstance.internalFaces.Count], "Face Centroids");
 			switch (surfaceType)
 			{
 				case SurfaceType.Flat:
-					faceCentroidsArray = Manifold.CalculateFaceCentroids(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance.array);
+					FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance, faceCentroids);
 					break;
 				case SurfaceType.Spherical:
-					faceCentroidsArray = SphericalManifoldUtility.CalculateFaceCentroids(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance.array);
+					FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance, 1f, faceCentroids);
 					break;
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			var instance = Vector3FaceAttribute.CreateInstance(faceCentroidsArray, "Face Centroids");
-			faceCentroids.SetGeneratedInstance(location, name, instance);
+			this.faceCentroids.SetGeneratedInstance(location, name, faceCentroids);
 		}
 
 		public override bool CanGenerate()

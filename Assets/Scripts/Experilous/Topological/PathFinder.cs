@@ -130,21 +130,21 @@ namespace Experilous.Topological
 				});
 		}
 
-		public static int[] FindSphericalEuclideanPath(Topology.Face source, Topology.Face target, Vector3[] facePositions)
+		public static int[] FindSphericalEuclideanPath(Topology.Face source, Topology.Face target, Vector3[] facePositions, float sphereRadius)
 		{
 			return FindPath(source, target,
 				(Topology.Face s, Topology.Face t, int pathLength) =>
 				{
 					var sourcePosition = facePositions[s];
 					var targetPosition = facePositions[t];
-					return SphericalManifoldUtility.AngleBetweenUnitVectors(sourcePosition, targetPosition);
+					return MathUtility.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				(Topology.FaceEdge edge, int pathLength) =>
 				{
 					if (edge.isOuterBoundary) return float.PositiveInfinity;
 					var sourcePosition = facePositions[edge.nearFace];
 					var targetPosition = facePositions[edge.farFace];
-					return SphericalManifoldUtility.AngleBetweenUnitVectors(sourcePosition, targetPosition);
+					return MathUtility.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				});
 		}
 	}

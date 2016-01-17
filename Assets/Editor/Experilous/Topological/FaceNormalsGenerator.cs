@@ -80,27 +80,26 @@ namespace Experilous.Topological
 
 		public override void Generate(string location, string name)
 		{
-			Vector3[] faceNormalsArray;
+			var faceNormals = Vector3FaceAttribute.CreateInstance(new Vector3[topology.generatedInstance.internalFaces.Count], "Face Normals");
 			switch (calculationMethod)
 			{
 				case CalculationMethod.FromFacePositions:
-					faceNormalsArray = Manifold.CalculateFaceNormalsFromFacePositions(topology.generatedInstance.internalFaces, facePositions.generatedInstance.array);
+					FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topology.generatedInstance.internalFaces, facePositions.generatedInstance, faceNormals);
 					break;
 				case CalculationMethod.FromVertexPositions:
-					faceNormalsArray = Manifold.CalculateFaceNormalsFromVertexPositions(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance.array);
+					FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance, faceNormals);
 					break;
 				case CalculationMethod.FromVertexNormals:
-					faceNormalsArray = Manifold.CalculateFaceNormalsFromVertexNormals(topology.generatedInstance.internalFaces, vertexNormals.generatedInstance.array);
+					FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topology.generatedInstance.internalFaces, this.vertexNormals.generatedInstance, faceNormals);
 					break;
 				case CalculationMethod.FromSphericalFacePositions:
-					faceNormalsArray = SphericalManifoldUtility.CalculateFaceNormalsFromFacePositions(facePositions.generatedInstance.array);
+					FaceAttributeUtility.CalculateSphericalFaceNormalsFromFacePositions(topology.generatedInstance.internalFaces, facePositions.generatedInstance, faceNormals);
 					break;
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			var instance = Vector3FaceAttribute.CreateInstance(faceNormalsArray, "Face Normals");
-			faceNormals.SetGeneratedInstance(location, name, instance);
+			this.faceNormals.SetGeneratedInstance(location, name, faceNormals);
 		}
 
 		public override bool CanGenerate()

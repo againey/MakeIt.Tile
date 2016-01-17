@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
+#if false
 	[Serializable]
 	public class PlanarWrapAroundPartitioning : PlanarPartitioning
 	{
@@ -120,4 +121,5 @@ namespace Experilous.Topological
 			}
 		}
 	}
+#endif
 }

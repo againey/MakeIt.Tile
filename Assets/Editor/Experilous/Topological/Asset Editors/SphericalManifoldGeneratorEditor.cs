@@ -17,7 +17,7 @@ namespace Experilous.Topological
 		{
 			var generator = (SphericalManifoldGenerator)target;
 
-			generator.sphericalPolyhedron = (SphericalPolyhedrons)EditorGUILayout.EnumPopup("Base Polyhedron", generator.sphericalPolyhedron);
+			generator.sphericalPolyhedron = (SphericalManifoldGenerator.SphericalPolyhedrons)EditorGUILayout.EnumPopup("Base Polyhedron", generator.sphericalPolyhedron);
 			generator.subdivisionDegree = EditorGUILayout.IntField("Subdivision Degree", generator.subdivisionDegree);
 			generator.useDualPolyhedron = EditorGUILayout.Toggle("Use Dual Polyhedron", generator.useDualPolyhedron);
 		}
