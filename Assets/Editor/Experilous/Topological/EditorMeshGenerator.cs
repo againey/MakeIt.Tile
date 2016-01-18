@@ -75,16 +75,20 @@ namespace Experilous.Topological
 
 		public override void Generate(string location, string name)
 		{
-			var generatedMeshes = MeshGenerator.GenerateSubmeshes(
+			var generatedMeshes = new List<Mesh>();
+			foreach (var mesh in MeshGenerator.GenerateSubmeshes(
 				topology.generatedInstance.internalFaces,
-				vertexPositions.generatedInstance.array,
-				(faceCentroids.generatedInstance).array,
-				(faceNormals.generatedInstance).array,
-				(int i) => { return Color.white; });
-
-			if (meshes.Length < generatedMeshes.Length)
+				vertexPositions.generatedInstance,
+				faceCentroids.generatedInstance,
+				faceNormals.generatedInstance,
+				ConstantColorFaceAttribute.CreateInstance(Color.white)))
 			{
-				var newMeshes = new MeshGeneratedAsset[generatedMeshes.Length];
+				generatedMeshes.Add(mesh);
+			}
+
+			if (meshes.Length < generatedMeshes.Count)
+			{
+				var newMeshes = new MeshGeneratedAsset[generatedMeshes.Count];
 
 				for (var i = 0; i < meshes.Length; ++i)
 				{
@@ -97,9 +101,9 @@ namespace Experilous.Topological
 
 				meshes = newMeshes;
 			}
-			else if (meshes.Length > generatedMeshes.Length)
+			else if (meshes.Length > generatedMeshes.Count)
 			{
-				var newMeshes = new MeshGeneratedAsset[generatedMeshes.Length];
+				var newMeshes = new MeshGeneratedAsset[generatedMeshes.Count];
 
 				for (var i = 0; i < newMeshes.Length; ++i)
 				{

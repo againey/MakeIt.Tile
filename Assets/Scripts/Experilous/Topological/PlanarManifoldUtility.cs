@@ -7,7 +7,7 @@ namespace Experilous.Topological
 	{
 		#region Generation
 
-		public static void Generate(RowMajorQuadGridFaceNeighborIndexer neighborIndexer, RowMajorQuadGridVertexIndexer2D vertexIndexer, Vector3 rowAxis, Vector3 columnAxis, Vector3 origin, out Topology topology, out Vector3[] vertexPositions)
+		public static void Generate(RowMajorQuadGridFaceNeighborIndexer neighborIndexer, RowMajorQuadGridVertexIndexer2D vertexIndexer, Vector3 rowAxis, Vector3 columnAxis, Vector3 origin, out Topology topology, out IList<Vector3> vertexPositions)
 		{
 			topology = TopologyBuilder.BuildTopoogy(neighborIndexer, "Topology");
 

@@ -68,18 +68,42 @@ namespace Experilous.Topological
 
 		public override void Generate(string location, string name)
 		{
-			Manifold manifold;
+			Topology topology;
+			IList<Vector3> vertexPositions;
+
 			switch (planarTileShape)
 			{
 				case PlanarTileShapes.Rectangular:
-					manifold = PlanarManifoldUtility.CreateQuadGrid(columns, rows);
+				{
+					var faceNeighborIndexer = RowMajorQuadGridFaceNeighborIndexer.CreateInstance(columns, rows);
+					var vertexIndexer = RowMajorQuadGridVertexIndexer2D.CreateInstance(columns, rows);
+					PlanarManifoldUtility.Generate(faceNeighborIndexer, vertexIndexer, new Vector3(1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, 0f), out topology, out vertexPositions);
 					break;
+				}
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			topology.SetGeneratedInstance(location, name, manifold);
-			vertexPositions.SetGeneratedInstance(location, name, manifold.vertexPositions);
+			this.topology.SetGeneratedInstance(location, name, topology);
+
+			if (this.vertexPositions.isEnabled)
+			{
+				Vector3[] vertexPositionsArray;
+				if (vertexPositions is Vector3[])
+				{
+					vertexPositionsArray = (Vector3[])vertexPositions;
+				}
+				else
+				{
+					vertexPositionsArray = new Vector3[topology.vertices.Count];
+					vertexPositionsArray.CopyTo(vertexPositionsArray, 0);
+				}
+				this.vertexPositions.SetGeneratedInstance(location, name, Vector3VertexAttribute.CreateInstance(vertexPositionsArray, "Vertex Positions"));
+			}
+			else
+			{
+				this.vertexPositions.ClearGeneratedInstance();
+			}
 		}
 
 		public override bool CanGenerate()
