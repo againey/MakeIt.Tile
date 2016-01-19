@@ -14,6 +14,7 @@ namespace Experilous.Topological
 		public MeshFilter meshGameObjectPrefab;
 
 		public TopologyGeneratedAsset topology;
+		public FaceIndexer2DGeneratedAsset faceIndexer2D;
 		public Vector3VertexAttributeGeneratedAsset vertexPositions;
 		public Vector3FaceAttributeGeneratedAsset faceCentroids;
 		public Vector3FaceAttributeGeneratedAsset faceNormals;
@@ -21,9 +22,9 @@ namespace Experilous.Topological
 		public MeshGeneratedAsset[] meshes;
 		public GameObjectGeneratedAsset prefab;
 
-		public static EditorMeshGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
+		public static Partitioned2DMeshGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
 		{
-			var generator = CreateInstance<EditorMeshGenerator>();
+			var generator = CreateInstance<Partitioned2DMeshGenerator>();
 			generator.bundle = bundle;
 			generator.name = name;
 			generator.hideFlags = HideFlags.HideInHierarchy;
@@ -35,6 +36,7 @@ namespace Experilous.Topological
 			get
 			{
 				if (topology != null) yield return topology;
+				if (faceIndexer2D != null) yield return faceIndexer2D;
 				if (vertexPositions != null) yield return vertexPositions;
 				if (faceNormals != null) yield return faceNormals;
 				if (faceCentroids != null) yield return faceCentroids;
@@ -78,17 +80,30 @@ namespace Experilous.Topological
 
 		public override void Generate(string location, string name)
 		{
-#if false
-			var generatedMeshes = MeshGenerator.GenerateSubmeshes(
-				topology.generatedInstance.internalFaces,
-				vertexPositions.generatedInstance.array,
-				(faceCentroids.generatedInstance).array,
-				(faceNormals.generatedInstance).array,
-				(int i) => { return Color.white; });
+			var generatedMeshes = new List<Mesh>();
 
-			if (meshes.Length < generatedMeshes.Length)
+			if (faceIndexer2D.generatedInstance is RowMajorQuadGridFaceIndexer2D)
 			{
-				var newMeshes = new MeshGeneratedAsset[generatedMeshes.Length];
+				var quadGridFaceIndexer2D = (RowMajorQuadGridFaceIndexer2D)faceIndexer2D.generatedInstance;
+				foreach (var mesh in MeshGenerator.GenerateSubmeshes(
+					quadGridFaceIndexer2D,
+					quadGridFaceIndexer2D.faceColumnCount,
+					quadGridFaceIndexer2D.faceRowCount,
+					new Index2D(0, 0),
+					horizontalPartitionCount,
+					verticalPartitionCount,
+					vertexPositions.generatedInstance,
+					faceCentroids.generatedInstance,
+					faceNormals.generatedInstance,
+					ConstantColorFaceAttribute.CreateInstance(Color.white)))
+				{
+					generatedMeshes.Add(mesh);
+				}
+			}
+
+			if (meshes.Length < generatedMeshes.Count)
+			{
+				var newMeshes = new MeshGeneratedAsset[generatedMeshes.Count];
 
 				for (var i = 0; i < meshes.Length; ++i)
 				{
@@ -101,9 +116,9 @@ namespace Experilous.Topological
 
 				meshes = newMeshes;
 			}
-			else if (meshes.Length > generatedMeshes.Length)
+			else if (meshes.Length > generatedMeshes.Count)
 			{
-				var newMeshes = new MeshGeneratedAsset[generatedMeshes.Length];
+				var newMeshes = new MeshGeneratedAsset[generatedMeshes.Count];
 
 				for (var i = 0; i < newMeshes.Length; ++i)
 				{
@@ -196,13 +211,15 @@ namespace Experilous.Topological
 			{
 				prefab = null;
 			}
-#endif
 		}
 
 		public override bool CanGenerate()
 		{
 			return
+				horizontalPartitionCount > 0 &&
+				verticalPartitionCount > 0 &&
 				topology != null &&
+				faceIndexer2D != null &&
 				vertexPositions != null &&
 				faceCentroids != null &&
 				faceNormals != null;

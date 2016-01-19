@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
@@ -34,11 +33,10 @@ namespace Experilous.Topological
 			{
 				var neighborCount = indexer.GetNeighborCount(faceIndex);
 				faceNeighborCounts[faceIndex] = neighborCount;
-				faceFirstEdgeIndices[faceIndex] = indexer.GetNeighborEdgeIndex(faceIndex, 0);
-
 				var nextEdgeIndex = indexer.GetNeighborEdgeIndex(faceIndex, 0);
 
-				var priorVertexIndex = indexer.GetNeighborVertexIndex(faceIndex, neighborCount - 1);
+				faceFirstEdgeIndices[faceIndex] = nextEdgeIndex;
+
 				var priorTwinEdgeIndex = indexer.GetNeighborEdgeIndex(
 					indexer.GetNeighborFaceIndex(faceIndex, neighborCount - 1),
 					indexer.GetInverseNeighborIndex(faceIndex, neighborCount - 1));
@@ -55,12 +53,11 @@ namespace Experilous.Topological
 
 					edgeData[neighborEdgeIndex] = new Topology.EdgeData(twinEdgeIndex, priorTwinEdgeIndex, nextEdgeIndex, neighborVertexIndex, neighborFaceIndex);
 
-					if (vertexFirstEdgeIndices[priorVertexIndex] > neighborEdgeIndex)
+					if (vertexFirstEdgeIndices[neighborVertexIndex] > twinEdgeIndex)
 					{
-						vertexFirstEdgeIndices[priorVertexIndex] = neighborEdgeIndex;
+						vertexFirstEdgeIndices[neighborVertexIndex] = twinEdgeIndex;
 					}
 
-					priorVertexIndex = neighborVertexIndex;
 					priorTwinEdgeIndex = twinEdgeIndex;
 				}
 			}
@@ -81,6 +78,10 @@ namespace Experilous.Topological
 				{
 					++neighborCount;
 					edgeIndex = edgeData[edgeIndex]._vNext;
+					if (neighborCount > vertexFirstEdgeIndices.Length)
+					{
+						throw new InvalidOperationException("Face neighbors were specified such that a face was misconfigured.");
+					}
 				}
 
 				vertexNeighborCounts[vertexIndex] = neighborCount;

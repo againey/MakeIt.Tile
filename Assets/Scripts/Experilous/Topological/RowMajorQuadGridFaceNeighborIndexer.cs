@@ -157,8 +157,8 @@ namespace Experilous.Topological
 				{
 					case 0: return (faceIndex >= _faceColumnCount) ? faceIndex - _faceColumnCount : _internalFaceCount;
 					case 1: return (faceIndex % _faceColumnCount > 0) ? faceIndex - 1 : _internalFaceCount;
-					case 2: return (faceIndex < faceCount - _faceColumnCount) ? faceIndex + _faceColumnCount : _internalFaceCount;
-					case 3: return (faceIndex % _faceColumnCount < _faceRowCount - 1) ? faceIndex + 1 : _internalFaceCount;
+					case 2: return (faceIndex < _internalFaceCount - _faceColumnCount) ? faceIndex + _faceColumnCount : _internalFaceCount;
+					case 3: return (faceIndex % _faceColumnCount < _faceColumnCount - 1) ? faceIndex + 1 : _internalFaceCount;
 					default: throw new ArgumentOutOfRangeException("neighborIndex");
 				}
 			}
@@ -186,8 +186,8 @@ namespace Experilous.Topological
 				{
 					case 0: return (faceIndex >= _faceColumnCount) ? 2 : faceIndex;
 					case 1: return (faceIndex % _faceColumnCount > 0) ? 3 : _externalEdgeCount - faceIndex / _faceColumnCount - 1;
-					case 2: return (faceIndex < faceCount - _faceColumnCount) ? 0 : _externalEdgeCount - _faceRowCount - faceIndex % _faceColumnCount - 1;
-					case 3: return (faceIndex % _faceColumnCount < _faceRowCount - 1) ? 1 : _faceColumnCount + faceIndex / _faceColumnCount;
+					case 2: return (faceIndex < _internalFaceCount - _faceColumnCount) ? 0 : _externalEdgeCount - _faceRowCount - faceIndex % _faceColumnCount - 1;
+					case 3: return (faceIndex % _faceColumnCount < _faceColumnCount - 1) ? 1 : _faceColumnCount + faceIndex / _faceColumnCount;
 					default: throw new ArgumentOutOfRangeException("neighborIndex");
 				}
 			}

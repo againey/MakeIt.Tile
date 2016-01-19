@@ -53,7 +53,7 @@ namespace Experilous.Topological
 			get
 			{
 				if (topology == null) topology = TopologyGeneratedAsset.CreateDefaultInstance(this, "Topology");
-				if (vertexPositions == null) vertexPositions = Vector3VertexAttributeGeneratedAsset.CreateOptionalInstance(this, "Vertex Positions");
+				if (vertexPositions == null) vertexPositions = Vector3VertexAttributeGeneratedAsset.CreateDefaultInstance(this, "Vertex Positions");
 
 				yield return topology;
 				yield return vertexPositions;
@@ -101,7 +101,8 @@ namespace Experilous.Topological
 
 			SphericalManifoldUtility.Subdivide(topology, vertexPositions, subdivisionDegree, 1f, out topology, out vertexPositions);
 
-			if (sphericalPolyhedron == SphericalPolyhedrons.Dodecahedron && subdivisionDegree != 0)
+			var alreadyDual = sphericalPolyhedron == SphericalPolyhedrons.Dodecahedron && subdivisionDegree != 0;
+			if (useDualPolyhedron != alreadyDual)
 			{
 				SphericalManifoldUtility.MakeDual(topology, ref vertexPositions, 1f);
 			}

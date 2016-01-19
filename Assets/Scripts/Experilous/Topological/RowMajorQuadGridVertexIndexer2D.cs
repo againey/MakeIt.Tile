@@ -19,21 +19,21 @@ namespace Experilous.Topological
 
 		public override int vertexCount { get { return _vertexColumnCount * _vertexRowCount; } }
 
-		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int vertexColumnCount, int vertexRowCount)
+		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int faceColumnCount, int faceRowCount)
 		{
-			return CreateInstance(vertexColumnCount, vertexRowCount, new Index2D(0, 0));
+			return CreateInstance(faceColumnCount, faceRowCount, new Index2D(0, 0));
 		}
 
-		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int vertexColumnCount, int vertexRowCount, string name)
+		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int faceColumnCount, int faceRowCount, string name)
 		{
-			return SetName(CreateInstance(vertexColumnCount, vertexRowCount), name);
+			return SetName(CreateInstance(faceColumnCount, faceRowCount), name);
 		}
 
-		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int vertexColumnCount, int vertexRowCount, Index2D lowestIndex)
+		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int faceColumnCount, int faceRowCount, Index2D lowestIndex)
 		{
 			var instance = CreateInstance<RowMajorQuadGridVertexIndexer2D>();
-			instance._vertexColumnCount = vertexColumnCount;
-			instance._vertexRowCount = vertexRowCount;
+			instance._vertexColumnCount = faceColumnCount + 1;
+			instance._vertexRowCount = faceRowCount + 1;
 			instance._lowestIndex = lowestIndex;
 			instance.Initialize();
 			return instance;
