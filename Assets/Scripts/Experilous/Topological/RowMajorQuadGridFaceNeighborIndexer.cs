@@ -37,6 +37,8 @@ namespace Experilous.Topological
 
 		public static RowMajorQuadGridFaceNeighborIndexer CreateInstance(int faceColumnCount, int faceRowCount)
 		{
+			if (faceColumnCount < 1) throw new System.ArgumentOutOfRangeException("faceColumnCount");
+			if (faceRowCount < 1) throw new System.ArgumentOutOfRangeException("faceRowCount");
 			var instance = CreateInstance<RowMajorQuadGridFaceNeighborIndexer>();
 			instance._faceColumnCount = faceColumnCount;
 			instance._faceRowCount = faceRowCount;
@@ -126,10 +128,10 @@ namespace Experilous.Topological
 				var y = faceIndex / _faceColumnCount;
 				switch (neighborIndex)
 				{
-					case 0: return 2 * (x * _vertexRowCount + y) + 1;
-					case 1: return 2 * (y * _vertexColumnCount + x) + 1 + _verticalEdgeOffset;
-					case 2: return 2 * (x * _vertexRowCount + y) + 2;
-					case 3: return 2 * (y * _vertexColumnCount + x) + 2 + _verticalEdgeOffset;
+					case 0: return x * _horizontalEdgesPerColumn + y * 2 + 1;
+					case 1: return y * _verticalEdgesPerRow + x * 2 + 1 + _verticalEdgeOffset;
+					case 2: return x * _horizontalEdgesPerColumn + y * 2 + 2;
+					case 3: return y * _verticalEdgesPerRow + x * 2 + 2 + _verticalEdgeOffset;
 					default: throw new ArgumentOutOfRangeException("neighborIndex");
 				}
 			}

@@ -15,7 +15,13 @@ namespace Experilous.Topological
 
 			generator.topology = OnDependencyGUI("Topology", generator.topology, true);
 			generator.faceIndexer2D = OnDependencyGUI("Face Indexer", generator.faceIndexer2D, true);
-			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false);
+			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false,
+				(GeneratedAsset asset) =>
+				{
+					return
+						typeof(IVertexAttribute<Vector3>).IsAssignableFrom(asset.generatedType) ||
+						typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(asset.generatedType);
+				});
 			generator.faceCentroids = OnDependencyGUI("Face Centroids", generator.faceCentroids, false);
 			generator.faceNormals = OnDependencyGUI("Face Normals", generator.faceNormals, false);
 

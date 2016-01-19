@@ -16,7 +16,7 @@ namespace Experilous.Topological
 		public SurfaceType surfaceType;
 
 		public TopologyGeneratedAsset topology;
-		public Vector3VertexAttributeGeneratedAsset vertexPositions;
+		public GeneratedAsset vertexPositions;
 
 		public Vector3FaceAttributeGeneratedAsset faceCentroids;
 
@@ -62,10 +62,24 @@ namespace Experilous.Topological
 			switch (surfaceType)
 			{
 				case SurfaceType.Flat:
-					FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance, faceCentroids);
+					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					{
+						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, (IVertexAttribute<Vector3>)vertexPositions.generatedInstance, faceCentroids);
+					}
+					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					{
+						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, (IEdgeAttribute<Vector3>)vertexPositions.generatedInstance, faceCentroids);
+					}
 					break;
 				case SurfaceType.Spherical:
-					FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance, 1f, faceCentroids);
+					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					{
+						FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, (IVertexAttribute<Vector3>)vertexPositions.generatedInstance, 1f, faceCentroids);
+					}
+					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					{
+						FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, (IEdgeAttribute<Vector3>)vertexPositions.generatedInstance, 1f, faceCentroids);
+					}
 					break;
 				default:
 					throw new System.NotImplementedException();

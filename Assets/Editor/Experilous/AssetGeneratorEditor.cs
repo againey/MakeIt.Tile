@@ -55,7 +55,22 @@ namespace Experilous
 
 		protected TAsset OnDependencyGUI<TAsset>(string label, TAsset currentSelection, bool hideForOneOption, bool includeNone) where TAsset : GeneratedAsset
 		{
-			var potentialSources = _generator.bundle.GetMatchingGeneratedAssets<TAsset>(_generator);
+			return (TAsset)OnDependencyGUI(label, currentSelection, hideForOneOption, includeNone, (GeneratedAsset asset) => { return asset is TAsset; });
+		}
+
+		protected GeneratedAsset OnDependencyGUI(string label, GeneratedAsset currentSelection, System.Predicate<GeneratedAsset> predicate)
+		{
+			return OnDependencyGUI(label, currentSelection, false, true, predicate);
+		}
+
+		protected GeneratedAsset OnDependencyGUI(string label, GeneratedAsset currentSelection, bool hideForOneOption, System.Predicate<GeneratedAsset> predicate)
+		{
+			return OnDependencyGUI(label, currentSelection, hideForOneOption, true, predicate);
+		}
+
+		protected GeneratedAsset OnDependencyGUI(string label, GeneratedAsset currentSelection, bool hideForOneOption, bool includeNone, System.Predicate<GeneratedAsset> predicate)
+		{
+			var potentialSources = _generator.bundle.GetMatchingGeneratedAssets(_generator, predicate);
 			if (potentialSources.Count == 1 && hideForOneOption)
 			{
 				return potentialSources[0];

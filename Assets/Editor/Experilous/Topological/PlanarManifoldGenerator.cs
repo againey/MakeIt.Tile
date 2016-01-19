@@ -129,8 +129,8 @@ namespace Experilous.Topological
 			}
 			else
 			{
-				vertexPositionsArray = new Vector3[((Topology)this.topology.generatedInstance).vertices.Count];
-				vertexPositionsArray.CopyTo(vertexPositionsArray, 0);
+				vertexPositionsArray = new Vector3[((Topology)topology.generatedInstance).vertices.Count];
+				vertexPositions.CopyTo(vertexPositionsArray, 0);
 			}
 			this.vertexPositions.SetGeneratedInstance(location, name, Vector3VertexAttribute.CreateInstance(vertexPositionsArray, "Vertex Positions"));
 		}

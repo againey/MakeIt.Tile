@@ -68,6 +68,27 @@ namespace Experilous
 			return matchingGeneratedAssets;
 		}
 
+		public List<GeneratedAsset> GetMatchingGeneratedAssets(AssetGenerator excludedGenerator, System.Predicate<GeneratedAsset> predicate, bool excludeDisabledOutputs = true)
+		{
+			var matchingGeneratedAssets = new List<GeneratedAsset>();
+
+			foreach (var generator in _generators)
+			{
+				if (!ReferenceEquals(generator, excludedGenerator))
+				{
+					foreach (var output in generator.outputs)
+					{
+						if (output != null && predicate(output) && output.isEnabled || !excludeDisabledOutputs)
+						{
+							matchingGeneratedAssets.Add(output);
+						}
+					}
+				}
+			}
+
+			return matchingGeneratedAssets;
+		}
+
 		public virtual void Add(AssetGenerator generator)
 		{
 			if (!CanAdd(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be added to this bundle.", generator.name, generator.GetType().Name));

@@ -15,7 +15,7 @@ namespace Experilous.Topological
 
 		public TopologyGeneratedAsset topology;
 		public FaceIndexer2DGeneratedAsset faceIndexer2D;
-		public Vector3VertexAttributeGeneratedAsset vertexPositions;
+		public GeneratedAsset vertexPositions;
 		public Vector3FaceAttributeGeneratedAsset faceCentroids;
 		public Vector3FaceAttributeGeneratedAsset faceNormals;
 
@@ -85,19 +85,77 @@ namespace Experilous.Topological
 			if (faceIndexer2D.generatedInstance is RowMajorQuadGridFaceIndexer2D)
 			{
 				var quadGridFaceIndexer2D = (RowMajorQuadGridFaceIndexer2D)faceIndexer2D.generatedInstance;
-				foreach (var mesh in MeshGenerator.GenerateSubmeshes(
-					quadGridFaceIndexer2D,
-					quadGridFaceIndexer2D.faceColumnCount,
-					quadGridFaceIndexer2D.faceRowCount,
-					new Index2D(0, 0),
-					horizontalPartitionCount,
-					verticalPartitionCount,
-					vertexPositions.generatedInstance,
-					faceCentroids.generatedInstance,
-					faceNormals.generatedInstance,
-					ConstantColorFaceAttribute.CreateInstance(Color.white)))
+				if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
 				{
-					generatedMeshes.Add(mesh);
+					foreach (var mesh in MeshGenerator.GenerateSubmeshes(
+						quadGridFaceIndexer2D,
+						quadGridFaceIndexer2D.faceColumnCount,
+						quadGridFaceIndexer2D.faceRowCount,
+						new Index2D(0, 0),
+						horizontalPartitionCount,
+						verticalPartitionCount,
+						(IVertexAttribute<Vector3>)vertexPositions.generatedInstance,
+						faceCentroids.generatedInstance,
+						faceNormals.generatedInstance,
+						ConstantColorFaceAttribute.CreateInstance(Color.white)))
+					{
+						generatedMeshes.Add(mesh);
+					}
+				}
+				else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+				{
+					foreach (var mesh in MeshGenerator.GenerateSubmeshes(
+						quadGridFaceIndexer2D,
+						quadGridFaceIndexer2D.faceColumnCount,
+						quadGridFaceIndexer2D.faceRowCount,
+						new Index2D(0, 0),
+						horizontalPartitionCount,
+						verticalPartitionCount,
+						(IEdgeAttribute<Vector3>)vertexPositions.generatedInstance,
+						faceCentroids.generatedInstance,
+						faceNormals.generatedInstance,
+						ConstantColorFaceAttribute.CreateInstance(Color.white)))
+					{
+						generatedMeshes.Add(mesh);
+					}
+				}
+			}
+			else if (faceIndexer2D.generatedInstance is WrappedRowMajorQuadGridFaceIndexer2D)
+			{
+				var quadGridFaceIndexer2D = (WrappedRowMajorQuadGridFaceIndexer2D)faceIndexer2D.generatedInstance;
+				if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+				{
+					foreach (var mesh in MeshGenerator.GenerateSubmeshes(
+						quadGridFaceIndexer2D,
+						quadGridFaceIndexer2D.faceColumnCount,
+						quadGridFaceIndexer2D.faceRowCount,
+						new Index2D(0, 0),
+						horizontalPartitionCount,
+						verticalPartitionCount,
+						(IVertexAttribute<Vector3>)vertexPositions.generatedInstance,
+						faceCentroids.generatedInstance,
+						faceNormals.generatedInstance,
+						ConstantColorFaceAttribute.CreateInstance(Color.white)))
+					{
+						generatedMeshes.Add(mesh);
+					}
+				}
+				else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+				{
+					foreach (var mesh in MeshGenerator.GenerateSubmeshes(
+						quadGridFaceIndexer2D,
+						quadGridFaceIndexer2D.faceColumnCount,
+						quadGridFaceIndexer2D.faceRowCount,
+						new Index2D(0, 0),
+						horizontalPartitionCount,
+						verticalPartitionCount,
+						(IEdgeAttribute<Vector3>)vertexPositions.generatedInstance,
+						faceCentroids.generatedInstance,
+						faceNormals.generatedInstance,
+						ConstantColorFaceAttribute.CreateInstance(Color.white)))
+					{
+						generatedMeshes.Add(mesh);
+					}
 				}
 			}
 

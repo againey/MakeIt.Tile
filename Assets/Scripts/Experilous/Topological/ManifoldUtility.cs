@@ -6,13 +6,15 @@ namespace Experilous.Topological
 {
 	public static class ManifoldUtility
 	{
-		public static void MakeDual(Topology topology, IList<Vector3> facePositions, out IList<Vector3> vertexPositions)
+		public static void MakeDual(Topology topology, IList<Vector3> facePositions, out Vector3[] vertexPositions)
 		{
+			var faceCount = topology.faces.Count;
 			topology.MakeDual();
-			vertexPositions = facePositions;
+			vertexPositions = new Vector3[faceCount];
+			facePositions.CopyTo(vertexPositions, 0);
 		}
 
-		public static void GetDualManifold(Topology topology, IList<Vector3> facePositions, out Topology dualTopology, out IList<Vector3> vertexPositions)
+		public static void GetDualManifold(Topology topology, IList<Vector3> facePositions, out Topology dualTopology, out Vector3[] vertexPositions)
 		{
 			dualTopology = (Topology)topology.Clone();
 			MakeDual(dualTopology, facePositions, out vertexPositions);
@@ -363,7 +365,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public static void Subdivide(Topology topology, IList<Vector3> vertexPositions, int degree, Func<Vector3, Vector3, float, Vector3> interpolator, out Topology subdividedTopology, out IList<Vector3> subdividedVertexPositions)
+		public static void Subdivide(Topology topology, IVertexAttribute<Vector3> vertexPositions, int degree, Func<Vector3, Vector3, float, Vector3> interpolator, out Topology subdividedTopology, out Vector3[] subdividedVertexPositions)
 		{
 			if (degree < 0) throw new ArgumentOutOfRangeException("Topology subdivision degree cannot be negative.");
 			if (degree == 0)
@@ -464,7 +466,7 @@ namespace Experilous.Topological
 			subdividedVertexPositions = subdividedVertexPositionsList.ToArray();
 		}
 
-		public static void Subdivide(Topology topology, IList<Vector3> vertexPositions, int degree, out Topology subdividedTopology, out IList<Vector3> subdividedVertexPositions)
+		public static void Subdivide(Topology topology, IVertexAttribute<Vector3> vertexPositions, int degree, out Topology subdividedTopology, out Vector3[] subdividedVertexPositions)
 		{
 			Subdivide(topology, vertexPositions, degree, (Vector3 p0, Vector3 p1, float t) => { return Vector3.LerpUnclamped(p0, p1, t); }, out subdividedTopology, out subdividedVertexPositions);
 		}

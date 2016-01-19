@@ -19,7 +19,7 @@ namespace Experilous.Topological
 
 		public TopologyGeneratedAsset topology;
 		public Vector3FaceAttributeGeneratedAsset facePositions;
-		public Vector3VertexAttributeGeneratedAsset vertexPositions;
+		public GeneratedAsset vertexPositions;
 		public Vector3VertexAttributeGeneratedAsset vertexNormals;
 
 		public Vector3FaceAttributeGeneratedAsset faceNormals;
@@ -87,7 +87,14 @@ namespace Experilous.Topological
 					FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topology.generatedInstance.internalFaces, facePositions.generatedInstance, faceNormals);
 					break;
 				case CalculationMethod.FromVertexPositions:
-					FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topology.generatedInstance.internalFaces, vertexPositions.generatedInstance, faceNormals);
+					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					{
+						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topology.generatedInstance.internalFaces, (IVertexAttribute<Vector3>)vertexPositions.generatedInstance, faceNormals);
+					}
+					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					{
+						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topology.generatedInstance.internalFaces, (IEdgeAttribute<Vector3>)vertexPositions.generatedInstance, faceNormals);
+					}
 					break;
 				case CalculationMethod.FromVertexNormals:
 					FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topology.generatedInstance.internalFaces, this.vertexNormals.generatedInstance, faceNormals);

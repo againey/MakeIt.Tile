@@ -31,6 +31,8 @@ namespace Experilous.Topological
 
 		public static RowMajorQuadGridFaceIndexer2D CreateInstance(int faceColumnCount, int faceRowCount, Index2D lowestIndex)
 		{
+			if (faceColumnCount < 1) throw new System.ArgumentOutOfRangeException("faceColumnCount");
+			if (faceRowCount < 1) throw new System.ArgumentOutOfRangeException("faceRowCount");
 			var instance = CreateInstance<RowMajorQuadGridFaceIndexer2D>();
 			instance._faceColumnCount = faceColumnCount;
 			instance._faceRowCount = faceRowCount;

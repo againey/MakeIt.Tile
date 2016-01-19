@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using UnityEngine;
+using UnityEditor;
 
 namespace Experilous.Topological
 {
@@ -19,7 +20,13 @@ namespace Experilous.Topological
 					break;
 				case FaceNormalsGenerator.CalculationMethod.FromVertexPositions:
 					generator.topology = OnDependencyGUI("Topology", generator.topology, true);
-					generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false);
+					generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false,
+						(GeneratedAsset asset) =>
+						{
+							return
+								typeof(IVertexAttribute<Vector3>).IsAssignableFrom(asset.generatedType) ||
+								typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(asset.generatedType);
+						});
 					break;
 				case FaceNormalsGenerator.CalculationMethod.FromVertexNormals:
 					generator.topology = OnDependencyGUI("Topology", generator.topology, true);

@@ -12,18 +12,20 @@ namespace Experilous.Topological
 			return CreateInstance<Vector3OffsetWrappedVertexAttribute>();
 		}
 
-		public static Vector3OffsetWrappedVertexAttribute CreateInstance(EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, Vector3[] repetitionAxes)
+		public static Vector3OffsetWrappedVertexAttribute CreateInstance(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, Vector3[] repetitionAxes)
 		{
 			var instance = CreateInstance<Vector3OffsetWrappedVertexAttribute>();
+			instance.topology = topology;
 			instance.edgeWrapData = edgeWrapData;
 			instance.vertexData = vertexData;
 			instance.repetitionAxes = (Vector3[])repetitionAxes.Clone();
 			return instance;
 		}
 
-		public static Vector3OffsetWrappedVertexAttribute CreateInstance(EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, Vector3[] repetitionAxes, string name)
+		public static Vector3OffsetWrappedVertexAttribute CreateInstance(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, Vector3[] repetitionAxes, string name)
 		{
 			var instance = CreateInstance<Vector3OffsetWrappedVertexAttribute>();
+			instance.topology = topology;
 			instance.edgeWrapData = edgeWrapData;
 			instance.vertexData = vertexData;
 			instance.repetitionAxes = (Vector3[])repetitionAxes.Clone();
@@ -43,8 +45,9 @@ namespace Experilous.Topological
 		public Vector3OffsetWrappedVertexAttribute Clone()
 		{
 			var clone = CreateInstance(
-				edgeWrapData.Clone(),
-				vertexData.Clone(),
+				topology,
+				edgeWrapData,
+				vertexData,
 				(Vector3[])repetitionAxes.Clone(),
 				name);
 			clone.hideFlags = hideFlags;

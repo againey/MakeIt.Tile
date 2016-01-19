@@ -8,7 +8,7 @@ namespace Experilous.Topological
 	{
 		#region Generation
 
-		public static void CreateTetrahedron(float circumsphereRadius, out Topology topology, out IList<Vector3> vertexPositions)
+		public static void CreateTetrahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
 			var builder = new VertexVerticesBuilder(4, 12, 4);
 
@@ -31,7 +31,7 @@ namespace Experilous.Topological
 			topology = builder.BuildTopology();
 		}
 
-		public static void CreateCube(float circumsphereRadius, out Topology topology, out IList<Vector3> vertexPositions)
+		public static void CreateCube(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
 			var builder = new VertexVerticesBuilder(8, 24, 6);
 
@@ -59,7 +59,7 @@ namespace Experilous.Topological
 			topology = builder.BuildTopology();
 		}
 
-		public static void CreateOctahedron(float circumsphereRadius, out Topology topology, out IList<Vector3> vertexPositions)
+		public static void CreateOctahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
 			var builder = new VertexVerticesBuilder(6, 24, 8);
 
@@ -81,13 +81,13 @@ namespace Experilous.Topological
 			topology = builder.BuildTopology();
 		}
 
-		public static void CreateDodecahedron(float circumsphereRadius, out Topology topology, out IList<Vector3> vertexPositions)
+		public static void CreateDodecahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
 			CreateIcosahedron(circumsphereRadius, out topology, out vertexPositions);
 			MakeDual(topology, ref vertexPositions, circumsphereRadius);
 		}
 
-		public static void CreateIcosahedron(float circumsphereRadius, out Topology topology, out IList<Vector3> vertexPositions)
+		public static void CreateIcosahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
 			var builder = new VertexVerticesBuilder(12, 60, 20);
 
@@ -140,19 +140,23 @@ namespace Experilous.Topological
 
 		#region Modification
 
-		public static void MakeDual(Topology topology, ref IList<Vector3> vertexPositions, float circumsphereRadius)
+		public static void MakeDual(Topology topology, IVertexAttribute<Vector3> vertexPositions, out Vector3[] dualVertexPositions, float circumsphereRadius)
 		{
-			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, vertexPositions, circumsphereRadius), out vertexPositions);
+			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, vertexPositions, circumsphereRadius), out dualVertexPositions);
 		}
 
-		public static void GetDualManifold(Topology topology, IList<Vector3> vertexPositions, float circumsphereRadius, out Topology dualTopology, out IList<Vector3> dualVertexPositions)
+		public static void MakeDual(Topology topology, ref Vector3[] vertexPositions, float circumsphereRadius)
+		{
+			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, vertexPositions.AsVertexAttribute(), circumsphereRadius), out vertexPositions);
+		}
+
+		public static void GetDualManifold(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, out Topology dualTopology, out Vector3[] dualVertexPositions)
 		{
 			dualTopology = (Topology)topology.Clone();
-			dualVertexPositions = vertexPositions;
-			MakeDual(dualTopology, ref dualVertexPositions, circumsphereRadius);
+			MakeDual(dualTopology, vertexPositions, out dualVertexPositions, circumsphereRadius);
 		}
 
-		public static void Subdivide(Topology topology, IList<Vector3> vertexPositions, int degree, float circumsphereRadius, out Topology subdividedTopology, out IList<Vector3> subdividedVertexPositions)
+		public static void Subdivide(Topology topology, IVertexAttribute<Vector3> vertexPositions, int degree, float circumsphereRadius, out Topology subdividedTopology, out Vector3[] subdividedVertexPositions)
 		{
 			Func<Vector3, Vector3, float, Vector3> interpolator;
 			if (circumsphereRadius == 1f)
@@ -166,12 +170,12 @@ namespace Experilous.Topological
 			ManifoldUtility.Subdivide(topology, vertexPositions, degree, interpolator, out subdividedTopology, out subdividedVertexPositions);
 		}
 
-		public static IList<Vector3> RelaxVertexPositionsForRegularity(Topology topology, IList<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions)
+		public static IList<Vector3> RelaxVertexPositionsForRegularity(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions)
 		{
 			return RelaxVertexPositionsForRegularity(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, new Vector3[topology.vertices.Count]);
 		}
 
-		public static IList<Vector3> RelaxVertexPositionsForRegularity(Topology topology, IList<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions)
+		public static IList<Vector3> RelaxVertexPositionsForRegularity(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions)
 		{
 			foreach (var vertex in topology.vertices)
 			{
@@ -197,17 +201,17 @@ namespace Experilous.Topological
 			return relaxedVertexPositions;
 		}
 
-		public static IList<Vector3> RelaxForEqualArea(Topology topology, IList<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions)
+		public static IList<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions)
 		{
 			return RelaxForEqualArea(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, new Vector3[topology.vertices.Count]);
 		}
 
-		public static IList<Vector3> RelaxForEqualArea(Topology topology, IList<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions)
+		public static IList<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions)
 		{
 			return RelaxForEqualArea(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, relaxedVertexPositions, new Vector3[topology.vertices.Count], new float[topology.faceEdges.Count], new float[topology.vertices.Count]);
 		}
 
-		public static IList<Vector3> RelaxForEqualArea(Topology topology, IList<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions, IList<Vector3> faceCentroids, IList<float> faceCentroidAngles, IList<float> vertexAreas)
+		public static IList<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions, IList<Vector3> faceCentroids, IList<float> faceCentroidAngles, IList<float> vertexAreas)
 		{
 			var idealArea = 4f * Mathf.PI / topology.vertices.Count;
 
@@ -245,7 +249,7 @@ namespace Experilous.Topological
 			return relaxedVertexPositions;
 		}
 
-		public static bool ValidateAndRepair(Topology topology, IList<Vector3> vertexPositions, float circumsphereRadius, float adjustmentWeight, bool lockBoundaryPositions)
+		public static bool ValidateAndRepair(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, float adjustmentWeight, bool lockBoundaryPositions)
 		{
 			bool repaired = false;
 			float originalWeight = 1f - adjustmentWeight;

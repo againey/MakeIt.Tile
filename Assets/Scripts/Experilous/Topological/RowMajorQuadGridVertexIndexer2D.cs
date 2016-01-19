@@ -31,6 +31,8 @@ namespace Experilous.Topological
 
 		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int faceColumnCount, int faceRowCount, Index2D lowestIndex)
 		{
+			if (faceColumnCount < 1) throw new System.ArgumentOutOfRangeException("faceColumnCount");
+			if (faceRowCount < 1) throw new System.ArgumentOutOfRangeException("faceRowCount");
 			var instance = CreateInstance<RowMajorQuadGridVertexIndexer2D>();
 			instance._vertexColumnCount = faceColumnCount + 1;
 			instance._vertexRowCount = faceRowCount + 1;
@@ -39,9 +41,9 @@ namespace Experilous.Topological
 			return instance;
 		}
 
-		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int vertexColumnCount, int vertexRowCount, Index2D lowestIndex, string name)
+		public static RowMajorQuadGridVertexIndexer2D CreateInstance(int faceColumnCount, int faceRowCount, Index2D lowestIndex, string name)
 		{
-			return SetName(CreateInstance(vertexColumnCount, vertexRowCount, lowestIndex), name);
+			return SetName(CreateInstance(faceColumnCount, faceRowCount, lowestIndex), name);
 		}
 
 		private static RowMajorQuadGridVertexIndexer2D SetName(RowMajorQuadGridVertexIndexer2D instance, string name)
@@ -58,7 +60,7 @@ namespace Experilous.Topological
 
 		public override object Clone()
 		{
-			var instance = CreateInstance(_vertexColumnCount, _vertexRowCount, _lowestIndex, name);
+			var instance = CreateInstance(_vertexColumnCount - 1, _vertexRowCount - 1, _lowestIndex, name);
 			instance.hideFlags = hideFlags;
 			return instance;
 		}

@@ -199,6 +199,46 @@ namespace Experilous.Topological
 		T this[Topology.Vertex v] { get; set; }
 	}
 
+	public struct VertexAttributeArrayWrapper<T> : IVertexAttribute<T>
+	{
+		public T[] array;
+
+		public VertexAttributeArrayWrapper(T[] array)
+		{
+			this.array = array;
+		}
+
+		public VertexAttributeArrayWrapper(int elementCount)
+		{
+			array = new T[elementCount];
+		}
+
+		public T this[int i]
+		{
+			get { return array[i]; }
+			set { array[i] = value; }
+		}
+
+		public T this[Topology.Vertex v]
+		{
+			get { return array[v.index]; }
+			set { array[v.index] = value; }
+		}
+
+		public int Count { get { return array.Length; } }
+		public bool IsReadOnly { get { return true; } }
+		public void Add(T item) { throw new NotSupportedException(); }
+		public void Clear() { throw new NotSupportedException(); }
+		public bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+		public void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+		public IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+		public int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
+		public void Insert(int index, T item) { throw new NotSupportedException(); }
+		public bool Remove(T item) { throw new NotSupportedException(); }
+		public void RemoveAt(int index) { throw new NotSupportedException(); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+	}
+
 	public abstract class VertexAttribute<T> : ScriptableObject, IVertexAttribute<T>
 	{
 		public abstract T this[int i] { get; set; }
@@ -328,5 +368,13 @@ namespace Experilous.Topological
 		public override void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
 		public override IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
 		public override int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
+	}
+
+	public static class VertexExtensions
+	{
+		public static VertexAttributeArrayWrapper<T> AsVertexAttribute<T>(this T[] array)
+		{
+			return new VertexAttributeArrayWrapper<T>(array);
+		}
 	}
 }

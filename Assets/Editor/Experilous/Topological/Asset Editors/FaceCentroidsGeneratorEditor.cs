@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using UnityEngine;
+using UnityEditor;
 
 namespace Experilous.Topological
 {
@@ -12,7 +13,13 @@ namespace Experilous.Topological
 			generator.surfaceType = (FaceCentroidsGenerator.SurfaceType)EditorGUILayout.EnumPopup("Surface Type", generator.surfaceType);
 
 			generator.topology = OnDependencyGUI("Topology", generator.topology, true);
-			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false);
+			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false,
+				(GeneratedAsset asset) =>
+				{
+					return
+						typeof(IVertexAttribute<Vector3>).IsAssignableFrom(asset.generatedType) ||
+						typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(asset.generatedType);
+				});
 		}
 	}
 }
