@@ -73,4 +73,87 @@ namespace Experilous.Topological
 		public bool Remove(Topology.Face item) { throw new NotSupportedException(); }
 		public void RemoveAt(int index) { throw new NotSupportedException(); }
 	}
+
+	public interface IFaceGroupAttribute<T> : IList<T>
+	{
+		T this[FaceGroup faceGroup] { get; set; }
+	}
+
+	public abstract class FaceGroupAttribute<T> : ScriptableObject, IFaceGroupAttribute<T>
+	{
+		public abstract T this[int i] { get; set; }
+		public abstract T this[FaceGroup faceGroup] { get; set; }
+
+		public virtual int Count { get { throw new NotSupportedException(); } }
+		public virtual bool IsReadOnly { get { return true; } }
+		public virtual void Add(T item) { throw new NotSupportedException(); }
+		public virtual void Clear() { throw new NotSupportedException(); }
+		public virtual bool Contains(T item) { throw new NotSupportedException(); }
+		public virtual void CopyTo(T[] array, int arrayIndex) { throw new NotSupportedException(); }
+		public virtual IEnumerator<T> GetEnumerator() { throw new NotSupportedException(); }
+		public virtual int IndexOf(T item) { throw new NotSupportedException(); }
+		public virtual void Insert(int index, T item) { throw new NotSupportedException(); }
+		public virtual bool Remove(T item) { throw new NotSupportedException(); }
+		public virtual void RemoveAt(int index) { throw new NotSupportedException(); }
+		IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
+	}
+
+	public class FaceGroupArrayAttribute<T> : FaceGroupAttribute<T> where T : new()
+	{
+		public T[] array;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : FaceGroupArrayAttribute<T>
+		{
+			return CreateInstance<TDerived>();
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : FaceGroupArrayAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.array = array;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : FaceGroupArrayAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.array = array;
+			instance.name = name;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : FaceGroupArrayAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.name = name;
+			return instance;
+		}
+
+		protected TDerived CloneDerived<TDerived>() where TDerived : FaceGroupArrayAttribute<T>
+		{
+			var clone = CreateInstance<TDerived>();
+			clone.array = (T[])array.Clone();
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
+		public override T this[int i]
+		{
+			get { return array[i]; }
+			set { array[i] = value; }
+		}
+
+		public override T this[FaceGroup faceGroup]
+		{
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
+
+		public override int Count { get { return array.Length; } }
+		public override bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+		public override void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+		public override IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+		public override int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
+	}
 }

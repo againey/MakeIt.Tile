@@ -98,6 +98,11 @@ namespace Experilous.Topological
 			}
 		}
 
+		public bool IsRoot(Topology.Face face)
+		{
+			return _visitedFaces[face.index];
+		}
+
 		public IEnumerator<Topology.Face> GetEnumerator()
 		{
 			return new FaceEnumerator(this);

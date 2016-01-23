@@ -355,4 +355,27 @@ namespace Experilous.Topological
 		public override IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
 		public override int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
 	}
+
+	public abstract class FaceGroupLookupFaceAttribute<T, TFaceGroupAttribute> : FaceAttribute<T> where TFaceGroupAttribute : FaceGroupAttribute<T>
+	{
+		public IntFaceAttribute faceGroupIndices;
+		public TFaceGroupAttribute faceGroupData;
+
+		public T GetAttribute(Topology.Face face)
+		{
+			return faceGroupData[faceGroupIndices[face]];
+		}
+
+		public override T this[int i]
+		{
+			get { return faceGroupData[faceGroupIndices[i]]; }
+			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+		}
+
+		public override T this[Topology.Face f]
+		{
+			get { return faceGroupData[faceGroupIndices[f]]; }
+			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+		}
+	}
 }

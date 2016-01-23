@@ -78,10 +78,10 @@ namespace Experilous.Topological
 			var axis1Dot = Vector3.Dot(axis0Normal, axis1DividedVector);
 			var origin = new Vector3(0f, 0f, 0f); //TODO this should come from somewhere, probably surface descriptor
 
-			var groupFaceIndices = new List<int>[axisDivisions.x * axisDivisions.y];
-			for (int i = 0; i < groupFaceIndices.Length; ++i)
+			var faceGroupFaceIndices = new List<int>[axisDivisions.x * axisDivisions.y];
+			for (int i = 0; i < faceGroupFaceIndices.Length; ++i)
 			{
-				groupFaceIndices[i] = new List<int>();
+				faceGroupFaceIndices[i] = new List<int>();
 			}
 
 			foreach (var face in topologyAsset.faces)
@@ -94,46 +94,25 @@ namespace Experilous.Topological
 				var axis0Index = MathUtility.Modulo(Mathf.FloorToInt(axis0Offset), axisDivisions.x);
 				var axis1Index = MathUtility.Modulo(Mathf.FloorToInt(axis1Offset), axisDivisions.y);
 
-				groupFaceIndices[axis0Index + axis1Index * axisDivisions.x].Add(face.index);
+				faceGroupFaceIndices[axis0Index + axis1Index * axisDivisions.x].Add(face.index);
 			}
 
 			int groupCount = 0;
-			foreach (var group in groupFaceIndices)
+			foreach (var group in faceGroupFaceIndices)
 			{
 				if (group.Count > 0) ++groupCount;
 			}
 
-			var faceGroupCollectionAsset = FaceGroupCollection.Create(groupCount);
+			faceGroups = AssetGeneratorUtility.ResizeArray(faceGroups, groupCount);
 
-			if (faceGroups == null)
-			{
-				faceGroups = new AssetDescriptor[groupCount];
-			}
-			else if (faceGroups.Length < groupCount)
-			{
-				var newFaceGroups = new AssetDescriptor[groupCount];
-				if (faceGroups.Length > 0)
-				{
-					System.Array.Copy(faceGroups, newFaceGroups, faceGroups.Length);
-				}
-				faceGroups = newFaceGroups;
-			}
-			else if (faceGroups.Length > groupCount)
-			{
-				var newFaceGroups = new AssetDescriptor[groupCount];
-				if (groupCount > 0)
-				{
-					System.Array.Copy(faceGroups, newFaceGroups, groupCount);
-				}
-				faceGroups = newFaceGroups;
-			}
+			var faceGroupCollectionAsset = FaceGroupCollection.Create(groupCount);
 
 			var groupIndex = 0;
 			for (int axis1Index = 0; axis1Index < axisDivisions.y; ++axis1Index)
 			{
 				for (int axis0Index = 0; axis0Index < axisDivisions.x; ++axis0Index)
 				{
-					var group = groupFaceIndices[axis0Index + axis1Index * axisDivisions.x];
+					var group = faceGroupFaceIndices[axis0Index + axis1Index * axisDivisions.x];
 					if (group.Count > 0)
 					{
 						var faceGroupName = string.Format("Face Group [{0}, {1}]", axis0Index, axis1Index);
@@ -156,6 +135,7 @@ namespace Experilous.Topological
 				}
 			}
 
+			faceGroupCollection.groupName = faceGroupCollection.name;
 			faceGroupCollection.SetAsset(faceGroupCollectionAsset);
 		}
 

@@ -35,6 +35,7 @@ namespace Experilous.Topological
 
 			generator.faceCentroids = OnDependencyGUI("Face Centroids", generator.faceCentroids, typeof(IFaceAttribute<Vector3>), false);
 			generator.faceNormals = OnDependencyGUI("Face Normals", generator.faceNormals, typeof(IFaceAttribute<Vector3>), false);
+			generator.faceColors = OnDependencyGUI("Face Colors", generator.faceColors, typeof(IFaceAttribute<Color>), false);
 
 			generator.centerOnGroupAverage = EditorGUILayout.Toggle("Center On Group", generator.centerOnGroupAverage);
 		}

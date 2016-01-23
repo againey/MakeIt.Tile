@@ -22,6 +22,7 @@ namespace Experilous.Topological
 		public AssetDescriptor vertexPositions;
 		public AssetDescriptor faceCentroids;
 		public AssetDescriptor faceNormals;
+		public AssetDescriptor faceColors;
 
 		public AssetDescriptor[] meshes;
 		public AssetDescriptor meshCollection;
@@ -54,6 +55,7 @@ namespace Experilous.Topological
 				if (vertexPositions != null) yield return vertexPositions;
 				if (faceNormals != null) yield return faceNormals;
 				if (faceCentroids != null) yield return faceCentroids;
+				if (faceColors != null) yield return faceColors;
 			}
 		}
 
@@ -181,6 +183,18 @@ namespace Experilous.Topological
 			meshCollection.SetAsset(meshCollectionAsset);
 		}
 
+		private IFaceAttribute<Color> GetFaceColors()
+		{
+			if (faceColors != null)
+			{
+				return faceColors.GetAsset<IFaceAttribute<Color>>();
+			}
+			else
+			{
+				return ConstantColorFaceAttribute.CreateInstance(Color.white);
+			}
+		}
+
 		private void GenerateMeshes(IEnumerable<Topology.Face> faces, List<Mesh> meshes, List<Vector3> offsets)
 		{
 			if (vertexPositions.asset is IVertexAttribute<Vector3>)
@@ -190,7 +204,7 @@ namespace Experilous.Topological
 					vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
 					faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
 					faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
-					ConstantColorFaceAttribute.CreateInstance(Color.white)))
+					GetFaceColors()))
 				{
 					meshes.Add(mesh);
 					offsets.Add(new Vector3(0f, 0f, 0f));
@@ -203,7 +217,7 @@ namespace Experilous.Topological
 					vertexPositions.GetAsset<IEdgeAttribute<Vector3>>(),
 					faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
 					faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
-					ConstantColorFaceAttribute.CreateInstance(Color.white)))
+					GetFaceColors()))
 				{
 					meshes.Add(mesh);
 					offsets.Add(new Vector3(0f, 0f, 0f));
@@ -221,7 +235,7 @@ namespace Experilous.Topological
 					vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
 					faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
 					faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
-					ConstantColorFaceAttribute.CreateInstance(Color.white)))
+					GetFaceColors()))
 				{
 					meshes.Add(mesh);
 					offsets.Add(groupAverage);
@@ -235,7 +249,7 @@ namespace Experilous.Topological
 					vertexPositions.GetAsset<IEdgeAttribute<Vector3>>(),
 					faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
 					faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
-					ConstantColorFaceAttribute.CreateInstance(Color.white)))
+					GetFaceColors()))
 				{
 					meshes.Add(mesh);
 					offsets.Add(groupAverage);
