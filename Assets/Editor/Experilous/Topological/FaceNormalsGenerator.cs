@@ -17,12 +17,12 @@ namespace Experilous.Topological
 
 		public CalculationMethod calculationMethod;
 
-		public TopologyGeneratedAsset topology;
-		public Vector3FaceAttributeGeneratedAsset facePositions;
-		public GeneratedAsset vertexPositions;
-		public Vector3VertexAttributeGeneratedAsset vertexNormals;
+		public AssetDescriptor topology;
+		public AssetDescriptor facePositions;
+		public AssetDescriptor vertexPositions;
+		public AssetDescriptor vertexNormals;
 
-		public Vector3FaceAttributeGeneratedAsset faceNormals;
+		public AssetDescriptor faceNormals;
 
 		public static FaceNormalsGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
 		{
@@ -33,7 +33,7 @@ namespace Experilous.Topological
 			return generator;
 		}
 
-		public override IEnumerable<GeneratedAsset> dependencies
+		public override IEnumerable<AssetDescriptor> dependencies
 		{
 			get
 			{
@@ -60,16 +60,16 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<GeneratedAsset> outputs
+		public override IEnumerable<AssetDescriptor> outputs
 		{
 			get
 			{
-				if (faceNormals == null) faceNormals = Vector3FaceAttributeGeneratedAsset.CreateDefaultInstance(this, "Face Normals");
+				if (faceNormals == null) faceNormals = AssetDescriptor.Create(this, typeof(IFaceAttribute<Vector3>), "Face Normals", "Attributes");
 				yield return faceNormals;
 			}
 		}
 
-		public override void ResetDependency(GeneratedAsset dependency)
+		public override void ResetDependency(AssetDescriptor dependency)
 		{
 			if (dependency == null) throw new System.ArgumentNullException("dependency");
 			if (!ResetMemberDependency(dependency, ref topology, ref facePositions, ref vertexPositions, ref vertexNormals))
@@ -78,35 +78,36 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate(string location, string name)
+		public override void Generate()
 		{
-			var faceNormals = Vector3FaceAttribute.CreateInstance(new Vector3[topology.generatedInstance.internalFaces.Count], "Face Normals");
+			var topologyAsset = topology.GetAsset<Topology>();
+			var faceNormalsAsset = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count], "Face Normals");
 			switch (calculationMethod)
 			{
 				case CalculationMethod.FromFacePositions:
-					FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topology.generatedInstance.internalFaces, facePositions.generatedInstance, faceNormals);
+					FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositions.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				case CalculationMethod.FromVertexPositions:
-					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.assetType))
 					{
-						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topology.generatedInstance.internalFaces, (IVertexAttribute<Vector3>)vertexPositions.generatedInstance, faceNormals);
+						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topologyAsset.internalFaces, vertexPositions.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
 					}
-					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.assetType))
 					{
-						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topology.generatedInstance.internalFaces, (IEdgeAttribute<Vector3>)vertexPositions.generatedInstance, faceNormals);
+						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topologyAsset.internalFaces, vertexPositions.GetAsset<IEdgeAttribute<Vector3>>(), faceNormalsAsset);
 					}
 					break;
 				case CalculationMethod.FromVertexNormals:
-					FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topology.generatedInstance.internalFaces, this.vertexNormals.generatedInstance, faceNormals);
+					FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topologyAsset.internalFaces, vertexNormals.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				case CalculationMethod.FromSphericalFacePositions:
-					FaceAttributeUtility.CalculateSphericalFaceNormalsFromFacePositions(topology.generatedInstance.internalFaces, facePositions.generatedInstance, faceNormals);
+					FaceAttributeUtility.CalculateSphericalFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositions.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			this.faceNormals.SetGeneratedInstance(location, name, faceNormals);
+			faceNormals.SetAsset(faceNormalsAsset);
 		}
 
 		public override bool CanGenerate()

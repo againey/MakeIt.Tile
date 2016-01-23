@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using UnityEngine;
+using UnityEditor;
 
 namespace Experilous.Topological
 {
@@ -9,8 +10,8 @@ namespace Experilous.Topological
 		{
 			var generator = (SphericalPartitioningGenerator)target;
 
-			generator.topology = OnDependencyGUI("Topology", generator.topology, true);
-			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false);
+			generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
+			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
 		}
 	}
 }

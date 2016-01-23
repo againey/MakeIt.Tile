@@ -11,12 +11,266 @@ namespace Experilous
 
 		[SerializeField] protected List<AssetGenerator> _generators = new List<AssetGenerator>();
 		[SerializeField] protected List<Object> _embeddedAssets = new List<Object>();
-		[SerializeField] protected List<Object> _generatedAssets = new List<Object>();
+		[SerializeField] protected List<Object> _persistedAssets = new List<Object>();
 
-		public virtual string nameSuffix { get { return " (Generator)"; } }
+		[System.Serializable] protected struct AssetGroup { public List<Object> assets; public static AssetGroup Create() { AssetGroup group; group.assets = new List<Object>(); return group; } }
+		[System.Serializable] protected class PersistedAssetGroupDictionary : SerializableDictionary<string, AssetGroup> { }
+		[SerializeField] protected PersistedAssetGroupDictionary _persistedGroups = new PersistedAssetGroupDictionary();
+
+		protected string _location;
+
 		public abstract string defaultName { get; }
-		public string GetDefaultFullName() { return defaultName + nameSuffix; }
-		public string GetFullName(string name) { return name + nameSuffix; }
+		public string location { get { return _location; } }
+
+		public string GetAssetPath(string assetName, string extension)
+		{
+			return AssetUtility.GetCanonicalPath(Path.Combine(_location, string.Format("{0} ({1}).{2}", name, assetName, extension)));
+		}
+
+		public string GetPersistedLocationAndName(out string location, out string name)
+		{
+			if (AssetDatabase.Contains(this))
+			{
+				var assetPath = AssetUtility.GetFullCanonicalAssetPath(this);
+
+				location = AssetUtility.TrimProjectPath(Path.GetDirectoryName(assetPath));
+				name = Path.GetFileNameWithoutExtension(assetPath);
+				
+				return assetPath;
+			}
+			else
+			{
+				location = AssetUtility.projectRelativeDataPath;
+				name = defaultName;
+
+				return "";
+			}
+		}
+
+		public bool IsUnused(AssetDescriptor assetDescriptor)
+		{
+			if (assetDescriptor.isPersisted) return true;
+
+			return false; //TODO graph analysis, looking for at least one downstream persisted asset.
+		}
+
+		public Object PersistAsset(Object oldAssetInstance, Object newAssetInstance, string name)
+		{
+			if (typeof(GameObject).IsInstanceOfType(newAssetInstance))
+			{
+				if (oldAssetInstance != null)
+				{
+					return PersistAsset((GameObject)oldAssetInstance, (GameObject)newAssetInstance, name);
+				}
+				else
+				{
+					return PersistAsset(null, (GameObject)newAssetInstance, name);
+				}
+			}
+
+			var assetPath = GetAssetPath(name, "asset");
+
+			// Is their an earlier instance of the asset already generated and persisted?
+			if (oldAssetInstance != null && AssetDatabase.Contains(oldAssetInstance))
+			{
+				// Is the earlier asset and this asset exactly the same type?
+				if (oldAssetInstance.GetType() == newAssetInstance.GetType())
+				{
+					// Check the earlier asset's path, and move or rename it to the new path if necessary.
+					if (AssetUtility.GetProjectRelativeAssetPath(oldAssetInstance) != assetPath)
+					{
+						AssetUtility.MoveOrRenameAsset(oldAssetInstance, assetPath, false);
+					}
+
+					// Update the earlier asset to match the new instance.
+					AssetUtility.UpdateAssetInPlace(newAssetInstance, oldAssetInstance);
+					EditorUtility.SetDirty(oldAssetInstance);
+					return oldAssetInstance;
+				}
+				// The earlier asset and the new instance have different types.
+				else
+				{
+					// Delete the earlier asset outright; don't bother to update it in place.
+					AssetUtility.DeleteAsset(oldAssetInstance);
+
+					// Persist the new asset.
+					AssetDatabase.CreateAsset(newAssetInstance, assetPath);
+					return newAssetInstance;
+				}
+			}
+			// There was no earlier persistent instance of the asset, so there is nothing to replace.
+			else
+			{
+				// Persist the new asset.
+				AssetDatabase.CreateAsset(newAssetInstance, assetPath);
+				return newAssetInstance;
+			}
+		}
+
+		public GameObject PersistAsset(GameObject oldAssetInstance, GameObject newAssetInstance, string name)
+		{
+			var assetPath = GetAssetPath(name, "prefab");
+
+			// Is their an earlier instance of the asset already generated and persisted?
+			if (oldAssetInstance != null && AssetDatabase.Contains(oldAssetInstance))
+			{
+				// Is the earlier asset and this asset exactly the same type?
+				if (oldAssetInstance.GetType() == newAssetInstance.GetType())
+				{
+					// Check the earlier asset's path, and move or rename it to the new path if necessary.
+					if (AssetUtility.GetProjectRelativeAssetPath(oldAssetInstance) != assetPath)
+					{
+						AssetUtility.MoveOrRenameAsset(oldAssetInstance, assetPath, false);
+					}
+
+					// Replace the earlier prefab with the new instance.
+					var prefab = PrefabUtility.ReplacePrefab(newAssetInstance as GameObject, oldAssetInstance, ReplacePrefabOptions.ReplaceNameBased);
+					// Destroy the template upon which the newly created prefab was based, since it will have been created within the scene.
+					DestroyImmediate(newAssetInstance);
+					return prefab;
+				}
+				// The earlier asset and the new instance have different types.
+				else
+				{
+					// Delete the earlier asset outright; don't bother to update it in place.
+					AssetUtility.DeleteAsset(oldAssetInstance);
+
+					// Create a new prefab based on the supplied template.
+					var prefab = PrefabUtility.CreatePrefab(assetPath, newAssetInstance as GameObject);
+					// Destroy the template upon which the newly created prefab was based, since it will have been created within the scene.
+					DestroyImmediate(newAssetInstance);
+					return prefab;
+				}
+			}
+			// There was no earlier persistent instance of the asset, so there is nothing to replace.
+			else
+			{
+				// Create a new prefab based on the supplied template.
+				var prefab = PrefabUtility.CreatePrefab(assetPath, newAssetInstance as GameObject);
+				// Destroy the template upon which the newly created prefab was based, since it will have been created within the scene.
+				DestroyImmediate(newAssetInstance);
+				return prefab;
+			}
+		}
+
+		public Object PersistAsset(Object oldAssetInstance, Object newAssetInstance, string name, string groupName)
+		{
+			if (string.IsNullOrEmpty(groupName))
+			{
+				return PersistAsset(oldAssetInstance, newAssetInstance, name);
+			}
+
+			if (typeof(GameObject).IsInstanceOfType(newAssetInstance))
+			{
+				throw new System.ArgumentException("Cannot store a GameObject asset within a group.", "groupName");
+			}
+
+			var assetPath = GetAssetPath(groupName, "asset");
+
+			// Is their an earlier instance of the asset already generated and persisted?
+			if (oldAssetInstance != null && AssetDatabase.Contains(oldAssetInstance))
+			{
+				// Is the earlier asset and this asset exactly the same type?
+				if (oldAssetInstance.GetType() == newAssetInstance.GetType())
+				{
+					// Check the earlier asset's path, and move or rename it to the new path if necessary.
+					if (AssetUtility.GetProjectRelativeAssetPath(oldAssetInstance) != assetPath)
+					{
+						AssetUtility.MoveOrRenameAsset(oldAssetInstance, assetPath, false);
+					}
+
+					// Update the earlier asset to match the new instance.
+					AssetUtility.UpdateAssetInPlace(newAssetInstance, oldAssetInstance);
+					oldAssetInstance.name = name;
+					EditorUtility.SetDirty(oldAssetInstance);
+					return oldAssetInstance;
+				}
+				// The earlier asset and the new instance have different types.
+				else
+				{
+					// Check the earlier asset's path, and move or rename it to the new path if necessary.
+					if (AssetUtility.GetProjectRelativeAssetPath(oldAssetInstance) != assetPath)
+					{
+						AssetUtility.MoveOrRenameAsset(oldAssetInstance, assetPath, false);
+					}
+
+					// Add the new asset instance to the same group that the old asset instance is in.
+					AssetDatabase.AddObjectToAsset(newAssetInstance, oldAssetInstance);
+
+					// Look up the list of assets already in the group, creating the list if necessary.
+					AssetGroup persistedGroup;
+					if (!_persistedGroups.TryGetValue(groupName, out persistedGroup))
+					{
+						persistedGroup = AssetGroup.Create();
+						_persistedGroups.Add(groupName, persistedGroup);
+					}
+
+					// Remove the old instance from the group, and add the new instance.
+					persistedGroup.assets.Remove(oldAssetInstance);
+					persistedGroup.assets.Add(newAssetInstance);
+					EditorUtility.SetDirty(this);
+
+					// Delete the earlier asset outright; don't bother to update it in place.
+					DestroyImmediate(oldAssetInstance);
+
+					newAssetInstance.name = name;
+					EditorUtility.SetDirty(newAssetInstance);
+
+					return newAssetInstance;
+				}
+			}
+			// There was no earlier persistent instance of the asset, so there is nothing to replace.
+			else
+			{
+				// Look up the list of assets already in the group, creating the list if necessary.
+				AssetGroup persistedGroup;
+				if (!_persistedGroups.TryGetValue(groupName, out persistedGroup))
+				{
+					persistedGroup = AssetGroup.Create();
+					_persistedGroups.Add(groupName, persistedGroup);
+				}
+
+				EditorUtility.SetDirty(this);
+
+				// How we add the asset to the group depends on how many assets are already in the group.
+				if (persistedGroup.assets.Count == 0)
+				{
+					// Persist the new asset as a singular asset rather than a group,
+					// using the asset name rather than the group name.
+					AssetDatabase.CreateAsset(newAssetInstance, GetAssetPath(name, "asset"));
+					persistedGroup.assets.Add(newAssetInstance);
+					newAssetInstance.name = name;
+					EditorUtility.SetDirty(newAssetInstance);
+					return newAssetInstance;
+				}
+				// The group already exists and has at least one asset in it.
+				else
+				{
+					// Persist the new asset, adding it to the existing group.
+					AssetDatabase.AddObjectToAsset(newAssetInstance, persistedGroup.assets[0]);
+					persistedGroup.assets.Add(newAssetInstance);
+					newAssetInstance.name = name;
+					EditorUtility.SetDirty(newAssetInstance);
+
+					// If there are now exactly two items in the group, then the group asset is probably still
+					// named according to the first item, and needs to be renamed with the proper group name.
+					if (persistedGroup.assets.Count == 2)
+					{
+						var existingName = persistedGroup.assets[0].name;
+						AssetUtility.MoveOrRenameAsset(persistedGroup.assets[0], assetPath, false);
+						persistedGroup.assets[0].name = existingName;
+						EditorUtility.SetDirty(persistedGroup.assets[0]);
+					}
+
+					return newAssetInstance;
+				}
+			}
+		}
+
+		public void DepersistAsset(Object oldAssetInstance)
+		{
+			AssetUtility.DeleteAsset(oldAssetInstance);
+		}
 
 		public IList<AssetGenerator> generators { get {  return _generators.AsReadOnly(); } }
 
@@ -31,13 +285,13 @@ namespace Experilous
 					{
 						foreach (var output in generator.outputs)
 						{
-							if (output.generatedInstance != null)
+							if (output.asset != null)
 							{
-								if (AssetDatabase.Contains(output.generatedInstance))
+								if (AssetDatabase.Contains(output.asset))
 								{
-									DestroyImmediate(output.generatedInstance, true);
+									DestroyImmediate(output.asset, true);
 								}
-								output.ClearGeneratedInstance();
+								output.ClearAsset();
 							}
 						}
 					}
@@ -45,9 +299,13 @@ namespace Experilous
 
 				_self = this;
 			}
+
+			string name;
+			GetPersistedLocationAndName(out _location, out name);
+			this.name = name;
 		}
 
-		public List<TAsset> GetMatchingGeneratedAssets<TAsset>(AssetGenerator excludedGenerator, bool excludeDisabledOutputs = true) where TAsset : GeneratedAsset
+		public List<TAsset> GetMatchingGeneratedAssets<TAsset>(AssetGenerator excludedGenerator, bool excludeUnpersistedOutputs = false) where TAsset : AssetDescriptor
 		{
 			var matchingGeneratedAssets = new List<TAsset>();
 
@@ -57,7 +315,7 @@ namespace Experilous
 				{
 					foreach (var output in generator.outputs)
 					{
-						if (output is TAsset && output.isEnabled || !excludeDisabledOutputs)
+						if (output is TAsset && output.isPersisted || !excludeUnpersistedOutputs)
 						{
 							matchingGeneratedAssets.Add((TAsset)output);
 						}
@@ -68,9 +326,9 @@ namespace Experilous
 			return matchingGeneratedAssets;
 		}
 
-		public List<GeneratedAsset> GetMatchingGeneratedAssets(AssetGenerator excludedGenerator, System.Predicate<GeneratedAsset> predicate, bool excludeDisabledOutputs = true)
+		public List<AssetDescriptor> GetMatchingGeneratedAssets(AssetGenerator excludedGenerator, System.Predicate<AssetDescriptor> predicate, bool excludeUnpersistedOutputs = false)
 		{
-			var matchingGeneratedAssets = new List<GeneratedAsset>();
+			var matchingGeneratedAssets = new List<AssetDescriptor>();
 
 			foreach (var generator in _generators)
 			{
@@ -78,7 +336,7 @@ namespace Experilous
 				{
 					foreach (var output in generator.outputs)
 					{
-						if (output != null && predicate(output) && output.isEnabled || !excludeDisabledOutputs)
+						if (output != null && predicate(output) && (output.isPersisted || !excludeUnpersistedOutputs))
 						{
 							matchingGeneratedAssets.Add(output);
 						}
@@ -176,7 +434,7 @@ namespace Experilous
 
 		public void CreateAsset()
 		{
-			AssetDatabase.CreateAsset(this, AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.selectedFolderOrDefault, name + ".asset")));
+			AssetDatabase.CreateAsset(this, AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.selectedFolderOrDefault, base.name + ".asset")));
 			foreach (var generator in _generators)
 			{
 				AssetDatabase.AddObjectToAsset(generator, this);
@@ -193,6 +451,9 @@ namespace Experilous
 
 		public void Generate(string location, string name)
 		{
+			_location = location;
+			this.name = name;
+
 			var orderedGenerators = new List<AssetGenerator>();
 			var unorderedGenerators = new List<AssetGenerator>();
 
@@ -207,7 +468,7 @@ namespace Experilous
 					var dependenciesComplete = true;
 					foreach (var dependency in generator.dependencies)
 					{
-						if (!orderedGenerators.Contains(dependency.assetGenerator))
+						if (!orderedGenerators.Contains(dependency.generator))
 						{
 							dependenciesComplete = false;
 							break;
@@ -233,22 +494,22 @@ namespace Experilous
 			}
 
 			// Move or rename the bundle asset if necessary.
-			var bundlePath = AssetUtility.GetCanonicalPath(Path.Combine(location, GetFullName(name) + ".asset"));
+			var bundlePath = AssetUtility.GetCanonicalPath(Path.Combine(location, name + ".asset"));
 			if (AssetUtility.GetProjectRelativeAssetPath(this) != bundlePath)
 			{
 				AssetUtility.MoveOrRenameAsset(this, bundlePath, true);
 			}
 
 			// Generate all assets, moving or renaming the outputs if necessary.
-			var generatedAssets = new List<Object>();
+			var persistedAssets = new List<Object>();
 			foreach (var generator in orderedGenerators)
 			{
-				generator.Generate(location, name);
+				generator.Generate();
 				foreach (var output in generator.outputs)
 				{
-					if (output.isEnabled)
+					if (output.isPersisted)
 					{
-						generatedAssets.Add(output.generatedInstance);
+						persistedAssets.Add(output.asset);
 					}
 				}
 			}
@@ -286,14 +547,50 @@ namespace Experilous
 			_embeddedAssets = embeddedAssets;
 
 			// Delete any external assets that are no longer part of the bundle.
-			foreach (var priorGeneratedAsset in _generatedAssets)
+			foreach (var priorPersistedAsset in _persistedAssets)
 			{
-				if (priorGeneratedAsset != null && AssetDatabase.Contains(priorGeneratedAsset) && !generatedAssets.Contains(priorGeneratedAsset))
+				if (priorPersistedAsset != null && AssetDatabase.Contains(priorPersistedAsset) && !persistedAssets.Contains(priorPersistedAsset))
 				{
-					AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(priorGeneratedAsset));
+					AssetUtility.DeleteAsset(priorPersistedAsset);
 				}
 			}
-			_generatedAssets = generatedAssets;
+			_persistedAssets = persistedAssets;
+
+			// Remove any assets from asset groups that no longer exist or are no longer part of the bundle.
+			foreach (var persistedGroup in _persistedGroups)
+			{
+				var groupAssets = persistedGroup.Value.assets;
+				int index = 0;
+				int endIndex = groupAssets.Count;
+				while (index < endIndex)
+				{
+					// Check if the asset is no longer valid, if it either got destroyed (evaluates to false),
+					// or if it simply is no longer included in the list of persisted assets.
+					if (groupAssets[index] == null || !_persistedAssets.Contains(groupAssets[index]))
+					{
+						// If so, overwrite it with the last item in the list, and decrement the end index
+						// so that we no to remove all items from that point onward when we're done.
+						groupAssets[index] = groupAssets[--endIndex];
+					}
+					else
+					{
+						++index;
+					}
+				}
+
+				// Remove all redundant items at the end due to removals.
+				if (endIndex < groupAssets.Count)
+				{
+					groupAssets.RemoveRange(endIndex, groupAssets.Count - endIndex);
+
+					// If there's only one item left, but there used to be more, then we need to rename
+					// the asset to reflect its actual name, not the name of the group.
+					if (groupAssets.Count == 1)
+					{
+						AssetUtility.MoveOrRenameAsset(groupAssets[0], GetAssetPath(groupAssets[0].name, "asset"), false);
+					}
+				}
+			}
 
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();

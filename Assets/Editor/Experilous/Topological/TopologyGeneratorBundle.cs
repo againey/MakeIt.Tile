@@ -27,7 +27,7 @@ namespace Experilous.Topological
 		public static TopologyGeneratorBundle CreateDefaultInstance(string name)
 		{
 			var bundle = CreateInstance<TopologyGeneratorBundle>();
-			bundle.name = bundle.GetFullName(name);
+			bundle.name = name;
 			return bundle;
 		}
 	}

@@ -15,10 +15,10 @@ namespace Experilous.Topological
 
 		public SurfaceType surfaceType;
 
-		public TopologyGeneratedAsset topology;
-		public GeneratedAsset vertexPositions;
+		public AssetDescriptor topology;
+		public AssetDescriptor vertexPositions;
 
-		public Vector3FaceAttributeGeneratedAsset faceCentroids;
+		public AssetDescriptor faceCentroids;
 
 		public static FaceCentroidsGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
 		{
@@ -29,7 +29,7 @@ namespace Experilous.Topological
 			return generator;
 		}
 
-		public override IEnumerable<GeneratedAsset> dependencies
+		public override IEnumerable<AssetDescriptor> dependencies
 		{
 			get
 			{
@@ -38,16 +38,16 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<GeneratedAsset> outputs
+		public override IEnumerable<AssetDescriptor> outputs
 		{
 			get
 			{
-				if (faceCentroids == null) faceCentroids = Vector3FaceAttributeGeneratedAsset.CreateDefaultInstance(this, "Face Centroids");
+				if (faceCentroids == null) faceCentroids = AssetDescriptor.Create(this, typeof(IFaceAttribute<Vector3>), "Face Centroids", "Attributes");
 				yield return faceCentroids;
 			}
 		}
 
-		public override void ResetDependency(GeneratedAsset dependency)
+		public override void ResetDependency(AssetDescriptor dependency)
 		{
 			if (dependency == null) throw new System.ArgumentNullException("dependency");
 			if (!ResetMemberDependency(dependency, ref topology, ref vertexPositions))
@@ -56,36 +56,37 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate(string location, string name)
+		public override void Generate()
 		{
-			var faceCentroids = Vector3FaceAttribute.CreateInstance(new Vector3[topology.generatedInstance.internalFaces.Count], "Face Centroids");
+			var topologyAsset = topology.GetAsset<Topology>();
+			var faceCentroidsAsset = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count], "Face Centroids");
 			switch (surfaceType)
 			{
 				case SurfaceType.Flat:
-					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.assetType))
 					{
-						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, (IVertexAttribute<Vector3>)vertexPositions.generatedInstance, faceCentroids);
+						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topologyAsset.internalFaces, (IVertexAttribute<Vector3>)vertexPositions.asset, faceCentroidsAsset);
 					}
-					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.assetType))
 					{
-						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, (IEdgeAttribute<Vector3>)vertexPositions.generatedInstance, faceCentroids);
+						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topologyAsset.internalFaces, (IEdgeAttribute<Vector3>)vertexPositions.asset, faceCentroidsAsset);
 					}
 					break;
 				case SurfaceType.Spherical:
-					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.assetType))
 					{
-						FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, (IVertexAttribute<Vector3>)vertexPositions.generatedInstance, 1f, faceCentroids);
+						FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topologyAsset.internalFaces, (IVertexAttribute<Vector3>)vertexPositions.asset, 1f, faceCentroidsAsset);
 					}
-					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.generatedType))
+					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.assetType))
 					{
-						FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.generatedInstance.internalFaces, (IEdgeAttribute<Vector3>)vertexPositions.generatedInstance, 1f, faceCentroids);
+						FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topologyAsset.internalFaces, (IEdgeAttribute<Vector3>)vertexPositions.asset, 1f, faceCentroidsAsset);
 					}
 					break;
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			this.faceCentroids.SetGeneratedInstance(location, name, faceCentroids);
+			faceCentroids.SetAsset(faceCentroidsAsset);
 		}
 
 		public override bool CanGenerate()

@@ -283,23 +283,23 @@ namespace Experilous.Topological
 			}
 		}
 
-		public EdgeWrapData GetEdgeWrapData(int faceIndex, int neighborIndex)
+		public EdgeWrap GetEdgeWrapData(int faceIndex, int neighborIndex)
 		{
 			if (faceIndex < 0 || faceIndex >= faceCount) throw new ArgumentOutOfRangeException("faceIndex");
 			if (faceIndex < _internalFaceCount)
 			{
 				switch (neighborIndex)
 				{
-					case 0: return (!_isWrappedVertically || faceIndex >= _faceColumnCount) ? new EdgeWrapData() : new EdgeWrapData(_isWrappedHorizontally ? 2 : 1, true);
-					case 1: return (!_isWrappedHorizontally || faceIndex % _faceColumnCount > 0) ? new EdgeWrapData() : new EdgeWrapData(1, true);
-					case 2: return (!_isWrappedVertically || faceIndex < _internalFaceCount - _faceColumnCount) ? new EdgeWrapData() : new EdgeWrapData(_isWrappedHorizontally ? 2 : 1, false);
-					case 3: return (!_isWrappedHorizontally || faceIndex % _faceColumnCount < _faceColumnCount - 1) ? new EdgeWrapData() : new EdgeWrapData(1, false);
+					case 0: return (!_isWrappedVertically || faceIndex >= _faceColumnCount) ? EdgeWrap.None : EdgeWrap.NegativeAxis1;
+					case 1: return (!_isWrappedHorizontally || faceIndex % _faceColumnCount > 0) ? EdgeWrap.None : EdgeWrap.NegativeAxis0;
+					case 2: return (!_isWrappedVertically || faceIndex < _internalFaceCount - _faceColumnCount) ? EdgeWrap.None : EdgeWrap.PositiveAxis1;
+					case 3: return (!_isWrappedHorizontally || faceIndex % _faceColumnCount < _faceColumnCount - 1) ? EdgeWrap.None : EdgeWrap.PositiveAxis0;
 					default: throw new ArgumentOutOfRangeException("neighborIndex");
 				}
 			}
 			else
 			{
-				return new EdgeWrapData();
+				return new EdgeWrap();
 			}
 		}
 	}

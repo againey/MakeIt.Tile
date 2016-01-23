@@ -5,30 +5,30 @@ namespace Experilous.Topological
 {
 	public class Vector3OffsetWrappedVertexAttribute : WrappedVertexAttribute<Vector3, Vector3VertexAttribute>, ICloneable
 	{
-		public Vector3[] repetitionAxes;
+		public PlanarSurfaceDescriptor surfaceDescriptor;
 
 		public static Vector3OffsetWrappedVertexAttribute CreateInstance()
 		{
 			return CreateInstance<Vector3OffsetWrappedVertexAttribute>();
 		}
 
-		public static Vector3OffsetWrappedVertexAttribute CreateInstance(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, Vector3[] repetitionAxes)
+		public static Vector3OffsetWrappedVertexAttribute CreateInstance(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, PlanarSurfaceDescriptor surfaceDescriptor)
 		{
 			var instance = CreateInstance<Vector3OffsetWrappedVertexAttribute>();
 			instance.topology = topology;
 			instance.edgeWrapData = edgeWrapData;
 			instance.vertexData = vertexData;
-			instance.repetitionAxes = (Vector3[])repetitionAxes.Clone();
+			instance.surfaceDescriptor = surfaceDescriptor;
 			return instance;
 		}
 
-		public static Vector3OffsetWrappedVertexAttribute CreateInstance(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, Vector3[] repetitionAxes, string name)
+		public static Vector3OffsetWrappedVertexAttribute CreateInstance(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, PlanarSurfaceDescriptor surfaceDescriptor, string name)
 		{
 			var instance = CreateInstance<Vector3OffsetWrappedVertexAttribute>();
 			instance.topology = topology;
 			instance.edgeWrapData = edgeWrapData;
 			instance.vertexData = vertexData;
-			instance.repetitionAxes = (Vector3[])repetitionAxes.Clone();
+			instance.surfaceDescriptor = surfaceDescriptor;
 			instance.name = name;
 			return instance;
 		}
@@ -48,25 +48,15 @@ namespace Experilous.Topological
 				topology,
 				edgeWrapData,
 				vertexData,
-				(Vector3[])repetitionAxes.Clone(),
+				surfaceDescriptor,
 				name);
 			clone.hideFlags = hideFlags;
 			return clone;
 		}
 
-		protected override Vector3 GetAttribute(Vector3 vertexValue)
+		protected override Vector3 GetAttribute(Vector3 vertexValue, EdgeWrap edgeWrap)
 		{
-			return vertexValue;
-		}
-
-		protected override Vector3 GetAttribute(Vector3 vertexValue, int repetitionAxisIndex)
-		{
-			return vertexValue + repetitionAxes[repetitionAxisIndex];
-		}
-
-		protected override Vector3 GetAttribute(Vector3 vertexValue, int repetitionAxisIndex0, int repetitionAxisIndex1)
-		{
-			return vertexValue + repetitionAxes[repetitionAxisIndex0] + repetitionAxes[repetitionAxisIndex1];
+			return surfaceDescriptor.OffsetPositive(vertexValue, edgeWrap);
 		}
 	}
 }

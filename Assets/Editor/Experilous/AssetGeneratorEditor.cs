@@ -7,7 +7,7 @@ namespace Experilous
 {
 	public abstract class AssetGeneratorEditor : Editor
 	{
-		[SerializeField] private Dictionary<GeneratedAsset, Editor> _editorStates = new Dictionary<GeneratedAsset, Editor>();
+		[SerializeField] private Dictionary<AssetDescriptor, Editor> _editorStates = new Dictionary<AssetDescriptor, Editor>();
 
 		protected AssetGenerator _generator;
 
@@ -43,32 +43,32 @@ namespace Experilous
 			OnOutputsGUI();
 		}
 
-		protected TAsset OnDependencyGUI<TAsset>(string label, TAsset currentSelection) where TAsset : GeneratedAsset
+		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType)
 		{
-			return OnDependencyGUI(label, currentSelection, false, true);
+			return OnDependencyGUI(label, currentSelection, assetType, false, true);
 		}
 
-		protected TAsset OnDependencyGUI<TAsset>(string label, TAsset currentSelection, bool hideForOneOption) where TAsset : GeneratedAsset
+		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType, bool hideForOneOption)
 		{
-			return OnDependencyGUI(label, currentSelection, hideForOneOption, true);
+			return OnDependencyGUI(label, currentSelection, assetType, hideForOneOption, true);
 		}
 
-		protected TAsset OnDependencyGUI<TAsset>(string label, TAsset currentSelection, bool hideForOneOption, bool includeNone) where TAsset : GeneratedAsset
+		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType, bool hideForOneOption, bool includeNone)
 		{
-			return (TAsset)OnDependencyGUI(label, currentSelection, hideForOneOption, includeNone, (GeneratedAsset asset) => { return asset is TAsset; });
+			return OnDependencyGUI(label, currentSelection, hideForOneOption, includeNone, (AssetDescriptor asset) => { return assetType.IsAssignableFrom(asset.assetType); });
 		}
 
-		protected GeneratedAsset OnDependencyGUI(string label, GeneratedAsset currentSelection, System.Predicate<GeneratedAsset> predicate)
+		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Predicate<AssetDescriptor> predicate)
 		{
 			return OnDependencyGUI(label, currentSelection, false, true, predicate);
 		}
 
-		protected GeneratedAsset OnDependencyGUI(string label, GeneratedAsset currentSelection, bool hideForOneOption, System.Predicate<GeneratedAsset> predicate)
+		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForOneOption, System.Predicate<AssetDescriptor> predicate)
 		{
 			return OnDependencyGUI(label, currentSelection, hideForOneOption, true, predicate);
 		}
 
-		protected GeneratedAsset OnDependencyGUI(string label, GeneratedAsset currentSelection, bool hideForOneOption, bool includeNone, System.Predicate<GeneratedAsset> predicate)
+		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForOneOption, bool includeNone, System.Predicate<AssetDescriptor> predicate)
 		{
 			var potentialSources = _generator.bundle.GetMatchingGeneratedAssets(_generator, predicate);
 			if (potentialSources.Count == 1 && hideForOneOption)
@@ -127,7 +127,7 @@ namespace Experilous
 				Editor editor;
 				if (!_editorStates.TryGetValue(output, out editor))
 				{
-					editor = CreateEditor(output, typeof(GeneratedAssetEditor));
+					editor = CreateEditor(output, typeof(AssetDescriptorEditor));
 					_editorStates[output] = editor;
 				}
 

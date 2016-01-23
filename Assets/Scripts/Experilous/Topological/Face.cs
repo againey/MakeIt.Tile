@@ -172,7 +172,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public struct FacesIndexer
+		public struct FacesIndexer : IList<Face>
 		{
 			private Topology _topology;
 			private int _first;
@@ -180,22 +180,39 @@ namespace Experilous.Topological
 
 			public FacesIndexer(Topology topology) { _topology = topology; _first = 0; _last = _topology._faceFirstEdgeIndices.Length; }
 			public FacesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
-			public Face this[int i] { get { return new Face(_topology, _first + i); } }
+			public Face this[int i] { get { return new Face(_topology, _first + i); } set { throw new NotSupportedException(); } }
 			public int Count { get { return _last - _first; } }
-			public FaceEnumerator GetEnumerator() { return new FaceEnumerator(_topology, _first, _last); }
+			public int IndexOf(Face item) { return Contains(item) ? item.index - _first : -1; }
+			public bool Contains(Face item) { return item.topology == _topology && item.index >= _first && item.index < _last; }
+			public bool IsReadOnly { get { return true; } }
 
-			public struct FaceEnumerator
+			public IEnumerator<Face> GetEnumerator()
 			{
-				private Topology _topology;
-				private int _index;
-				private int _next;
-				private int _last;
-
-				public FaceEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
-				public Face Current { get { return new Face(_topology, _index); } }
-				public bool MoveNext() { return (_index = _next++) != _last; }
-				public void Reset() { throw new NotSupportedException(); }
+				for (int faceIndex = _first; faceIndex < _last; ++faceIndex)
+				{
+					yield return new Face(_topology, faceIndex);
+				}
 			}
+
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+
+			public void CopyTo(Face[] array, int arrayIndex)
+			{
+				int offset = arrayIndex - _first;
+				for (int i = _first; i < _last; ++i)
+				{
+					array[i + offset] = new Face(_topology, i);
+				}
+			}
+
+			public void Add(Face item) { throw new NotSupportedException(); }
+			public void Insert(int index, Face item) { throw new NotSupportedException(); }
+			public bool Remove(Face item) { throw new NotSupportedException(); }
+			public void RemoveAt(int index) { throw new NotSupportedException(); }
+			public void Clear() { throw new NotSupportedException(); }
 		}
 
 		public FacesIndexer faces { get { return new FacesIndexer(this); } }

@@ -8,39 +8,12 @@ namespace Experilous.Topological
 		public EdgeWrapDataEdgeAttribute edgeWrapData;
 		public TVertexAttribute vertexData;
 
-		protected abstract T GetAttribute(T vertexValue);
-		protected abstract T GetAttribute(T vertexValue, int repetitionAxisIndex);
-		protected abstract T GetAttribute(T vertexValue, int repetitionAxisIndex0, int repetitionAxisIndex1);
+		protected abstract T GetAttribute(T vertexValue, EdgeWrap edgeWrap);
 
 		public T GetAttribute(Topology.FaceEdge prevEdge)
 		{
-			var prevEdgeWrapData = edgeWrapData[prevEdge];
-			var nextEdgeWrapData = edgeWrapData[prevEdge.next];
-
-			if (!prevEdgeWrapData.isWrapped || prevEdgeWrapData.isNegatedAxis)
-			{
-				if (!nextEdgeWrapData.isWrapped || nextEdgeWrapData.isNegatedAxis)
-				{
-					return GetAttribute(vertexData[prevEdge.nextVertex]);
-				}
-				else
-				{
-					return GetAttribute(vertexData[prevEdge.nextVertex], nextEdgeWrapData.repetitionAxis);
-				}
-			}
-			else
-			{
-				if (!nextEdgeWrapData.isWrapped || nextEdgeWrapData.isNegatedAxis)
-				{
-					return GetAttribute(vertexData[prevEdge.nextVertex], prevEdgeWrapData.repetitionAxis);
-				}
-				else
-				{
-					return GetAttribute(vertexData[prevEdge.nextVertex], prevEdgeWrapData.repetitionAxis, nextEdgeWrapData.repetitionAxis);
-				}
-			}
+			return GetAttribute(vertexData[prevEdge.nextVertex], edgeWrapData[prevEdge] | edgeWrapData[prevEdge.next]);
 		}
-
 
 		public override T this[int i]
 		{

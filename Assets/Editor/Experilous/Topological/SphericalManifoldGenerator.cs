@@ -20,8 +20,8 @@ namespace Experilous.Topological
 		public int subdivisionDegree = 10;
 		public bool useDualPolyhedron = true;
 
-		public GeneratedAsset topology;
-		public GeneratedAsset vertexPositions;
+		public AssetDescriptor topology;
+		public AssetDescriptor vertexPositions;
 
 		public static SphericalManifoldGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
 		{
@@ -40,7 +40,7 @@ namespace Experilous.Topological
 			bundle.CreateAsset();
 		}
 
-		public override IEnumerable<GeneratedAsset> dependencies
+		public override IEnumerable<AssetDescriptor> dependencies
 		{
 			get
 			{
@@ -48,75 +48,67 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<GeneratedAsset> outputs
+		public override IEnumerable<AssetDescriptor> outputs
 		{
 			get
 			{
-				if (topology == null) topology = TopologyGeneratedAsset.CreateDefaultInstance(this, "Topology");
-				if (vertexPositions == null) vertexPositions = Vector3VertexAttributeGeneratedAsset.CreateDefaultInstance(this, "Vertex Positions");
+				if (topology == null) topology = AssetDescriptor.Create(this, typeof(Topology), "Topology");
+				if (vertexPositions == null) vertexPositions = AssetDescriptor.Create(this, typeof(IVertexAttribute<Vector3>), "Vertex Positions", "Attributes");
 
 				yield return topology;
 				yield return vertexPositions;
 			}
 		}
 
-		public override void ResetDependency(GeneratedAsset dependency)
+		public override void ResetDependency(AssetDescriptor dependency)
 		{
 			if (dependency == null) throw new System.ArgumentNullException("dependency");
 			throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this spherical manifold generator.", dependency.name, dependency.GetType().Name), "dependency");
 		}
 
-		public override void Generate(string location, string name)
+		public override void Generate()
 		{
-			Topology topology;
+			Topology topologyAsset;
 			Vector3[] vertexPositionsArray;
 
 			switch (sphericalPolyhedron)
 			{
 				case SphericalPolyhedrons.Tetrahedron:
-					SphericalManifoldUtility.CreateTetrahedron(1f, out topology, out vertexPositionsArray);
+					SphericalManifoldUtility.CreateTetrahedron(1f, out topologyAsset, out vertexPositionsArray);
 					break;
 				case SphericalPolyhedrons.Cube:
-					SphericalManifoldUtility.CreateCube(1f, out topology, out vertexPositionsArray);
+					SphericalManifoldUtility.CreateCube(1f, out topologyAsset, out vertexPositionsArray);
 					break;
 				case SphericalPolyhedrons.Octahedron:
-					SphericalManifoldUtility.CreateOctahedron(1f, out topology, out vertexPositionsArray);
+					SphericalManifoldUtility.CreateOctahedron(1f, out topologyAsset, out vertexPositionsArray);
 					break;
 				case SphericalPolyhedrons.Dodecahedron:
 					if (subdivisionDegree == 0)
 					{
-						SphericalManifoldUtility.CreateDodecahedron(1f, out topology, out vertexPositionsArray);
+						SphericalManifoldUtility.CreateDodecahedron(1f, out topologyAsset, out vertexPositionsArray);
 					}
 					else
 					{
-						SphericalManifoldUtility.CreateIcosahedron(1f, out topology, out vertexPositionsArray);
+						SphericalManifoldUtility.CreateIcosahedron(1f, out topologyAsset, out vertexPositionsArray);
 					}
 					break;
 				case SphericalPolyhedrons.Icosahedron:
-					SphericalManifoldUtility.CreateIcosahedron(1f, out topology, out vertexPositionsArray);
+					SphericalManifoldUtility.CreateIcosahedron(1f, out topologyAsset, out vertexPositionsArray);
 					break;
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			SphericalManifoldUtility.Subdivide(topology, vertexPositionsArray.AsVertexAttribute(), subdivisionDegree, 1f, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.Subdivide(topologyAsset, vertexPositionsArray.AsVertexAttribute(), subdivisionDegree, 1f, out topologyAsset, out vertexPositionsArray);
 
 			var alreadyDual = sphericalPolyhedron == SphericalPolyhedrons.Dodecahedron && subdivisionDegree != 0;
 			if (useDualPolyhedron != alreadyDual)
 			{
-				SphericalManifoldUtility.MakeDual(topology, ref vertexPositionsArray, 1f);
+				SphericalManifoldUtility.MakeDual(topologyAsset, ref vertexPositionsArray, 1f);
 			}
 
-			this.topology.SetGeneratedInstance(location, name, topology);
-
-			if (vertexPositions.isEnabled)
-			{
-				vertexPositions.SetGeneratedInstance(location, name, Vector3VertexAttribute.CreateInstance(vertexPositionsArray, "Vertex Positions"));
-			}
-			else
-			{
-				vertexPositions.ClearGeneratedInstance();
-			}
+			topology.SetAsset(topologyAsset);
+			vertexPositions.SetAsset(Vector3VertexAttribute.CreateInstance(vertexPositionsArray, "Vertex Positions"));
 		}
 
 		public override bool CanGenerate()

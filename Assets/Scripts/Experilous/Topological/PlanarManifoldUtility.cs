@@ -7,7 +7,7 @@ namespace Experilous.Topological
 	{
 		#region Generation
 
-		public static void Generate(RowMajorQuadGridFaceNeighborIndexer neighborIndexer, RowMajorQuadGridVertexIndexer2D vertexIndexer, Vector3 rowAxis, Vector3 columnAxis, Vector3 origin, out Topology topology, out IList<Vector3> vertexPositions)
+		public static void Generate(RowMajorQuadGridFaceNeighborIndexer neighborIndexer, RowMajorQuadGridVertexIndexer2D vertexIndexer, PlanarSurfaceDescriptor surfaceDescriptor, Vector3 origin, out Topology topology, out Vector3[] vertexPositions)
 		{
 			topology = TopologyBuilder.BuildTopoogy(neighborIndexer, "Topology");
 
@@ -16,11 +16,13 @@ namespace Experilous.Topological
 			for (int i = 0; i < vertexIndexer.vertexCount; ++i)
 			{
 				var index2D = vertexIndexer.GetVertexIndex2D(i);
-				vertexPositions[i] = index2D.x * rowAxis + index2D.y * columnAxis + origin;
+				vertexPositions[i] =
+					index2D.x * surfaceDescriptor.axis0.vector / neighborIndexer.faceColumnCount +
+					index2D.y * surfaceDescriptor.axis1.vector / neighborIndexer.faceRowCount + origin;
 			}
 		}
 
-		public static void Generate(WrappedRowMajorQuadGridFaceNeighborIndexer neighborIndexer, WrappedRowMajorQuadGridVertexIndexer2D vertexIndexer, Vector3 rowAxis, Vector3 columnAxis, Vector3 origin, out Topology topology, out IList<Vector3> vertexPositions, out IList<EdgeWrapData> edgeWrapData, out Vector3[] repetitionAxes)
+		public static void Generate(WrappedRowMajorQuadGridFaceNeighborIndexer neighborIndexer, WrappedRowMajorQuadGridVertexIndexer2D vertexIndexer, PlanarSurfaceDescriptor surfaceDescriptor, Vector3 origin, out Topology topology, out Vector3[] vertexPositions, out EdgeWrap[] edgeWrapData)
 		{
 			topology = TopologyBuilder.BuildTopoogy(neighborIndexer, "Topology");
 
@@ -29,10 +31,12 @@ namespace Experilous.Topological
 			for (int i = 0; i < vertexIndexer.vertexCount; ++i)
 			{
 				var index2D = vertexIndexer.GetVertexIndex2D(i);
-				vertexPositions[i] = index2D.x * rowAxis + index2D.y * columnAxis + origin;
+				vertexPositions[i] =
+					index2D.x * surfaceDescriptor.axis0.vector / neighborIndexer.faceColumnCount +
+					index2D.y * surfaceDescriptor.axis1.vector / neighborIndexer.faceRowCount + origin;
 			}
 
-			edgeWrapData = new EdgeWrapData[neighborIndexer.edgeCount];
+			edgeWrapData = new EdgeWrap[neighborIndexer.edgeCount];
 
 			for (int i = 0; i < neighborIndexer.faceCount; ++i)
 			{
@@ -40,19 +44,6 @@ namespace Experilous.Topological
 				{
 					edgeWrapData[neighborIndexer.GetNeighborEdgeIndex(i, j)] = neighborIndexer.GetEdgeWrapData(i, j);
 				}
-			}
-
-			if (neighborIndexer.isWrappedHorizontally && neighborIndexer.isWrappedVertically)
-			{
-				repetitionAxes = new Vector3[3] { new Vector3(0f, 0f, 0f), rowAxis * neighborIndexer.vertexColumnCount, columnAxis * neighborIndexer.vertexRowCount };
-			}
-			else if (neighborIndexer.isWrappedHorizontally)
-			{
-				repetitionAxes = new Vector3[2] { new Vector3(0f, 0f, 0f), rowAxis * neighborIndexer.vertexColumnCount };
-			}
-			else //if (neighborIndexer.isWrappedVertically)
-			{
-				repetitionAxes = new Vector3[2] { new Vector3(0f, 0f, 0f), columnAxis * neighborIndexer.vertexRowCount };
 			}
 		}
 

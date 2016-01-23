@@ -12,9 +12,9 @@ namespace Experilous.Topological
 	{
 		[SerializeField] protected AssetGeneratorBundle _generatorBundle;
 
-		[SerializeField] private string _generatePath = null;
-		[SerializeField] private string _generateName = null;
-		private string _latestAssetPath = null;
+		[SerializeField] private string _bundleLocation = "";
+		[SerializeField] private string _bundleName = "";
+		[SerializeField] private string _latestAssetPath = "";
 
 		[System.Serializable]
 		public class AssetGeneratorEditorState
@@ -41,20 +41,6 @@ namespace Experilous.Topological
 
 		private static Dictionary<System.Type, List<AddGeneratorCategoryGUI>> _addGeneratorCategoryGUIs = new Dictionary<System.Type, List<AddGeneratorCategoryGUI>>();
 
-		protected string GenerateNameAndPathFromAssetPath(string assetPath, out string name, out string path)
-		{
-			name = Path.GetFileNameWithoutExtension(assetPath);
-
-			if (name.EndsWith(_generatorBundle.nameSuffix))
-			{
-				name = name.Substring(0, name.Length - _generatorBundle.nameSuffix.Length);
-			}
-
-			path = AssetUtility.TrimProjectPath(Path.GetDirectoryName(assetPath));
-
-			return assetPath;
-		}
-
 		protected void OnEnable()
 		{
 			if (_generatorBundle == null)
@@ -63,26 +49,9 @@ namespace Experilous.Topological
 				_generatorBundle = (AssetGeneratorBundle)target;
 			}
 
-			if (_generateName == null)
+			if (string.IsNullOrEmpty(_bundleLocation) || string.IsNullOrEmpty(_bundleName))
 			{
-				if (AssetDatabase.Contains(_generatorBundle))
-				{
-					_latestAssetPath = GenerateNameAndPathFromAssetPath(AssetUtility.GetFullCanonicalAssetPath(_generatorBundle), out _generateName, out _generatePath);
-				}
-				else
-				{
-					_generateName = _generatorBundle.defaultName;
-
-					if (_generatePath == null)
-					{
-						_generatePath = AssetUtility.projectRelativeDataPath;
-					}
-				}
-			}
-
-			if (_generatePath == null)
-			{
-				_generatePath = AssetUtility.projectRelativeDataPath;
+				_latestAssetPath = _generatorBundle.GetPersistedLocationAndName(out _bundleLocation, out _bundleName);
 			}
 
 			foreach (var editorState in _editorStates)
@@ -101,31 +70,43 @@ namespace Experilous.Topological
 		{
 		}
 
-		protected void OnUpdate()
+		protected void Update()
 		{
-			if (_latestAssetPath != null)
+			// Last time we checked, did we have a known path at which this bundle was persisted,
+			// and which hasn't been nullified by any edits in the inspector?
+			if (!string.IsNullOrEmpty(_latestAssetPath))
 			{
+				// Is this bundle still persisted?
 				if (AssetDatabase.Contains(_generatorBundle))
 				{
+					string location;
 					string name;
-					string path;
-					var assetPath = AssetUtility.GetFullCanonicalAssetPath(_generatorBundle);
-					GenerateNameAndPathFromAssetPath(AssetUtility.GetFullCanonicalAssetPath(_generatorBundle), out name, out path);
+					var assetPath = _generatorBundle.GetPersistedLocationAndName(out location, out name);
 
+					// Is it no longer persisted at the same location as the last known location?
 					if (assetPath != _latestAssetPath)
 					{
-						_generateName = name;
-						_generatePath = path;
+						// The location must have changed for reasons other than through edits in the inspector.
+						// We'll automatically replace our inspector values with the newly inferred values.
+						_bundleLocation = location;
+						_bundleName = name;
 						_latestAssetPath = assetPath;
 					}
-					else if (_generateName != name || _generatePath != path)
+					// It is still persisted at the same location.
+					// Has the location or name been changed from within the inspector?
+					else if (_bundleLocation != location || _bundleName != name)
 					{
-						_latestAssetPath = null;
+						// Let's forget we ever knew what the persisted location ever was.
+						// The values in the inspector take precedence because the user is editing them.
+						_latestAssetPath = "";
 					}
 				}
+				// Nope, the bundle is no longer persisted.
 				else
 				{
-					_latestAssetPath = null;
+					// The last known path is irrelevant.  Might as well treat whatever is in
+					// the inspector as having precedence.
+					_latestAssetPath = "";
 				}
 			}
 		}
@@ -162,20 +143,22 @@ namespace Experilous.Topological
 
 		public override void OnInspectorGUI()
 		{
+			Update();
+
 			InitializeStyles();
 
 			EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
 
 			EditorGUILayout.BeginHorizontal();
-			_generatePath = EditorGUILayout.TextField("Generation Path", _generatePath, GUILayout.ExpandWidth(true));
+			_bundleLocation = EditorGUILayout.TextField("Generation Path", _bundleLocation, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("...", GUILayout.ExpandWidth(false)))
 			{
-				var path = EditorUtility.SaveFolderPanel("Select Generation Folder", AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.canonicalProjectPath, _generatePath)), "");
+				var path = EditorUtility.SaveFolderPanel("Select Generation Folder", AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.canonicalProjectPath, _bundleLocation)), "");
 				if (!string.IsNullOrEmpty(path))
 				{
 					try
 					{
-						_generatePath = AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.projectRelativeDataPath, AssetUtility.TrimDataPath(path)));
+						_bundleLocation = AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.projectRelativeDataPath, AssetUtility.TrimDataPath(path)));
 					}
 					catch (System.InvalidOperationException)
 					{
@@ -184,12 +167,12 @@ namespace Experilous.Topological
 				}
 			}
 			EditorGUILayout.EndHorizontal();
-			_generateName = EditorGUILayout.TextField("Generation Name", _generateName);
+			_bundleName = EditorGUILayout.TextField("Generation Name", _bundleName);
 
-			GUI.enabled = _generatePath != null && !string.IsNullOrEmpty(_generateName) && _generatorBundle.CanGenerate();
+			GUI.enabled = _bundleLocation != null && !string.IsNullOrEmpty(_bundleName) && _generatorBundle.CanGenerate();
 			if (CenteredButton("Generate", 0.6f))
 			{
-				_generatorBundle.Generate(_generatePath, _generateName);
+				_generatorBundle.Generate(_bundleLocation, _bundleName);
 			}
 			GUI.enabled = true;
 			EditorGUILayout.EndVertical();

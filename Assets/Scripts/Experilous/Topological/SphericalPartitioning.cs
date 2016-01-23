@@ -29,7 +29,7 @@ namespace Experilous.Topological
 			{
 			}
 
-			public Partition(Topology.VertexEdge edge, Vector3[] vertexPositions)
+			public Partition(Topology.VertexEdge edge, IVertexAttribute<Vector3> vertexPositions)
 				: this(vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.prevFace.index, edge.nextFace.index)
 			{
 			}
@@ -78,7 +78,7 @@ namespace Experilous.Topological
 		[SerializeField] private Topology _topology;
 		[SerializeField] private Partition[] _partitionBinaryTree;
 
-		public static SphericalPartitioning CreateInstance(Topology topology, Vector3[] vertexPositions)
+		public static SphericalPartitioning CreateInstance(Topology topology, IVertexAttribute<Vector3> vertexPositions)
 		{
 			var partitioning = CreateInstance<SphericalPartitioning>();
 
@@ -141,7 +141,7 @@ namespace Experilous.Topological
 				partition._overPartitionIndex != 0 ? GetHeight(partition._overPartitionIndex) : 0);
 		}
 
-		private void PartitionEdge(Topology.VertexEdge edge, Vector3[] vertexPositions, ref int nextPartitionIndex)
+		private void PartitionEdge(Topology.VertexEdge edge, IVertexAttribute<Vector3> vertexPositions, ref int nextPartitionIndex)
 		{
 			PartitionEdge(0, vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.index, edge.prevFace.index, edge.nextFace.index, ref nextPartitionIndex);
 		}

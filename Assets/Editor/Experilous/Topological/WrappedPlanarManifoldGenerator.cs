@@ -31,13 +31,14 @@ namespace Experilous.Topological
 		public Vector3 verticalAxis = new Vector3(0f, 1f, 0f);
 		public Vector3 originPosition = new Vector3(0f, 0f, 0f);
 
-		public GeneratedAsset topology;
-		public GeneratedAsset vertexPositions;
-		public GeneratedAsset edgeWrapData;
-		public GeneratedAsset wrappedVertexPositions;
-		public GeneratedAsset vertexIndexer2D;
-		public GeneratedAsset faceIndexer2D;
-		public GeneratedAsset faceNeighborIndexer;
+		public AssetDescriptor topology;
+		public AssetDescriptor vertexPositions;
+		public AssetDescriptor edgeWrapData;
+		public AssetDescriptor wrappedVertexPositions;
+		public AssetDescriptor surfaceDescriptor;
+		public AssetDescriptor vertexIndexer2D;
+		public AssetDescriptor faceIndexer2D;
+		public AssetDescriptor faceNeighborIndexer;
 
 		public static WrappedPlanarManifoldGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
 		{
@@ -56,7 +57,7 @@ namespace Experilous.Topological
 			bundle.CreateAsset();
 		}
 
-		public override IEnumerable<GeneratedAsset> dependencies
+		public override IEnumerable<AssetDescriptor> dependencies
 		{
 			get
 			{
@@ -64,40 +65,42 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<GeneratedAsset> outputs
+		public override IEnumerable<AssetDescriptor> outputs
 		{
 			get
 			{
-				if (topology == null) topology = TopologyGeneratedAsset.CreateDefaultInstance(this, "Topology");
-				if (vertexPositions == null) vertexPositions = Vector3VertexAttributeGeneratedAsset.CreateDefaultInstance(this, "Vertex Positions");
-				if (edgeWrapData == null) edgeWrapData = EdgeWrapDataEdgeAttributeGeneratedAsset.CreateDefaultInstance(this, "Ege Wrap Data");
-				if (wrappedVertexPositions == null) wrappedVertexPositions = Vector3OffsetWrappedVertexAttributeGeneratedAsset.CreateDefaultInstance(this, "Wrapped Vertex Positions");
-				if (vertexIndexer2D == null) vertexIndexer2D = VertexIndexer2DGeneratedAsset.CreateDefaultInstance(this, "Vertex Indexer 2D");
-				if (faceIndexer2D == null) faceIndexer2D = FaceIndexer2DGeneratedAsset.CreateDefaultInstance(this, "Face Indexer 2D");
-				if (faceNeighborIndexer == null) faceNeighborIndexer = FaceNeighborIndexerGeneratedAsset.CreateDefaultInstance(this, "Face Neighbor Indexer");
+				if (topology == null) topology = AssetDescriptor.Create(this, typeof(Topology), "Topology", "Descriptors");
+				if (vertexPositions == null) vertexPositions = AssetDescriptor.Create(this, typeof(IVertexAttribute<Vector3>), "Vertex Positions", "Attributes");
+				if (edgeWrapData == null) edgeWrapData = AssetDescriptor.Create(this, typeof(IEdgeAttribute<EdgeWrap>), "Ege Wrap Data", "Attributes");
+				if (wrappedVertexPositions == null) wrappedVertexPositions = AssetDescriptor.Create(this, typeof(IEdgeAttribute<Vector3>), "Wrapped Vertex Positions", "Attributes");
+				if (surfaceDescriptor == null) surfaceDescriptor = AssetDescriptor.Create(this, typeof(PlanarSurfaceDescriptor), "Surface Descriptor", "Descriptors");
+				if (vertexIndexer2D == null) vertexIndexer2D = AssetDescriptor.Create(this, typeof(VertexIndexer2D), "Vertex Indexer 2D", "Descriptors");
+				if (faceIndexer2D == null) faceIndexer2D = AssetDescriptor.Create(this, typeof(FaceIndexer2D), "Face Indexer 2D", "Descriptors");
+				if (faceNeighborIndexer == null) faceNeighborIndexer = AssetDescriptor.Create(this, typeof(FaceNeighborIndexer), "Face Neighbor Indexer", "Descriptors");
 
 				yield return topology;
 				yield return vertexPositions;
 				yield return edgeWrapData;
 				yield return wrappedVertexPositions;
+				yield return surfaceDescriptor;
 				yield return vertexIndexer2D;
 				yield return faceIndexer2D;
 				yield return faceNeighborIndexer;
 			}
 		}
 
-		public override void ResetDependency(GeneratedAsset dependency)
+		public override void ResetDependency(AssetDescriptor dependency)
 		{
 			if (dependency == null) throw new System.ArgumentNullException("dependency");
 			throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this planar manifold generator.", dependency.name, dependency.GetType().Name), "dependency");
 		}
 
-		public override void Generate(string location, string name)
+		public override void Generate()
 		{
 			switch (planarTileShape)
 			{
 				case PlanarTileShapes.Rectangular:
-					CreateQuadGridManifold(location, name);
+					CreateQuadGridManifold();
 					break;
 				default:
 					throw new System.NotImplementedException();
@@ -113,69 +116,42 @@ namespace Experilous.Topological
 				verticalAxis != new Vector3(0f, 0f, 0f);
 		}
 
-		private void CreateQuadGridManifold(string location, string name)
+		private void CreateQuadGridManifold()
 		{
-			Topology topology;
-			IList<Vector3> vertexPositions;
-			IList<EdgeWrapData> edgeWrapData;
-			Vector3[] repetitionAxes;
+			Topology topologyAsset;
+			Vector3[] vertexPositionsArray;
+			EdgeWrap[] edgeWrapDataArray;
 
 			var isWrappedHorizontally = (wrapOption & PlanarTwoAxisWrapOptions.Horizontal) != 0;
 			var isWrappedVertically = (wrapOption & PlanarTwoAxisWrapOptions.Vertical) != 0;
-			var vertexIndexer2D = WrappedRowMajorQuadGridVertexIndexer2D.CreateInstance(size.x, size.y, isWrappedHorizontally, isWrappedVertically);
-			var faceIndexer2D = WrappedRowMajorQuadGridFaceIndexer2D.CreateInstance(size.x, size.y, isWrappedHorizontally, isWrappedVertically);
-			var faceNeighborIndexer = WrappedRowMajorQuadGridFaceNeighborIndexer.CreateInstance(size.x, size.y, isWrappedHorizontally, isWrappedVertically);
-			PlanarManifoldUtility.Generate(faceNeighborIndexer, vertexIndexer2D, horizontalAxis, verticalAxis, originPosition, out topology, out vertexPositions, out edgeWrapData, out repetitionAxes);
+			var surfaceDescriptorAsset = PlanarSurfaceDescriptor.Create(horizontalAxis * size.x, isWrappedHorizontally, verticalAxis * size.y, isWrappedVertically);
+			var vertexIndexer2DAsset = WrappedRowMajorQuadGridVertexIndexer2D.CreateInstance(size.x, size.y, isWrappedHorizontally, isWrappedVertically);
+			var faceIndexer2DAsset = WrappedRowMajorQuadGridFaceIndexer2D.CreateInstance(size.x, size.y, isWrappedHorizontally, isWrappedVertically);
+			var faceNeighborIndexerAsset = WrappedRowMajorQuadGridFaceNeighborIndexer.CreateInstance(size.x, size.y, isWrappedHorizontally, isWrappedVertically);
+			PlanarManifoldUtility.Generate(faceNeighborIndexerAsset, vertexIndexer2DAsset, surfaceDescriptorAsset, originPosition, out topologyAsset, out vertexPositionsArray, out edgeWrapDataArray);
 
-			this.topology.SetGeneratedInstance(location, name, topology);
-			SetVertexPositions(location, name, vertexPositions);
-			SetEdgeWrapData(location, name, edgeWrapData);
+			topology.SetAsset(topologyAsset);
+			vertexPositions.SetAsset(Vector3VertexAttribute.CreateInstance(vertexPositionsArray));
+			edgeWrapData.SetAsset(EdgeWrapDataEdgeAttribute.CreateInstance(edgeWrapDataArray));
 
-			var wrappedVertexPositions = Vector3OffsetWrappedVertexAttribute.CreateInstance(
-				(Topology)this.topology.generatedInstance,
-				(EdgeWrapDataEdgeAttribute)this.edgeWrapData.generatedInstance,
-				(Vector3VertexAttribute)this.vertexPositions.generatedInstance,
-				repetitionAxes);
+			surfaceDescriptor.SetAsset(surfaceDescriptorAsset);
 
-			this.wrappedVertexPositions.SetGeneratedInstance(location, name, wrappedVertexPositions);
+			var wrappedVertexPositionsAsset = Vector3OffsetWrappedVertexAttribute.CreateInstance(
+				topology.GetAsset<Topology>(),
+				edgeWrapData.GetAsset<EdgeWrapDataEdgeAttribute>(),
+				vertexPositions.GetAsset<Vector3VertexAttribute>(),
+				surfaceDescriptor.GetAsset<PlanarSurfaceDescriptor>());
 
-			vertexIndexer2D.topology = (Topology)this.topology.generatedInstance;
-			faceIndexer2D.topology = (Topology)this.topology.generatedInstance;
-			faceNeighborIndexer.topology = (Topology)this.topology.generatedInstance;
+			wrappedVertexPositions.SetAsset(wrappedVertexPositionsAsset);
 
-			this.vertexIndexer2D.SetGeneratedInstance(location, name, vertexIndexer2D);
-			this.faceIndexer2D.SetGeneratedInstance(location, name, faceIndexer2D);
-			this.faceNeighborIndexer.SetGeneratedInstance(location, name, faceNeighborIndexer);
-		}
+			topologyAsset = topology.GetAsset<Topology>();
+			vertexIndexer2DAsset.topology = topologyAsset;
+			faceIndexer2DAsset.topology = topologyAsset;
+			faceNeighborIndexerAsset.topology = topologyAsset;
 
-		private void SetVertexPositions(string location, string name, IList<Vector3> vertexPositions)
-		{
-			Vector3[] vertexPositionsArray;
-			if (vertexPositions is Vector3[])
-			{
-				vertexPositionsArray = (Vector3[])vertexPositions;
-			}
-			else
-			{
-				vertexPositionsArray = new Vector3[((Topology)topology.generatedInstance).vertices.Count];
-				vertexPositions.CopyTo(vertexPositionsArray, 0);
-			}
-			this.vertexPositions.SetGeneratedInstance(location, name, Vector3VertexAttribute.CreateInstance(vertexPositionsArray, "Vertex Positions"));
-		}
-
-		private void SetEdgeWrapData(string location, string name, IList<EdgeWrapData> edgeWrapData)
-		{
-			EdgeWrapData[] edgeWrapDataArray;
-			if (edgeWrapData is EdgeWrapData[])
-			{
-				edgeWrapDataArray = (EdgeWrapData[])edgeWrapData;
-			}
-			else
-			{
-				edgeWrapDataArray = new EdgeWrapData[((Topology)topology.generatedInstance).faceEdges.Count];
-				edgeWrapData.CopyTo(edgeWrapDataArray, 0);
-			}
-			this.edgeWrapData.SetGeneratedInstance(location, name, EdgeWrapDataEdgeAttribute.CreateInstance(edgeWrapDataArray, "Edge Wrap Data"));
+			vertexIndexer2D.SetAsset(vertexIndexer2DAsset);
+			faceIndexer2D.SetAsset(faceIndexer2DAsset);
+			faceNeighborIndexer.SetAsset(faceNeighborIndexerAsset);
 		}
 	}
 }

@@ -7,10 +7,10 @@ namespace Experilous.Topological
 	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(UtilitiesCategory), "Spherical Partitioning")]
 	public class SphericalPartitioningGenerator : AssetGenerator
 	{
-		public TopologyGeneratedAsset topology;
-		public Vector3VertexAttributeGeneratedAsset vertexPositions;
+		public AssetDescriptor topology;
+		public AssetDescriptor vertexPositions;
 
-		public SphericalPartitioningGeneratedAsset partitioning;
+		public AssetDescriptor partitioning;
 
 		public static SphericalPartitioningGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
 		{
@@ -21,7 +21,7 @@ namespace Experilous.Topological
 			return generator;
 		}
 
-		public override IEnumerable<GeneratedAsset> dependencies
+		public override IEnumerable<AssetDescriptor> dependencies
 		{
 			get
 			{
@@ -30,16 +30,16 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<GeneratedAsset> outputs
+		public override IEnumerable<AssetDescriptor> outputs
 		{
 			get
 			{
-				if (partitioning == null) partitioning = SphericalPartitioningGeneratedAsset.CreateDefaultInstance(this, "Spherical Partitioning");
+				if (partitioning == null) partitioning = AssetDescriptor.Create(this, typeof(SphericalPartitioning), "Spherical Partitioning");
 				yield return partitioning;
 			}
 		}
 
-		public override void ResetDependency(GeneratedAsset dependency)
+		public override void ResetDependency(AssetDescriptor dependency)
 		{
 			if (dependency == null) throw new System.ArgumentNullException("dependency");
 			if (!ResetMemberDependency(dependency, ref topology, ref vertexPositions))
@@ -48,10 +48,10 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate(string location, string name)
+		public override void Generate()
 		{
-			var instance = SphericalPartitioning.CreateInstance(topology.generatedInstance, vertexPositions.generatedInstance.array);
-			partitioning.SetGeneratedInstance(location, name, instance);
+			var instance = SphericalPartitioning.CreateInstance(topology.GetAsset<Topology>(), vertexPositions.GetAsset<IVertexAttribute<Vector3>>());
+			partitioning.SetAsset(instance);
 		}
 
 		public override bool CanGenerate()
