@@ -20,8 +20,8 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public int neighborCount { get { return _topology._vertexNeighborCounts[_index]; } }
-			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology._vertexFirstEdgeIndices[_index]); } }
+			public int neighborCount { get { return _topology.vertexNeighborCounts[_index]; } }
+			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology.vertexFirstEdgeIndices[_index]); } }
 
 			public bool isInitialized { get { return _topology != null; } }
 
@@ -57,7 +57,7 @@ namespace Experilous.Topological
 					_index = index;
 				}
 
-				public int Count { get { return _topology._vertexNeighborCounts[_index]; } }
+				public int Count { get { return _topology.vertexNeighborCounts[_index]; } }
 				
 				public struct VertexEdgeEnumerator
 				{
@@ -81,7 +81,7 @@ namespace Experilous.Topological
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._vNext;
+							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex]._vNext;
 							return true;
 						}
 						else
@@ -99,7 +99,7 @@ namespace Experilous.Topological
 
 				public VertexEdgeEnumerator GetEnumerator()
 				{
-					return new VertexEdgeEnumerator(_topology, _topology._vertexFirstEdgeIndices[_index]);
+					return new VertexEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
 				}
 			}
 
@@ -176,7 +176,7 @@ namespace Experilous.Topological
 
 			public VerticesIndexer(Topology topology) { _topology = topology; }
 			public Vertex this[int i] { get { return new Vertex(_topology, i); } }
-			public int Count { get { return _topology._vertexFirstEdgeIndices.Length; } }
+			public int Count { get { return _topology.vertexFirstEdgeIndices.Length; } }
 			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology); }
 
 			public struct VertexEnumerator
@@ -186,7 +186,7 @@ namespace Experilous.Topological
 
 				public VertexEnumerator(Topology topology) { _topology = topology; _current = -1; }
 				public Vertex Current { get { return new Vertex(_topology, _current); } }
-				public bool MoveNext() { return ++_current < _topology._vertexFirstEdgeIndices.Length; }
+				public bool MoveNext() { return ++_current < _topology.vertexFirstEdgeIndices.Length; }
 				public void Reset() { throw new NotSupportedException(); }
 			}
 		}

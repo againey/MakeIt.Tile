@@ -247,10 +247,10 @@ namespace Experilous.Topological
 			{
 				switch (neighborIndex)
 				{
-					case 0: return (_isWrappedVertically || faceIndex >= _faceColumnCount) ? 2 : faceIndex;
-					case 1: return (_isWrappedHorizontally || faceIndex % _faceColumnCount > 0) ? 3 : _faceRowCount - faceIndex / _faceColumnCount - 1;
-					case 2: return (_isWrappedVertically || faceIndex < _internalFaceCount - _faceColumnCount) ? 0 : _internalFaceCount - faceIndex - 1;
-					case 3: return (_isWrappedHorizontally || faceIndex % _faceColumnCount < _faceColumnCount - 1) ? 1 : faceIndex / _faceColumnCount;
+					case 0: return ExitsOnBottom(faceIndex) ? faceIndex : 2;
+					case 1: return ExitsOnLeft(faceIndex) ? _faceRowCount - faceIndex / _faceColumnCount - 1 : 3;
+					case 2: return ExitsOnTop(faceIndex) ? _internalFaceCount - faceIndex - 1 : 0;
+					case 3: return ExitsOnRight(faceIndex) ? faceIndex / _faceColumnCount : 1;
 					default: throw new ArgumentOutOfRangeException("neighborIndex");
 				}
 			}
@@ -290,17 +290,86 @@ namespace Experilous.Topological
 			{
 				switch (neighborIndex)
 				{
-					case 0: return (!_isWrappedVertically || faceIndex >= _faceColumnCount) ? EdgeWrap.None : EdgeWrap.NegativeAxis1;
-					case 1: return (!_isWrappedHorizontally || faceIndex % _faceColumnCount > 0) ? EdgeWrap.None : EdgeWrap.NegativeAxis0;
-					case 2: return (!_isWrappedVertically || faceIndex < _internalFaceCount - _faceColumnCount) ? EdgeWrap.None : EdgeWrap.PositiveAxis1;
-					case 3: return (!_isWrappedHorizontally || faceIndex % _faceColumnCount < _faceColumnCount - 1) ? EdgeWrap.None : EdgeWrap.PositiveAxis0;
-					default: throw new ArgumentOutOfRangeException("neighborIndex");
+					case 0: return
+						(WrapsOnRight(faceIndex) ? EdgeWrap.NegVertToVertAxis0 | EdgeWrap.NegVertToFaceAxis0 : EdgeWrap.None) |
+						(WrapsOnBottom(faceIndex) ? EdgeWrap.NegVertToFaceAxis1 | EdgeWrap.NegFaceToFaceAxis1 : EdgeWrap.None);
+					case 1: return
+						(WrapsOnTop(faceIndex) ? EdgeWrap.PosVertToVertAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None) |
+						(WrapsOnLeft(faceIndex) ? EdgeWrap.NegVertToFaceAxis0 | EdgeWrap.NegFaceToFaceAxis0 : EdgeWrap.None);
+					case 2: return
+						(WrapsOnRight(faceIndex) ? EdgeWrap.PosVertToVertAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None) |
+						(WrapsOnTop(faceIndex) ? EdgeWrap.PosFaceToFaceAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None);
+					case 3: return
+						(WrapsOnTop(faceIndex) ? EdgeWrap.NegVertToVertAxis1 | EdgeWrap.NegVertToFaceAxis1 : EdgeWrap.None) |
+						(WrapsOnRight(faceIndex) ? EdgeWrap.PosFaceToFaceAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None);
+					default:
+						throw new ArgumentOutOfRangeException("neighborIndex");
 				}
 			}
 			else
 			{
 				return new EdgeWrap();
 			}
+		}
+
+		private bool IsOnLeft(int faceIndex)
+		{
+			return faceIndex % _faceColumnCount == 0;
+		}
+
+		private bool IsOnRight(int faceIndex)
+		{
+			return faceIndex % _faceColumnCount == _faceColumnCount - 1;
+		}
+
+		private bool IsOnBottom(int faceIndex)
+		{
+			return faceIndex < _faceColumnCount;
+		}
+
+		private bool IsOnTop(int faceIndex)
+		{
+			return faceIndex >= _internalFaceCount - _faceColumnCount;
+		}
+
+		private bool ExitsOnLeft(int faceIndex)
+		{
+			return !_isWrappedHorizontally && IsOnLeft(faceIndex);
+		}
+
+		private bool ExitsOnRight(int faceIndex)
+		{
+			return !_isWrappedHorizontally && IsOnRight(faceIndex);
+		}
+
+		private bool ExitsOnBottom(int faceIndex)
+		{
+			return !_isWrappedVertically && IsOnBottom(faceIndex);
+		}
+
+		private bool ExitsOnTop(int faceIndex)
+		{
+			return !_isWrappedVertically && IsOnTop(faceIndex);
+		}
+
+		private bool WrapsOnLeft(int faceIndex)
+		{
+			return _isWrappedHorizontally && IsOnLeft(faceIndex);
+		}
+
+		private bool WrapsOnRight(int faceIndex)
+		{
+			return _isWrappedHorizontally && IsOnRight(faceIndex);
+		}
+
+		private bool WrapsOnBottom(int faceIndex)
+		{
+			return _isWrappedVertically && IsOnBottom(faceIndex);
+		}
+
+		private bool WrapsOnTop(int faceIndex)
+		{
+			return _isWrappedVertically && IsOnTop(faceIndex);
 		}
 	}
 }

@@ -49,11 +49,11 @@ namespace Experilous.Topological
 			return generator;
 		}
 
-		[MenuItem("Assets/Create/Topology/Planar Manifold Generator")]
+		[MenuItem("Assets/Create/Topology/Wrapped Planar Manifold Generator")]
 		public static void CreateDefaultGeneratorBundle()
 		{
 			var bundle = TopologyGeneratorBundle.CreateDefaultInstance("New Wrapped Planar Manifold");
-			bundle.Add(CreateDefaultInstance(bundle, "Planar Manifold"));
+			bundle.Add(CreateDefaultInstance(bundle, "Manifold"));
 			bundle.CreateAsset();
 		}
 
@@ -113,7 +113,8 @@ namespace Experilous.Topological
 				size.x > 0 &&
 				size.y > 0 &&
 				horizontalAxis != new Vector3(0f, 0f, 0f) &&
-				verticalAxis != new Vector3(0f, 0f, 0f);
+				verticalAxis != new Vector3(0f, 0f, 0f) &&
+				Mathf.Abs(Vector3.Dot(horizontalAxis, verticalAxis)) < 0.99f; //Axes are not nearly parallel
 		}
 
 		private void CreateQuadGridManifold()

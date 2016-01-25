@@ -36,7 +36,7 @@ namespace Experilous.Topological
 		public static void CreateDefaultGeneratorBundle()
 		{
 			var bundle = TopologyGeneratorBundle.CreateDefaultInstance("New Spherical Manifold");
-			bundle.Add(CreateDefaultInstance(bundle, "Spherical Manifold"));
+			bundle.Add(CreateDefaultInstance(bundle, "Manifold"));
 			bundle.CreateAsset();
 		}
 

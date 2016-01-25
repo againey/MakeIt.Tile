@@ -84,15 +84,15 @@ namespace Experilous.Topological
 				faceGroupFaceIndices[i] = new List<int>();
 			}
 
-			foreach (var face in topologyAsset.faces)
+			foreach (var face in topologyAsset.internalFaces)
 			{
 				var facePosition = facePositionsAsset[face];
 
 				var axis0Offset = Vector3.Dot(axis1Normal, facePosition - origin) / axis0Dot;
 				var axis1Offset = Vector3.Dot(axis0Normal, facePosition - origin) / axis1Dot;
 
-				var axis0Index = MathUtility.Modulo(Mathf.FloorToInt(axis0Offset), axisDivisions.x);
-				var axis1Index = MathUtility.Modulo(Mathf.FloorToInt(axis1Offset), axisDivisions.y);
+				var axis0Index = Mathf.Clamp(Mathf.FloorToInt(axis0Offset), 0, axisDivisions.x - 1);
+				var axis1Index = Mathf.Clamp(Mathf.FloorToInt(axis1Offset), 0, axisDivisions.y - 1);
 
 				faceGroupFaceIndices[axis0Index + axis1Index * axisDivisions.x].Add(face.index);
 			}

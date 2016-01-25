@@ -170,12 +170,12 @@ namespace Experilous.Topological
 			ManifoldUtility.Subdivide(topology, vertexPositions, degree, interpolator, out subdividedTopology, out subdividedVertexPositions);
 		}
 
-		public static IList<Vector3> RelaxVertexPositionsForRegularity(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions)
+		public static IVertexAttribute<Vector3> RelaxVertexPositionsForRegularity(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions)
 		{
-			return RelaxVertexPositionsForRegularity(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, new Vector3[topology.vertices.Count]);
+			return RelaxVertexPositionsForRegularity(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, new Vector3[topology.vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<Vector3> RelaxVertexPositionsForRegularity(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions)
+		public static IVertexAttribute<Vector3> RelaxVertexPositionsForRegularity(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions)
 		{
 			foreach (var vertex in topology.vertices)
 			{
@@ -201,19 +201,19 @@ namespace Experilous.Topological
 			return relaxedVertexPositions;
 		}
 
-		public static IList<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions)
+		public static IVertexAttribute<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions)
 		{
-			return RelaxForEqualArea(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, new Vector3[topology.vertices.Count]);
+			return RelaxForEqualArea(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, new Vector3[topology.vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions)
+		public static IVertexAttribute<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions)
 		{
-			return RelaxForEqualArea(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, relaxedVertexPositions, new Vector3[topology.vertices.Count], new float[topology.faceEdges.Count], new float[topology.vertices.Count]);
+			return RelaxForEqualArea(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, relaxedVertexPositions, new Vector3[topology.internalFaces.Count].AsFaceAttribute(), new float[topology.faceEdges.Count].AsEdgeAttribute(), new float[topology.vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IList<Vector3> relaxedVertexPositions, IList<Vector3> faceCentroids, IList<float> faceCentroidAngles, IList<float> vertexAreas)
+		public static IVertexAttribute<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions, IFaceAttribute<Vector3> faceCentroids, IEdgeAttribute<float> faceCentroidAngles, IVertexAttribute<float> vertexAreas)
 		{
-			var idealArea = 4f * Mathf.PI / topology.vertices.Count;
+			var idealArea = circumsphereRadius * circumsphereRadius * 4f * Mathf.PI / topology.vertices.Count;
 
 			FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, vertexPositions, circumsphereRadius, faceCentroids);
 			EdgeAttributeUtility.CalculateFaceCentroidAnglesFromFaceCentroids(topology.faceEdges, faceCentroids, faceCentroidAngles); //TODO: spherical angles?
@@ -247,6 +247,16 @@ namespace Experilous.Topological
 			}
 
 			return relaxedVertexPositions;
+		}
+
+		public static float CalculateRelaxationAmount(IVertexAttribute<Vector3> originalVertexPositions, IVertexAttribute<Vector3> relaxedVertexPositions)
+		{
+			float relaxationAmount = 0f;
+			for (int i = 0; i < originalVertexPositions.Count; ++i)
+			{
+				relaxationAmount += (originalVertexPositions[i] - relaxedVertexPositions[i]).magnitude;
+			}
+			return relaxationAmount;
 		}
 
 		public static bool ValidateAndRepair(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, float adjustmentWeight, bool lockBoundaryPositions)

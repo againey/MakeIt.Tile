@@ -20,10 +20,10 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public bool isInternal { get { return (_topology._faceNeighborCounts[_index] & 0x8000u) == 0x0000u; } }
-			public bool isExternal { get { return (_topology._faceNeighborCounts[_index] & 0x8000u) == 0x8000u; } }
-			public int neighborCount { get { return (int)(_topology._faceNeighborCounts[_index] & 0x7FFFu); } }
-			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology._faceFirstEdgeIndices[_index]); } }
+			public bool isInternal { get { return _index < _topology.firstExternalFaceIndex; } }
+			public bool isExternal { get { return _index >= _topology.firstExternalFaceIndex; } }
+			public int neighborCount { get { return (int)_topology.faceNeighborCounts[_index]; } }
+			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology.faceFirstEdgeIndices[_index]); } }
 
 			public bool isInitialized { get { return _topology != null; } }
 
@@ -59,7 +59,7 @@ namespace Experilous.Topological
 					_index = index;
 				}
 
-				public int Count { get { return (int)(_topology._faceNeighborCounts[_index] & 0x7FFFu); } }
+				public int Count { get { return (int)(_topology.faceNeighborCounts[_index] & 0x7FFFu); } }
 				
 				public struct FaceEdgeEnumerator
 				{
@@ -83,7 +83,7 @@ namespace Experilous.Topological
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._fNext;
+							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex]._fNext;
 							return true;
 						}
 						else
@@ -101,7 +101,7 @@ namespace Experilous.Topological
 
 				public FaceEdgeEnumerator GetEnumerator()
 				{
-					return new FaceEdgeEnumerator(_topology, _topology._faceFirstEdgeIndices[_index]);
+					return new FaceEdgeEnumerator(_topology, _topology.faceFirstEdgeIndices[_index]);
 				}
 			}
 
@@ -178,7 +178,7 @@ namespace Experilous.Topological
 			private int _first;
 			private int _last;
 
-			public FacesIndexer(Topology topology) { _topology = topology; _first = 0; _last = _topology._faceFirstEdgeIndices.Length; }
+			public FacesIndexer(Topology topology) { _topology = topology; _first = 0; _last = _topology.faceFirstEdgeIndices.Length; }
 			public FacesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
 			public Face this[int i] { get { return new Face(_topology, _first + i); } set { throw new NotSupportedException(); } }
 			public int Count { get { return _last - _first; } }
@@ -216,13 +216,53 @@ namespace Experilous.Topological
 		}
 
 		public FacesIndexer faces { get { return new FacesIndexer(this); } }
-		public FacesIndexer internalFaces { get { return new FacesIndexer(this, 0, _firstExternalFaceIndex); } }
-		public FacesIndexer externalFaces { get { return new FacesIndexer(this, _firstExternalFaceIndex, _faceFirstEdgeIndices.Length); } }
+		public FacesIndexer internalFaces { get { return new FacesIndexer(this, 0, firstExternalFaceIndex); } }
+		public FacesIndexer externalFaces { get { return new FacesIndexer(this, firstExternalFaceIndex, faceFirstEdgeIndices.Length); } }
 	}
 
 	public interface IFaceAttribute<T> : IList<T>
 	{
 		T this[Topology.Face f] { get; set; }
+	}
+
+	public struct FaceAttributeArrayWrapper<T> : IFaceAttribute<T>
+	{
+		public T[] array;
+
+		public FaceAttributeArrayWrapper(T[] array)
+		{
+			this.array = array;
+		}
+
+		public FaceAttributeArrayWrapper(int elementCount)
+		{
+			array = new T[elementCount];
+		}
+
+		public T this[int i]
+		{
+			get { return array[i]; }
+			set { array[i] = value; }
+		}
+
+		public T this[Topology.Face v]
+		{
+			get { return array[v.index]; }
+			set { array[v.index] = value; }
+		}
+
+		public int Count { get { return array.Length; } }
+		public bool IsReadOnly { get { return true; } }
+		public void Add(T item) { throw new NotSupportedException(); }
+		public void Clear() { throw new NotSupportedException(); }
+		public bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+		public void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+		public IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+		public int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
+		public void Insert(int index, T item) { throw new NotSupportedException(); }
+		public bool Remove(T item) { throw new NotSupportedException(); }
+		public void RemoveAt(int index) { throw new NotSupportedException(); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 	}
 
 	public abstract class FaceAttribute<T> : ScriptableObject, IFaceAttribute<T>
@@ -376,6 +416,14 @@ namespace Experilous.Topological
 		{
 			get { return faceGroupData[faceGroupIndices[f]]; }
 			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+		}
+	}
+
+	public static class FaceExtensions
+	{
+		public static FaceAttributeArrayWrapper<T> AsFaceAttribute<T>(this T[] array)
+		{
+			return new FaceAttributeArrayWrapper<T>(array);
 		}
 	}
 }

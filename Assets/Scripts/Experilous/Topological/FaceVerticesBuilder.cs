@@ -543,7 +543,7 @@ namespace Experilous.Topological
 					faceVertex2 = _faceVertices[faceVertex1]._next;
 				} while (faceVertex0 != firstFaceVertex);
 
-				internalFaceNeighborCounts[face] = (ushort)(0x0000u | (neighborCount & 0x7FFFu));
+				internalFaceNeighborCounts[face] = (ushort)neighborCount;
 				internalFaceFirstEdgeIndices[face] = edgeData[firstEdge]._twin;
 				edge = firstEdge + neighborCount;
 			}
@@ -643,14 +643,14 @@ namespace Experilous.Topological
 						} while (faceEdgeIndex != firstFaceEdgeIndex);
 
 						// Store the face count and link the face to the first edge.
-						faceNeighborCounts[faceIndex] = (ushort)(0x8000u | (neighborCount & 0x7FFFu));
+						faceNeighborCounts[faceIndex] = (ushort)neighborCount;
 						faceFirstEdgeIndices[faceIndex] = firstFaceEdgeIndex;
 						++faceIndex;
 					}
 				}
 			}
 
-			return Topology.CreateInstance(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, internalEdgeData.Length, internalFaceFirstEdgeIndices.Length);
+			return Topology.Create(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, internalEdgeData.Length, internalFaceFirstEdgeIndices.Length);
 		}
 	}
 }

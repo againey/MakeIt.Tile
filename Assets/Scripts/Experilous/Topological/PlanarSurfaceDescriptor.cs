@@ -77,66 +77,57 @@ namespace Experilous.Topological
 			}
 		}
 
-		public Vector3 Offset(Vector3 position, EdgeWrap edgeWrap)
+		public Vector3 OffsetVertToVertAttribute(Vector3 position, EdgeWrap edgeWrap)
 		{
-			switch (edgeWrap)
+			switch (edgeWrap & EdgeWrap.VertToVert)
 			{
 				case EdgeWrap.None:
-				case EdgeWrap.Axis0:
-				case EdgeWrap.Axis1:
-				case EdgeWrap.Axis0 | EdgeWrap.Axis1:
 					return position;
-				case EdgeWrap.PositiveAxis0:
-				case EdgeWrap.PositiveAxis0 | EdgeWrap.Axis1:
+				case EdgeWrap.PosVertToVertAxis0:
 					return position + axis0.vector;
-				case EdgeWrap.NegativeAxis0:
-				case EdgeWrap.NegativeAxis0 | EdgeWrap.Axis1:
+				case EdgeWrap.NegVertToVertAxis0:
 					return position - axis0.vector;
-				case EdgeWrap.PositiveAxis1:
-				case EdgeWrap.PositiveAxis1 | EdgeWrap.Axis0:
+				case EdgeWrap.PosVertToVertAxis1:
 					return position + axis1.vector;
-				case EdgeWrap.NegativeAxis1:
-				case EdgeWrap.NegativeAxis1 | EdgeWrap.Axis0:
+				case EdgeWrap.NegVertToVertAxis1:
 					return position - axis1.vector;
-				case EdgeWrap.PositiveAxis0 | EdgeWrap.PositiveAxis1:
+				case EdgeWrap.PosVertToVertAxis0 | EdgeWrap.PosVertToVertAxis1:
 					return position + axis0.vector + axis1.vector;
-				case EdgeWrap.PositiveAxis0 | EdgeWrap.NegativeAxis1:
+				case EdgeWrap.PosVertToVertAxis0 | EdgeWrap.NegVertToVertAxis1:
 					return position + axis0.vector - axis1.vector;
-				case EdgeWrap.NegativeAxis0 | EdgeWrap.PositiveAxis1:
+				case EdgeWrap.NegVertToVertAxis0 | EdgeWrap.PosVertToVertAxis1:
 					return position - axis0.vector + axis1.vector;
-				case EdgeWrap.NegativeAxis0 | EdgeWrap.NegativeAxis1:
+				case EdgeWrap.NegVertToVertAxis0 | EdgeWrap.NegVertToVertAxis1:
 					return position - axis0.vector - axis1.vector;
 				default:
-					throw new NotSupportedException(string.Format("Cannot offset a position according to the specified edge wrap data {0} because it references an axis beyond the first two or references both the positive and negative of an axis.", edgeWrap));
+					throw new ArgumentException("edgeWrap");
 			}
 		}
 
-		public Vector3 OffsetPositive(Vector3 position, EdgeWrap edgeWrap)
+		public Vector3 OffsetFaceToVertAttribute(Vector3 position, EdgeWrap edgeWrap)
 		{
-			switch (edgeWrap)
+			switch (edgeWrap & EdgeWrap.FaceToVert)
 			{
 				case EdgeWrap.None:
-				case EdgeWrap.Axis0:
-				case EdgeWrap.Axis1:
-				case EdgeWrap.Axis0 | EdgeWrap.Axis1:
-				case EdgeWrap.NegativeAxis0:
-				case EdgeWrap.NegativeAxis0 | EdgeWrap.Axis1:
-				case EdgeWrap.NegativeAxis1:
-				case EdgeWrap.NegativeAxis1 | EdgeWrap.Axis0:
-				case EdgeWrap.NegativeAxis0 | EdgeWrap.NegativeAxis1:
 					return position;
-				case EdgeWrap.PositiveAxis0:
-				case EdgeWrap.PositiveAxis0 | EdgeWrap.Axis1:
-				case EdgeWrap.PositiveAxis0 | EdgeWrap.NegativeAxis1:
+				case EdgeWrap.PosFaceToVertAxis0:
 					return position + axis0.vector;
-				case EdgeWrap.PositiveAxis1:
-				case EdgeWrap.PositiveAxis1 | EdgeWrap.Axis0:
-				case EdgeWrap.NegativeAxis0 | EdgeWrap.PositiveAxis1:
+				case EdgeWrap.NegFaceToVertAxis0:
+					return position - axis0.vector;
+				case EdgeWrap.PosFaceToVertAxis1:
 					return position + axis1.vector;
-				case EdgeWrap.PositiveAxis0 | EdgeWrap.PositiveAxis1:
+				case EdgeWrap.NegFaceToVertAxis1:
+					return position - axis1.vector;
+				case EdgeWrap.PosFaceToVertAxis0 | EdgeWrap.PosFaceToVertAxis1:
 					return position + axis0.vector + axis1.vector;
+				case EdgeWrap.PosFaceToVertAxis0 | EdgeWrap.NegFaceToVertAxis1:
+					return position + axis0.vector - axis1.vector;
+				case EdgeWrap.NegFaceToVertAxis0 | EdgeWrap.PosFaceToVertAxis1:
+					return position - axis0.vector + axis1.vector;
+				case EdgeWrap.NegFaceToVertAxis0 | EdgeWrap.NegFaceToVertAxis1:
+					return position - axis0.vector - axis1.vector;
 				default:
-					throw new NotSupportedException(string.Format("Cannot offset a position according to the specified edge wrap data {0} because it references an axis beyond the first two or references both the positive and negative of an axis.", edgeWrap));
+					throw new ArgumentException("edgeWrap");
 			}
 		}
 	}

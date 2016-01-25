@@ -454,6 +454,21 @@ namespace Experilous
 			_location = location;
 			this.name = name;
 
+			_persistedAssets.RemoveAll((Object obj) => { return obj == null; });
+			var persistedGroupsToRemove = new List<string>();
+			foreach (var persistedGroup in _persistedGroups)
+			{
+				persistedGroup.Value.assets.RemoveAll((Object obj) => { return obj == null; });
+				if (persistedGroup.Value.assets.Count == 0)
+				{
+					persistedGroupsToRemove.Add(persistedGroup.Key);
+				}
+			}
+			foreach (var persistedGroupToRemove in persistedGroupsToRemove)
+			{
+				_persistedGroups.Remove(persistedGroupToRemove);
+			}
+
 			var orderedGenerators = new List<AssetGenerator>();
 			var unorderedGenerators = new List<AssetGenerator>();
 

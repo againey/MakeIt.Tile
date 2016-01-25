@@ -42,7 +42,7 @@ namespace Experilous.Topological
 		public static void CreateDefaultGeneratorBundle()
 		{
 			var bundle = TopologyGeneratorBundle.CreateDefaultInstance("New Planar Manifold");
-			bundle.Add(CreateDefaultInstance(bundle, "Planar Manifold"));
+			bundle.Add(CreateDefaultInstance(bundle, "Manifold"));
 			bundle.CreateAsset();
 		}
 
@@ -98,7 +98,8 @@ namespace Experilous.Topological
 				size.x > 0 &&
 				size.y > 0 &&
 				horizontalAxis != new Vector3(0f, 0f, 0f) &&
-				verticalAxis != new Vector3(0f, 0f, 0f);
+				verticalAxis != new Vector3(0f, 0f, 0f) &&
+				Mathf.Abs(Vector3.Dot(horizontalAxis, verticalAxis)) < 0.99f; //Axes are not nearly parallel
 		}
 
 		private void CreateQuadGridManifold()
@@ -106,7 +107,7 @@ namespace Experilous.Topological
 			Topology topologyAsset;
 			Vector3[] vertexPositionsArray;
 
-			var surfaceDescriptorAsset = PlanarSurfaceDescriptor.Create(horizontalAxis, verticalAxis);
+			var surfaceDescriptorAsset = PlanarSurfaceDescriptor.Create(horizontalAxis * size.x, false, verticalAxis * size.y, false);
 			var vertexIndexer2DAsset = RowMajorQuadGridVertexIndexer2D.CreateInstance(size.x, size.y);
 			var faceIndexer2DAsset = RowMajorQuadGridFaceIndexer2D.CreateInstance(size.x, size.y);
 			var faceNeighborIndexerAsset = RowMajorQuadGridFaceNeighborIndexer.CreateInstance(size.x, size.y);

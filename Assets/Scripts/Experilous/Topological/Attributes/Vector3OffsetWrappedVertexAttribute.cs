@@ -54,9 +54,14 @@ namespace Experilous.Topological
 			return clone;
 		}
 
-		protected override Vector3 GetAttribute(Vector3 vertexValue, EdgeWrap edgeWrap)
+		protected override Vector3 GetVertexRelativeAttribute(Vector3 vertexValue, EdgeWrap edgeWrap)
 		{
-			return surfaceDescriptor.OffsetPositive(vertexValue, edgeWrap);
+			return surfaceDescriptor.OffsetVertToVertAttribute(vertexValue, edgeWrap);
+		}
+
+		protected override Vector3 GetFaceRelativeAttribute(Vector3 vertexValue, EdgeWrap edgeWrap)
+		{
+			return surfaceDescriptor.OffsetFaceToVertAttribute(vertexValue, edgeWrap);
 		}
 	}
 }

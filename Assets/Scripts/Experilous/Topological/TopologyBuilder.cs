@@ -87,7 +87,7 @@ namespace Experilous.Topological
 				vertexNeighborCounts[vertexIndex] = neighborCount;
 			}
 
-			return Topology.CreateInstance(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, indexer.internalEdgeCount, indexer.internalFaceCount);
+			return Topology.Create(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, indexer.internalEdgeCount, indexer.internalFaceCount);
 		}
 	}
 }

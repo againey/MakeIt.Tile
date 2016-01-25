@@ -402,7 +402,7 @@ namespace Experilous.Topological
 						} while (faceEdgeIndex != edgeIndex);
 
 						// Store the face count and link the face to the first edge.
-						faceNeighborCounts[faceIndex] = (ushort)(0x0000u | (neighborCount & 0x7FFFu));
+						faceNeighborCounts[faceIndex] = (ushort)neighborCount;
 						faceFirstEdgeIndices[faceIndex] = edgeData[edgeIndex]._twin;
 						++faceIndex;
 					}
@@ -435,7 +435,7 @@ namespace Experilous.Topological
 						} while (faceEdgeIndex != edgeIndex);
 
 						// Store the face count and link the face to the first edge.
-						faceNeighborCounts[faceIndex] = (ushort)(0x0000u | (neighborCount & 0x7FFFu));
+						faceNeighborCounts[faceIndex] = (ushort)neighborCount;
 						faceFirstEdgeIndices[faceIndex] = edgeData[edgeIndex]._twin;
 						++faceIndex;
 					}
@@ -444,7 +444,7 @@ namespace Experilous.Topological
 				if (faceIndex != _faceCount) throw new System.InvalidOperationException("The actual number of faces does not match the number specified when the topology builder was first constructed.");
 			}
 
-			return Topology.CreateInstance(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, edgeData.Length, faceFirstEdgeIndices.Length);
+			return Topology.Create(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, edgeData.Length, faceFirstEdgeIndices.Length);
 		}
 	}
 }
