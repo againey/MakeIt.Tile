@@ -65,7 +65,7 @@ namespace Experilous.Topological
 		public override void Generate()
 		{
 			var topologyAsset = topology.GetAsset<Topology>();
-			var faceGroupIndicesArray = new int[topologyAsset.internalFaces.Count];
+			var faceGroupIndicesArray = new int[topologyAsset.internalFaces.Count].AsFaceAttribute();
 			List<int>[] faceGroupFaceIndices;
 
 			//if (clustered || true) //TODO create an unclustered version
@@ -89,14 +89,14 @@ namespace Experilous.Topological
 					} while (visitor.IsRoot(face));
 					visitor.AddRoot(face);
 					faceGroupIndicesArray[face] = faceGroupIndex;
-					faceGroupFaceIndices[faceGroupIndex].Add(face);
+					faceGroupFaceIndices[faceGroupIndex].Add(face.index);
 				}
 
 				foreach (var edge in (IEnumerable<Topology.FaceEdge>)visitor)
 				{
 					var faceGroupIndex = faceGroupIndicesArray[edge.nearFace];
 					faceGroupIndicesArray[edge.farFace] = faceGroupIndex;
-					faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace);
+					faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace.index);
 				}
 			}
 
@@ -123,7 +123,7 @@ namespace Experilous.Topological
 			faceGroupIndices.groupName = faceGroupCollection.name;
 
 			faceGroupCollection.SetAsset(faceGroupCollectionAsset);
-			faceGroupIndices.SetAsset(IntFaceAttribute.CreateInstance(faceGroupIndicesArray));
+			faceGroupIndices.SetAsset(IntFaceAttribute.CreateInstance(faceGroupIndicesArray.array));
 		}
 
 		public override bool CanGenerate()

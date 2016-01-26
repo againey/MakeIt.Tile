@@ -38,11 +38,6 @@ namespace Experilous.Topological
 				}
 			}
 
-			public static implicit operator int(Face face)
-			{
-				return face._index;
-			}
-
 			public T Attribute<T>(T[] attributeArray)
 			{
 				return attributeArray[_index];
@@ -223,6 +218,8 @@ namespace Experilous.Topological
 	public interface IFaceAttribute<T> : IList<T>
 	{
 		T this[Topology.Face f] { get; set; }
+		T this[Topology.VertexEdge e] { get; set; }
+		T this[Topology.FaceEdge e] { get; set; }
 	}
 
 	public struct FaceAttributeArrayWrapper<T> : IFaceAttribute<T>
@@ -245,10 +242,22 @@ namespace Experilous.Topological
 			set { array[i] = value; }
 		}
 
-		public T this[Topology.Face v]
+		public T this[Topology.Face f]
 		{
-			get { return array[v.index]; }
-			set { array[v.index] = value; }
+			get { return array[f.index]; }
+			set { array[f.index] = value; }
+		}
+
+		public T this[Topology.VertexEdge e]
+		{
+			get { return array[e.prevFace.index]; }
+			set { array[e.prevFace.index] = value; }
+		}
+
+		public T this[Topology.FaceEdge e]
+		{
+			get { return array[e.farFace.index]; }
+			set { array[e.farFace.index] = value; }
 		}
 
 		public int Count { get { return array.Length; } }
@@ -269,6 +278,8 @@ namespace Experilous.Topological
 	{
 		public abstract T this[int i] { get; set; }
 		public abstract T this[Topology.Face f] { get; set; }
+		public abstract T this[Topology.VertexEdge e] { get; set; }
+		public abstract T this[Topology.FaceEdge e] { get; set; }
 
 		public virtual int Count { get { throw new NotSupportedException(); } }
 		public virtual bool IsReadOnly { get { return true; } }
@@ -335,6 +346,18 @@ namespace Experilous.Topological
 			get { return constant; }
 			set { throw new NotSupportedException("Values of a constant face attribute cannot be changed."); }
 		}
+
+		public override T this[Topology.VertexEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant face attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.FaceEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant face attribute cannot be changed."); }
+		}
 	}
 
 	public class FaceArrayAttribute<T> : FaceAttribute<T> where T : new()
@@ -389,6 +412,18 @@ namespace Experilous.Topological
 			set { array[f.index] = value; }
 		}
 
+		public override T this[Topology.VertexEdge e]
+		{
+			get { return array[e.prevFace.index]; }
+			set { array[e.prevFace.index] = value; }
+		}
+
+		public override T this[Topology.FaceEdge e]
+		{
+			get { return array[e.farFace.index]; }
+			set { array[e.farFace.index] = value; }
+		}
+
 		public override int Count { get { return array.Length; } }
 		public override bool Contains(T item) { return ((IList<T>)array).Contains(item); }
 		public override void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
@@ -415,6 +450,18 @@ namespace Experilous.Topological
 		public override T this[Topology.Face f]
 		{
 			get { return faceGroupData[faceGroupIndices[f]]; }
+			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+		}
+
+		public override T this[Topology.VertexEdge e]
+		{
+			get { return faceGroupData[faceGroupIndices[e.prevFace]]; }
+			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+		}
+
+		public override T this[Topology.FaceEdge e]
+		{
+			get { return faceGroupData[faceGroupIndices[e.farFace]]; }
 			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 	}

@@ -65,14 +65,14 @@ namespace Experilous.Topological
 			topology.edgeData[outerEdgeIndex1]._fNext = outerEdgeIndex2;
 
 			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
-			if (oldVertexIndex != -1) topology.vertexFirstEdgeIndices[oldVertexIndex] = innerEdgeIndex1;
-			if (prevFaceIndex != -1) topology.faceFirstEdgeIndices[prevFaceIndex] = twinEdgeIndex;
+			topology.vertexFirstEdgeIndices[oldVertexIndex] = innerEdgeIndex1;
+			topology.faceFirstEdgeIndices[prevFaceIndex] = twinEdgeIndex;
 
 			// Adjust neighbor counts.
-			if (oldVertexIndex != -1) topology.vertexNeighborCounts[oldVertexIndex] -= 1;
-			if (newVertexIndex != -1) topology.vertexNeighborCounts[newVertexIndex] += 1;
-			if (prevFaceIndex != -1) topology.faceNeighborCounts[prevFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
-			if (nextFaceIndex != -1) topology.faceNeighborCounts[nextFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
+			topology.vertexNeighborCounts[oldVertexIndex] -= 1;
+			topology.vertexNeighborCounts[newVertexIndex] += 1;
+			topology.faceNeighborCounts[prevFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
+			topology.faceNeighborCounts[nextFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 		}
 
 		private static void PivotVertexEdgeBackwardUnchecked(Topology topology, IEdgeAttribute<EdgeWrap> edgeWrap, int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
@@ -107,14 +107,14 @@ namespace Experilous.Topological
 			topology.edgeData[outerEdgeIndex1]._fNext = outerEdgeIndex2;
 
 			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
-			if (oldVertexIndex != -1) topology.vertexFirstEdgeIndices[oldVertexIndex] = innerEdgeIndex1;
-			if (prevFaceIndex != -1) topology.faceFirstEdgeIndices[prevFaceIndex] = twinEdgeIndex;
+			topology.vertexFirstEdgeIndices[oldVertexIndex] = innerEdgeIndex1;
+			topology.faceFirstEdgeIndices[prevFaceIndex] = twinEdgeIndex;
 
 			// Adjust neighbor counts.
-			if (oldVertexIndex != -1) topology.vertexNeighborCounts[oldVertexIndex] -= 1;
-			if (newVertexIndex != -1) topology.vertexNeighborCounts[newVertexIndex] += 1;
-			if (prevFaceIndex != -1) topology.faceNeighborCounts[prevFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
-			if (nextFaceIndex != -1) topology.faceNeighborCounts[nextFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
+			topology.vertexNeighborCounts[oldVertexIndex] -= 1;
+			topology.vertexNeighborCounts[newVertexIndex] += 1;
+			topology.faceNeighborCounts[prevFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
+			topology.faceNeighborCounts[nextFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 
 			edgeWrap[edgeIndex] =
 				EdgeWrapUtility.ChainVertToVertToVert(edgeWrap[edgeIndex], edgeWrap[innerEdgeIndex1]) | //vert-to-vert
@@ -198,14 +198,14 @@ namespace Experilous.Topological
 			topology.edgeData[outerEdgeIndex1]._fNext = twinEdgeIndex;
 
 			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
-			if (oldVertexIndex != -1) topology.vertexFirstEdgeIndices[oldVertexIndex] = outerEdgeIndex1;
-			if (nextFaceIndex != -1) topology.faceFirstEdgeIndices[nextFaceIndex] = edgeIndex;
+			topology.vertexFirstEdgeIndices[oldVertexIndex] = outerEdgeIndex1;
+			topology.faceFirstEdgeIndices[nextFaceIndex] = edgeIndex;
 
 			// Adjust neighbor counts.
-			if (oldVertexIndex != -1) topology.vertexNeighborCounts[oldVertexIndex] -= 1;
-			if (newVertexIndex != -1) topology.vertexNeighborCounts[newVertexIndex] += 1;
-			if (nextFaceIndex != -1) topology.faceNeighborCounts[nextFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
-			if (prevFaceIndex != -1) topology.faceNeighborCounts[prevFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
+			topology.vertexNeighborCounts[oldVertexIndex] -= 1;
+			topology.vertexNeighborCounts[newVertexIndex] += 1;
+			topology.faceNeighborCounts[nextFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
+			topology.faceNeighborCounts[prevFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 		}
 
 		private static void PivotVertexEdgeForwardUnchecked(Topology topology, IEdgeAttribute<EdgeWrap> edgeWrap, int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
@@ -240,14 +240,14 @@ namespace Experilous.Topological
 			topology.edgeData[outerEdgeIndex1]._fNext = twinEdgeIndex;
 
 			// Reroot the vertex and face that just lost edges with edges guaranteed to still belong.
-			if (oldVertexIndex != -1) topology.vertexFirstEdgeIndices[oldVertexIndex] = outerEdgeIndex1;
-			if (nextFaceIndex != -1) topology.faceFirstEdgeIndices[nextFaceIndex] = edgeIndex;
+			topology.vertexFirstEdgeIndices[oldVertexIndex] = outerEdgeIndex1;
+			topology.faceFirstEdgeIndices[nextFaceIndex] = edgeIndex;
 
 			// Adjust neighbor counts.
-			if (oldVertexIndex != -1) topology.vertexNeighborCounts[oldVertexIndex] -= 1;
-			if (newVertexIndex != -1) topology.vertexNeighborCounts[newVertexIndex] += 1;
-			if (nextFaceIndex != -1) topology.faceNeighborCounts[nextFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
-			if (prevFaceIndex != -1) topology.faceNeighborCounts[prevFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
+			topology.vertexNeighborCounts[oldVertexIndex] -= 1;
+			topology.vertexNeighborCounts[newVertexIndex] += 1;
+			topology.faceNeighborCounts[nextFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
+			topology.faceNeighborCounts[prevFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 
 			edgeWrap[edgeIndex] =
 				EdgeWrapUtility.ChainVertToVertToVert(edgeWrap[edgeIndex], edgeWrap[outerEdgeIndex1]) | //vert-to-vert

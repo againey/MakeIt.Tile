@@ -20,13 +20,7 @@ namespace Experilous.Topological
 					break;
 				case FaceNormalsGenerator.CalculationMethod.FromVertexPositions:
 					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-					generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false,
-						(AssetDescriptor asset) =>
-						{
-							return
-								typeof(IVertexAttribute<Vector3>).IsAssignableFrom(asset.assetType) ||
-								typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(asset.assetType);
-						});
+					generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
 					break;
 				case FaceNormalsGenerator.CalculationMethod.FromVertexNormals:
 					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);

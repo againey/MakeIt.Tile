@@ -6,18 +6,22 @@ namespace Experilous.Topological
 	public enum EdgeWrap : int //should be ushort, but Unity doesn't like to serialize it
 	{
 		None = 0x00,
+
 		PosVertToVertAxis0 = 0x0001,
 		NegVertToVertAxis0 = 0x0002,
 		PosVertToVertAxis1 = 0x0004,
 		NegVertToVertAxis1 = 0x0008,
+
 		PosVertToFaceAxis0 = 0x0010,
 		NegVertToFaceAxis0 = 0x0020,
 		PosVertToFaceAxis1 = 0x0040,
 		NegVertToFaceAxis1 = 0x0080,
+
 		PosFaceToVertAxis0 = 0x0100,
 		NegFaceToVertAxis0 = 0x0200,
 		PosFaceToVertAxis1 = 0x0400,
 		NegFaceToVertAxis1 = 0x0800,
+
 		PosFaceToFaceAxis0 = 0x1000,
 		NegFaceToFaceAxis0 = 0x2000,
 		PosFaceToFaceAxis1 = 0x4000,

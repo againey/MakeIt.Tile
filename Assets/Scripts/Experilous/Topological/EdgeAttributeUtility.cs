@@ -7,12 +7,12 @@ namespace Experilous.Topological
 	{
 		#region T[] Calculate[VertexEdgeAttribute]...(...)
 
-		public static IList<float> CalculateVertexAnglesFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IList<Vector3> vertexPositions)
+		public static IEdgeAttribute<float> CalculateVertexAnglesFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CalculateVertexAnglesFromVertexPositions(vertexEdges, vertexPositions, new float[vertexEdges.Count]);
+			return CalculateVertexAnglesFromVertexPositions(vertexEdges, vertexPositions, new float[vertexEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IList<float> CalculateVertexAnglesFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IList<Vector3> vertexPositions, IList<float> vertexAngles)
+		public static IEdgeAttribute<float> CalculateVertexAnglesFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IVertexAttribute<Vector3> vertexPositions, IEdgeAttribute<float> vertexAngles)
 		{
 			foreach (var vertexEdge in vertexEdges)
 			{
@@ -25,12 +25,12 @@ namespace Experilous.Topological
 			return vertexAngles;
 		}
 
-		public static IList<float> CalculateVertexEdgeLengthsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IList<Vector3> vertexPositions)
+		public static IEdgeAttribute<float> CalculateVertexEdgeLengthsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CalculateVertexEdgeLengthsFromVertexPositions(vertexEdges, vertexPositions, new float[vertexEdges.Count]);
+			return CalculateVertexEdgeLengthsFromVertexPositions(vertexEdges, vertexPositions, new float[vertexEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IList<float> CalculateVertexEdgeLengthsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IList<Vector3> vertexPositions, IList<float> vertexEdgeLengths)
+		public static IEdgeAttribute<float> CalculateVertexEdgeLengthsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IVertexAttribute<Vector3> vertexPositions, IEdgeAttribute<float> vertexEdgeLengths)
 		{
 			foreach (var vertexEdge in vertexEdges)
 			{
@@ -40,12 +40,12 @@ namespace Experilous.Topological
 			return vertexEdgeLengths;
 		}
 
-		public static IList<Vector3> CalculateVertexEdgeMidpointsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IList<Vector3> vertexPositions)
+		public static IEdgeAttribute<Vector3> CalculateVertexEdgeMidpointsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CalculateVertexEdgeMidpointsFromVertexPositions(vertexEdges, vertexPositions, new Vector3[vertexEdges.Count]);
+			return CalculateVertexEdgeMidpointsFromVertexPositions(vertexEdges, vertexPositions, new Vector3[vertexEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IList<Vector3> CalculateVertexEdgeMidpointsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IList<Vector3> vertexPositions, IList<Vector3> vertexEdgeMidpoints)
+		public static IEdgeAttribute<Vector3> CalculateVertexEdgeMidpointsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, IVertexAttribute<Vector3> vertexPositions, IEdgeAttribute<Vector3> vertexEdgeMidpoints)
 		{
 			foreach (var vertexEdge in vertexEdges)
 			{
@@ -59,12 +59,12 @@ namespace Experilous.Topological
 
 		#region T[] Calculate[FaceEdgeAttribute]...(...)
 
-		public static IList<float> CalculateFaceAnglesFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IList<Vector3> vertexPositions)
+		public static IEdgeAttribute<float> CalculateFaceAnglesFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CalculateFaceAnglesFromVertexPositions(faceEdges, vertexPositions, new float[faceEdges.Count]);
+			return CalculateFaceAnglesFromVertexPositions(faceEdges, vertexPositions, new float[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IList<float> CalculateFaceAnglesFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IList<Vector3> vertexPositions, IList<float> faceAngles)
+		public static IEdgeAttribute<float> CalculateFaceAnglesFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, IEdgeAttribute<float> faceAngles)
 		{
 			foreach (var faceEdge in faceEdges)
 			{
@@ -77,30 +77,51 @@ namespace Experilous.Topological
 			return faceAngles;
 		}
 
-		public static IList<float> CalculateFaceCentroidAnglesFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IList<Vector3> faceCentroids)
+		public static IEdgeAttribute<float> CalculateFaceCentroidAnglesFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids)
 		{
-			return CalculateFaceCentroidAnglesFromFaceCentroids(faceEdges, faceCentroids, new float[faceEdges.Count]);
+			return CalculateFaceCentroidAnglesFromFaceCentroids(faceEdges, faceCentroids, new float[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IList<float> CalculateFaceCentroidAnglesFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IList<Vector3> faceCentroids, IList<float> faceAngles)
+		public static IEdgeAttribute<float> CalculateFaceCentroidAnglesFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids, IEdgeAttribute<float> faceAngles)
 		{
 			foreach (var faceEdge in faceEdges)
 			{
-				var p0 = faceCentroids[faceEdge.farFace];
+				var p0 = faceCentroids[faceEdge.prev.farFace];
 				var p1 = faceCentroids[faceEdge.nearFace];
-				var p2 = faceCentroids[faceEdge.prev.farFace];
-				faceAngles[faceEdge] = MathUtility.AngleBetweenVectors(p1 - p0, p2 - p0);
+				var p2 = faceCentroids[faceEdge.farFace];
+				faceAngles[faceEdge] = MathUtility.AngleBetweenVectors(p0 - p1, p2 - p1);
 			}
 
 			return faceAngles;
 		}
 
-		public static IList<float> CalculateFaceEdgeLengthsFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IList<Vector3> faceCentroids, float boundaryLength = float.PositiveInfinity)
+		public static IEdgeAttribute<float> CalculateSphericalFaceCentroidAnglesFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids)
 		{
-			return CalculateFaceEdgeLengthsFromFaceCentroids(faceEdges, faceCentroids, boundaryLength, new float[faceEdges.Count]);
+			return CalculateSphericalFaceCentroidAnglesFromFaceCentroids(faceEdges, faceCentroids, new float[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IList<float> CalculateFaceEdgeLengthsFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IList<Vector3> faceCentroids, float boundaryLength, IList<float> faceEdgeLengths)
+		public static IEdgeAttribute<float> CalculateSphericalFaceCentroidAnglesFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids, IEdgeAttribute<float> faceAngles)
+		{
+			foreach (var faceEdge in faceEdges)
+			{
+				var p0 = faceCentroids[faceEdge.prev.farFace];
+				var p1 = faceCentroids[faceEdge.nearFace];
+				var p2 = faceCentroids[faceEdge.farFace];
+				var v10 = Vector3.Cross(Vector3.Cross(p0 - p1, p1), p1);
+				var v12 = Vector3.Cross(Vector3.Cross(p2 - p1, p1), p1);
+
+				faceAngles[faceEdge] = MathUtility.AngleBetweenVectors(v10, v12);
+			}
+
+			return faceAngles;
+		}
+
+		public static IEdgeAttribute<float> CalculateFaceEdgeLengthsFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids, float boundaryLength = float.PositiveInfinity)
+		{
+			return CalculateFaceEdgeLengthsFromFaceCentroids(faceEdges, faceCentroids, boundaryLength, new float[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<float> CalculateFaceEdgeLengthsFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids, float boundaryLength, IEdgeAttribute<float> faceEdgeLengths)
 		{
 			foreach (var faceEdge in faceEdges)
 			{
@@ -117,12 +138,12 @@ namespace Experilous.Topological
 			return faceEdgeLengths;
 		}
 
-		public static IList<Vector3> CalculateFaceEdgeMidpointsFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IList<Vector3> faceCentroids)
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeMidpointsFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids)
 		{
-			return CalculateFaceEdgeMidpointsFromFaceCentroids(faceEdges, faceCentroids, new Vector3[faceEdges.Count]);
+			return CalculateFaceEdgeMidpointsFromFaceCentroids(faceEdges, faceCentroids, new Vector3[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IList<Vector3> CalculateFaceEdgeMidpointsFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IList<Vector3> faceCentroids, IList<Vector3> faceEdgeMidpoints)
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeMidpointsFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids, IEdgeAttribute<Vector3> faceEdgeMidpoints)
 		{
 			foreach (var faceEdge in faceEdges)
 			{

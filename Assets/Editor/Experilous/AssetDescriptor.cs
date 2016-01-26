@@ -94,7 +94,8 @@ namespace Experilous
 			}
 		}
 
-		public bool isUnused { get { return _generator.bundle.IsUnused(this); } }
+		public bool isUsed { get { return _generator.bundle.IsUsed(this); } }
+		public bool isUnused { get { return !_generator.bundle.IsUsed(this); } }
 
 		public TAsset GetAsset<TAsset>() where TAsset : class
 		{

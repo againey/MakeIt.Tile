@@ -130,7 +130,7 @@ namespace Experilous.Topological
 					if (neighborIndex < 0 || neighborIndex >= _vertexColumnCount) throw new ArgumentOutOfRangeException("neighborIndex");
 					if (faceIndex == _internalFaceCount) // first external face
 					{
-						return neighborIndex;
+						return MathUtility.Modulo(neighborIndex + 1, _vertexColumnCount);
 					}
 					else // second external face
 					{
@@ -146,7 +146,7 @@ namespace Experilous.Topological
 					}
 					else // second external face
 					{
-						return _vertexColumnCount * (neighborIndex + 1) - 1;
+						return _vertexColumnCount * (MathUtility.Modulo(neighborIndex + 1, _vertexRowCount) + 1) - 1;
 					}
 				}
 			}
@@ -294,21 +294,44 @@ namespace Experilous.Topological
 						(WrapsOnRight(faceIndex) ? EdgeWrap.NegVertToVertAxis0 | EdgeWrap.NegVertToFaceAxis0 : EdgeWrap.None) |
 						(WrapsOnBottom(faceIndex) ? EdgeWrap.NegVertToFaceAxis1 | EdgeWrap.NegFaceToFaceAxis1 : EdgeWrap.None);
 					case 1: return
-						(WrapsOnTop(faceIndex) ? EdgeWrap.PosVertToVertAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None) |
-						(WrapsOnLeft(faceIndex) ? EdgeWrap.NegVertToFaceAxis0 | EdgeWrap.NegFaceToFaceAxis0 : EdgeWrap.None);
+						(WrapsOnLeft(faceIndex) ? EdgeWrap.NegVertToFaceAxis0 | EdgeWrap.NegFaceToFaceAxis0 : EdgeWrap.None) |
+						(WrapsOnTop(faceIndex) ? EdgeWrap.PosVertToVertAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None);
 					case 2: return
 						(WrapsOnRight(faceIndex) ? EdgeWrap.PosVertToVertAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None) |
 						(WrapsOnTop(faceIndex) ? EdgeWrap.PosFaceToFaceAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None);
 					case 3: return
-						(WrapsOnTop(faceIndex) ? EdgeWrap.NegVertToVertAxis1 | EdgeWrap.NegVertToFaceAxis1 : EdgeWrap.None) |
-						(WrapsOnRight(faceIndex) ? EdgeWrap.PosFaceToFaceAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None);
+						(WrapsOnRight(faceIndex) ? EdgeWrap.PosFaceToFaceAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None) |
+						(WrapsOnTop(faceIndex) ? EdgeWrap.NegVertToVertAxis1 | EdgeWrap.NegVertToFaceAxis1 : EdgeWrap.None);
 					default:
 						throw new ArgumentOutOfRangeException("neighborIndex");
 				}
 			}
 			else
 			{
-				return new EdgeWrap();
+				if (_isWrappedHorizontally)
+				{
+					if (neighborIndex < 0 || neighborIndex >= _faceColumnCount) throw new ArgumentOutOfRangeException("neighborIndex");
+					if (faceIndex == _internalFaceCount) // first external face
+					{
+						return (neighborIndex == _faceColumnCount - 1) ? EdgeWrap.PosVertToVertAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None;
+					}
+					else // second external face
+					{
+						return (neighborIndex == 0) ? EdgeWrap.NegVertToVertAxis0 | EdgeWrap.NegVertToFaceAxis0 : EdgeWrap.None;
+					}
+				}
+				else //if (_isWrappedVertically)
+				{
+					if (neighborIndex < 0 || neighborIndex >= _vertexRowCount) throw new ArgumentOutOfRangeException("neighborIndex");
+					if (faceIndex == _internalFaceCount) // first external face
+					{
+						return (neighborIndex == 0) ? EdgeWrap.NegVertToVertAxis1 | EdgeWrap.NegVertToFaceAxis1 : EdgeWrap.None;
+					}
+					else // second external face
+					{
+						return (neighborIndex == _faceColumnCount - 1) ? EdgeWrap.PosVertToVertAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None;
+					}
+				}
 			}
 		}
 

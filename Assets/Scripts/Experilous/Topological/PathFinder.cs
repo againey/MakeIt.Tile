@@ -116,7 +116,7 @@ namespace Experilous.Topological
 			return null;
 		}
 
-		public static int[] FindEuclideanPath(Topology.Face source, Topology.Face target, Vector3[] facePositions)
+		public static int[] FindEuclideanPath(Topology.Face source, Topology.Face target, IFaceAttribute<Vector3> facePositions)
 		{
 			return FindPath(source, target,
 				(Topology.Face s, Topology.Face t, int pathLength) =>
@@ -130,7 +130,7 @@ namespace Experilous.Topological
 				});
 		}
 
-		public static int[] FindSphericalEuclideanPath(Topology.Face source, Topology.Face target, Vector3[] facePositions, float sphereRadius)
+		public static int[] FindSphericalEuclideanPath(Topology.Face source, Topology.Face target, IFaceAttribute<Vector3> facePositions, float sphereRadius)
 		{
 			return FindPath(source, target,
 				(Topology.Face s, Topology.Face t, int pathLength) =>

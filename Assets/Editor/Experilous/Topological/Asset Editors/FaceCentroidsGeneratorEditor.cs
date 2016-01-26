@@ -13,13 +13,13 @@ namespace Experilous.Topological
 			generator.surfaceType = (FaceCentroidsGenerator.SurfaceType)EditorGUILayout.EnumPopup("Surface Type", generator.surfaceType);
 
 			generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false,
-				(AssetDescriptor asset) =>
-				{
-					return
-						typeof(IVertexAttribute<Vector3>).IsAssignableFrom(asset.assetType) ||
-						typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(asset.assetType);
-				});
+			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
+
+			if (generator.wrappedFaceCentroids.isUsed)
+			{
+				generator.surfaceDescriptor = OnDependencyGUI("Surface Descriptor", generator.surfaceDescriptor, typeof(PlanarSurfaceDescriptor), false);
+				generator.edgeWrapData = OnDependencyGUI("Edge Wrap Data", generator.edgeWrapData, typeof(IEdgeAttribute<EdgeWrap>), false);
+			}
 		}
 	}
 }

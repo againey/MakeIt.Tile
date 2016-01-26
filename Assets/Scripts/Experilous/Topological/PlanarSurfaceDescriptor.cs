@@ -104,6 +104,33 @@ namespace Experilous.Topological
 			}
 		}
 
+		public Vector3 OffsetVertToFaceAttribute(Vector3 position, EdgeWrap edgeWrap)
+		{
+			switch (edgeWrap & EdgeWrap.VertToFace)
+			{
+				case EdgeWrap.None:
+					return position;
+				case EdgeWrap.PosVertToFaceAxis0:
+					return position + axis0.vector;
+				case EdgeWrap.NegVertToFaceAxis0:
+					return position - axis0.vector;
+				case EdgeWrap.PosVertToFaceAxis1:
+					return position + axis1.vector;
+				case EdgeWrap.NegVertToFaceAxis1:
+					return position - axis1.vector;
+				case EdgeWrap.PosVertToFaceAxis0 | EdgeWrap.PosVertToFaceAxis1:
+					return position + axis0.vector + axis1.vector;
+				case EdgeWrap.PosVertToFaceAxis0 | EdgeWrap.NegVertToFaceAxis1:
+					return position + axis0.vector - axis1.vector;
+				case EdgeWrap.NegVertToFaceAxis0 | EdgeWrap.PosVertToFaceAxis1:
+					return position - axis0.vector + axis1.vector;
+				case EdgeWrap.NegVertToFaceAxis0 | EdgeWrap.NegVertToFaceAxis1:
+					return position - axis0.vector - axis1.vector;
+				default:
+					throw new ArgumentException("edgeWrap");
+			}
+		}
+
 		public Vector3 OffsetFaceToVertAttribute(Vector3 position, EdgeWrap edgeWrap)
 		{
 			switch (edgeWrap & EdgeWrap.FaceToVert)
@@ -125,6 +152,33 @@ namespace Experilous.Topological
 				case EdgeWrap.NegFaceToVertAxis0 | EdgeWrap.PosFaceToVertAxis1:
 					return position - axis0.vector + axis1.vector;
 				case EdgeWrap.NegFaceToVertAxis0 | EdgeWrap.NegFaceToVertAxis1:
+					return position - axis0.vector - axis1.vector;
+				default:
+					throw new ArgumentException("edgeWrap");
+			}
+		}
+
+		public Vector3 OffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap)
+		{
+			switch (edgeWrap & EdgeWrap.FaceToFace)
+			{
+				case EdgeWrap.None:
+					return position;
+				case EdgeWrap.PosFaceToFaceAxis0:
+					return position + axis0.vector;
+				case EdgeWrap.NegFaceToFaceAxis0:
+					return position - axis0.vector;
+				case EdgeWrap.PosFaceToFaceAxis1:
+					return position + axis1.vector;
+				case EdgeWrap.NegFaceToFaceAxis1:
+					return position - axis1.vector;
+				case EdgeWrap.PosFaceToFaceAxis0 | EdgeWrap.PosFaceToFaceAxis1:
+					return position + axis0.vector + axis1.vector;
+				case EdgeWrap.PosFaceToFaceAxis0 | EdgeWrap.NegFaceToFaceAxis1:
+					return position + axis0.vector - axis1.vector;
+				case EdgeWrap.NegFaceToFaceAxis0 | EdgeWrap.PosFaceToFaceAxis1:
+					return position - axis0.vector + axis1.vector;
+				case EdgeWrap.NegFaceToFaceAxis0 | EdgeWrap.NegFaceToFaceAxis1:
 					return position - axis0.vector - axis1.vector;
 				default:
 					throw new ArgumentException("edgeWrap");

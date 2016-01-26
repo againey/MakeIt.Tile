@@ -72,7 +72,7 @@ namespace Experilous.Topological
 				if (topology == null) topology = AssetDescriptor.Create(this, typeof(Topology), "Topology", "Descriptors");
 				if (vertexPositions == null) vertexPositions = AssetDescriptor.Create(this, typeof(IVertexAttribute<Vector3>), "Vertex Positions", "Attributes");
 				if (edgeWrapData == null) edgeWrapData = AssetDescriptor.Create(this, typeof(IEdgeAttribute<EdgeWrap>), "Ege Wrap Data", "Attributes");
-				if (wrappedVertexPositions == null) wrappedVertexPositions = AssetDescriptor.Create(this, typeof(IEdgeAttribute<Vector3>), "Wrapped Vertex Positions", "Attributes");
+				if (wrappedVertexPositions == null) wrappedVertexPositions = AssetDescriptor.Create(this, typeof(IVertexAttribute<Vector3>), "Wrapped Vertex Positions", "Attributes");
 				if (surfaceDescriptor == null) surfaceDescriptor = AssetDescriptor.Create(this, typeof(PlanarSurfaceDescriptor), "Surface Descriptor", "Descriptors");
 				if (vertexIndexer2D == null) vertexIndexer2D = AssetDescriptor.Create(this, typeof(VertexIndexer2D), "Vertex Indexer 2D", "Descriptors");
 				if (faceIndexer2D == null) faceIndexer2D = AssetDescriptor.Create(this, typeof(FaceIndexer2D), "Face Indexer 2D", "Descriptors");
@@ -137,7 +137,7 @@ namespace Experilous.Topological
 
 			surfaceDescriptor.SetAsset(surfaceDescriptorAsset);
 
-			var wrappedVertexPositionsAsset = Vector3OffsetWrappedVertexAttribute.CreateInstance(
+			var wrappedVertexPositionsAsset = Vector3OffsetWrappedVertexAttribute.Create(
 				topology.GetAsset<Topology>(),
 				edgeWrapData.GetAsset<EdgeWrapDataEdgeAttribute>(),
 				vertexPositions.GetAsset<Vector3VertexAttribute>(),

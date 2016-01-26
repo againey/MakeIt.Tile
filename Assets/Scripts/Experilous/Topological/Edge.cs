@@ -84,11 +84,6 @@ namespace Experilous.Topological
 
 			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
 
-			public static implicit operator int(VertexEdge edge)
-			{
-				return edge._index;
-			}
-
 			public T Attribute<T>(T[] attributeArray)
 			{
 				return attributeArray[_index];
@@ -158,11 +153,6 @@ namespace Experilous.Topological
 			public bool isExternal { get { return farFace.isExternal; } }
 
 			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
-
-			public static implicit operator int(FaceEdge edge)
-			{
-				return edge._index;
-			}
 
 			public T Attribute<T>(T[] attributeArray)
 			{

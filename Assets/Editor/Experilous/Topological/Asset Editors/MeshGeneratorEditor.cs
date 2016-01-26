@@ -25,14 +25,7 @@ namespace Experilous.Topological
 					break;
 			}
 
-			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, false,
-				(AssetDescriptor asset) =>
-				{
-					return
-						typeof(IVertexAttribute<Vector3>).IsAssignableFrom(asset.assetType) ||
-						typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(asset.assetType);
-				});
-
+			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
 			generator.faceCentroids = OnDependencyGUI("Face Centroids", generator.faceCentroids, typeof(IFaceAttribute<Vector3>), false);
 			generator.faceNormals = OnDependencyGUI("Face Normals", generator.faceNormals, typeof(IFaceAttribute<Vector3>), false);
 			generator.faceColors = OnDependencyGUI("Face Colors", generator.faceColors, typeof(IFaceAttribute<Color>), false);

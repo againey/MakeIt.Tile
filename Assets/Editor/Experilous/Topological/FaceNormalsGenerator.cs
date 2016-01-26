@@ -88,14 +88,7 @@ namespace Experilous.Topological
 					FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositions.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				case CalculationMethod.FromVertexPositions:
-					if (typeof(IVertexAttribute<Vector3>).IsAssignableFrom(vertexPositions.assetType))
-					{
-						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topologyAsset.internalFaces, vertexPositions.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
-					}
-					else if (typeof(IEdgeAttribute<Vector3>).IsAssignableFrom(vertexPositions.assetType))
-					{
-						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topologyAsset.internalFaces, vertexPositions.GetAsset<IEdgeAttribute<Vector3>>(), faceNormalsAsset);
-					}
+					FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topologyAsset.internalFaces, vertexPositions.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				case CalculationMethod.FromVertexNormals:
 					FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topologyAsset.internalFaces, vertexNormals.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);

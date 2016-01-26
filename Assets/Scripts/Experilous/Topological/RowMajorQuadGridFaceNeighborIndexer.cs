@@ -108,13 +108,13 @@ namespace Experilous.Topological
 			{
 				// Return the perimeter vertices in counter-clockwise order (since the external face is back-facing).
 				if (neighborIndex < 0) throw new ArgumentOutOfRangeException("neighborIndex");
-				if (neighborIndex <= _faceColumnCount) return neighborIndex;
+				if (neighborIndex < _faceColumnCount) return neighborIndex + 1;
 				neighborIndex -= _faceColumnCount;
-				if (neighborIndex <= _faceRowCount) return _vertexColumnCount * (neighborIndex + 1) - 1;
+				if (neighborIndex < _faceRowCount) return _vertexColumnCount * (neighborIndex + 2) - 1;
 				neighborIndex -= _faceRowCount;
-				if (neighborIndex <= _faceColumnCount) return _vertexCount - neighborIndex - 1;
+				if (neighborIndex <= _faceColumnCount) return _vertexCount - neighborIndex - 2;
 				neighborIndex -= _faceColumnCount;
-				if (neighborIndex < _faceRowCount) return _vertexColumnCount * (_faceRowCount - neighborIndex);
+				if (neighborIndex < _faceRowCount) return _vertexColumnCount * (_faceRowCount - neighborIndex - 1);
 				throw new ArgumentOutOfRangeException("neighborIndex");
 			}
 		}

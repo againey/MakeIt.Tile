@@ -92,7 +92,7 @@ namespace Experilous.Topological
 		[SerializeField] protected Topology _topology;
 		[SerializeField] private Partition[] _partitionBinaryTree;
 
-		protected PlanarPartitioning Initialize(Topology topology, Vector3[] vertexPositions)
+		protected PlanarPartitioning Initialize(Topology topology, IVertexAttribute<Vector3> vertexPositions)
 		{
 			_topology = topology;
 
@@ -145,19 +145,19 @@ namespace Experilous.Topological
 			return this;
 		}
 
-		protected PlanarPartitioning Initialize(Topology topology, Vector3[] vertexPositions, string name)
+		protected PlanarPartitioning Initialize(Topology topology, IVertexAttribute<Vector3> vertexPositions, string name)
 		{
 			Initialize(topology, vertexPositions);
 			this.name = name;
 			return this;
 		}
 
-		public static PlanarPartitioning CreateInstance(Topology topology, Vector3[] vertexPositions)
+		public static PlanarPartitioning CreateInstance(Topology topology, IVertexAttribute<Vector3> vertexPositions)
 		{
 			return CreateInstance<PlanarPartitioning>().Initialize(topology, vertexPositions);
 		}
 
-		public static PlanarPartitioning CreateInstance(Topology topology, Vector3[] vertexPositions, string name)
+		public static PlanarPartitioning CreateInstance(Topology topology, IVertexAttribute<Vector3> vertexPositions, string name)
 		{
 			return CreateInstance<PlanarPartitioning>().Initialize(topology, vertexPositions, name);
 		}
@@ -167,7 +167,7 @@ namespace Experilous.Topological
 			return new Vector2(v.x, v.y);
 		}
 
-		protected virtual Vector2 GetVertexPosition(Topology.FaceEdge edge, Vector3[] vertexPositions)
+		protected virtual Vector2 GetVertexPosition(Topology.FaceEdge edge, IVertexAttribute<Vector3> vertexPositions)
 		{
 			return IgnoreZ(vertexPositions[edge.nextVertex]);
 		}
@@ -180,7 +180,7 @@ namespace Experilous.Topological
 				partition._overPartitionIndex != 0 ? GetHeight(partition._overPartitionIndex) : 0);
 		}
 
-		protected virtual void PartitionEdge(Topology.FaceEdge edge, Vector3[] vertexPositions, ref int nextPartitionIndex)
+		protected virtual void PartitionEdge(Topology.FaceEdge edge, IVertexAttribute<Vector3> vertexPositions, ref int nextPartitionIndex)
 		{
 			PartitionEdge(0, GetVertexPosition(edge.prev, vertexPositions), GetVertexPosition(edge, vertexPositions), edge.index, edge.farFace.index, edge.nearFace.index, ref nextPartitionIndex);
 		}

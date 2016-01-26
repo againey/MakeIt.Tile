@@ -7,12 +7,12 @@ namespace Experilous.Topological
 	{
 		#region IList<Vector3> CalculateVertexNormals...(...)
 
-		public static IList<Vector3> CalculateVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IList<Vector3> vertexPositions)
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CalculateVertexNormalsFromVertexPositions(vertices, vertexPositions, new Vector3[vertices.Count]);
+			return CalculateVertexNormalsFromVertexPositions(vertices, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<Vector3> CalculateVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IList<Vector3> vertexPositions, IList<Vector3> vertexNormals)
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
 			{
@@ -36,12 +36,12 @@ namespace Experilous.Topological
 			return vertexNormals;
 		}
 
-		public static IList<Vector3> CalculateVertexNormalsFromFacePositions(Topology.VerticesIndexer vertices, IList<Vector3> facePositions)
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromFacePositions(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> facePositions)
 		{
-			return CalculateVertexNormalsFromFacePositions(vertices, facePositions, new Vector3[vertices.Count]);
+			return CalculateVertexNormalsFromFacePositions(vertices, facePositions, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<Vector3> CalculateVertexNormalsFromFacePositions(Topology.VerticesIndexer vertices, IList<Vector3> facePositions, IList<Vector3> vertexNormals)
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromFacePositions(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> facePositions, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
 			{
@@ -66,12 +66,12 @@ namespace Experilous.Topological
 			return vertexNormals;
 		}
 
-		public static IList<Vector3> CalculateVertexNormalsFromFaceNormals(Topology.VerticesIndexer vertices, IList<Vector3> faceNormals)
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromFaceNormals(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> faceNormals)
 		{
-			return CalculateVertexNormalsFromFaceNormals(vertices, faceNormals, new Vector3[vertices.Count]);
+			return CalculateVertexNormalsFromFaceNormals(vertices, faceNormals, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<Vector3> CalculateVertexNormalsFromFaceNormals(Topology.VerticesIndexer vertices, IList<Vector3> faceNormals, IList<Vector3> vertexNormals)
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromFaceNormals(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> faceNormals, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
 			{
@@ -88,12 +88,12 @@ namespace Experilous.Topological
 			return vertexNormals;
 		}
 
-		public static IList<Vector3> CalculateSphericalVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IList<Vector3> vertexPositions)
+		public static IVertexAttribute<Vector3> CalculateSphericalVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CalculateSphericalVertexNormalsFromVertexPositions(vertices, vertexPositions, new Vector3[vertices.Count]);
+			return CalculateSphericalVertexNormalsFromVertexPositions(vertices, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<Vector3> CalculateSphericalVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IList<Vector3> vertexPositions, IList<Vector3> vertexNormals)
+		public static IVertexAttribute<Vector3> CalculateSphericalVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
 			{
@@ -107,12 +107,12 @@ namespace Experilous.Topological
 
 		#region IList<float> CalculateVertexAreas...(...)
 
-		public static IList<float> CalculatePlanarVertexAreasFromFaceCentroids(Topology.VerticesIndexer vertices, IList<Vector3> faceCentroids)
+		public static IVertexAttribute<float> CalculatePlanarVertexAreasFromFaceCentroids(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> faceCentroids)
 		{
-			return CalculatePlanarVertexAreasFromFaceCentroids(vertices, faceCentroids, new float[vertices.Count]);
+			return CalculatePlanarVertexAreasFromFaceCentroids(vertices, faceCentroids, new float[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<float> CalculatePlanarVertexAreasFromFaceCentroids(Topology.VerticesIndexer vertices, IList<Vector3> faceCentroids, IList<float> vertexAreas)
+		public static IVertexAttribute<float> CalculatePlanarVertexAreasFromFaceCentroids(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> faceCentroids, IVertexAttribute<float> vertexAreas)
 		{
 			foreach (var vertex in vertices)
 			{
@@ -135,53 +135,45 @@ namespace Experilous.Topological
 			return vertexAreas;
 		}
 
-		public static IList<float> CalculateVertexAreasFromVertexPositionsAndFaceCentroids(Topology.VerticesIndexer vertices, IList<Vector3> vertexPositions, IList<Vector3> faceCentroids)
+		public static IVertexAttribute<float> CalculateVertexAreasFromVertexPositionsAndFaceCentroids(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceCentroids)
 		{
-			return CalculateVertexAreasFromVertexPositionsAndFaceCentroids(vertices, faceCentroids, vertexPositions, new float[vertices.Count]);
+			return CalculateVertexAreasFromVertexPositionsAndFaceCentroids(vertices, vertexPositions, faceCentroids, new float[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<float> CalculateVertexAreasFromVertexPositionsAndFaceCentroids(Topology.VerticesIndexer vertices, IList<Vector3> vertexPositions, IList<Vector3> faceCentroids, IList<float> vertexAreas)
+		public static IVertexAttribute<float> CalculateVertexAreasFromVertexPositionsAndFaceCentroids(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceCentroids, IVertexAttribute<float> vertexAreas)
 		{
 			foreach (var vertex in vertices)
 			{
-				if (vertex.neighborCount == 3)
+				var center = vertexPositions[vertex];
+				var quadAreaSum = 0f;
+				var edge = vertex.firstEdge;
+				var v0 = vertexPositions[edge] - center;
+				edge = edge.next;
+				var firstEdge = edge;
+				do
 				{
-					var edge = vertex.firstEdge;
-					var p0 = faceCentroids[edge.prevFace];
-					edge = edge.next;
-					var p1 = faceCentroids[edge.prevFace];
-					edge = edge.next;
-					var p2 = faceCentroids[edge.prevFace];
-					vertexAreas[vertex] = Vector3.Cross(p1 - p0, p2 - p0).magnitude * 0.5f;
-				}
-				else
-				{
-					var p0 = vertexPositions[vertex];
-					float doubleAreaSum = 0f;
-					var edge = vertex.firstEdge;
-					var p1 = faceCentroids[edge.prevFace];
-					edge = edge.next;
-					var firstEdge = edge;
-					do
+					var v2 = vertexPositions[edge] - center;
+					if (!edge.isOuterBoundary)
 					{
-						var p2 = faceCentroids[edge.prevFace];
-						doubleAreaSum += Vector3.Cross(p1 - p0, p2 - p0).magnitude;
-						p1 = p2;
-						edge = edge.next;
-					} while (edge != firstEdge);
-					vertexAreas[vertex] = doubleAreaSum / (2 * vertex.neighborCount);
-				}
+						var v1 = faceCentroids[edge] - center;
+						quadAreaSum += Vector3.Cross(v0, v1).magnitude + Vector3.Cross(v1, v2).magnitude;
+					}
+					v0 = v2;
+					edge = edge.next;
+				} while (edge != firstEdge);
+
+				vertexAreas[vertex] = quadAreaSum / 4;
 			}
 
 			return vertexAreas;
 		}
 
-		public static IList<float> CalculateSphericalVertexAreasFromFaceCentroidAngles(Topology.VerticesIndexer vertices, IList<float> faceCentroidAngles, float sphereRadius = 1f)
+		public static IVertexAttribute<float> CalculateSphericalVertexAreasFromFaceCentroidAngles(Topology.VerticesIndexer vertices, IEdgeAttribute<float> faceCentroidAngles, float sphereRadius = 1f)
 		{
-			return CalculateSphericalVertexAreasFromFaceCentroidAngles(vertices, faceCentroidAngles, sphereRadius, new float[vertices.Count]);
+			return CalculateSphericalVertexAreasFromFaceCentroidAngles(vertices, faceCentroidAngles, sphereRadius, new float[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IList<float> CalculateSphericalVertexAreasFromFaceCentroidAngles(Topology.VerticesIndexer vertices, IList<float> faceCentroidAngles, float sphereRadius, IList<float> vertexAreas)
+		public static IVertexAttribute<float> CalculateSphericalVertexAreasFromFaceCentroidAngles(Topology.VerticesIndexer vertices, IEdgeAttribute<float> faceCentroidAngles, float sphereRadius, IVertexAttribute<float> vertexAreas)
 		{
 			var radiusSquared = sphereRadius * sphereRadius;
 

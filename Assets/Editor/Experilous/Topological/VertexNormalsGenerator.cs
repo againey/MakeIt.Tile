@@ -81,7 +81,7 @@ namespace Experilous.Topological
 		public override void Generate()
 		{
 			var topologyAsset = topology.GetAsset<Topology>();
-			var vertexNormalsAsset = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.vertices.Count], "Vertex Normals");
+			var vertexNormalsAsset = Vector3VertexAttribute.CreateInstance(new Vector3[topologyAsset.vertices.Count], "Vertex Normals");
 			switch (calculationMethod)
 			{
 				case CalculationMethod.FromVertexPositions:

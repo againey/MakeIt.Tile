@@ -197,63 +197,30 @@ namespace Experilous.Topological
 
 		private void GenerateMeshes(IEnumerable<Topology.Face> faces, List<Mesh> meshes, List<Vector3> offsets)
 		{
-			if (vertexPositions.asset is IVertexAttribute<Vector3>)
+			foreach (var mesh in MeshBuilder.BuildMeshes(
+				faces,
+				vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
+				faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
+				faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
+				GetFaceColors()))
 			{
-				foreach (var mesh in MeshBuilder.BuildMeshes(
-					faces,
-					vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
-					faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
-					faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
-					GetFaceColors()))
-				{
-					meshes.Add(mesh);
-					offsets.Add(new Vector3(0f, 0f, 0f));
-				}
-			}
-			else if (vertexPositions.asset is IEdgeAttribute<Vector3>)
-			{
-				foreach (var mesh in MeshBuilder.BuildMeshes(
-					faces,
-					vertexPositions.GetAsset<IEdgeAttribute<Vector3>>(),
-					faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
-					faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
-					GetFaceColors()))
-				{
-					meshes.Add(mesh);
-					offsets.Add(new Vector3(0f, 0f, 0f));
-				}
+				meshes.Add(mesh);
+				offsets.Add(new Vector3(0f, 0f, 0f));
 			}
 		}
 
 		private void GenerateMeshes(IEnumerable<Topology.Face> faces, Vector3 groupAverage, List<Mesh> meshes, List<Vector3> offsets)
 		{
-			if (vertexPositions.asset is IVertexAttribute<Vector3>)
+			foreach (var mesh in MeshBuilder.BuildMeshes(
+				faces,
+				-groupAverage,
+				vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
+				faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
+				faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
+				GetFaceColors()))
 			{
-				foreach (var mesh in MeshBuilder.BuildMeshes(
-					faces,
-					-groupAverage,
-					vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
-					faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
-					faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
-					GetFaceColors()))
-				{
-					meshes.Add(mesh);
-					offsets.Add(groupAverage);
-				}
-			}
-			else if (vertexPositions.asset is IEdgeAttribute<Vector3>)
-			{
-				foreach (var mesh in MeshBuilder.BuildMeshes(
-					faces,
-					-groupAverage,
-					vertexPositions.GetAsset<IEdgeAttribute<Vector3>>(),
-					faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
-					faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
-					GetFaceColors()))
-				{
-					meshes.Add(mesh);
-					offsets.Add(groupAverage);
-				}
+				meshes.Add(mesh);
+				offsets.Add(groupAverage);
 			}
 		}
 

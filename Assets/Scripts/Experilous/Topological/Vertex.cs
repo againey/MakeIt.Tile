@@ -36,11 +36,6 @@ namespace Experilous.Topological
 				}
 			}
 
-			public static implicit operator int(Vertex vertex)
-			{
-				return vertex._index;
-			}
-
 			public T Attribute<T>(T[] attributeArray)
 			{
 				return attributeArray[_index];
@@ -197,6 +192,8 @@ namespace Experilous.Topological
 	public interface IVertexAttribute<T> : IList<T>
 	{
 		T this[Topology.Vertex v] { get; set; }
+		T this[Topology.VertexEdge e] { get; set; }
+		T this[Topology.FaceEdge e] { get; set; }
 	}
 
 	public struct VertexAttributeArrayWrapper<T> : IVertexAttribute<T>
@@ -225,6 +222,18 @@ namespace Experilous.Topological
 			set { array[v.index] = value; }
 		}
 
+		public T this[Topology.VertexEdge e]
+		{
+			get { return array[e.farVertex.index]; }
+			set { array[e.farVertex.index] = value; }
+		}
+
+		public T this[Topology.FaceEdge e]
+		{
+			get { return array[e.nextVertex.index]; }
+			set { array[e.nextVertex.index] = value; }
+		}
+
 		public int Count { get { return array.Length; } }
 		public bool IsReadOnly { get { return true; } }
 		public void Add(T item) { throw new NotSupportedException(); }
@@ -243,6 +252,8 @@ namespace Experilous.Topological
 	{
 		public abstract T this[int i] { get; set; }
 		public abstract T this[Topology.Vertex v] { get; set; }
+		public abstract T this[Topology.VertexEdge e] { get; set; }
+		public abstract T this[Topology.FaceEdge e] { get; set; }
 
 		public virtual int Count { get { throw new NotSupportedException(); } }
 		public virtual bool IsReadOnly { get { return true; } }
@@ -309,6 +320,18 @@ namespace Experilous.Topological
 			get { return constant; }
 			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
 		}
+
+		public override T this[Topology.VertexEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.FaceEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
+		}
 	}
 
 	public class VertexArrayAttribute<T> : VertexAttribute<T> where T : new()
@@ -361,6 +384,18 @@ namespace Experilous.Topological
 		{
 			get { return array[v.index]; }
 			set { array[v.index] = value; }
+		}
+
+		public override T this[Topology.VertexEdge e]
+		{
+			get { return array[e.farVertex.index]; }
+			set { array[e.farVertex.index] = value; }
+		}
+
+		public override T this[Topology.FaceEdge e]
+		{
+			get { return array[e.nextVertex.index]; }
+			set { array[e.nextVertex.index] = value; }
 		}
 
 		public override int Count { get { return array.Length; } }

@@ -182,11 +182,11 @@ namespace Experilous.Topological
 				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
 				{
 					var firstEdge = vertex.firstEdge;
-					var relaxedVertexPosition = vertexPositions[firstEdge.farVertex];
+					var relaxedVertexPosition = vertexPositions[firstEdge];
 					var edge = firstEdge.next;
 					while (edge != firstEdge)
 					{
-						relaxedVertexPosition += vertexPositions[edge.farVertex];
+						relaxedVertexPosition += vertexPositions[edge];
 						edge = edge.next;
 					}
 					
@@ -215,8 +215,8 @@ namespace Experilous.Topological
 		{
 			var idealArea = circumsphereRadius * circumsphereRadius * 4f * Mathf.PI / topology.vertices.Count;
 
-			FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, vertexPositions, circumsphereRadius, faceCentroids);
-			EdgeAttributeUtility.CalculateFaceCentroidAnglesFromFaceCentroids(topology.faceEdges, faceCentroids, faceCentroidAngles); //TODO: spherical angles?
+			FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, circumsphereRadius, faceCentroids);
+			EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids(topology.faceEdges, faceCentroids, faceCentroidAngles);
 			VertexAttributeUtility.CalculateSphericalVertexAreasFromFaceCentroidAngles(topology.vertices, faceCentroidAngles, circumsphereRadius, vertexAreas);
 
 			for (int i = 0; i < topology.vertices.Count; ++i)
@@ -230,7 +230,7 @@ namespace Experilous.Topological
 				var multiplier = Mathf.Sqrt(idealArea / vertexAreas[vertex]);
 				foreach (var edge in vertex.edges)
 				{
-					relaxedVertexPositions[edge.farVertex] += (vertexPositions[edge.farVertex] - center) * multiplier + center;
+					relaxedVertexPositions[edge] += (vertexPositions[edge] - center) * multiplier + center;
 				}
 			}
 

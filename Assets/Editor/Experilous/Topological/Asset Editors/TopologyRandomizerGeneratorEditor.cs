@@ -12,8 +12,8 @@ namespace Experilous.Topological
 
 			generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
 			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
-			generator.surfaceDescriptor = OnDependencyGUI("Surface Descriptor", generator.surfaceDescriptor, typeof(PlanarSurfaceDescriptor), false);
 			generator.edgeWrap = OnDependencyGUI("Edge Wrap", generator.edgeWrap, typeof(IEdgeAttribute<EdgeWrap>), false);
+			generator.surfaceDescriptor = OnDependencyGUI("Surface Descriptor", generator.surfaceDescriptor, typeof(PlanarSurfaceDescriptor), false);
 
 			generator.surfaceType = (TopologyRandomizerGenerator.SurfaceType)EditorGUILayout.EnumPopup("Surface Type", generator.surfaceType);
 
@@ -29,7 +29,7 @@ namespace Experilous.Topological
 
 			if (generator.vertexPositions != null)
 			{
-				generator.lockBoundaryVertices = EditorGUILayout.Toggle("Lock Boundaries", generator.lockBoundaryVertices);
+				generator.lockBoundaryPositions = EditorGUILayout.Toggle("Lock Boundaries", generator.lockBoundaryPositions);
 
 				generator.relaxForRegularityWeight = EditorGUILayout.Slider("Relax Regularity", generator.relaxForRegularityWeight, 0f, 1f);
 				generator.relaxRelativePrecision = EditorGUILayout.Slider("Relax Precision", generator.relaxRelativePrecision, 0f, 1f);

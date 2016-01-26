@@ -47,7 +47,7 @@ namespace Experilous
 			}
 		}
 
-		public bool IsUnused(AssetDescriptor assetDescriptor)
+		public bool IsUsed(AssetDescriptor assetDescriptor)
 		{
 			if (assetDescriptor.isPersisted) return true;
 
