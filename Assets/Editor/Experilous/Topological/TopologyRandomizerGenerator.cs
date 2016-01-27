@@ -112,7 +112,7 @@ namespace Experilous.Topological
 						var relaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
 						var faceCentroids = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count]);
 						var vertexAreas = new float[topologyAsset.vertices.Count].AsVertexAttribute();
-						var wrappedFaceCentroids = (edgeWrapAsset != null && surfaceDescriptorAsset != null) ? (IFaceAttribute<Vector3>)Vector3OffsetWrappedFaceAttribute.Create(topologyAsset, (EdgeWrapDataEdgeAttribute)edgeWrapAsset, faceCentroids, surfaceDescriptorAsset) : faceCentroids;
+						var wrappedFaceCentroids = (edgeWrapAsset != null && surfaceDescriptorAsset != null) ? (IFaceAttribute<Vector3>)Vector3OffsetWrappedFaceAttribute.Create(edgeWrapAsset, faceCentroids, surfaceDescriptorAsset) : faceCentroids;
 
 						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topologyAsset.internalFaces, vertexPositionsAsset, wrappedFaceCentroids);
 						VertexAttributeUtility.CalculateVertexAreasFromVertexPositionsAndFaceCentroids(topologyAsset.vertices, vertexPositionsAsset, wrappedFaceCentroids, vertexAreas);
@@ -144,7 +144,7 @@ namespace Experilous.Topological
 						var relaxedVertexPositions = regularityRelaxedVertexPositions;
 						var faceCentroids = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count]);
 						var vertexAreas = new float[topologyAsset.vertices.Count].AsVertexAttribute();
-						var wrappedFaceCentroids = (edgeWrapAsset != null && surfaceDescriptorAsset != null) ? (IFaceAttribute<Vector3>)Vector3OffsetWrappedFaceAttribute.Create(topologyAsset, (EdgeWrapDataEdgeAttribute)edgeWrapAsset, faceCentroids, surfaceDescriptorAsset) : faceCentroids;
+						var wrappedFaceCentroids = (edgeWrapAsset != null && surfaceDescriptorAsset != null) ? (IFaceAttribute<Vector3>)Vector3OffsetWrappedFaceAttribute.Create(edgeWrapAsset, faceCentroids, surfaceDescriptorAsset) : faceCentroids;
 
 						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topologyAsset.internalFaces, vertexPositionsAsset, wrappedFaceCentroids);
 						VertexAttributeUtility.CalculateVertexAreasFromVertexPositionsAndFaceCentroids(topologyAsset.vertices, vertexPositionsAsset, wrappedFaceCentroids, vertexAreas);

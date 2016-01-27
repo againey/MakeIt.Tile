@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Experilous.Topological
 {
-	public class Vector3OffsetWrappedFaceAttribute : WrappedFaceAttribute<Vector3, Vector3FaceAttribute>
+	public class Vector3OffsetWrappedFaceAttribute : WrappedFaceAttribute<Vector3>
 	{
 		public PlanarSurfaceDescriptor surfaceDescriptor;
 
@@ -12,22 +11,20 @@ namespace Experilous.Topological
 			return CreateInstance<Vector3OffsetWrappedFaceAttribute>();
 		}
 
-		public static Vector3OffsetWrappedFaceAttribute Create(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3FaceAttribute faceData, PlanarSurfaceDescriptor surfaceDescriptor)
+		public static Vector3OffsetWrappedFaceAttribute Create(IEdgeAttribute<EdgeWrap> edgeWrapAttribute, IFaceAttribute<Vector3> faceAttribute, PlanarSurfaceDescriptor surfaceDescriptor)
 		{
 			var instance = CreateInstance<Vector3OffsetWrappedFaceAttribute>();
-			instance.topology = topology;
-			instance.edgeWrapData = edgeWrapData;
-			instance.faceData = faceData;
+			instance.edgeWrapAttribute = edgeWrapAttribute;
+			instance.faceAttribute = faceAttribute;
 			instance.surfaceDescriptor = surfaceDescriptor;
 			return instance;
 		}
 
-		public static Vector3OffsetWrappedFaceAttribute Create(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3FaceAttribute faceData, PlanarSurfaceDescriptor surfaceDescriptor, string name)
+		public static Vector3OffsetWrappedFaceAttribute Create(IEdgeAttribute<EdgeWrap> edgeWrapAttribute, IFaceAttribute<Vector3> faceAttribute, PlanarSurfaceDescriptor surfaceDescriptor, string name)
 		{
 			var instance = CreateInstance<Vector3OffsetWrappedFaceAttribute>();
-			instance.topology = topology;
-			instance.edgeWrapData = edgeWrapData;
-			instance.faceData = faceData;
+			instance.edgeWrapAttribute = edgeWrapAttribute;
+			instance.faceAttribute = faceAttribute;
 			instance.surfaceDescriptor = surfaceDescriptor;
 			instance.name = name;
 			return instance;

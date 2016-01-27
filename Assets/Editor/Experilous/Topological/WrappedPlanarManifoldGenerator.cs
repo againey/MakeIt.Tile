@@ -138,9 +138,8 @@ namespace Experilous.Topological
 			surfaceDescriptor.SetAsset(surfaceDescriptorAsset);
 
 			var wrappedVertexPositionsAsset = Vector3OffsetWrappedVertexAttribute.Create(
-				topology.GetAsset<Topology>(),
-				edgeWrapData.GetAsset<EdgeWrapDataEdgeAttribute>(),
-				vertexPositions.GetAsset<Vector3VertexAttribute>(),
+				edgeWrapData.GetAsset<IEdgeAttribute<EdgeWrap>>(),
+				vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
 				surfaceDescriptor.GetAsset<PlanarSurfaceDescriptor>());
 
 			wrappedVertexPositions.SetAsset(wrappedVertexPositionsAsset);

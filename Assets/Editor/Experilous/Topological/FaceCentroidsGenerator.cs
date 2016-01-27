@@ -84,7 +84,7 @@ namespace Experilous.Topological
 			{
 				var surfaceDescriptorAsset = surfaceDescriptor.GetAsset<PlanarSurfaceDescriptor>();
 				var edgeWrapDataAsset = edgeWrapData.GetAsset<EdgeWrapDataEdgeAttribute>();
-				wrappedFaceCentroids.SetAsset(Vector3OffsetWrappedFaceAttribute.Create(topologyAsset, edgeWrapDataAsset, faceCentroids.GetAsset<Vector3FaceAttribute>(), surfaceDescriptorAsset));
+				wrappedFaceCentroids.SetAsset(Vector3OffsetWrappedFaceAttribute.Create(edgeWrapDataAsset, faceCentroids.GetAsset<IFaceAttribute<Vector3>>(), surfaceDescriptorAsset));
 			}
 
 			faceCentroids.SetAsset(faceCentroidsAsset);

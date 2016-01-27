@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Experilous.Topological
 {
-	public class Vector3OffsetWrappedVertexAttribute : WrappedVertexAttribute<Vector3, Vector3VertexAttribute>
+	public class Vector3OffsetWrappedVertexAttribute : WrappedVertexAttribute<Vector3>
 	{
 		public PlanarSurfaceDescriptor surfaceDescriptor;
 
@@ -12,22 +11,20 @@ namespace Experilous.Topological
 			return CreateInstance<Vector3OffsetWrappedVertexAttribute>();
 		}
 
-		public static Vector3OffsetWrappedVertexAttribute Create(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, PlanarSurfaceDescriptor surfaceDescriptor)
+		public static Vector3OffsetWrappedVertexAttribute Create(IEdgeAttribute<EdgeWrap> edgeWrapAttribute, IVertexAttribute<Vector3> vertexAttribute, PlanarSurfaceDescriptor surfaceDescriptor)
 		{
 			var instance = CreateInstance<Vector3OffsetWrappedVertexAttribute>();
-			instance.topology = topology;
-			instance.edgeWrapData = edgeWrapData;
-			instance.vertexData = vertexData;
+			instance.edgeWrapAttribute = edgeWrapAttribute;
+			instance.vertexAttribute = vertexAttribute;
 			instance.surfaceDescriptor = surfaceDescriptor;
 			return instance;
 		}
 
-		public static Vector3OffsetWrappedVertexAttribute Create(Topology topology, EdgeWrapDataEdgeAttribute edgeWrapData, Vector3VertexAttribute vertexData, PlanarSurfaceDescriptor surfaceDescriptor, string name)
+		public static Vector3OffsetWrappedVertexAttribute Create(IEdgeAttribute<EdgeWrap> edgeWrapAttribute, IVertexAttribute<Vector3> vertexAttribute, PlanarSurfaceDescriptor surfaceDescriptor, string name)
 		{
 			var instance = CreateInstance<Vector3OffsetWrappedVertexAttribute>();
-			instance.topology = topology;
-			instance.edgeWrapData = edgeWrapData;
-			instance.vertexData = vertexData;
+			instance.edgeWrapAttribute = edgeWrapAttribute;
+			instance.vertexAttribute = vertexAttribute;
 			instance.surfaceDescriptor = surfaceDescriptor;
 			instance.name = name;
 			return instance;
