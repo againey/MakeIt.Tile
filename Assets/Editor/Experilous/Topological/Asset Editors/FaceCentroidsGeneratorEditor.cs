@@ -12,14 +12,9 @@ namespace Experilous.Topological
 
 			generator.surfaceType = (FaceCentroidsGenerator.SurfaceType)EditorGUILayout.EnumPopup("Surface Type", generator.surfaceType);
 
-			generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
-
-			if (generator.wrappedFaceCentroids.isUsed)
-			{
-				generator.surfaceDescriptor = OnDependencyGUI("Surface Descriptor", generator.surfaceDescriptor, typeof(PlanarSurfaceDescriptor), false);
-				generator.edgeWrapData = OnDependencyGUI("Edge Wrap Data", generator.edgeWrapData, typeof(IEdgeAttribute<EdgeWrap>), false);
-			}
+			generator.topologyDescriptor = OnDependencyGUI("Topology", generator.topologyDescriptor, typeof(Topology), true);
+			generator.vertexPositionsDescriptor = OnDependencyGUI("Vertex Positions", generator.vertexPositionsDescriptor, typeof(IVertexAttribute<Vector3>), false);
+			generator.positionalAttributeAdapterDescriptor = OnOptionalDependencyGUI("Attribute Adapter", generator.positionalAttributeAdapterDescriptor, typeof(PositionalAttributeAdapter), true, true);
 		}
 	}
 }

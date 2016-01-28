@@ -53,6 +53,8 @@ namespace Experilous.Topological
 
 		public void OnBeforeSerialize()
 		{
+			if (edgeWrapAttribute != null && !(edgeWrapAttribute is ScriptableObject)) throw new InvalidOperationException(string.Format("The stored edge wrap attribute of type {0} does not derive from ScriptableObject.", edgeWrapAttribute.GetType().GetPrettyName(true)));
+			if (edgeAttribute != null && !(edgeAttribute is ScriptableObject)) throw new InvalidOperationException(string.Format("The stored edge attribute of type {0} does not derive from ScriptableObject.", edgeAttribute.GetType().GetPrettyName(true)));
 			_edgeWrapAttributeReference = (ScriptableObject)edgeWrapAttribute;
 			_edgeAttributeReference = (ScriptableObject)edgeAttribute;
 		}
