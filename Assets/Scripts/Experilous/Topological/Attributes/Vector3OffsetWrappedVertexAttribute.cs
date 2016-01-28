@@ -42,6 +42,11 @@ namespace Experilous.Topological
 			return surfaceDescriptor.OffsetVertToVertAttribute(vertexValue, edgeWrap);
 		}
 
+		protected override Vector3 GetEdgeRelativeAttribute(Vector3 vertexValue, EdgeWrap edgeWrap)
+		{
+			return surfaceDescriptor.OffsetEdgeToVertAttribute(vertexValue, edgeWrap);
+		}
+
 		protected override Vector3 GetFaceRelativeAttribute(Vector3 vertexValue, EdgeWrap edgeWrap)
 		{
 			return surfaceDescriptor.OffsetFaceToVertAttribute(vertexValue, edgeWrap);

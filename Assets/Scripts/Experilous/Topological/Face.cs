@@ -218,6 +218,7 @@ namespace Experilous.Topological
 	public interface IFaceAttribute<T> : IList<T>
 	{
 		T this[Topology.Face f] { get; set; }
+		T this[Topology.HalfEdge e] { get; set; }
 		T this[Topology.VertexEdge e] { get; set; }
 		T this[Topology.FaceEdge e] { get; set; }
 	}
@@ -246,6 +247,12 @@ namespace Experilous.Topological
 		{
 			get { return array[f.index]; }
 			set { array[f.index] = value; }
+		}
+
+		public T this[Topology.HalfEdge e]
+		{
+			get { return array[e.farFace.index]; }
+			set { array[e.farFace.index] = value; }
 		}
 
 		public T this[Topology.VertexEdge e]
@@ -278,6 +285,7 @@ namespace Experilous.Topological
 	{
 		public abstract T this[int i] { get; set; }
 		public abstract T this[Topology.Face f] { get; set; }
+		public abstract T this[Topology.HalfEdge e] { get; set; }
 		public abstract T this[Topology.VertexEdge e] { get; set; }
 		public abstract T this[Topology.FaceEdge e] { get; set; }
 
@@ -342,6 +350,12 @@ namespace Experilous.Topological
 		}
 
 		public override T this[Topology.Face f]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant face attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.HalfEdge e]
 		{
 			get { return constant; }
 			set { throw new NotSupportedException("Values of a constant face attribute cannot be changed."); }
@@ -412,6 +426,12 @@ namespace Experilous.Topological
 			set { array[f.index] = value; }
 		}
 
+		public override T this[Topology.HalfEdge e]
+		{
+			get { return array[e.farFace.index]; }
+			set { array[e.farFace.index] = value; }
+		}
+
 		public override T this[Topology.VertexEdge e]
 		{
 			get { return array[e.prevFace.index]; }
@@ -450,6 +470,12 @@ namespace Experilous.Topological
 		public override T this[Topology.Face f]
 		{
 			get { return faceGroupData[faceGroupIndices[f]]; }
+			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+		}
+
+		public override T this[Topology.HalfEdge e]
+		{
+			get { return faceGroupData[faceGroupIndices[e.farFace]]; }
 			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 

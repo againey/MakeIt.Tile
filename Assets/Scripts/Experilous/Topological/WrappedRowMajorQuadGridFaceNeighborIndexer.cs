@@ -290,18 +290,18 @@ namespace Experilous.Topological
 			{
 				switch (neighborIndex)
 				{
-					case 0: return
-						(WrapsOnRight(faceIndex) ? EdgeWrap.NegVertToVertAxis0 | EdgeWrap.NegVertToFaceAxis0 : EdgeWrap.None) |
-						(WrapsOnBottom(faceIndex) ? EdgeWrap.NegVertToFaceAxis1 | EdgeWrap.NegFaceToFaceAxis1 : EdgeWrap.None);
-					case 1: return
-						(WrapsOnLeft(faceIndex) ? EdgeWrap.NegVertToFaceAxis0 | EdgeWrap.NegFaceToFaceAxis0 : EdgeWrap.None) |
-						(WrapsOnTop(faceIndex) ? EdgeWrap.PosVertToVertAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None);
-					case 2: return
-						(WrapsOnRight(faceIndex) ? EdgeWrap.PosVertToVertAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None) |
-						(WrapsOnTop(faceIndex) ? EdgeWrap.PosFaceToFaceAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None);
-					case 3: return
-						(WrapsOnRight(faceIndex) ? EdgeWrap.PosFaceToFaceAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None) |
-						(WrapsOnTop(faceIndex) ? EdgeWrap.NegVertToVertAxis1 | EdgeWrap.NegVertToFaceAxis1 : EdgeWrap.None);
+					case 0: return EdgeWrapUtility.FromEdgeRelations(
+						(WrapsOnRight(faceIndex) ? EdgeWrap.NegVertToEdgeAxis0 : EdgeWrap.None) |
+						(WrapsOnBottom(faceIndex) ? EdgeWrap.NegEdgeToFaceAxis1 : EdgeWrap.None));
+					case 1: return EdgeWrapUtility.FromEdgeRelations(
+						(WrapsOnLeft(faceIndex) ? EdgeWrap.NegEdgeToFaceAxis0 : EdgeWrap.None) |
+						(WrapsOnTop(faceIndex) ? EdgeWrap.PosEdgeToVertAxis1 : EdgeWrap.None));
+					case 2: return EdgeWrapUtility.FromEdgeRelations(
+						(WrapsOnRight(faceIndex) ? EdgeWrap.PosEdgeToVertAxis0 : EdgeWrap.None) |
+						(WrapsOnTop(faceIndex) ? EdgeWrap.PosFaceToEdgeAxis1 : EdgeWrap.None));
+					case 3: return EdgeWrapUtility.FromEdgeRelations(
+						(WrapsOnRight(faceIndex) ? EdgeWrap.PosFaceToEdgeAxis0 : EdgeWrap.None) |
+						(WrapsOnTop(faceIndex) ? EdgeWrap.NegVertToEdgeAxis1 : EdgeWrap.None));
 					default:
 						throw new ArgumentOutOfRangeException("neighborIndex");
 				}
@@ -313,11 +313,11 @@ namespace Experilous.Topological
 					if (neighborIndex < 0 || neighborIndex >= _faceColumnCount) throw new ArgumentOutOfRangeException("neighborIndex");
 					if (faceIndex == _internalFaceCount) // first external face
 					{
-						return (neighborIndex == _faceColumnCount - 1) ? EdgeWrap.PosVertToVertAxis0 | EdgeWrap.PosFaceToVertAxis0 : EdgeWrap.None;
+						return (neighborIndex == _faceColumnCount - 1) ? EdgeWrapUtility.FromEdgeRelations(EdgeWrap.PosEdgeToVertAxis0) : EdgeWrap.None;
 					}
 					else // second external face
 					{
-						return (neighborIndex == 0) ? EdgeWrap.NegVertToVertAxis0 | EdgeWrap.NegVertToFaceAxis0 : EdgeWrap.None;
+						return (neighborIndex == 0) ? EdgeWrapUtility.FromEdgeRelations(EdgeWrap.NegVertToEdgeAxis0) : EdgeWrap.None;
 					}
 				}
 				else //if (_isWrappedVertically)
@@ -325,11 +325,11 @@ namespace Experilous.Topological
 					if (neighborIndex < 0 || neighborIndex >= _vertexRowCount) throw new ArgumentOutOfRangeException("neighborIndex");
 					if (faceIndex == _internalFaceCount) // first external face
 					{
-						return (neighborIndex == 0) ? EdgeWrap.NegVertToVertAxis1 | EdgeWrap.NegVertToFaceAxis1 : EdgeWrap.None;
+						return (neighborIndex == 0) ? EdgeWrapUtility.FromEdgeRelations(EdgeWrap.NegVertToEdgeAxis1) : EdgeWrap.None;
 					}
 					else // second external face
 					{
-						return (neighborIndex == _faceColumnCount - 1) ? EdgeWrap.PosVertToVertAxis1 | EdgeWrap.PosFaceToVertAxis1 : EdgeWrap.None;
+						return (neighborIndex == _faceColumnCount - 1) ? EdgeWrapUtility.FromEdgeRelations(EdgeWrap.PosEdgeToVertAxis1) : EdgeWrap.None;
 					}
 				}
 			}

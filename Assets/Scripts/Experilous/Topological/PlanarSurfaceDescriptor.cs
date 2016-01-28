@@ -77,112 +77,71 @@ namespace Experilous.Topological
 			}
 		}
 
-		public Vector3 OffsetVertToVertAttribute(Vector3 position, EdgeWrap edgeWrap)
+		private Vector3 OffsetAttribute(Vector3 position, EdgeWrapUtility.Generic edgeWrap)
 		{
-			switch (edgeWrap & EdgeWrap.VertToVert)
+			switch (edgeWrap)
 			{
-				case EdgeWrap.None:
+				case EdgeWrapUtility.Generic.None:
 					return position;
-				case EdgeWrap.PosVertToVertAxis0:
+				case EdgeWrapUtility.Generic.PosAxis0:
 					return position + axis0.vector;
-				case EdgeWrap.NegVertToVertAxis0:
+				case EdgeWrapUtility.Generic.NegAxis0:
 					return position - axis0.vector;
-				case EdgeWrap.PosVertToVertAxis1:
+				case EdgeWrapUtility.Generic.PosAxis1:
 					return position + axis1.vector;
-				case EdgeWrap.NegVertToVertAxis1:
+				case EdgeWrapUtility.Generic.NegAxis1:
 					return position - axis1.vector;
-				case EdgeWrap.PosVertToVertAxis0 | EdgeWrap.PosVertToVertAxis1:
+				case EdgeWrapUtility.Generic.PosAxis0 | EdgeWrapUtility.Generic.PosAxis1:
 					return position + axis0.vector + axis1.vector;
-				case EdgeWrap.PosVertToVertAxis0 | EdgeWrap.NegVertToVertAxis1:
+				case EdgeWrapUtility.Generic.PosAxis0 | EdgeWrapUtility.Generic.NegAxis1:
 					return position + axis0.vector - axis1.vector;
-				case EdgeWrap.NegVertToVertAxis0 | EdgeWrap.PosVertToVertAxis1:
+				case EdgeWrapUtility.Generic.NegAxis0 | EdgeWrapUtility.Generic.PosAxis1:
 					return position - axis0.vector + axis1.vector;
-				case EdgeWrap.NegVertToVertAxis0 | EdgeWrap.NegVertToVertAxis1:
+				case EdgeWrapUtility.Generic.NegAxis0 | EdgeWrapUtility.Generic.NegAxis1:
 					return position - axis0.vector - axis1.vector;
 				default:
 					throw new ArgumentException("edgeWrap");
 			}
+		}
+
+		public Vector3 OffsetVertToVertAttribute(Vector3 position, EdgeWrap edgeWrap)
+		{
+			return OffsetAttribute(position, EdgeWrapUtility.VertToVertAsGeneric(edgeWrap));
+		}
+
+		public Vector3 OffsetVertToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap)
+		{
+			return OffsetAttribute(position, EdgeWrapUtility.VertToEdgeAsGeneric(edgeWrap));
 		}
 
 		public Vector3 OffsetVertToFaceAttribute(Vector3 position, EdgeWrap edgeWrap)
 		{
-			switch (edgeWrap & EdgeWrap.VertToFace)
-			{
-				case EdgeWrap.None:
-					return position;
-				case EdgeWrap.PosVertToFaceAxis0:
-					return position + axis0.vector;
-				case EdgeWrap.NegVertToFaceAxis0:
-					return position - axis0.vector;
-				case EdgeWrap.PosVertToFaceAxis1:
-					return position + axis1.vector;
-				case EdgeWrap.NegVertToFaceAxis1:
-					return position - axis1.vector;
-				case EdgeWrap.PosVertToFaceAxis0 | EdgeWrap.PosVertToFaceAxis1:
-					return position + axis0.vector + axis1.vector;
-				case EdgeWrap.PosVertToFaceAxis0 | EdgeWrap.NegVertToFaceAxis1:
-					return position + axis0.vector - axis1.vector;
-				case EdgeWrap.NegVertToFaceAxis0 | EdgeWrap.PosVertToFaceAxis1:
-					return position - axis0.vector + axis1.vector;
-				case EdgeWrap.NegVertToFaceAxis0 | EdgeWrap.NegVertToFaceAxis1:
-					return position - axis0.vector - axis1.vector;
-				default:
-					throw new ArgumentException("edgeWrap");
-			}
+			return OffsetAttribute(position, EdgeWrapUtility.VertToFaceAsGeneric(edgeWrap));
+		}
+
+		public Vector3 OffsetEdgeToVertAttribute(Vector3 position, EdgeWrap edgeWrap)
+		{
+			return OffsetAttribute(position, EdgeWrapUtility.EdgeToVertAsGeneric(edgeWrap));
+		}
+
+		public Vector3 OffsetEdgeToFaceAttribute(Vector3 position, EdgeWrap edgeWrap)
+		{
+			return OffsetAttribute(position, EdgeWrapUtility.EdgeToFaceAsGeneric(edgeWrap));
 		}
 
 		public Vector3 OffsetFaceToVertAttribute(Vector3 position, EdgeWrap edgeWrap)
 		{
-			switch (edgeWrap & EdgeWrap.FaceToVert)
-			{
-				case EdgeWrap.None:
-					return position;
-				case EdgeWrap.PosFaceToVertAxis0:
-					return position + axis0.vector;
-				case EdgeWrap.NegFaceToVertAxis0:
-					return position - axis0.vector;
-				case EdgeWrap.PosFaceToVertAxis1:
-					return position + axis1.vector;
-				case EdgeWrap.NegFaceToVertAxis1:
-					return position - axis1.vector;
-				case EdgeWrap.PosFaceToVertAxis0 | EdgeWrap.PosFaceToVertAxis1:
-					return position + axis0.vector + axis1.vector;
-				case EdgeWrap.PosFaceToVertAxis0 | EdgeWrap.NegFaceToVertAxis1:
-					return position + axis0.vector - axis1.vector;
-				case EdgeWrap.NegFaceToVertAxis0 | EdgeWrap.PosFaceToVertAxis1:
-					return position - axis0.vector + axis1.vector;
-				case EdgeWrap.NegFaceToVertAxis0 | EdgeWrap.NegFaceToVertAxis1:
-					return position - axis0.vector - axis1.vector;
-				default:
-					throw new ArgumentException("edgeWrap");
-			}
+			return OffsetAttribute(position, EdgeWrapUtility.FaceToVertAsGeneric(edgeWrap));
+		}
+
+		public Vector3 OffsetFaceToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap)
+		{
+			return OffsetAttribute(position, EdgeWrapUtility.FaceToEdgeAsGeneric(edgeWrap));
 		}
 
 		public Vector3 OffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap)
 		{
-			switch (edgeWrap & EdgeWrap.FaceToFace)
-			{
-				case EdgeWrap.None:
-					return position;
-				case EdgeWrap.PosFaceToFaceAxis0:
-					return position + axis0.vector;
-				case EdgeWrap.NegFaceToFaceAxis0:
-					return position - axis0.vector;
-				case EdgeWrap.PosFaceToFaceAxis1:
-					return position + axis1.vector;
-				case EdgeWrap.NegFaceToFaceAxis1:
-					return position - axis1.vector;
-				case EdgeWrap.PosFaceToFaceAxis0 | EdgeWrap.PosFaceToFaceAxis1:
-					return position + axis0.vector + axis1.vector;
-				case EdgeWrap.PosFaceToFaceAxis0 | EdgeWrap.NegFaceToFaceAxis1:
-					return position + axis0.vector - axis1.vector;
-				case EdgeWrap.NegFaceToFaceAxis0 | EdgeWrap.PosFaceToFaceAxis1:
-					return position - axis0.vector + axis1.vector;
-				case EdgeWrap.NegFaceToFaceAxis0 | EdgeWrap.NegFaceToFaceAxis1:
-					return position - axis0.vector - axis1.vector;
-				default:
-					throw new ArgumentException("edgeWrap");
-			}
+			return OffsetAttribute(position, EdgeWrapUtility.FaceToFaceAsGeneric(edgeWrap));
 		}
 	}
 }

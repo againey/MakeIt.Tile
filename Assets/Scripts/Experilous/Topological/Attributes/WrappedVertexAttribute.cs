@@ -13,6 +13,7 @@ namespace Experilous.Topological
 		[SerializeField] private ScriptableObject _vertexAttributeReference;
 
 		protected abstract T GetVertexRelativeAttribute(T vertexValue, EdgeWrap edgeWrap);
+		protected abstract T GetEdgeRelativeAttribute(T vertexValue, EdgeWrap edgeWrap);
 		protected abstract T GetFaceRelativeAttribute(T vertexValue, EdgeWrap edgeWrap);
 
 		public override T this[int i]
@@ -25,6 +26,12 @@ namespace Experilous.Topological
 		{
 			get { return vertexAttribute[v]; }
 			set { vertexAttribute[v] = value; }
+		}
+
+		public override T this[Topology.HalfEdge e]
+		{
+			get { return GetEdgeRelativeAttribute(vertexAttribute[e], edgeWrapAttribute[e]); }
+			set { throw new NotSupportedException("An edge-relative wrapped vertex attribute is read only and cannot be modified."); }
 		}
 
 		public override T this[Topology.VertexEdge e]

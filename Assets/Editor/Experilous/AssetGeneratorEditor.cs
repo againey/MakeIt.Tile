@@ -45,33 +45,52 @@ namespace Experilous
 
 		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType)
 		{
-			return OnDependencyGUI(label, currentSelection, assetType, false, true);
+			return OnDependencyGUI(label, currentSelection, assetType, false);
 		}
 
 		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType, bool hideForOneOption)
 		{
-			return OnDependencyGUI(label, currentSelection, assetType, hideForOneOption, true);
-		}
-
-		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType, bool hideForOneOption, bool includeNone)
-		{
-			return OnDependencyGUI(label, currentSelection, hideForOneOption, includeNone, (AssetDescriptor asset) => { return assetType.IsAssignableFrom(asset.assetType); });
+			return OnDependencyGUI(label, currentSelection, hideForOneOption, (AssetDescriptor asset) => { return assetType.IsAssignableFrom(asset.assetType); });
 		}
 
 		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Predicate<AssetDescriptor> predicate)
 		{
-			return OnDependencyGUI(label, currentSelection, false, true, predicate);
+			return OnDependencyGUI(label, currentSelection, false, false, false, predicate);
 		}
 
 		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForOneOption, System.Predicate<AssetDescriptor> predicate)
 		{
-			return OnDependencyGUI(label, currentSelection, hideForOneOption, true, predicate);
+			return OnDependencyGUI(label, currentSelection, false, hideForOneOption, false, predicate);
 		}
 
-		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForOneOption, bool includeNone, System.Predicate<AssetDescriptor> predicate)
+		protected AssetDescriptor OnOptionalDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType)
+		{
+			return OnOptionalDependencyGUI(label, currentSelection, assetType, false, false);
+		}
+
+		protected AssetDescriptor OnOptionalDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType, bool hideForNoOption, bool hideForOneOption)
+		{
+			return OnDependencyGUI(label, currentSelection, hideForNoOption, hideForOneOption, true, (AssetDescriptor asset) => { return assetType.IsAssignableFrom(asset.assetType); });
+		}
+
+		protected AssetDescriptor OnOptionalDependencyGUI(string label, AssetDescriptor currentSelection, System.Predicate<AssetDescriptor> predicate)
+		{
+			return OnOptionalDependencyGUI(label, currentSelection, false, false, predicate);
+		}
+
+		protected AssetDescriptor OnOptionalDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForNoOption, bool hideForOneOption, System.Predicate<AssetDescriptor> predicate)
+		{
+			return OnDependencyGUI(label, currentSelection, hideForNoOption, hideForOneOption, true, predicate);
+		}
+
+		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForNoOption, bool hideForOneOption, bool includeNone, System.Predicate<AssetDescriptor> predicate)
 		{
 			var potentialSources = _generator.bundle.GetMatchingGeneratedAssets(_generator, predicate);
-			if (potentialSources.Count == 1 && hideForOneOption)
+			if (potentialSources.Count == 0 && hideForNoOption)
+			{
+				return null;
+			}
+			else if (potentialSources.Count == 1 && hideForOneOption)
 			{
 				return potentialSources[0];
 			}

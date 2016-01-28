@@ -32,10 +32,11 @@ namespace Experilous.Topological
 		public Vector3 originPosition = new Vector3(0f, 0f, 0f);
 
 		public AssetDescriptor topology;
-		public AssetDescriptor vertexPositions;
 		public AssetDescriptor edgeWrapData;
-		public AssetDescriptor wrappedVertexPositions;
 		public AssetDescriptor surfaceDescriptor;
+		public AssetDescriptor positionalAttributeAdapter;
+		public AssetDescriptor vertexPositions;
+		public AssetDescriptor wrappedVertexPositions;
 		public AssetDescriptor vertexIndexer2D;
 		public AssetDescriptor faceIndexer2D;
 		public AssetDescriptor faceNeighborIndexer;
@@ -70,19 +71,21 @@ namespace Experilous.Topological
 			get
 			{
 				if (topology == null) topology = AssetDescriptor.Create(this, typeof(Topology), "Topology", "Descriptors");
-				if (vertexPositions == null) vertexPositions = AssetDescriptor.Create(this, typeof(IVertexAttribute<Vector3>), "Vertex Positions", "Attributes");
 				if (edgeWrapData == null) edgeWrapData = AssetDescriptor.Create(this, typeof(IEdgeAttribute<EdgeWrap>), "Ege Wrap Data", "Attributes");
-				if (wrappedVertexPositions == null) wrappedVertexPositions = AssetDescriptor.Create(this, typeof(IVertexAttribute<Vector3>), "Wrapped Vertex Positions", "Attributes");
 				if (surfaceDescriptor == null) surfaceDescriptor = AssetDescriptor.Create(this, typeof(PlanarSurfaceDescriptor), "Surface Descriptor", "Descriptors");
+				if (positionalAttributeAdapter == null) positionalAttributeAdapter = AssetDescriptor.Create(this, typeof(PositionalAttributeAdapter), "Positional Attribute Adapter", "Descriptors");
+				if (vertexPositions == null) vertexPositions = AssetDescriptor.Create(this, typeof(IVertexAttribute<Vector3>), "Vertex Positions", "Attributes");
+				if (wrappedVertexPositions == null) wrappedVertexPositions = AssetDescriptor.Create(this, typeof(IVertexAttribute<Vector3>), "Wrapped Vertex Positions", "Attributes");
 				if (vertexIndexer2D == null) vertexIndexer2D = AssetDescriptor.Create(this, typeof(VertexIndexer2D), "Vertex Indexer 2D", "Descriptors");
 				if (faceIndexer2D == null) faceIndexer2D = AssetDescriptor.Create(this, typeof(FaceIndexer2D), "Face Indexer 2D", "Descriptors");
 				if (faceNeighborIndexer == null) faceNeighborIndexer = AssetDescriptor.Create(this, typeof(FaceNeighborIndexer), "Face Neighbor Indexer", "Descriptors");
 
 				yield return topology;
-				yield return vertexPositions;
 				yield return edgeWrapData;
-				yield return wrappedVertexPositions;
 				yield return surfaceDescriptor;
+				yield return positionalAttributeAdapter;
+				yield return vertexPositions;
+				yield return wrappedVertexPositions;
 				yield return vertexIndexer2D;
 				yield return faceIndexer2D;
 				yield return faceNeighborIndexer;
@@ -137,11 +140,12 @@ namespace Experilous.Topological
 
 			surfaceDescriptor.SetAsset(surfaceDescriptorAsset);
 
-			var wrappedVertexPositionsAsset = Vector3OffsetWrappedVertexAttribute.Create(
-				edgeWrapData.GetAsset<IEdgeAttribute<EdgeWrap>>(),
-				vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
-				surfaceDescriptor.GetAsset<PlanarSurfaceDescriptor>());
+			var positionalAttributeAdapterAsset = EdgeWrapPositionalAttributeAdapter.Create(
+				surfaceDescriptor.GetAsset<PlanarSurfaceDescriptor>(),
+				edgeWrapData.GetAsset<IEdgeAttribute<EdgeWrap>>());
+			positionalAttributeAdapter.SetAsset(positionalAttributeAdapterAsset);
 
+			var wrappedVertexPositionsAsset = positionalAttributeAdapterAsset.Adapt(vertexPositions.GetAsset<IVertexAttribute<Vector3>>());
 			wrappedVertexPositions.SetAsset(wrappedVertexPositionsAsset);
 
 			topologyAsset = topology.GetAsset<Topology>();

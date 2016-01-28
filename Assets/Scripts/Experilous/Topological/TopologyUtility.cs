@@ -116,25 +116,11 @@ namespace Experilous.Topological
 			topology.faceNeighborCounts[prevFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
 			topology.faceNeighborCounts[nextFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 
-			edgeWrap[edgeIndex] =
-				EdgeWrapUtility.ChainVertToVertToVert(edgeWrap[edgeIndex], edgeWrap[innerEdgeIndex1]) | //vert-to-vert
-				EdgeWrapUtility.ChainFaceToVertToVert(edgeWrap[edgeIndex], edgeWrap[innerEdgeIndex1]) | //face-to-vert
-				edgeWrap[edgeIndex] & ~EdgeWrap.ToVert;
-
-			edgeWrap[twinEdgeIndex] =
-				EdgeWrapUtility.ChainVertToVertToVert(edgeWrap[outerEdgeIndex1], edgeWrap[twinEdgeIndex]) | //vert-to-vert
-				EdgeWrapUtility.ChainVertToVertToFace(edgeWrap[outerEdgeIndex1], edgeWrap[twinEdgeIndex]) | //vert-to-face
-				edgeWrap[twinEdgeIndex] & ~EdgeWrap.VertTo;
-
-			edgeWrap[outerEdgeIndex1] =
-				EdgeWrapUtility.ChainFaceToFaceToFace(edgeWrap[edgeIndex], edgeWrap[outerEdgeIndex1]) | //face-to-face
-				EdgeWrapUtility.ChainFaceToFaceToVert(edgeWrap[edgeIndex], edgeWrap[outerEdgeIndex1]) | //face-to-vert
-				edgeWrap[outerEdgeIndex1] & ~EdgeWrap.FaceTo;
-
-			edgeWrap[innerEdgeIndex1] =
-				EdgeWrapUtility.ChainFaceToFaceToFace(edgeWrap[innerEdgeIndex1], edgeWrap[twinEdgeIndex]) | //face-to-face
-				EdgeWrapUtility.ChainVertToFaceToFace(edgeWrap[innerEdgeIndex1], edgeWrap[twinEdgeIndex]) | //vert-to-face
-				edgeWrap[innerEdgeIndex1] & ~EdgeWrap.ToFace;
+			// Adjust edge wrap information, coallescing multiple edges together as appropriate.
+			edgeWrap[edgeIndex] = EdgeWrapUtility.ModifyTargetVertEdgeRelations(edgeWrap[edgeIndex], edgeWrap[innerEdgeIndex1]); // Edge's target vertex changed, according to Inner Edge 1.
+			edgeWrap[twinEdgeIndex] = EdgeWrapUtility.ModifySourceVertEdgeRelations(edgeWrap[twinEdgeIndex], edgeWrap[outerEdgeIndex1]); // Twin Edge's source vertex changed, according to Outer Edge 1.
+			edgeWrap[innerEdgeIndex1] = EdgeWrapUtility.ModifyTargetFaceEdgeRelations(edgeWrap[innerEdgeIndex1], edgeWrap[twinEdgeIndex]); // Inner Edge 1's target face changed, according to Twin Edge.
+			edgeWrap[outerEdgeIndex1] = EdgeWrapUtility.ModifySourceFaceEdgeRelations(edgeWrap[outerEdgeIndex1], edgeWrap[edgeIndex]); // Outer Edge 1's source face changed, according to Edge.
 		}
 
 		// Pivot an edge clockwise around its implicit near vertex.
@@ -249,25 +235,11 @@ namespace Experilous.Topological
 			topology.faceNeighborCounts[nextFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
 			topology.faceNeighborCounts[prevFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
 
-			edgeWrap[edgeIndex] =
-				EdgeWrapUtility.ChainVertToVertToVert(edgeWrap[edgeIndex], edgeWrap[outerEdgeIndex1]) | //vert-to-vert
-				EdgeWrapUtility.ChainFaceToVertToVert(edgeWrap[edgeIndex], edgeWrap[outerEdgeIndex1]) | //face-to-vert
-				edgeWrap[edgeIndex] & ~EdgeWrap.ToVert;
-
-			edgeWrap[twinEdgeIndex] =
-				EdgeWrapUtility.ChainVertToVertToVert(edgeWrap[innerEdgeIndex1], edgeWrap[twinEdgeIndex]) | //vert-to-vert
-				EdgeWrapUtility.ChainVertToVertToFace(edgeWrap[innerEdgeIndex1], edgeWrap[twinEdgeIndex]) | //vert-to-face
-				edgeWrap[twinEdgeIndex] & ~EdgeWrap.VertTo;
-
-			edgeWrap[outerEdgeIndex1] =
-				EdgeWrapUtility.ChainFaceToFaceToFace(edgeWrap[twinEdgeIndex], edgeWrap[outerEdgeIndex1]) | //face-to-face
-				EdgeWrapUtility.ChainFaceToFaceToVert(edgeWrap[twinEdgeIndex], edgeWrap[outerEdgeIndex1]) | //face-to-vert
-				edgeWrap[outerEdgeIndex1] & ~EdgeWrap.FaceTo;
-
-			edgeWrap[innerEdgeIndex1] =
-				EdgeWrapUtility.ChainFaceToFaceToFace(edgeWrap[innerEdgeIndex1], edgeWrap[edgeIndex]) | //face-to-face
-				EdgeWrapUtility.ChainVertToFaceToFace(edgeWrap[innerEdgeIndex1], edgeWrap[edgeIndex]) | //vert-to-face
-				edgeWrap[innerEdgeIndex1] & ~EdgeWrap.ToFace;
+			// Adjust edge wrap information, coallescing multiple edges together as appropriate.
+			edgeWrap[edgeIndex] = EdgeWrapUtility.ModifyTargetVertEdgeRelations(edgeWrap[edgeIndex], edgeWrap[outerEdgeIndex1]); // Edge's target vertex changed, according to Outer Edge 1.
+			edgeWrap[twinEdgeIndex] = EdgeWrapUtility.ModifySourceVertEdgeRelations(edgeWrap[twinEdgeIndex], edgeWrap[innerEdgeIndex1]); // Twin Edge's source vertex changed, according to Inner Edge 1.
+			edgeWrap[innerEdgeIndex1] = EdgeWrapUtility.ModifyTargetFaceEdgeRelations(edgeWrap[innerEdgeIndex1], edgeWrap[edgeIndex]); // Inner Edge 1's target face changed, according to Edge.
+			edgeWrap[outerEdgeIndex1] = EdgeWrapUtility.ModifySourceFaceEdgeRelations(edgeWrap[outerEdgeIndex1], edgeWrap[twinEdgeIndex]); // Outer Edge 1's source face changed, according to Twin Edge.
 		}
 
 		private static void PivotEdgeBackwardUnchecked(Topology.VertexEdge edge)

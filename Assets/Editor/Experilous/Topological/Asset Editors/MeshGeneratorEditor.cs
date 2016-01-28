@@ -15,7 +15,7 @@ namespace Experilous.Topological
 			switch (generator.sourceType)
 			{
 				case MeshGenerator.SourceType.InternalFaces:
-					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), false);
+					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
 					break;
 				case MeshGenerator.SourceType.FaceGroupCollection:
 					generator.faceGroupCollection = OnDependencyGUI("Face Groups", generator.faceGroupCollection, typeof(FaceGroupCollection), false);

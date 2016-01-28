@@ -34,10 +34,10 @@ namespace Experilous.Topological
 		public int maxRepairIterations = 20;
 		public float repairRate = 0.5f;
 
-		public AssetDescriptor topology;
-		public AssetDescriptor vertexPositions;
-		public AssetDescriptor edgeWrap;
-		public AssetDescriptor surfaceDescriptor;
+		public AssetDescriptor topologyDescriptor;
+		public AssetDescriptor positionalAttributeAdapterDescriptor;
+		public AssetDescriptor vertexPositionsDescriptor;
+		public AssetDescriptor edgeWrapDescriptor;
 
 		public static TopologyRandomizerGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
 		{
@@ -52,10 +52,10 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				if (topology != null) yield return topology;
-				if (vertexPositions != null) yield return vertexPositions;
-				if (edgeWrap != null) yield return edgeWrap;
-				if (surfaceDescriptor != null) yield return surfaceDescriptor;
+				if (topologyDescriptor != null) yield return topologyDescriptor;
+				if (positionalAttributeAdapterDescriptor != null) yield return positionalAttributeAdapterDescriptor;
+				if (vertexPositionsDescriptor != null) yield return vertexPositionsDescriptor;
+				if (edgeWrapDescriptor != null) yield return edgeWrapDescriptor;
 			}
 		}
 
@@ -70,7 +70,7 @@ namespace Experilous.Topological
 		public override void ResetDependency(AssetDescriptor dependency)
 		{
 			if (dependency == null) throw new System.ArgumentNullException("dependency");
-			if (!ResetMemberDependency(dependency, ref topology, ref vertexPositions, ref edgeWrap, ref surfaceDescriptor))
+			if (!ResetMemberDependency(dependency, ref topologyDescriptor, ref positionalAttributeAdapterDescriptor, ref vertexPositionsDescriptor, ref edgeWrapDescriptor))
 			{
 				throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this vertex normals generator.", dependency.name, dependency.GetType().Name), "dependency");
 			}
@@ -78,10 +78,12 @@ namespace Experilous.Topological
 
 		public override void Generate()
 		{
-			var topologyAsset = topology.GetAsset<Topology>();
-			var vertexPositionsAsset = vertexPositions != null ? vertexPositions.GetAsset<IVertexAttribute<Vector3>>() : null;
-			var edgeWrapAsset = edgeWrap != null ? edgeWrap.GetAsset<IEdgeAttribute<EdgeWrap>>() : null;
-			var surfaceDescriptorAsset = surfaceDescriptor != null ? surfaceDescriptor.GetAsset<PlanarSurfaceDescriptor>() : null;
+			var topology = topologyDescriptor.GetAsset<Topology>();
+			var positionalAttributeAdapter = positionalAttributeAdapterDescriptor != null
+				? positionalAttributeAdapterDescriptor.GetAsset<PositionalAttributeAdapter>()
+				: PositionalAttributeAdapter.Create();
+			var vertexPositions = vertexPositionsDescriptor != null ? vertexPositionsDescriptor.GetAsset<IVertexAttribute<Vector3>>() : null;
+			var edgeWrap = edgeWrapDescriptor != null ? edgeWrapDescriptor.GetAsset<IEdgeAttribute<EdgeWrap>>() : null;
 
 			var random = new Random(new NativeRandomEngine(randomSeed));
 
@@ -89,33 +91,32 @@ namespace Experilous.Topological
 			System.Func<bool> repairFunction = null;
 			System.Action relaxationLoopFunction = null;
 
-			if (vertexPositionsAsset != null)
+			if (vertexPositions != null)
 			{
 				if (surfaceType == SurfaceType.Planar)
 				{
 					if (relaxForRegularityWeight >= 1.0f)
 					{
-						var relaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
+						var relaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
 						relaxIterationFunction = () =>
 						{
-							PlanarManifoldUtility.RelaxVertexPositionsForRegularity(topologyAsset, vertexPositionsAsset, lockBoundaryPositions, relaxedVertexPositions);
-							var relaxationAmount = PlanarManifoldUtility.CalculateRelaxationAmount(vertexPositionsAsset, relaxedVertexPositions);
-							for (int i = 0; i < vertexPositionsAsset.Count; ++i)
+							PlanarManifoldUtility.RelaxVertexPositionsForRegularity(topology, vertexPositions, lockBoundaryPositions, relaxedVertexPositions);
+							var relaxationAmount = PlanarManifoldUtility.CalculateRelaxationAmount(vertexPositions, relaxedVertexPositions);
+							for (int i = 0; i < vertexPositions.Count; ++i)
 							{
-								vertexPositionsAsset[i] = relaxedVertexPositions[i];
+								vertexPositions[i] = relaxedVertexPositions[i];
 							}
 							return relaxationAmount;
 						};
 					}
 					else if (relaxForRegularityWeight <= 0.0f)
 					{
-						var relaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
-						var faceCentroids = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count]);
-						var vertexAreas = new float[topologyAsset.vertices.Count].AsVertexAttribute();
-						var wrappedFaceCentroids = (edgeWrapAsset != null && surfaceDescriptorAsset != null) ? (IFaceAttribute<Vector3>)Vector3OffsetWrappedFaceAttribute.Create(edgeWrapAsset, faceCentroids, surfaceDescriptorAsset) : faceCentroids;
+						var relaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
+						var faceCentroids = positionalAttributeAdapter.Adapt(new Vector3[topology.internalFaces.Count].AsFaceAttribute());
+						var vertexAreas = new float[topology.vertices.Count].AsVertexAttribute();
 
-						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topologyAsset.internalFaces, vertexPositionsAsset, wrappedFaceCentroids);
-						VertexAttributeUtility.CalculateVertexAreasFromVertexPositionsAndFaceCentroids(topologyAsset.vertices, vertexPositionsAsset, wrappedFaceCentroids, vertexAreas);
+						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, faceCentroids);
+						VertexAttributeUtility.CalculateVertexAreasFromVertexPositionsAndFaceCentroids(topology.vertices, vertexPositions, faceCentroids, vertexAreas);
 
 						var totalArea = 0f;
 						foreach (var vertexArea in vertexAreas)
@@ -125,11 +126,11 @@ namespace Experilous.Topological
 
 						relaxIterationFunction = () =>
 						{
-							PlanarManifoldUtility.RelaxForEqualArea(topologyAsset, vertexPositionsAsset, totalArea, lockBoundaryPositions, relaxedVertexPositions, wrappedFaceCentroids, vertexAreas);
-							var relaxationAmount = PlanarManifoldUtility.CalculateRelaxationAmount(vertexPositionsAsset, relaxedVertexPositions);
-							for (int i = 0; i < vertexPositionsAsset.Count; ++i)
+							PlanarManifoldUtility.RelaxForEqualArea(topology, vertexPositions, totalArea, lockBoundaryPositions, relaxedVertexPositions, faceCentroids, vertexAreas);
+							var relaxationAmount = PlanarManifoldUtility.CalculateRelaxationAmount(vertexPositions, relaxedVertexPositions);
+							for (int i = 0; i < vertexPositions.Count; ++i)
 							{
-								vertexPositionsAsset[i] = relaxedVertexPositions[i];
+								vertexPositions[i] = relaxedVertexPositions[i];
 							}
 							return relaxationAmount;
 						};
@@ -139,15 +140,14 @@ namespace Experilous.Topological
 						var regularityWeight = Mathf.Clamp01(relaxForRegularityWeight);
 						var equalAreaWeight = 1f - regularityWeight;
 
-						var regularityRelaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
-						var equalAreaRelaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
+						var regularityRelaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
+						var equalAreaRelaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
 						var relaxedVertexPositions = regularityRelaxedVertexPositions;
-						var faceCentroids = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count]);
-						var vertexAreas = new float[topologyAsset.vertices.Count].AsVertexAttribute();
-						var wrappedFaceCentroids = (edgeWrapAsset != null && surfaceDescriptorAsset != null) ? (IFaceAttribute<Vector3>)Vector3OffsetWrappedFaceAttribute.Create(edgeWrapAsset, faceCentroids, surfaceDescriptorAsset) : faceCentroids;
+						var faceCentroids = positionalAttributeAdapter.Adapt(new Vector3[topology.internalFaces.Count].AsFaceAttribute());
+						var vertexAreas = new float[topology.vertices.Count].AsVertexAttribute();
 
-						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topologyAsset.internalFaces, vertexPositionsAsset, wrappedFaceCentroids);
-						VertexAttributeUtility.CalculateVertexAreasFromVertexPositionsAndFaceCentroids(topologyAsset.vertices, vertexPositionsAsset, wrappedFaceCentroids, vertexAreas);
+						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, faceCentroids);
+						VertexAttributeUtility.CalculateVertexAreasFromVertexPositionsAndFaceCentroids(topology.vertices, vertexPositions, faceCentroids, vertexAreas);
 
 						var totalArea = 0f;
 						foreach (var vertexArea in vertexAreas)
@@ -157,16 +157,16 @@ namespace Experilous.Topological
 
 						relaxIterationFunction = () =>
 						{
-							PlanarManifoldUtility.RelaxVertexPositionsForRegularity(topologyAsset, vertexPositionsAsset, lockBoundaryPositions, regularityRelaxedVertexPositions);
-							PlanarManifoldUtility.RelaxForEqualArea(topologyAsset, vertexPositionsAsset, totalArea, lockBoundaryPositions, equalAreaRelaxedVertexPositions, wrappedFaceCentroids, vertexAreas);
+							PlanarManifoldUtility.RelaxVertexPositionsForRegularity(topology, vertexPositions, lockBoundaryPositions, regularityRelaxedVertexPositions);
+							PlanarManifoldUtility.RelaxForEqualArea(topology, vertexPositions, totalArea, lockBoundaryPositions, equalAreaRelaxedVertexPositions, faceCentroids, vertexAreas);
 							for (int i = 0; i < relaxedVertexPositions.Count; ++i)
 							{
 								relaxedVertexPositions[i] = regularityRelaxedVertexPositions[i] * regularityWeight + equalAreaRelaxedVertexPositions[i] * equalAreaWeight;
 							}
-							var relaxationAmount = PlanarManifoldUtility.CalculateRelaxationAmount(vertexPositionsAsset, relaxedVertexPositions);
-							for (int i = 0; i < vertexPositionsAsset.Count; ++i)
+							var relaxationAmount = PlanarManifoldUtility.CalculateRelaxationAmount(vertexPositions, relaxedVertexPositions);
+							for (int i = 0; i < vertexPositions.Count; ++i)
 							{
-								vertexPositionsAsset[i] = relaxedVertexPositions[i];
+								vertexPositions[i] = relaxedVertexPositions[i];
 							}
 							return relaxationAmount;
 						};
@@ -174,7 +174,7 @@ namespace Experilous.Topological
 
 					repairFunction = () =>
 					{
-						return PlanarManifoldUtility.ValidateAndRepair(topologyAsset, vertexPositionsAsset, repairRate, lockBoundaryPositions);
+						return PlanarManifoldUtility.ValidateAndRepair(topology, vertexPositions, repairRate, lockBoundaryPositions);
 					};
 
 					relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(maxRelaxIterations, maxRepairIterations, relaxRelativePrecision, relaxIterationFunction, repairFunction);
@@ -183,31 +183,31 @@ namespace Experilous.Topological
 				{
 					if (relaxForRegularityWeight >= 1.0f)
 					{
-						var relaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
+						var relaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
 						relaxIterationFunction = () =>
 						{
-							SphericalManifoldUtility.RelaxVertexPositionsForRegularity(topologyAsset, vertexPositionsAsset, 1f, lockBoundaryPositions, relaxedVertexPositions);
-							var relaxationAmount = SphericalManifoldUtility.CalculateRelaxationAmount(vertexPositionsAsset, relaxedVertexPositions);
-							for (int i = 0; i < vertexPositionsAsset.Count; ++i)
+							SphericalManifoldUtility.RelaxVertexPositionsForRegularity(topology, vertexPositions, 1f, lockBoundaryPositions, relaxedVertexPositions);
+							var relaxationAmount = SphericalManifoldUtility.CalculateRelaxationAmount(vertexPositions, relaxedVertexPositions);
+							for (int i = 0; i < vertexPositions.Count; ++i)
 							{
-								vertexPositionsAsset[i] = relaxedVertexPositions[i];
+								vertexPositions[i] = relaxedVertexPositions[i];
 							}
 							return relaxationAmount;
 						};
 					}
 					else if (relaxForRegularityWeight <= 0.0f)
 					{
-						var relaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
-						var faceCentroids = new Vector3[topologyAsset.internalFaces.Count].AsFaceAttribute();
-						var faceCentroidAngles = new float[topologyAsset.faceEdges.Count].AsEdgeAttribute();
-						var vertexAreas = new float[topologyAsset.vertices.Count].AsVertexAttribute();
+						var relaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
+						var faceCentroids = positionalAttributeAdapter.Adapt(new Vector3[topology.internalFaces.Count].AsFaceAttribute());
+						var faceCentroidAngles = new float[topology.faceEdges.Count].AsEdgeAttribute();
+						var vertexAreas = new float[topology.vertices.Count].AsVertexAttribute();
 						relaxIterationFunction = () =>
 						{
-							SphericalManifoldUtility.RelaxForEqualArea(topologyAsset, vertexPositionsAsset, 1f, lockBoundaryPositions, relaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
-							var relaxationAmount = SphericalManifoldUtility.CalculateRelaxationAmount(vertexPositionsAsset, relaxedVertexPositions);
-							for (int i = 0; i < vertexPositionsAsset.Count; ++i)
+							SphericalManifoldUtility.RelaxForEqualArea(topology, vertexPositions, 1f, lockBoundaryPositions, relaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
+							var relaxationAmount = SphericalManifoldUtility.CalculateRelaxationAmount(vertexPositions, relaxedVertexPositions);
+							for (int i = 0; i < vertexPositions.Count; ++i)
 							{
-								vertexPositionsAsset[i] = relaxedVertexPositions[i];
+								vertexPositions[i] = relaxedVertexPositions[i];
 							}
 							return relaxationAmount;
 						};
@@ -217,24 +217,24 @@ namespace Experilous.Topological
 						var regularityWeight = Mathf.Clamp01(relaxForRegularityWeight);
 						var equalAreaWeight = 1f - regularityWeight;
 
-						var regularityRelaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
-						var equalAreaRelaxedVertexPositions = new Vector3[topologyAsset.vertices.Count].AsVertexAttribute();
+						var regularityRelaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
+						var equalAreaRelaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
 						var relaxedVertexPositions = regularityRelaxedVertexPositions;
-						var faceCentroids = new Vector3[topologyAsset.internalFaces.Count].AsFaceAttribute();
-						var faceCentroidAngles = new float[topologyAsset.faceEdges.Count].AsEdgeAttribute();
-						var vertexAreas = new float[topologyAsset.vertices.Count].AsVertexAttribute();
+						var faceCentroids = positionalAttributeAdapter.Adapt(new Vector3[topology.internalFaces.Count].AsFaceAttribute());
+						var faceCentroidAngles = new float[topology.faceEdges.Count].AsEdgeAttribute();
+						var vertexAreas = new float[topology.vertices.Count].AsVertexAttribute();
 						relaxIterationFunction = () =>
 						{
-							SphericalManifoldUtility.RelaxVertexPositionsForRegularity(topologyAsset, vertexPositionsAsset, 1f, lockBoundaryPositions, regularityRelaxedVertexPositions);
-							SphericalManifoldUtility.RelaxForEqualArea(topologyAsset, vertexPositionsAsset, 1f, lockBoundaryPositions, equalAreaRelaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
+							SphericalManifoldUtility.RelaxVertexPositionsForRegularity(topology, vertexPositions, 1f, lockBoundaryPositions, regularityRelaxedVertexPositions);
+							SphericalManifoldUtility.RelaxForEqualArea(topology, vertexPositions, 1f, lockBoundaryPositions, equalAreaRelaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
 							for (int i = 0; i < relaxedVertexPositions.Count; ++i)
 							{
 								relaxedVertexPositions[i] = regularityRelaxedVertexPositions[i] * regularityWeight + equalAreaRelaxedVertexPositions[i] * equalAreaWeight;
 							}
-							var relaxationAmount = SphericalManifoldUtility.CalculateRelaxationAmount(vertexPositionsAsset, relaxedVertexPositions);
-							for (int i = 0; i < vertexPositionsAsset.Count; ++i)
+							var relaxationAmount = SphericalManifoldUtility.CalculateRelaxationAmount(vertexPositions, relaxedVertexPositions);
+							for (int i = 0; i < vertexPositions.Count; ++i)
 							{
-								vertexPositionsAsset[i] = relaxedVertexPositions[i];
+								vertexPositions[i] = relaxedVertexPositions[i];
 							}
 							return relaxationAmount;
 						};
@@ -242,43 +242,39 @@ namespace Experilous.Topological
 
 					repairFunction = () =>
 					{
-						return SphericalManifoldUtility.ValidateAndRepair(topologyAsset, vertexPositionsAsset, 1f, repairRate, lockBoundaryPositions);
+						return SphericalManifoldUtility.ValidateAndRepair(topology, vertexPositions, 1f, repairRate, lockBoundaryPositions);
 					};
 
 					relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(maxRelaxIterations, maxRepairIterations, relaxRelativePrecision, relaxIterationFunction, repairFunction);
 				}
 			}
 
-			if (edgeWrapAsset == null)
+			if (edgeWrap == null)
 			{
-				TopologyRandomizer.Randomize(topologyAsset, passCount, frequency,
+				TopologyRandomizer.Randomize(topology, passCount, frequency,
 					minVertexNeighbors, maxVertexNeighbors, minFaceNeighbors, maxFaceNeighbors,
 					lockBoundaryPositions, random, relaxationLoopFunction);
-				EditorUtility.SetDirty(topologyAsset);
+				EditorUtility.SetDirty(topology);
 			}
 			else
 			{
-				TopologyRandomizer.Randomize(topologyAsset, edgeWrapAsset, passCount, frequency,
+				TopologyRandomizer.Randomize(topology, edgeWrap, passCount, frequency,
 					minVertexNeighbors, maxVertexNeighbors, minFaceNeighbors, maxFaceNeighbors,
 					lockBoundaryPositions, random, relaxationLoopFunction);
-				EditorUtility.SetDirty(topologyAsset);
-				EditorUtility.SetDirty((Object)edgeWrapAsset);
+				EditorUtility.SetDirty(topology);
+				EditorUtility.SetDirty((Object)edgeWrap);
 			}
 
-			if (vertexPositionsAsset != null)
+			if (vertexPositions != null)
 			{
-				EditorUtility.SetDirty((Object)vertexPositionsAsset);
+				EditorUtility.SetDirty((Object)vertexPositions);
 			}
 		}
 
 		public override bool CanGenerate()
 		{
 			return (
-				topology != null &&
-				(
-					surfaceType != SurfaceType.Planar ||
-					(edgeWrap == null) == (surfaceDescriptor == null) ||
-					relaxForRegularityWeight == 1f));
+				topologyDescriptor != null);
 		}
 	}
 }

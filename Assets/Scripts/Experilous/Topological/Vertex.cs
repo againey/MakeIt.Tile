@@ -192,6 +192,7 @@ namespace Experilous.Topological
 	public interface IVertexAttribute<T> : IList<T>
 	{
 		T this[Topology.Vertex v] { get; set; }
+		T this[Topology.HalfEdge e] { get; set; }
 		T this[Topology.VertexEdge e] { get; set; }
 		T this[Topology.FaceEdge e] { get; set; }
 	}
@@ -220,6 +221,12 @@ namespace Experilous.Topological
 		{
 			get { return array[v.index]; }
 			set { array[v.index] = value; }
+		}
+
+		public T this[Topology.HalfEdge e]
+		{
+			get { return array[e.farVertex.index]; }
+			set { array[e.farVertex.index] = value; }
 		}
 
 		public T this[Topology.VertexEdge e]
@@ -252,6 +259,7 @@ namespace Experilous.Topological
 	{
 		public abstract T this[int i] { get; set; }
 		public abstract T this[Topology.Vertex v] { get; set; }
+		public abstract T this[Topology.HalfEdge e] { get; set; }
 		public abstract T this[Topology.VertexEdge e] { get; set; }
 		public abstract T this[Topology.FaceEdge e] { get; set; }
 
@@ -321,6 +329,12 @@ namespace Experilous.Topological
 			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
 		}
 
+		public override T this[Topology.HalfEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
+		}
+
 		public override T this[Topology.VertexEdge e]
 		{
 			get { return constant; }
@@ -384,6 +398,12 @@ namespace Experilous.Topological
 		{
 			get { return array[v.index]; }
 			set { array[v.index] = value; }
+		}
+
+		public override T this[Topology.HalfEdge e]
+		{
+			get { return array[e.farVertex.index]; }
+			set { array[e.farVertex.index] = value; }
 		}
 
 		public override T this[Topology.VertexEdge e]
