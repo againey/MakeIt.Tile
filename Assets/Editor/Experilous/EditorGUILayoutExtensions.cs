@@ -45,7 +45,7 @@ namespace Experilous
 			GUIContent content = EditorGUIUtility.ObjectContent(obj, objType);
 			if (obj == null)
 			{
-				content.text =string.Format("None ({0})", objType.GetPrettyName());
+				content.text = string.Format("None ({0})", objType.GetPrettyName());
 			}
 			else
 			{

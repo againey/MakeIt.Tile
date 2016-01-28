@@ -22,10 +22,7 @@ namespace Experilous.Topological
 
 		public static Vector3OffsetWrappedVertexAttribute Create(IEdgeAttribute<EdgeWrap> edgeWrapAttribute, IVertexAttribute<Vector3> vertexAttribute, PlanarSurfaceDescriptor surfaceDescriptor, string name)
 		{
-			var instance = CreateInstance<Vector3OffsetWrappedVertexAttribute>();
-			instance.edgeWrapAttribute = edgeWrapAttribute;
-			instance.vertexAttribute = vertexAttribute;
-			instance.surfaceDescriptor = surfaceDescriptor;
+			var instance = Create(edgeWrapAttribute, vertexAttribute, surfaceDescriptor);
 			instance.name = name;
 			return instance;
 		}
