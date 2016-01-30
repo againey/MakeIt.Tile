@@ -4,30 +4,32 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(FaceAttributesCategory), "Group Random Colors")]
+	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(FaceAttributesCategory), "Group Random Colors")]
 	public class FaceGroupRandomColorGenerator : AssetGenerator
 	{
-		public AssetDescriptor faceGroupCollection;
-		public AssetDescriptor faceGroupIndices;
+		public AssetInputSlot faceGroupCollectionInputSlot;
+		public AssetInputSlot faceGroupIndicesInputSlot;
 
-		public AssetDescriptor faceGroupColors;
-		public AssetDescriptor faceColors;
+		public AssetDescriptor faceGroupColorsDescriptor;
+		public AssetDescriptor faceColorsDescriptor;
 
-		public static FaceGroupRandomColorGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
+		protected override void Initialize(bool reset = true)
 		{
-			var generator = CreateInstance<FaceGroupRandomColorGenerator>();
-			generator.bundle = bundle;
-			generator.name = name;
-			generator.hideFlags = HideFlags.HideInHierarchy;
-			return generator;
+			// Inputs
+			if (reset || faceGroupCollectionInputSlot == null) faceGroupCollectionInputSlot = AssetInputSlot.CreateRequired(this, typeof(FaceGroupCollection));
+			if (reset || faceGroupIndicesInputSlot == null) faceGroupIndicesInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<int>));
+
+			// Outputs
+			if (reset || faceGroupColorsDescriptor == null) faceGroupColorsDescriptor = AssetDescriptor.CreateGrouped<IFaceGroupAttribute<Color>>(this, "Random Face Group Colors", "Attributes");
+			if (reset || faceColorsDescriptor == null) faceColorsDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<Color>>(this, "Random Face Colors", "Attributes");
 		}
 
-		public override IEnumerable<AssetDescriptor> dependencies
+		public override IEnumerable<AssetInputSlot> inputs
 		{
 			get
 			{
-				if (faceGroupCollection != null) yield return faceGroupCollection;
-				if (faceGroupIndices != null) yield return faceGroupIndices;
+				yield return faceGroupCollectionInputSlot;
+				yield return faceGroupIndicesInputSlot;
 			}
 		}
 
@@ -35,26 +37,14 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				if (faceGroupColors == null) faceGroupColors = AssetDescriptor.Create(this, typeof(IFaceGroupAttribute<Color>), "Random Face Group Colors", "Attributes");
-				if (faceColors == null) faceColors = AssetDescriptor.Create(this, typeof(IFaceAttribute<Color>), "Random Face Colors", "Attributes");
-
-				yield return faceGroupColors;
-				yield return faceColors;
-			}
-		}
-
-		public override void ResetDependency(AssetDescriptor dependency)
-		{
-			if (dependency == null) throw new System.ArgumentNullException("dependency");
-			if (!ResetMemberDependency(dependency, ref faceGroupCollection, ref faceGroupIndices))
-			{
-				throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this face centroids generator.", dependency.name, dependency.GetType().Name), "dependency");
+				yield return faceGroupColorsDescriptor;
+				yield return faceColorsDescriptor;
 			}
 		}
 
 		public override void Generate()
 		{
-			var faceGroups = faceGroupCollection.GetAsset<FaceGroupCollection>().faceGroups;
+			var faceGroups = faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>().faceGroups;
 			var faceGroupColorsArray = new Color[faceGroups.Length];
 
 			var random = new Random(new NativeRandomEngine(2));
@@ -64,15 +54,8 @@ namespace Experilous.Topological
 				faceGroupColorsArray[i] = new Color(random.ClosedFloatUnit(), random.ClosedFloatUnit(), random.ClosedFloatUnit());
 			}
 
-			faceGroupColors.SetAsset(ColorFaceGroupAttribute.CreateInstance(faceGroupColorsArray));
-			faceColors.SetAsset(ColorFaceGroupLookupFaceAttribute.CreateInstance(faceGroupIndices.GetAsset<IntFaceAttribute>(), faceGroupColors.GetAsset<ColorFaceGroupAttribute>()));
-		}
-
-		public override bool CanGenerate()
-		{
-			return
-				faceGroupCollection != null &&
-				faceGroupIndices != null;
+			faceGroupColorsDescriptor.SetAsset(ColorFaceGroupAttribute.CreateInstance(faceGroupColorsArray));
+			faceColorsDescriptor.SetAsset(ColorFaceGroupLookupFaceAttribute.CreateInstance(faceGroupIndicesInputSlot.GetAsset<IntFaceAttribute>(), faceGroupColorsDescriptor.GetAsset<ColorFaceGroupAttribute>()));
 		}
 	}
 }

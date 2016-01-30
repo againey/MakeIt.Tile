@@ -6,63 +6,112 @@ namespace Experilous
 {
 	public abstract class AssetGenerator : ScriptableObject
 	{
-		public AssetGeneratorBundle bundle;
-		public abstract IEnumerable<AssetDescriptor> dependencies { get; }
-		public abstract IEnumerable<AssetDescriptor> outputs { get; }
-		public abstract void ResetDependency(AssetDescriptor dependency);
+		public AssetGeneratorCollection collection;
+
 		public abstract void Generate();
 
-		public virtual bool CanGenerate()
+		public static TGenerator CreateInstance<TGenerator>(AssetGeneratorCollection collection, string name) where TGenerator : AssetGenerator
 		{
-			return true;
+			var generator = CreateInstance<TGenerator>();
+			generator.collection = collection;
+			generator.name = name;
+			generator.hideFlags = HideFlags.HideInHierarchy;
+			generator.Initialize();
+			return generator;
+		}
+
+		protected abstract void Initialize(bool reset = true);
+
+		protected virtual void OnEnable()
+		{
+			Initialize(false);
+		}
+
+		public virtual IEnumerable<AssetInputSlot> inputs
+		{
+			get
+			{
+				yield break; // A generator that creates everything from scratch.
+			}
+		}
+
+		public virtual IEnumerable<AssetDescriptor> dependencies
+		{
+			get
+			{
+				foreach (var input in inputs)
+				{
+					if (input.source != null)
+					{
+						yield return input.source;
+					}
+				}
+			}
+		}
+
+		public virtual IEnumerable<AssetDescriptor> outputs
+		{
+			get
+			{
+				yield break; // A generator that only modifies existing data, does not create anything new.
+			}
+		}
+
+		public virtual IEnumerable<AssetReferenceDescriptor> references
+		{
+			get
+			{
+				yield break; // A generator whose outputs store references neither to the generator's inputs nor to the generator's other outputs has no references to report.
+			}
+		}
+
+		public virtual bool canGenerate
+		{
+			get
+			{
+				foreach (var input in inputs)
+				{
+					if (!input.isOptional && input.source == null)
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		public virtual void ResetDependency(AssetDescriptor dependency)
+		{
+			foreach (var input in inputs)
+			{
+				if (ReferenceEquals(input.source, dependency))
+				{
+					input.source = null;
+				}
+			}
+		}
+
+		public virtual void ResetAllDependencies()
+		{
+			foreach (var input in inputs)
+			{
+				input.source = null;
+			}
+		}
+
+		public virtual void ResetAssets()
+		{
+			Initialize(false);
+			foreach (var output in outputs)
+			{
+				output.ResetAsset();
+			}
 		}
 
 		public virtual void Reset()
 		{
-			foreach (var dependency in dependencies)
-			{
-				ResetDependency(dependency);
-			}
-		}
-
-		protected bool ResetMemberDependency<TAsset>(AssetDescriptor dependency, ref TAsset member) where TAsset : AssetDescriptor
-		{
-			if (ReferenceEquals(dependency, member))
-			{
-				member = null;
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		protected bool ResetMemberDependency<TAsset0, TAsset1>(AssetDescriptor dependency, ref TAsset0 member0, ref TAsset1 member1)
-			where TAsset0 : AssetDescriptor where TAsset1 : AssetDescriptor
-		{
-			return
-				ResetMemberDependency(dependency, ref member0) ||
-				ResetMemberDependency(dependency, ref member1);
-		}
-
-		protected bool ResetMemberDependency<TAsset0, TAsset1, TAsset2>(AssetDescriptor dependency, ref TAsset0 member0, ref TAsset1 member1, ref TAsset2 member2)
-			where TAsset0 : AssetDescriptor where TAsset1 : AssetDescriptor where TAsset2 : AssetDescriptor
-		{
-			return
-				ResetMemberDependency(dependency, ref member0) ||
-				ResetMemberDependency(dependency, ref member1) ||
-				ResetMemberDependency(dependency, ref member2);
-		}
-
-		protected bool ResetMemberDependency<TAsset0, TAsset1, TAsset2, TAsset3>(AssetDescriptor dependency, ref TAsset0 member0, ref TAsset1 member1, ref TAsset2 member2, ref TAsset3 member3)
-			where TAsset0 : AssetDescriptor where TAsset1 : AssetDescriptor where TAsset2 : AssetDescriptor where TAsset3 : AssetDescriptor
-		{
-			return
-				ResetMemberDependency(dependency, ref member0) ||
-				ResetMemberDependency(dependency, ref member1) ||
-				ResetMemberDependency(dependency, ref member2) ||
-				ResetMemberDependency(dependency, ref member3);
+			Initialize(true);
 		}
 
 		public void EditScript()
@@ -81,42 +130,42 @@ namespace Experilous
 		public static void RemoveGenerator(MenuCommand menuCommand)
 		{
 			var generator = (AssetGenerator)menuCommand.context;
-			generator.bundle.Remove(generator);
+			generator.collection.Remove(generator);
 		}
 
 		[MenuItem("CONTEXT/AssetGenerator/Remove Generator", validate = true)]
 		public static bool CanRemoveGenerator(MenuCommand menuCommand)
 		{
 			var generator = (AssetGenerator)menuCommand.context;
-			return generator.bundle.CanRemove(generator);
+			return generator.collection.CanRemove(generator);
 		}
 
 		[MenuItem("CONTEXT/AssetGenerator/Move Up", priority = 21)]
 		public static void MoveUp(MenuCommand menuCommand)
 		{
 			var generator = (AssetGenerator)menuCommand.context;
-			generator.bundle.MoveUp(generator);
+			generator.collection.MoveUp(generator);
 		}
 
 		[MenuItem("CONTEXT/AssetGenerator/Move Up", validate = true)]
 		public static bool CanMoveUp(MenuCommand menuCommand)
 		{
 			var generator = (AssetGenerator)menuCommand.context;
-			return generator.bundle.CanMoveUp(generator);
+			return generator.collection.CanMoveUp(generator);
 		}
 
 		[MenuItem("CONTEXT/AssetGenerator/Move Down", priority = 22)]
 		public static void MoveDown(MenuCommand menuCommand)
 		{
 			var generator = (AssetGenerator)menuCommand.context;
-			generator.bundle.MoveDown(generator);
+			generator.collection.MoveDown(generator);
 		}
 
 		[MenuItem("CONTEXT/AssetGenerator/Move Down", validate = true)]
 		public static bool CanMoveDown(MenuCommand menuCommand)
 		{
 			var generator = (AssetGenerator)menuCommand.context;
-			return generator.bundle.CanMoveDown(generator);
+			return generator.collection.CanMoveDown(generator);
 		}
 
 		[MenuItem("CONTEXT/AssetGenerator/Edit Script", priority = 40)]

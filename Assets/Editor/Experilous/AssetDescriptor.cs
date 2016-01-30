@@ -1,71 +1,57 @@
 ﻿using UnityEngine;
-using UnityEditor;
-using System.IO;
+using System.Collections.Generic;
 
 namespace Experilous
 {
-	public class AssetDescriptor : ScriptableObject
+	public sealed class AssetDescriptor : ScriptableObject
 	{
-		[SerializeField] protected AssetGenerator _generator;
-		[SerializeField] protected SerializableType _assetType;
-		[SerializeField] protected Object _asset;
-
-		[SerializeField] protected string _groupName;
-
-		[SerializeField] protected bool _isOptional = false;
-		[SerializeField] protected bool _isPersisted = true;
-
-		public static AssetDescriptor Create<TAsset>(AssetGenerator generator, string name, string groupName = null) where TAsset : Object
+		[System.Flags]
+		public enum Availability
 		{
-			return Create(generator, typeof(TAsset), name, groupName, false, true);
+			Always = 3,
+			DuringGeneration = 1,
+			AfterGeneration = 2,
 		}
 
-		public static AssetDescriptor Create(AssetGenerator generator, System.Type assetType, string name, string groupName = null)
+		[SerializeField] private AssetGenerator _generator;
+		[SerializeField] private SerializableType _assetType;
+		[SerializeField] private Object _asset;
+
+		[SerializeField] private string _path;
+
+		[SerializeField] private bool _isEnabled = true;
+		[SerializeField] private Availability _availability = Availability.Always;
+
+		[SerializeField] private List<AssetInputSlot> _consumers;
+
+		public static AssetDescriptor Create<TAsset>(AssetGenerator generator, string name, bool isEnabled = true, Availability availability = Availability.Always)
 		{
-			return Create(generator, assetType, name, groupName, false, true);
+			return Create(generator, typeof(TAsset), name, null, isEnabled, availability);
 		}
 
-		public static AssetDescriptor CreateUnpersisted<TAsset>(AssetGenerator generator, string name, string groupName = null) where TAsset : Object
+		public static AssetDescriptor CreateGrouped<TAsset>(AssetGenerator generator, string name, string groupName, bool isEnabled = true, Availability availability = Availability.Always)
 		{
-			return Create(generator, typeof(TAsset), name, groupName, false, false);
+			return Create(generator, typeof(TAsset), name, groupName, isEnabled, availability);
 		}
 
-		public static AssetDescriptor CreateUnpersisted(AssetGenerator generator, System.Type assetType, string name, string groupName = null)
-		{
-			return Create(generator, assetType, name, groupName, false, false);
-		}
-
-		public static AssetDescriptor CreateOptional<TAsset>(AssetGenerator generator, string name, bool isPersisted = true, string groupName = null) where TAsset : Object
-		{
-			return Create(generator, typeof(TAsset), name, groupName, true, isPersisted);
-		}
-
-		public static AssetDescriptor CreateOptional(AssetGenerator generator, System.Type assetType, string name, bool isPersisted = true, string groupName = null)
-		{
-			return Create(generator, assetType, name, groupName, true, isPersisted);
-		}
-
-		protected static AssetDescriptor Create(AssetGenerator generator, System.Type assetType, string name, string groupName, bool isOptional, bool isPersisted)
+		private static AssetDescriptor Create(AssetGenerator generator, System.Type assetType, string name, string path, bool isEnabled, Availability availability)
 		{
 			if (generator == null)
 				throw new System.ArgumentNullException("generator");
 			if (assetType == null)
 				throw new System.ArgumentNullException("assetType");
-			//if (!assetType.IsSubclassOf(typeof(Object)))
-			//	throw new System.ArgumentException("Asset descriptor must be for an asset derived from type UnityEngine.Object.", "assetType");
-			if (assetType.IsSubclassOf(typeof(GameObject)) && !string.IsNullOrEmpty(groupName))
-				throw new System.ArgumentException("Cannot store a GameObject asset within a group.", "groupName");
-			if (assetType.IsSubclassOf(typeof(GameObject)) && isPersisted == false)
-				throw new System.ArgumentException("Cannot generate an unpersisted GameObject asset.", "isPersisted");
 			if (string.IsNullOrEmpty(name))
-				throw new System.ArgumentException("Asset descriptor must be given a non-empty name.");
+				throw new System.ArgumentException("Asset descriptor must be given a non-empty name.", "name");
+			if (assetType == typeof(GameObject) && availability == Availability.DuringGeneration)
+				throw new System.ArgumentException("Assets of type GameObject must always be available after generation.", "availability");
 
 			var descriptor = CreateInstance<AssetDescriptor>();
 			descriptor._generator = generator;
 			descriptor._assetType = assetType;
-			descriptor._groupName = string.IsNullOrEmpty(groupName) ? null : groupName;
-			descriptor._isOptional = isOptional;
-			descriptor._isPersisted = isPersisted;
+			descriptor._path = string.IsNullOrEmpty(path) ? null : path;
+			descriptor._isEnabled = isEnabled;
+			descriptor._availability = availability;
+			descriptor._consumers = new List<AssetInputSlot>();
 			descriptor.name = name;
 			descriptor.hideFlags = HideFlags.HideInHierarchy;
 			return descriptor;
@@ -75,34 +61,46 @@ namespace Experilous
 		public System.Type assetType { get { return _assetType; } }
 		public Object asset { get { return _asset; } }
 
-		public string groupName { get { return _groupName; } set { _groupName = value; } }
+		public string path { get { return _path; } set { _path = value; } }
+		public bool canBeGrouped { get { return _assetType != typeof(GameObject); } }
 
-		public bool isOptional { get { return _isOptional; } set { _isOptional = value; } }
+		public bool isEnabled { get { return _isEnabled; } set { _isEnabled = value; } }
+		public Availability availability { get { return _availability; } set { _availability = value; } }
+		public bool mustBeAvailableAfterGeneration { get { return _assetType == typeof(GameObject); } }
+		public bool isAvailableDuringGeneration { get { return _isEnabled && (_availability & Availability.DuringGeneration) != 0; } }
+		public bool isAvailableAfterGeneration { get { return _isEnabled && (_availability & Availability.AfterGeneration) != 0; } }
 
-		public bool isPersisted
+		public IEnumerable<AssetInputSlot> consumers { get { foreach (var consumer in _consumers) yield return consumer; } }
+
+		public void AddConsumer(AssetInputSlot consumer)
 		{
-			get
+			if (!_consumers.Contains(consumer))
 			{
-				return _isPersisted;
-			}
-			set
-			{
-				if (!_isOptional)
-					throw new System.NotSupportedException("Cannot change the persistence of a non-optional asset.");
-
-				_isPersisted = value;
+				_consumers.Add(consumer);
 			}
 		}
 
-		public bool isUsed { get { return _generator.bundle.IsUsed(this); } }
-		public bool isUnused { get { return !_generator.bundle.IsUsed(this); } }
+		public void RemoveConsumer(AssetInputSlot consumer)
+		{
+			_consumers.Remove(consumer);
+		}
+
+		public AssetReferenceDescriptor ReferencedBy(AssetDescriptor referencer)
+		{
+			return new AssetReferenceDescriptor(this, referencer);
+		}
+
+		public AssetReferenceDescriptor References(AssetDescriptor referencer)
+		{
+			return new AssetReferenceDescriptor(referencer, this);
+		}
 
 		public TAsset GetAsset<TAsset>() where TAsset : class
 		{
 			return (TAsset)(object)_asset;
 		}
 
-		public virtual Object SetAsset(Object newAsset)
+		public Object SetAsset(Object newAsset)
 		{
 			// Are we setting or clearing the generated asset?
 			if (newAsset != null)
@@ -112,21 +110,7 @@ namespace Experilous
 					throw new System.ArgumentException("The new asset instance was not of the type specified by this asset descriptor's asset type.", "newAsset");
 				}
 
-				// Should the new asset instance be persisted?
-				if (_isPersisted)
-				{
-					_asset = _generator.bundle.PersistAsset(_asset, newAsset, name, _groupName);
-				}
-				// We're not bothering to persist the asset.
-				else
-				{
-					if (_asset != null)
-					{
-						_generator.bundle.DepersistAsset(_asset);
-					}
-
-					_asset = newAsset;
-				}
+				_asset = _generator.collection.SetAsset(this, newAsset);
 			}
 			// New instance is null; clear any stored asset.
 			else
@@ -137,18 +121,35 @@ namespace Experilous
 			return _asset;
 		}
 
-		public virtual TAsset SetAsset<TAsset>(TAsset newAsset) where TAsset : class
+		public Object SetAsset(ref Object newAsset)
+		{
+			newAsset = SetAsset(newAsset);
+			return newAsset;
+		}
+
+		public TAsset SetAsset<TAsset>(TAsset newAsset) where TAsset : class
 		{
 			return (TAsset)(object)SetAsset((Object)(object)newAsset);
 		}
 
-		public virtual void ClearAsset()
+		public TAsset SetAsset<TAsset>(ref TAsset newAsset) where TAsset : class
+		{
+			newAsset = (TAsset)(object)SetAsset((Object)(object)newAsset);
+			return newAsset;
+		}
+
+		public void ClearAsset()
 		{
 			if (_asset != null)
 			{
-				_generator.bundle.DepersistAsset(_asset);
+				_generator.collection.ClearAsset(this);
 				_asset = null;
 			}
+		}
+
+		public void ResetAsset()
+		{
+			_asset = null;
 		}
 	}
 }

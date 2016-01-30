@@ -10,10 +10,10 @@ namespace Experilous.Topological
 		{
 			var generator = (TopologyRandomizerGenerator)target;
 
-			generator.topologyDescriptor = OnDependencyGUI("Topology", generator.topologyDescriptor, typeof(Topology), true);
-			generator.positionalAttributeAdapterDescriptor = OnOptionalDependencyGUI("Attribute Adapter", generator.positionalAttributeAdapterDescriptor, typeof(PositionalAttributeAdapter), true, true);
-			generator.vertexPositionsDescriptor = OnDependencyGUI("Vertex Positions", generator.vertexPositionsDescriptor, typeof(IVertexAttribute<Vector3>), false);
-			generator.edgeWrapDescriptor = OnOptionalDependencyGUI("Edge Wrap", generator.edgeWrapDescriptor, typeof(IEdgeAttribute<EdgeWrap>), true, false);
+			OnDependencyGUI("Topology", generator.topologyInputSlot);
+			OnDependencyGUI("Vertex Positions", generator.vertexPositionsInputSlot);
+			OnDependencyGUI("Edge Wrap", generator.edgeWrapInputSlot);
+			OnDependencyGUI("Attribute Adapter", generator.positionalAttributeAdapterInputSlot, true);
 
 			generator.surfaceType = (TopologyRandomizerGenerator.SurfaceType)EditorGUILayout.EnumPopup("Surface Type", generator.surfaceType);
 
@@ -27,7 +27,7 @@ namespace Experilous.Topological
 			generator.minFaceNeighbors = EditorGUILayout.IntSlider("Min Face Neighbors", generator.minFaceNeighbors, 2, 20);
 			generator.maxFaceNeighbors = EditorGUILayout.IntSlider("Max Face Neighbors", generator.maxFaceNeighbors, 2, 20);
 
-			if (generator.vertexPositionsDescriptor != null)
+			if (generator.vertexPositionsInputSlot.source != null)
 			{
 				generator.lockBoundaryPositions = EditorGUILayout.Toggle("Lock Boundaries", generator.lockBoundaryPositions);
 

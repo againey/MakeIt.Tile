@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(FaceAttributesCategory), "Face Centroids")]
+	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(FaceAttributesCategory), "Face Centroids")]
 	public class FaceCentroidsGenerator : AssetGenerator
 	{
 		public enum SurfaceType
@@ -15,29 +14,32 @@ namespace Experilous.Topological
 
 		public SurfaceType surfaceType;
 
-		public AssetDescriptor topologyDescriptor;
-		public AssetDescriptor vertexPositionsDescriptor;
-		public AssetDescriptor positionalAttributeAdapterDescriptor;
+		public AssetInputSlot topologyInputSlot;
+		public AssetInputSlot vertexPositionsInputSlot;
+		public AssetInputSlot positionalAttributeAdapterInputSlot;
 
 		public AssetDescriptor faceCentroidsDescriptor;
 		public AssetDescriptor wrappedFaceCentroidsDescriptor;
 
-		public static FaceCentroidsGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
+		protected override void Initialize(bool reset = true)
 		{
-			var generator = CreateInstance<FaceCentroidsGenerator>();
-			generator.bundle = bundle;
-			generator.name = name;
-			generator.hideFlags = HideFlags.HideInHierarchy;
-			return generator;
+			// Inputs
+			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
+			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
+			if (reset || positionalAttributeAdapterInputSlot == null) positionalAttributeAdapterInputSlot = AssetInputSlot.CreateOptional(this, typeof(PositionalAttributeAdapter));
+
+			// Outputs
+			if (reset || faceCentroidsDescriptor == null) faceCentroidsDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<Vector3>>(this, "Face Centroids", "Attributes");
+			if (reset || wrappedFaceCentroidsDescriptor == null) wrappedFaceCentroidsDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<Vector3>>(this, "Wrapped Face Centroids", "Attributes");
 		}
 
-		public override IEnumerable<AssetDescriptor> dependencies
+		public override IEnumerable<AssetInputSlot> inputs
 		{
 			get
 			{
-				if (topologyDescriptor != null) yield return topologyDescriptor;
-				if (vertexPositionsDescriptor != null) yield return vertexPositionsDescriptor;
-				if (positionalAttributeAdapterDescriptor != null) yield return positionalAttributeAdapterDescriptor;
+				yield return topologyInputSlot;
+				yield return vertexPositionsInputSlot;
+				yield return positionalAttributeAdapterInputSlot;
 			}
 		}
 
@@ -45,30 +47,23 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				if (faceCentroidsDescriptor == null) faceCentroidsDescriptor = AssetDescriptor.Create(this, typeof(IFaceAttribute<Vector3>), "Face Centroids", "Attributes");
-				if (wrappedFaceCentroidsDescriptor == null) wrappedFaceCentroidsDescriptor = AssetDescriptor.CreateOptional(this, typeof(IFaceAttribute<Vector3>), "Wrapped Face Centroids", false, "Attributes");
 				yield return faceCentroidsDescriptor;
-
-				if (positionalAttributeAdapterDescriptor != null && positionalAttributeAdapterDescriptor.asset != null)
-				{
-					yield return wrappedFaceCentroidsDescriptor;
-				}
+				if (positionalAttributeAdapterInputSlot.source != null) yield return wrappedFaceCentroidsDescriptor;
 			}
 		}
 
-		public override void ResetDependency(AssetDescriptor dependency)
+		public override IEnumerable<AssetReferenceDescriptor> references
 		{
-			if (dependency == null) throw new System.ArgumentNullException("dependency");
-			if (!ResetMemberDependency(dependency, ref topologyDescriptor, ref vertexPositionsDescriptor, ref positionalAttributeAdapterDescriptor))
+			get
 			{
-				throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this face centroids generator.", dependency.name, dependency.GetType().Name), "dependency");
+				if (positionalAttributeAdapterInputSlot.source != null) yield return faceCentroidsDescriptor.ReferencedBy(wrappedFaceCentroidsDescriptor);
 			}
 		}
 
 		public override void Generate()
 		{
-			var topology = topologyDescriptor.GetAsset<Topology>();
-			var vertexPositions = vertexPositionsDescriptor.GetAsset<IVertexAttribute<Vector3>>();
+			var topology = topologyInputSlot.GetAsset<Topology>();
+			var vertexPositions = vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>();
 			var faceCentroids = Vector3FaceAttribute.CreateInstance(new Vector3[topology.internalFaces.Count], "Face Centroids");
 			switch (surfaceType)
 			{
@@ -84,18 +79,12 @@ namespace Experilous.Topological
 
 			faceCentroidsDescriptor.SetAsset(faceCentroids);
 
-			if (positionalAttributeAdapterDescriptor != null && positionalAttributeAdapterDescriptor.asset != null)
+			if (positionalAttributeAdapterInputSlot.source != null)
 			{
-				var positionalAttributeAdapter = positionalAttributeAdapterDescriptor.GetAsset<PositionalAttributeAdapter>();
+				var positionalAttributeAdapter = positionalAttributeAdapterInputSlot.GetAsset<PositionalAttributeAdapter>();
 				var wrappedFaceCentroids = positionalAttributeAdapter.Adapt(faceCentroidsDescriptor.GetAsset<IFaceAttribute<Vector3>>());
 				wrappedFaceCentroidsDescriptor.SetAsset(wrappedFaceCentroids);
 			}
-		}
-
-		public override bool CanGenerate()
-		{
-			return (
-				vertexPositionsDescriptor != null);
 		}
 	}
 }

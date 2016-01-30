@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace Experilous.Topological
 {
@@ -15,19 +14,19 @@ namespace Experilous.Topological
 			switch (generator.calculationMethod)
 			{
 				case FaceNormalsGenerator.CalculationMethod.FromFacePositions:
-					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-					generator.facePositions = OnDependencyGUI("Face Positions", generator.facePositions, typeof(IFaceAttribute<Vector3>), false);
+					OnDependencyGUI("Topology", generator.topologyInputSlot, true);
+					OnDependencyGUI("Face Positions", generator.facePositionsInputSlot);
 					break;
 				case FaceNormalsGenerator.CalculationMethod.FromVertexPositions:
-					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-					generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
+					OnDependencyGUI("Topology", generator.topologyInputSlot, true);
+					OnDependencyGUI("Vertex Positions", generator.vertexPositionsInputSlot);
 					break;
 				case FaceNormalsGenerator.CalculationMethod.FromVertexNormals:
-					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-					generator.vertexNormals = OnDependencyGUI("Vertex Normals", generator.vertexNormals, typeof(IVertexAttribute<Vector3>), false);
+					OnDependencyGUI("Topology", generator.topologyInputSlot, true);
+					OnDependencyGUI("Vertex Normals", generator.vertexNormalsInputSlot);
 					break;
 				case FaceNormalsGenerator.CalculationMethod.FromSphericalFacePositions:
-					generator.facePositions = OnDependencyGUI("Face Positions", generator.facePositions, typeof(IFaceAttribute<Vector3>), false);
+					OnDependencyGUI("Face Positions", generator.facePositionsInputSlot);
 					break;
 			}
 		}

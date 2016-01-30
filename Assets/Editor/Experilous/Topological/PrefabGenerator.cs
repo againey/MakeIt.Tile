@@ -3,29 +3,29 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(MeshCategory), "Prefab")]
+	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(MeshCategory), "Prefab")]
 	public class PrefabGenerator : AssetGenerator
 	{
 		public MeshFilter meshPrefab;
 
-		public AssetDescriptor meshCollection;
+		public AssetInputSlot meshCollectionInputSlot;
 
-		public AssetDescriptor prefab;
+		public AssetDescriptor prefabDescriptor;
 
-		public static PrefabGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
+		protected override void Initialize(bool reset = true)
 		{
-			var generator = CreateInstance<PrefabGenerator>();
-			generator.bundle = bundle;
-			generator.name = name;
-			generator.hideFlags = HideFlags.HideInHierarchy;
-			return generator;
+			// Inputs
+			if (reset || meshCollectionInputSlot == null) meshCollectionInputSlot = AssetInputSlot.CreateRequired(this, typeof(MeshCollection));
+
+			// Outputs
+			if (reset || prefabDescriptor == null) prefabDescriptor = AssetDescriptor.Create<GameObject>(this, "Prefab");
 		}
 
-		public override IEnumerable<AssetDescriptor> dependencies
+		public override IEnumerable<AssetInputSlot> inputs
 		{
 			get
 			{
-				if (meshCollection != null) yield return meshCollection;
+				yield return meshCollectionInputSlot;
 			}
 		}
 
@@ -33,59 +33,49 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				if (prefab == null) prefab = AssetDescriptor.Create(this, typeof(GameObject), "Prefab");
-
-				yield return prefab;
-			}
-		}
-
-		public override void ResetDependency(AssetDescriptor dependency)
-		{
-			if (!ResetMemberDependency(dependency, ref meshCollection))
-			{
-				throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this prefab generator.", dependency.name, dependency.GetType().Name), "dependency");
+				yield return prefabDescriptor;
 			}
 		}
 
 		public override void Generate()
 		{
-			GameObject prefabInstance;
+			GameObject prefab;
 
-			var meshes = meshCollection.GetAsset<MeshCollection>().meshes;
+			var meshes = meshCollectionInputSlot.GetAsset<MeshCollection>().meshes;
 
 			if (meshes.Length == 0)
 			{
 				if (meshPrefab == null)
 				{
-					prefabInstance = new GameObject();
-					prefabInstance.AddComponent<MeshFilter>();
-					prefabInstance.AddComponent<MeshRenderer>();
+					prefab = new GameObject();
+					prefab.AddComponent<MeshFilter>();
+					prefab.AddComponent<MeshRenderer>();
 				}
 				else
 				{
-					prefabInstance = Instantiate(meshPrefab).gameObject;
+					prefab = Instantiate(meshPrefab).gameObject;
 				}
 			}
 			else if (meshes.Length == 1)
 			{
 				if (meshPrefab == null)
 				{
-					prefabInstance = new GameObject();
-					prefabInstance.AddComponent<MeshFilter>().mesh = meshes[0].mesh;
-					prefabInstance.AddComponent<MeshRenderer>();
+					prefab = new GameObject();
+					prefab.AddComponent<MeshFilter>().mesh = meshes[0].mesh;
+					prefab.AddComponent<MeshRenderer>();
 				}
 				else
 				{
 					var meshFilter = Instantiate(meshPrefab);
 					meshFilter.mesh = meshes[0].mesh;
-					prefabInstance = meshFilter.gameObject;
+					prefab = meshFilter.gameObject;
 				}
-				prefabInstance.transform.position = meshes[0].position;
-				prefabInstance.transform.rotation = meshes[0].rotation;
+				prefab.transform.position = meshes[0].position;
+				prefab.transform.rotation = meshes[0].rotation;
 			}
 			else
 			{
-				prefabInstance = new GameObject();
+				prefab = new GameObject();
 				if (meshPrefab == null)
 				{
 					for (int i = 0; i < meshes.Length; ++i)
@@ -94,7 +84,7 @@ namespace Experilous.Topological
 						submeshInstance.name = string.Format("Mesh {0}", i);
 						submeshInstance.AddComponent<MeshFilter>().mesh = meshes[i].mesh;
 						submeshInstance.AddComponent<MeshRenderer>();
-						submeshInstance.transform.SetParent(prefabInstance.transform, false);
+						submeshInstance.transform.SetParent(prefab.transform, false);
 						submeshInstance.transform.position = meshes[i].position;
 						submeshInstance.transform.rotation = meshes[i].rotation;
 					}
@@ -106,21 +96,16 @@ namespace Experilous.Topological
 						var meshFilter = Instantiate(meshPrefab);
 						meshFilter.name = string.Format("Mesh {0}", i);
 						meshFilter.mesh = meshes[i].mesh;
-						meshFilter.transform.SetParent(prefabInstance.transform, false);
+						meshFilter.transform.SetParent(prefab.transform, false);
 						meshFilter.transform.position = meshes[i].position;
 						meshFilter.transform.rotation = meshes[i].rotation;
 					}
 				}
 			}
 
-			prefabInstance.name = name;
+			prefab.name = name;
 
-			prefab.SetAsset(prefabInstance);
-		}
-
-		public override bool CanGenerate()
-		{
-			return meshCollection != null;
+			prefabDescriptor.SetAsset(prefab);
 		}
 	}
 }

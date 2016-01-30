@@ -226,11 +226,12 @@ namespace Experilous.Topological
 
 			foreach (var vertex in topology.vertices)
 			{
-				var center = vertexPositions[vertex];
 				var multiplier = Mathf.Sqrt(idealArea / vertexAreas[vertex]);
 				foreach (var edge in vertex.edges)
 				{
-					relaxedVertexPositions[edge] += (vertexPositions[edge] - center) * multiplier + center;
+					var neighborVertex = edge.farVertex;
+					var neighborRelativeCenter = vertexPositions[edge.twin];
+					relaxedVertexPositions[neighborVertex] += (vertexPositions[neighborVertex] - neighborRelativeCenter) * multiplier + neighborRelativeCenter;
 				}
 			}
 

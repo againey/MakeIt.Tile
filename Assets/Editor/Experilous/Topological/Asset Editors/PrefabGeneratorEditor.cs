@@ -10,7 +10,7 @@ namespace Experilous.Topological
 		{
 			var generator = (PrefabGenerator)target;
 
-			generator.meshCollection = OnDependencyGUI("Mesh Collection", generator.meshCollection, typeof(MeshCollection), false);
+			OnDependencyGUI("Mesh Collection", generator.meshCollectionInputSlot);
 			generator.meshPrefab = EditorGUILayoutExtensions.ObjectField("Mesh Prefab", generator.meshPrefab, false);
 		}
 	}

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace Experilous.Topological
 {
@@ -10,8 +9,8 @@ namespace Experilous.Topological
 		{
 			var generator = (FaceGroupRandomColorGenerator)target;
 
-			generator.faceGroupCollection = OnDependencyGUI("Face Groups", generator.faceGroupCollection, typeof(FaceGroupCollection), false);
-			generator.faceGroupIndices = OnDependencyGUI("Face Group Indices", generator.faceGroupIndices, typeof(IFaceAttribute<int>), false);
+			OnDependencyGUI("Face Groups", generator.faceGroupCollectionInputSlot);
+			OnDependencyGUI("Face Group Indices", generator.faceGroupIndicesInputSlot);
 		}
 	}
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(MeshCategory), "Mesh")]
+	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(MeshCategory), "Mesh")]
 	public class MeshGenerator : AssetGenerator
 	{
 		public enum SourceType
@@ -16,46 +16,53 @@ namespace Experilous.Topological
 		public SourceType sourceType = SourceType.InternalFaces;
 		public bool centerOnGroupAverage = false;
 
-		public AssetDescriptor topology;
-		public AssetDescriptor faceGroupCollection;
-		public AssetDescriptor faceGroup;
-		public AssetDescriptor vertexPositions;
-		public AssetDescriptor faceCentroids;
-		public AssetDescriptor faceNormals;
-		public AssetDescriptor faceColors;
+		public AssetInputSlot topologyInputSlot;
+		public AssetInputSlot faceGroupCollectionInputSlot;
+		public AssetInputSlot faceGroupInputSlot;
+		public AssetInputSlot vertexPositionsInputSlot;
+		public AssetInputSlot faceCentroidsInputSlot;
+		public AssetInputSlot faceNormalsInputSlot;
+		public AssetInputSlot faceColorsInputSlot;
 
-		public AssetDescriptor[] meshes;
-		public AssetDescriptor meshCollection;
+		public AssetDescriptor meshCollectionDescriptor;
+		public AssetDescriptor[] meshDescriptors;
 
-		public static MeshGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
+		protected override void Initialize(bool reset = true)
 		{
-			var generator = CreateInstance<MeshGenerator>();
-			generator.bundle = bundle;
-			generator.name = name;
-			generator.hideFlags = HideFlags.HideInHierarchy;
-			return generator;
+			// Inputs
+			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
+			if (reset || faceGroupCollectionInputSlot == null) faceGroupCollectionInputSlot = AssetInputSlot.CreateRequired(this, typeof(FaceGroupCollection));
+			if (reset || faceGroupInputSlot == null) faceGroupInputSlot = AssetInputSlot.CreateRequired(this, typeof(FaceGroup));
+			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
+			if (reset || faceNormalsInputSlot == null) faceNormalsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
+			if (reset || faceCentroidsInputSlot == null) faceCentroidsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
+			if (reset || faceColorsInputSlot == null) faceColorsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Color>));
+
+			// Outputs
+			if (reset || meshCollectionDescriptor == null) meshCollectionDescriptor = AssetDescriptor.CreateGrouped<MeshCollection>(this, "Mesh Collection", "Meshes");
+			if (reset || meshDescriptors == null) meshDescriptors = new AssetDescriptor[0];
 		}
 
-		public override IEnumerable<AssetDescriptor> dependencies
+		public override IEnumerable<AssetInputSlot> inputs
 		{
 			get
 			{
 				switch (sourceType)
 				{
 					case SourceType.InternalFaces:
-						if (topology != null) yield return topology;
+						yield return topologyInputSlot;
 						break;
 					case SourceType.FaceGroupCollection:
-						if (faceGroupCollection != null) yield return faceGroupCollection;
+						yield return faceGroupCollectionInputSlot;
 						break;
 					case SourceType.FaceGroup:
-						if (faceGroup != null) yield return faceGroup;
+						yield return faceGroupInputSlot;
 						break;
 				}
-				if (vertexPositions != null) yield return vertexPositions;
-				if (faceNormals != null) yield return faceNormals;
-				if (faceCentroids != null) yield return faceCentroids;
-				if (faceColors != null) yield return faceColors;
+				yield return vertexPositionsInputSlot;
+				yield return faceNormalsInputSlot;
+				yield return faceCentroidsInputSlot;
+				yield return faceColorsInputSlot;
 			}
 		}
 
@@ -63,35 +70,29 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				if (meshes == null || meshes.Length == 0)
-				{
-					meshes = new AssetDescriptor[1] { AssetDescriptor.Create(this, typeof(Mesh), "Mesh", "Meshes") };
-				}
+				yield return meshCollectionDescriptor;
 
-				if (meshCollection == null) meshCollection = AssetDescriptor.Create(this, typeof(MeshCollection), "Mesh Collection", "Meshes");
-
-				foreach (var mesh in meshes)
+				foreach (var mesh in meshDescriptors)
 				{
 					yield return mesh;
 				}
-
-				yield return meshCollection;
 			}
 		}
 
-		public override void ResetDependency(AssetDescriptor dependency)
+		public override IEnumerable<AssetReferenceDescriptor> references
 		{
-			if (dependency == null) throw new System.ArgumentNullException("dependency");
-			if (!ResetMemberDependency(dependency, ref topology, ref faceGroupCollection, ref faceGroup) &&
-				!ResetMemberDependency(dependency, ref vertexPositions, ref faceCentroids, ref faceNormals))
+			get
 			{
-				throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this mesh generator.", dependency.name, dependency.GetType().Name), "dependency");
+				foreach (var meshDescriptor in meshDescriptors)
+				{
+					yield return meshDescriptor.ReferencedBy(meshCollectionDescriptor);
+				}
 			}
 		}
 
 		public override void Generate()
 		{
-			var generatedMeshes = new List<Mesh>();
+			var meshes = new List<Mesh>();
 			var meshOffsets = new List<Vector3>();
 
 			if (centerOnGroupAverage)
@@ -99,16 +100,16 @@ namespace Experilous.Topological
 				switch (sourceType)
 				{
 					case SourceType.InternalFaces:
-						GenerateMeshes(topology.GetAsset<Topology>().internalFaces, GetAverageFromCentroids(topology.GetAsset<Topology>().internalFaces, faceCentroids.GetAsset<IFaceAttribute<Vector3>>()), generatedMeshes, meshOffsets);
+						GenerateMeshes(topologyInputSlot.GetAsset<Topology>().internalFaces, GetAverageFromCentroids(topologyInputSlot.GetAsset<Topology>().internalFaces, faceCentroidsInputSlot.GetAsset<IFaceAttribute<Vector3>>()), meshes, meshOffsets);
 						break;
 					case SourceType.FaceGroupCollection:
-						foreach (var faceGroup in faceGroupCollection.GetAsset<FaceGroupCollection>().faceGroups)
+						foreach (var faceGroup in faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>().faceGroups)
 						{
-							GenerateMeshes(faceGroup, GetAverageFromCentroids(faceGroup, faceCentroids.GetAsset<IFaceAttribute<Vector3>>()), generatedMeshes, meshOffsets);
+							GenerateMeshes(faceGroup, GetAverageFromCentroids(faceGroup, faceCentroidsInputSlot.GetAsset<IFaceAttribute<Vector3>>()), meshes, meshOffsets);
 						}
 						break;
 					case SourceType.FaceGroup:
-						GenerateMeshes(faceGroup.GetAsset<FaceGroup>(), GetAverageFromCentroids(faceGroup.GetAsset<FaceGroup>(), faceCentroids.GetAsset<IFaceAttribute<Vector3>>()), generatedMeshes, meshOffsets);
+						GenerateMeshes(faceGroupInputSlot.GetAsset<FaceGroup>(), GetAverageFromCentroids(faceGroupInputSlot.GetAsset<FaceGroup>(), faceCentroidsInputSlot.GetAsset<IFaceAttribute<Vector3>>()), meshes, meshOffsets);
 						break;
 				}
 			}
@@ -117,77 +118,77 @@ namespace Experilous.Topological
 				switch (sourceType)
 				{
 					case SourceType.InternalFaces:
-						GenerateMeshes(topology.GetAsset<Topology>().internalFaces, generatedMeshes, meshOffsets);
+						GenerateMeshes(topologyInputSlot.GetAsset<Topology>().internalFaces, meshes, meshOffsets);
 						break;
 					case SourceType.FaceGroupCollection:
-						foreach (var faceGroup in faceGroupCollection.GetAsset<FaceGroupCollection>().faceGroups)
+						foreach (var faceGroup in faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>().faceGroups)
 						{
-							GenerateMeshes(faceGroup, generatedMeshes, meshOffsets);
+							GenerateMeshes(faceGroup, meshes, meshOffsets);
 						}
 						break;
 					case SourceType.FaceGroup:
-						GenerateMeshes(faceGroup.GetAsset<FaceGroup>(), generatedMeshes, meshOffsets);
+						GenerateMeshes(faceGroupInputSlot.GetAsset<FaceGroup>(), meshes, meshOffsets);
 						break;
 				}
 			}
 
-			if (meshes.Length < generatedMeshes.Count)
+			if (meshDescriptors.Length < meshes.Count)
 			{
-				var newMeshes = new AssetDescriptor[generatedMeshes.Count];
+				var newMeshes = new AssetDescriptor[meshes.Count];
 
-				for (var i = 0; i < meshes.Length; ++i)
+				for (var i = 0; i < meshDescriptors.Length; ++i)
 				{
-					newMeshes[i] = meshes[i];
+					newMeshes[i] = meshDescriptors[i];
 				}
-				for (var i = meshes.Length; i < newMeshes.Length; ++i)
+				for (var i = meshDescriptors.Length; i < newMeshes.Length; ++i)
 				{
-					newMeshes[i] = AssetDescriptor.Create(this, typeof(Mesh), "Mesh", "Meshes");
+					newMeshes[i] = AssetDescriptor.CreateGrouped<Mesh>(this, "Mesh", "Meshes");
 				}
 
-				meshes = newMeshes;
+				meshDescriptors = newMeshes;
 			}
-			else if (meshes.Length > generatedMeshes.Count)
+			else if (meshDescriptors.Length > meshes.Count)
 			{
-				var newMeshes = new AssetDescriptor[generatedMeshes.Count];
+				var newMeshes = new AssetDescriptor[meshes.Count];
 
 				for (var i = 0; i < newMeshes.Length; ++i)
 				{
-					newMeshes[i] = meshes[i];
+					newMeshes[i] = meshDescriptors[i];
 				}
 
-				meshes = newMeshes;
+				meshDescriptors = newMeshes;
 			}
 
-			if (meshes.Length == 1)
+			if (meshDescriptors.Length == 1)
 			{
-				meshes[0].name = "Mesh";
+				meshDescriptors[0].name = "Mesh";
 			}
-			else if (meshes.Length > 1)
+			else if (meshDescriptors.Length > 1)
 			{
-				for (int i = 0; i < meshes.Length; ++i)
+				for (int i = 0; i < meshDescriptors.Length; ++i)
 				{
-					meshes[i].name = string.Format("Submesh {0}", i);
+					meshDescriptors[i].name = string.Format("Submesh {0}", i);
 				}
 			}
 
-			for (int i = 0; i < meshes.Length; ++i)
+			for (int i = 0; i < meshDescriptors.Length; ++i)
 			{
-				meshes[i].SetAsset(generatedMeshes[i]);
+				meshDescriptors[i].SetAsset(meshes[i]);
 			}
 
-			var meshCollectionAsset = MeshCollection.Create(meshes.Length);
-			for (int i = 0; i < meshes.Length; ++i)
+			var meshCollection = MeshCollection.Create(meshDescriptors.Length);
+			for (int i = 0; i < meshDescriptors.Length; ++i)
 			{
-				meshCollectionAsset.meshes[i] = new MeshCollection.OrientedMesh(meshes[i].GetAsset<Mesh>(), meshOffsets[i]);
+				meshCollection.meshes[i] = new MeshCollection.OrientedMesh(meshDescriptors[i].GetAsset<Mesh>(), meshOffsets[i]);
 			}
-			meshCollection.SetAsset(meshCollectionAsset);
+			meshCollectionDescriptor.SetAsset(meshCollection);
 		}
 
 		private IFaceAttribute<Color> GetFaceColors()
 		{
-			if (faceColors != null)
+			if (faceColorsInputSlot.source != null)
 			{
-				return faceColors.GetAsset<IFaceAttribute<Color>>();
+				return faceColorsInputSlot.GetAsset<IFaceAttribute<Color>>();
 			}
 			else
 			{
@@ -199,9 +200,9 @@ namespace Experilous.Topological
 		{
 			foreach (var mesh in MeshBuilder.BuildMeshes(
 				faces,
-				vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
-				faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
-				faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
+				vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(),
+				faceCentroidsInputSlot.GetAsset<IFaceAttribute<Vector3>>(),
+				faceNormalsInputSlot.GetAsset<IFaceAttribute<Vector3>>(),
 				GetFaceColors()))
 			{
 				meshes.Add(mesh);
@@ -214,9 +215,9 @@ namespace Experilous.Topological
 			foreach (var mesh in MeshBuilder.BuildMeshes(
 				faces,
 				-groupAverage,
-				vertexPositions.GetAsset<IVertexAttribute<Vector3>>(),
-				faceCentroids.GetAsset<IFaceAttribute<Vector3>>(),
-				faceNormals.GetAsset<IFaceAttribute<Vector3>>(),
+				vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(),
+				faceCentroidsInputSlot.GetAsset<IFaceAttribute<Vector3>>(),
+				faceNormalsInputSlot.GetAsset<IFaceAttribute<Vector3>>(),
 				GetFaceColors()))
 			{
 				meshes.Add(mesh);
@@ -233,27 +234,6 @@ namespace Experilous.Topological
 			}
 
 			return sum / faces.Count;
-		}
-
-		public override bool CanGenerate()
-		{
-			switch (sourceType)
-			{
-				case SourceType.InternalFaces:
-					if (topology == null) return false;
-					break;
-				case SourceType.FaceGroupCollection:
-					if (faceGroupCollection == null) return false;
-					break;
-				case SourceType.FaceGroup:
-					if (faceGroup == null) return false;
-					break;
-			}
-
-			return
-				vertexPositions != null &&
-				faceCentroids != null &&
-				faceNormals != null;
 		}
 	}
 }

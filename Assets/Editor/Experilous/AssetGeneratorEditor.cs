@@ -14,8 +14,6 @@ namespace Experilous
 		[SerializeField] protected bool _outputFoldout = false;
 		protected AnimBool _outputFoldoutAnimation;
 
-		protected static GUIStyle _outputGUIStyle = null;
-
 		protected void OnEnable()
 		{
 			_generator = (AssetGenerator)target;
@@ -24,79 +22,54 @@ namespace Experilous
 			_outputFoldoutAnimation.valueChanged.AddListener(Repaint);
 		}
 
-		protected virtual void InitializeStyles()
-		{
-			if (_outputGUIStyle == null)
-			{
-				_outputGUIStyle = new GUIStyle(EditorStyles.helpBox);
-			}
-		}
-
 		protected abstract void OnPropertiesGUI();
 
 		public override void OnInspectorGUI()
 		{
-			InitializeStyles();
-
 			OnPropertiesGUI();
 
 			OnOutputsGUI();
 		}
 
-		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType)
+		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot)
 		{
-			return OnDependencyGUI(label, currentSelection, assetType, false);
+			OnDependencyGUI(label, inputSlot, false, inputSlot.isOptional);
 		}
 
-		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType, bool hideForOneOption)
+		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, bool hideForOneOption)
 		{
-			return OnDependencyGUI(label, currentSelection, hideForOneOption, (AssetDescriptor asset) => { return assetType.IsAssignableFrom(asset.assetType); });
+			OnDependencyGUI(label, inputSlot, hideForOneOption, inputSlot.isOptional);
 		}
 
-		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, System.Predicate<AssetDescriptor> predicate)
+		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, bool hideForOneOption, bool hideForNoOption)
 		{
-			return OnDependencyGUI(label, currentSelection, false, false, false, predicate);
+			OnDependencyGUI(label, inputSlot, hideForOneOption, hideForNoOption, (AssetDescriptor asset) => { return inputSlot.assetType.IsAssignableFrom(asset.assetType); });
 		}
 
-		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForOneOption, System.Predicate<AssetDescriptor> predicate)
+		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, System.Predicate<AssetDescriptor> predicate)
 		{
-			return OnDependencyGUI(label, currentSelection, false, hideForOneOption, false, predicate);
+			OnDependencyGUI(label, inputSlot, false, inputSlot.isOptional, predicate);
 		}
 
-		protected AssetDescriptor OnOptionalDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType)
+		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, bool hideForOneOption, System.Predicate<AssetDescriptor> predicate)
 		{
-			return OnOptionalDependencyGUI(label, currentSelection, assetType, false, false);
+			OnDependencyGUI(label, inputSlot, hideForOneOption, inputSlot.isOptional, predicate);
 		}
 
-		protected AssetDescriptor OnOptionalDependencyGUI(string label, AssetDescriptor currentSelection, System.Type assetType, bool hideForNoOption, bool hideForOneOption)
+		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, bool hideForOneOption, bool hideForNoOption, System.Predicate<AssetDescriptor> predicate)
 		{
-			return OnDependencyGUI(label, currentSelection, hideForNoOption, hideForOneOption, true, (AssetDescriptor asset) => { return assetType.IsAssignableFrom(asset.assetType); });
-		}
-
-		protected AssetDescriptor OnOptionalDependencyGUI(string label, AssetDescriptor currentSelection, System.Predicate<AssetDescriptor> predicate)
-		{
-			return OnOptionalDependencyGUI(label, currentSelection, false, false, predicate);
-		}
-
-		protected AssetDescriptor OnOptionalDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForNoOption, bool hideForOneOption, System.Predicate<AssetDescriptor> predicate)
-		{
-			return OnDependencyGUI(label, currentSelection, hideForNoOption, hideForOneOption, true, predicate);
-		}
-
-		protected AssetDescriptor OnDependencyGUI(string label, AssetDescriptor currentSelection, bool hideForNoOption, bool hideForOneOption, bool includeNone, System.Predicate<AssetDescriptor> predicate)
-		{
-			var potentialSources = _generator.bundle.GetMatchingGeneratedAssets(_generator, predicate);
+			var potentialSources = _generator.collection.GetMatchingGeneratedAssets(_generator, predicate);
 			if (potentialSources.Count == 0 && hideForNoOption)
 			{
-				return null;
+				inputSlot.source = null;
 			}
 			else if (potentialSources.Count == 1 && hideForOneOption)
 			{
-				return potentialSources[0];
+				inputSlot.source = potentialSources[0];
 			}
-			else if (includeNone)
+			else if (inputSlot.isOptional)
 			{
-				var sourceIndex = potentialSources.IndexOf(currentSelection) + 1;
+				var sourceIndex = potentialSources.IndexOf(inputSlot.source) + 1;
 
 				var potentialSourcesContent = new GUIContent[potentialSources.Count + 1];
 				potentialSourcesContent[0] = new GUIContent("None");
@@ -108,16 +81,16 @@ namespace Experilous
 				sourceIndex = EditorGUILayout.Popup(new GUIContent(label), sourceIndex, potentialSourcesContent);
 				if (sourceIndex > 0)
 				{
-					return potentialSources[sourceIndex - 1];
+					inputSlot.source = potentialSources[sourceIndex - 1];
 				}
 				else
 				{
-					return null;
+					inputSlot.source = null;
 				}
 			}
 			else if (potentialSources.Count > 0)
 			{
-				var sourceIndex = potentialSources.IndexOf(currentSelection);
+				var sourceIndex = potentialSources.IndexOf(inputSlot.source);
 				if (sourceIndex == -1) sourceIndex = 0;
 
 				var potentialSourcesContent = new GUIContent[potentialSources.Count];
@@ -127,14 +100,14 @@ namespace Experilous
 				}
 
 				sourceIndex = EditorGUILayout.Popup(new GUIContent(label), sourceIndex, potentialSourcesContent);
-				return potentialSources[sourceIndex];
+				inputSlot.source = potentialSources[sourceIndex];
 			}
 			else
 			{
 				var potentialSourcesContent = new GUIContent[1];
 				potentialSourcesContent[0] = new GUIContent("(none available)");
 				EditorGUILayout.Popup(new GUIContent(label), 0, potentialSourcesContent);
-				return null;
+				inputSlot.source = null;
 			}
 		}
 
@@ -166,9 +139,7 @@ namespace Experilous
 					}
 				}
 
-				EditorGUILayout.BeginVertical(_outputGUIStyle);
 				editor.OnInspectorGUI();
-				EditorGUILayout.EndVertical();
 			}
 
 			if (hasOutputs)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(FaceAttributesCategory), "Face Normals", after = typeof(FaceCentroidsGenerator))]
+	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(FaceAttributesCategory), "Face Normals", after = typeof(FaceCentroidsGenerator))]
 	public class FaceNormalsGenerator : AssetGenerator
 	{
 		public enum CalculationMethod
@@ -17,42 +17,45 @@ namespace Experilous.Topological
 
 		public CalculationMethod calculationMethod;
 
-		public AssetDescriptor topology;
-		public AssetDescriptor facePositions;
-		public AssetDescriptor vertexPositions;
-		public AssetDescriptor vertexNormals;
+		public AssetInputSlot topologyInputSlot;
+		public AssetInputSlot facePositionsInputSlot;
+		public AssetInputSlot vertexPositionsInputSlot;
+		public AssetInputSlot vertexNormalsInputSlot;
 
-		public AssetDescriptor faceNormals;
+		public AssetDescriptor faceNormalsDescriptor;
 
-		public static FaceNormalsGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
+		protected override void Initialize(bool reset = true)
 		{
-			var generator = CreateInstance<FaceNormalsGenerator>();
-			generator.bundle = bundle;
-			generator.name = name;
-			generator.hideFlags = HideFlags.HideInHierarchy;
-			return generator;
+			// Inputs
+			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
+			if (reset || facePositionsInputSlot == null) facePositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
+			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
+			if (reset || vertexNormalsInputSlot == null) vertexNormalsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
+
+			// Outputs
+			if (reset || faceNormalsDescriptor == null) faceNormalsDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<Vector3>>(this, "Face Normals", "Attributes");
 		}
 
-		public override IEnumerable<AssetDescriptor> dependencies
+		public override IEnumerable<AssetInputSlot> inputs
 		{
 			get
 			{
 				switch (calculationMethod)
 				{
 					case CalculationMethod.FromFacePositions:
-						if (topology != null) yield return topology;
-						if (facePositions != null) yield return facePositions;
+						yield return topologyInputSlot;
+						yield return facePositionsInputSlot;
 						break;
 					case CalculationMethod.FromVertexPositions:
-						if (topology != null) yield return topology;
-						if (vertexPositions != null) yield return vertexPositions;
+						yield return topologyInputSlot;
+						yield return vertexPositionsInputSlot;
 						break;
 					case CalculationMethod.FromVertexNormals:
-						if (topology != null) yield return topology;
-						if (vertexNormals != null) yield return vertexNormals;
+						yield return topologyInputSlot;
+						yield return vertexNormalsInputSlot;
 						break;
 					case CalculationMethod.FromSphericalFacePositions:
-						if (facePositions != null) yield return facePositions;
+						yield return facePositionsInputSlot;
 						break;
 					default:
 						throw new System.NotImplementedException();
@@ -64,55 +67,33 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				if (faceNormals == null) faceNormals = AssetDescriptor.Create(this, typeof(IFaceAttribute<Vector3>), "Face Normals", "Attributes");
-				yield return faceNormals;
-			}
-		}
-
-		public override void ResetDependency(AssetDescriptor dependency)
-		{
-			if (dependency == null) throw new System.ArgumentNullException("dependency");
-			if (!ResetMemberDependency(dependency, ref topology, ref facePositions, ref vertexPositions, ref vertexNormals))
-			{
-				throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this face normals generator.", dependency.name, dependency.GetType().Name), "dependency");
+				yield return faceNormalsDescriptor;
 			}
 		}
 
 		public override void Generate()
 		{
-			var topologyAsset = topology.GetAsset<Topology>();
+			var topologyAsset = topologyInputSlot.GetAsset<Topology>();
 			var faceNormalsAsset = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count], "Face Normals");
 			switch (calculationMethod)
 			{
 				case CalculationMethod.FromFacePositions:
-					FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositions.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
+					FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				case CalculationMethod.FromVertexPositions:
-					FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topologyAsset.internalFaces, vertexPositions.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
+					FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topologyAsset.internalFaces, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				case CalculationMethod.FromVertexNormals:
-					FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topologyAsset.internalFaces, vertexNormals.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
+					FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topologyAsset.internalFaces, vertexNormalsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				case CalculationMethod.FromSphericalFacePositions:
-					FaceAttributeUtility.CalculateSphericalFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositions.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
+					FaceAttributeUtility.CalculateSphericalFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
 					break;
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			faceNormals.SetAsset(faceNormalsAsset);
-		}
-
-		public override bool CanGenerate()
-		{
-			switch (calculationMethod)
-			{
-				case CalculationMethod.FromFacePositions: return (topology != null && facePositions != null);
-				case CalculationMethod.FromVertexPositions: return (topology != null && vertexPositions != null);
-				case CalculationMethod.FromVertexNormals: return (topology != null && vertexNormals != null);
-				case CalculationMethod.FromSphericalFacePositions: return (facePositions != null);
-				default: throw new System.NotImplementedException();
-			}
+			faceNormalsDescriptor.SetAsset(faceNormalsAsset);
 		}
 	}
 }

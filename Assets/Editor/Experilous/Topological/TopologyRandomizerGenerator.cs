@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(TopologyCategory), "Topology Randomizer")]
+	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(TopologyCategory), "Topology Randomizer")]
 	public class TopologyRandomizerGenerator : AssetGenerator
 	{
 		public enum SurfaceType
@@ -34,56 +34,39 @@ namespace Experilous.Topological
 		public int maxRepairIterations = 20;
 		public float repairRate = 0.5f;
 
-		public AssetDescriptor topologyDescriptor;
-		public AssetDescriptor positionalAttributeAdapterDescriptor;
-		public AssetDescriptor vertexPositionsDescriptor;
-		public AssetDescriptor edgeWrapDescriptor;
+		public AssetInputSlot topologyInputSlot;
+		public AssetInputSlot vertexPositionsInputSlot;
+		public AssetInputSlot edgeWrapInputSlot;
+		public AssetInputSlot positionalAttributeAdapterInputSlot;
 
-		public static TopologyRandomizerGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
+		protected override void Initialize(bool reset = true)
 		{
-			var generator = CreateInstance<TopologyRandomizerGenerator>();
-			generator.bundle = bundle;
-			generator.name = name;
-			generator.hideFlags = HideFlags.HideInHierarchy;
-			return generator;
+			// Inputs
+			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequiredMutating(this, typeof(Topology));
+			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateOptionalMutating(this, typeof(IVertexAttribute<Vector3>));
+			if (reset || edgeWrapInputSlot == null) edgeWrapInputSlot = AssetInputSlot.CreateOptionalMutating(this, typeof(IEdgeAttribute<EdgeWrap>));
+			if (reset || positionalAttributeAdapterInputSlot == null) positionalAttributeAdapterInputSlot = AssetInputSlot.CreateOptional(this, typeof(PositionalAttributeAdapter));
 		}
 
-		public override IEnumerable<AssetDescriptor> dependencies
+		public override IEnumerable<AssetInputSlot> inputs
 		{
 			get
 			{
-				if (topologyDescriptor != null) yield return topologyDescriptor;
-				if (positionalAttributeAdapterDescriptor != null) yield return positionalAttributeAdapterDescriptor;
-				if (vertexPositionsDescriptor != null) yield return vertexPositionsDescriptor;
-				if (edgeWrapDescriptor != null) yield return edgeWrapDescriptor;
-			}
-		}
-
-		public override IEnumerable<AssetDescriptor> outputs
-		{
-			get
-			{
-				yield break;
-			}
-		}
-
-		public override void ResetDependency(AssetDescriptor dependency)
-		{
-			if (dependency == null) throw new System.ArgumentNullException("dependency");
-			if (!ResetMemberDependency(dependency, ref topologyDescriptor, ref positionalAttributeAdapterDescriptor, ref vertexPositionsDescriptor, ref edgeWrapDescriptor))
-			{
-				throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this vertex normals generator.", dependency.name, dependency.GetType().Name), "dependency");
+				yield return topologyInputSlot;
+				yield return vertexPositionsInputSlot;
+				yield return edgeWrapInputSlot;
+				yield return positionalAttributeAdapterInputSlot;
 			}
 		}
 
 		public override void Generate()
 		{
-			var topology = topologyDescriptor.GetAsset<Topology>();
-			var positionalAttributeAdapter = positionalAttributeAdapterDescriptor != null
-				? positionalAttributeAdapterDescriptor.GetAsset<PositionalAttributeAdapter>()
+			var topology = topologyInputSlot.GetAsset<Topology>();
+			var vertexPositions = vertexPositionsInputSlot.source != null ? vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>() : null;
+			var edgeWrap = edgeWrapInputSlot.source != null ? edgeWrapInputSlot.GetAsset<IEdgeAttribute<EdgeWrap>>() : null;
+			var positionalAttributeAdapter = positionalAttributeAdapterInputSlot.source != null
+				? positionalAttributeAdapterInputSlot.GetAsset<PositionalAttributeAdapter>()
 				: PositionalAttributeAdapter.Create();
-			var vertexPositions = vertexPositionsDescriptor != null ? vertexPositionsDescriptor.GetAsset<IVertexAttribute<Vector3>>() : null;
-			var edgeWrap = edgeWrapDescriptor != null ? edgeWrapDescriptor.GetAsset<IEdgeAttribute<EdgeWrap>>() : null;
 
 			var random = new Random(new NativeRandomEngine(randomSeed));
 
@@ -269,12 +252,6 @@ namespace Experilous.Topological
 			{
 				EditorUtility.SetDirty((Object)vertexPositions);
 			}
-		}
-
-		public override bool CanGenerate()
-		{
-			return (
-				topologyDescriptor != null);
 		}
 	}
 }

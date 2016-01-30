@@ -4,34 +4,39 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorBundle), typeof(UtilitiesCategory), "Rectangular Face Groups")]
+	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(UtilitiesCategory), "Rectangular Face Groups")]
 	public class RectangularFaceGroupsGenerator : AssetGenerator
 	{
 		public Index2D axisDivisions = new Index2D(1, 1);
 
-		public AssetDescriptor topology;
-		public AssetDescriptor facePositions;
-		public AssetDescriptor surfaceDescriptor;
+		public AssetInputSlot topologyInputSlot;
+		public AssetInputSlot facePositionsInputSlot;
+		public AssetInputSlot surfaceDescriptorInputSlot;
 
-		public AssetDescriptor faceGroupCollection;
-		public AssetDescriptor[] faceGroups;
+		public AssetDescriptor faceGroupCollectionDescriptor;
+		public AssetDescriptor faceGroupIndicesDescriptor;
+		public AssetDescriptor[] faceGroupDescriptors;
 
-		public static RectangularFaceGroupsGenerator CreateDefaultInstance(AssetGeneratorBundle bundle, string name)
+		protected override void Initialize(bool reset = true)
 		{
-			var generator = CreateInstance<RectangularFaceGroupsGenerator>();
-			generator.bundle = bundle;
-			generator.name = name;
-			generator.hideFlags = HideFlags.HideInHierarchy;
-			return generator;
+			// Inputs
+			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
+			if (reset || facePositionsInputSlot == null) facePositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
+			if (reset || surfaceDescriptorInputSlot == null) surfaceDescriptorInputSlot = AssetInputSlot.CreateRequired(this, typeof(PlanarSurfaceDescriptor));
+
+			// Outputs
+			if (reset || faceGroupCollectionDescriptor == null) faceGroupCollectionDescriptor = AssetDescriptor.CreateGrouped<FaceGroupCollection>(this, "Face Groups", "Face Groups");
+			if (reset || faceGroupIndicesDescriptor == null) faceGroupIndicesDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<int>>(this, "Face Group Indices", "Attributes");
+			if (reset || faceGroupDescriptors == null) faceGroupDescriptors = new AssetDescriptor[0];
 		}
 
-		public override IEnumerable<AssetDescriptor> dependencies
+		public override IEnumerable<AssetInputSlot> inputs
 		{
 			get
 			{
-				if (topology != null) yield return topology;
-				if (facePositions != null) yield return facePositions;
-				if (surfaceDescriptor != null) yield return surfaceDescriptor;
+				yield return topologyInputSlot;
+				yield return facePositionsInputSlot;
+				yield return surfaceDescriptorInputSlot;
 			}
 		}
 
@@ -39,36 +44,35 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				if (faceGroupCollection == null) faceGroupCollection = AssetDescriptor.Create(this, typeof(FaceGroupCollection), "Face Groups", "Face Groups");
-				yield return faceGroupCollection;
+				yield return faceGroupCollectionDescriptor;
+				yield return faceGroupIndicesDescriptor;
 
-				if (faceGroups != null && faceGroups.Length > 0)
+				foreach (var faceGroup in faceGroupDescriptors)
 				{
-					foreach (var faceGroup in faceGroups)
-					{
-						yield return faceGroup;
-					}
+					yield return faceGroup;
 				}
 			}
 		}
 
-		public override void ResetDependency(AssetDescriptor dependency)
+		public override IEnumerable<AssetReferenceDescriptor> references
 		{
-			if (dependency == null) throw new System.ArgumentNullException("dependency");
-			if (!ResetMemberDependency(dependency, ref topology, ref facePositions, ref surfaceDescriptor))
+			get
 			{
-				throw new System.ArgumentException(string.Format("Generated asset \"{0}\" of type {1} is not a dependency of this vertex normals generator.", dependency.name, dependency.GetType().Name), "dependency");
+				foreach (var faceGroupDescriptor in faceGroupDescriptors)
+				{
+					yield return faceGroupDescriptor.ReferencedBy(faceGroupCollectionDescriptor);
+				}
 			}
 		}
 
 		public override void Generate()
 		{
-			var topologyAsset = topology.GetAsset<Topology>();
-			var facePositionsAsset = facePositions.GetAsset<IFaceAttribute<Vector3>>();
-			var surfaceDescriptorAsset = surfaceDescriptor.GetAsset<PlanarSurfaceDescriptor>();
+			var topology = topologyInputSlot.GetAsset<Topology>();
+			var facePositions = facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>();
+			var surfaceDescriptor = surfaceDescriptorInputSlot.GetAsset<PlanarSurfaceDescriptor>();
 
-			var axis0Vector = surfaceDescriptorAsset.axis0.vector;
-			var axis1Vector = surfaceDescriptorAsset.axis1.vector;
+			var axis0Vector = surfaceDescriptor.axis0.vector;
+			var axis1Vector = surfaceDescriptor.axis1.vector;
 			var surfaceNormal = Vector3.Cross(axis0Vector, axis1Vector).normalized;
 			var axis0Normal = Vector3.Cross(axis0Vector, surfaceNormal).normalized;
 			var axis1Normal = Vector3.Cross(axis1Vector, surfaceNormal).normalized;
@@ -84,9 +88,9 @@ namespace Experilous.Topological
 				faceGroupFaceIndices[i] = new List<int>();
 			}
 
-			foreach (var face in topologyAsset.internalFaces)
+			foreach (var face in topology.internalFaces)
 			{
-				var facePosition = facePositionsAsset[face];
+				var facePosition = facePositions[face];
 
 				var axis0Offset = Vector3.Dot(axis1Normal, facePosition - origin) / axis0Dot;
 				var axis1Offset = Vector3.Dot(axis0Normal, facePosition - origin) / axis1Dot;
@@ -103,9 +107,11 @@ namespace Experilous.Topological
 				if (group.Count > 0) ++groupCount;
 			}
 
-			faceGroups = AssetGeneratorUtility.ResizeArray(faceGroups, groupCount);
+			faceGroupDescriptors = AssetGeneratorUtility.ResizeArray(faceGroupDescriptors, groupCount);
 
-			var faceGroupCollectionAsset = FaceGroupCollection.Create(groupCount);
+			var faceGroupCollection = FaceGroupCollection.Create(groupCount);
+
+			var faceGroupIndices = new int[topology.internalFaces.Count];
 
 			var groupIndex = 0;
 			for (int axis1Index = 0; axis1Index < axisDivisions.y; ++axis1Index)
@@ -116,37 +122,43 @@ namespace Experilous.Topological
 					if (group.Count > 0)
 					{
 						var faceGroupName = string.Format("Face Group [{0}, {1}]", axis0Index, axis1Index);
-						var faceGroup = ArrayFaceGroup.Create(topologyAsset, group.ToArray(), faceGroupName);
+						var faceGroup = ArrayFaceGroup.Create(topology, group.ToArray(), faceGroupName);
 
-						if (faceGroups[groupIndex] == null)
+						if (faceGroupDescriptors[groupIndex] == null)
 						{
-							faceGroups[groupIndex] = AssetDescriptor.Create(this, typeof(FaceGroup), faceGroupName, faceGroupCollection.name);
+							faceGroupDescriptors[groupIndex] = AssetDescriptor.CreateGrouped<FaceGroup>(this, faceGroupName, faceGroupCollectionDescriptor.name);
 						}
 						else
 						{
-							faceGroups[groupIndex].name = faceGroupName;
-							faceGroups[groupIndex].groupName = faceGroupCollection.name;
+							faceGroupDescriptors[groupIndex].name = faceGroupName;
+							faceGroupDescriptors[groupIndex].path = faceGroupCollectionDescriptor.name;
 						}
 
-						faceGroupCollectionAsset.faceGroups[groupIndex] = faceGroups[groupIndex].SetAsset(faceGroup);
+						faceGroupCollection.faceGroups[groupIndex] = faceGroupDescriptors[groupIndex].SetAsset(faceGroup);
+
+						foreach (var faceIndex in group)
+						{
+							faceGroupIndices[faceIndex] = groupIndex;
+						}
 
 						++groupIndex;
 					}
 				}
 			}
 
-			faceGroupCollection.groupName = faceGroupCollection.name;
-			faceGroupCollection.SetAsset(faceGroupCollectionAsset);
+			faceGroupCollectionDescriptor.path = faceGroupCollectionDescriptor.name;
+			faceGroupCollectionDescriptor.SetAsset(faceGroupCollection);
+			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.CreateInstance(faceGroupIndices));
 		}
 
-		public override bool CanGenerate()
+		public override bool canGenerate
 		{
-			return (
-				topology != null &&
-				facePositions != null &&
-				surfaceDescriptor != null &&
-				axisDivisions.x >= 1 &&
-				axisDivisions.y >= 1);
+			get
+			{
+				return base.canGenerate &&
+					axisDivisions.x >= 1 &&
+					axisDivisions.y >= 1;
+			}
 		}
 	}
 }

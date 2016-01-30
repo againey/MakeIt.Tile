@@ -15,20 +15,20 @@ namespace Experilous.Topological
 			switch (generator.sourceType)
 			{
 				case MeshGenerator.SourceType.InternalFaces:
-					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
+					OnDependencyGUI("Topology", generator.topologyInputSlot, true);
 					break;
 				case MeshGenerator.SourceType.FaceGroupCollection:
-					generator.faceGroupCollection = OnDependencyGUI("Face Groups", generator.faceGroupCollection, typeof(FaceGroupCollection), false);
+					OnDependencyGUI("Face Groups", generator.faceGroupCollectionInputSlot);
 					break;
 				case MeshGenerator.SourceType.FaceGroup:
-					generator.faceGroup = OnDependencyGUI("Face Group", generator.faceGroup, typeof(FaceGroup), false);
+					OnDependencyGUI("Face Group", generator.faceGroupInputSlot);
 					break;
 			}
 
-			generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
-			generator.faceCentroids = OnDependencyGUI("Face Centroids", generator.faceCentroids, typeof(IFaceAttribute<Vector3>), false);
-			generator.faceNormals = OnDependencyGUI("Face Normals", generator.faceNormals, typeof(IFaceAttribute<Vector3>), false);
-			generator.faceColors = OnDependencyGUI("Face Colors", generator.faceColors, typeof(IFaceAttribute<Color>), false);
+			OnDependencyGUI("Vertex Positions", generator.vertexPositionsInputSlot);
+			OnDependencyGUI("Face Centroids", generator.faceCentroidsInputSlot);
+			OnDependencyGUI("Face Normals", generator.faceNormalsInputSlot);
+			OnDependencyGUI("Face Colors", generator.faceColorsInputSlot);
 
 			generator.centerOnGroupAverage = EditorGUILayout.Toggle("Center On Group", generator.centerOnGroupAverage);
 		}

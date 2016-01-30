@@ -15,19 +15,19 @@ namespace Experilous.Topological
 			switch (generator.calculationMethod)
 			{
 				case VertexNormalsGenerator.CalculationMethod.FromVertexPositions:
-					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-					generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
+					OnDependencyGUI("Topology", generator.topologyInputSlot, true);
+					OnDependencyGUI("Vertex Positions", generator.vertexPositionsInputSlot);
 					break;
 				case VertexNormalsGenerator.CalculationMethod.FromFacePositions:
-					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-					generator.facePositions = OnDependencyGUI("Face Positions", generator.facePositions, typeof(IFaceAttribute<Vector3>), false);
+					OnDependencyGUI("Topology", generator.topologyInputSlot, true);
+					OnDependencyGUI("Face Positions", generator.facePositionsInputSlot);
 					break;
 				case VertexNormalsGenerator.CalculationMethod.FromFaceNormals:
-					generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-					generator.faceNormals = OnDependencyGUI("Face Normals", generator.faceNormals, typeof(IFaceAttribute<Vector3>), false);
+					OnDependencyGUI("Topology", generator.topologyInputSlot, true);
+					OnDependencyGUI("Face Normals", generator.faceNormalsInputSlot);
 					break;
 				case VertexNormalsGenerator.CalculationMethod.FromSphericalVertexPositions:
-					generator.vertexPositions = OnDependencyGUI("Vertex Positions", generator.vertexPositions, typeof(IVertexAttribute<Vector3>), false);
+					OnDependencyGUI("Vertex Positions", generator.vertexPositionsInputSlot);
 					break;
 			}
 		}

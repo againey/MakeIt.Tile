@@ -21,9 +21,9 @@ namespace Experilous.Topological
 
 			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("axisDivisions"), new GUIContent("Divisions"), false);
 
-			generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
-			generator.facePositions = OnDependencyGUI("Face Positions", generator.facePositions, typeof(IFaceAttribute<Vector3>), false);
-			generator.surfaceDescriptor = OnDependencyGUI("Surface Descriptor", generator.surfaceDescriptor, typeof(PlanarSurfaceDescriptor), false);
+			OnDependencyGUI("Topology", generator.topologyInputSlot, true);
+			OnDependencyGUI("Face Positions", generator.facePositionsInputSlot);
+			OnDependencyGUI("Surface Descriptor", generator.surfaceDescriptorInputSlot);
 
 			_serializedGenerator.ApplyModifiedProperties();
 		}

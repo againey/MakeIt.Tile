@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace Experilous.Topological
 {
@@ -12,9 +11,9 @@ namespace Experilous.Topological
 
 			generator.surfaceType = (FaceCentroidsGenerator.SurfaceType)EditorGUILayout.EnumPopup("Surface Type", generator.surfaceType);
 
-			generator.topologyDescriptor = OnDependencyGUI("Topology", generator.topologyDescriptor, typeof(Topology), true);
-			generator.vertexPositionsDescriptor = OnDependencyGUI("Vertex Positions", generator.vertexPositionsDescriptor, typeof(IVertexAttribute<Vector3>), false);
-			generator.positionalAttributeAdapterDescriptor = OnOptionalDependencyGUI("Attribute Adapter", generator.positionalAttributeAdapterDescriptor, typeof(PositionalAttributeAdapter), true, true);
+			OnDependencyGUI("Topology", generator.topologyInputSlot, true);
+			OnDependencyGUI("Vertex Positions", generator.vertexPositionsInputSlot);
+			OnDependencyGUI("Attribute Adapter", generator.positionalAttributeAdapterInputSlot, true);
 		}
 	}
 }

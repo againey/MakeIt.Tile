@@ -10,7 +10,7 @@ namespace Experilous.Topological
 		{
 			var generator = (RandomFaceGroupsGenerator)target;
 
-			generator.topology = OnDependencyGUI("Topology", generator.topology, typeof(Topology), true);
+			OnDependencyGUI("Topology", generator.topologyInputSlot, true);
 
 			generator.clustered = EditorGUILayout.Toggle("Clustered", generator.clustered);
 			generator.groupCount = EditorGUILayout.IntField("Group Count", generator.groupCount);
