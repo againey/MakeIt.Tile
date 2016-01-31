@@ -10,17 +10,17 @@ namespace Experilous.Topological
 		{
 			var generator = (TopologyRandomizerGenerator)target;
 
-			OnDependencyGUI("Topology", generator.topologyInputSlot);
-			OnDependencyGUI("Vertex Positions", generator.vertexPositionsInputSlot);
-			OnDependencyGUI("Edge Wrap", generator.edgeWrapInputSlot);
-			OnDependencyGUI("Attribute Adapter", generator.positionalAttributeAdapterInputSlot, true);
+			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("topologyInputSlot"));
+			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("vertexPositionsInputSlot"));
+			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("edgeWrapInputSlot"));
+			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("positionalAttributeAdapterInputSlot"));
 
 			generator.surfaceType = (TopologyRandomizerGenerator.SurfaceType)EditorGUILayout.EnumPopup("Surface Type", generator.surfaceType);
 
 			generator.passCount = EditorGUILayout.IntField("Passes", generator.passCount);
 			generator.frequency = EditorGUILayout.Slider("Frequency", generator.frequency, 0f, 1f);
 
-			generator.randomSeed = EditorGUILayout.IntField("Random Seed", generator.randomSeed);
+			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("randomization"));
 
 			generator.minVertexNeighbors = EditorGUILayout.IntSlider("Min Vertex Neighbors", generator.minVertexNeighbors, 2, 20);
 			generator.maxVertexNeighbors = EditorGUILayout.IntSlider("Max Vertex Neighbors", generator.maxVertexNeighbors, 2, 20);

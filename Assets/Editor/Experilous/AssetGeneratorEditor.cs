@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
 using UnityEditor.AnimatedValues;
 using UnityEditor;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Experilous
 {
-	public abstract class AssetGeneratorEditor : Editor
+	[CustomEditor(typeof(AssetGenerator), true)]
+	public class AssetGeneratorEditor : Editor
 	{
 		[SerializeField] private Dictionary<AssetDescriptor, Editor> _editorStates = new Dictionary<AssetDescriptor, Editor>();
 
 		protected AssetGenerator _generator;
+		protected SerializedObject _serializedGenerator;
 
 		[SerializeField] protected bool _outputFoldout = false;
 		protected AnimBool _outputFoldoutAnimation;
@@ -17,98 +21,83 @@ namespace Experilous
 		protected void OnEnable()
 		{
 			_generator = (AssetGenerator)target;
+			_serializedGenerator = (target != null) ? new SerializedObject(target) : null;
 
 			_outputFoldoutAnimation = new AnimBool(_outputFoldout);
 			_outputFoldoutAnimation.valueChanged.AddListener(Repaint);
 		}
 
-		protected abstract void OnPropertiesGUI();
+		private static bool IsInAssetGeneratorSubclass(FieldInfo field)
+		{
+			var baseType = typeof(AssetGenerator);
+			while (baseType != null)
+			{
+				if (field.DeclaringType == baseType) return false;
+				baseType = baseType.BaseType;
+			}
+			return true;
+		}
+
+		private static TAttribute GetAttribute<TAttribute>(FieldInfo field) where TAttribute : Attribute
+		{
+			foreach (var attribute in field.GetCustomAttributes(true))
+			{
+				if (attribute is TAttribute)
+				{
+					return (TAttribute)attribute;
+				}
+			}
+			return null;
+		}
+
+		protected virtual void OnPropertiesGUI()
+		{
+			var generatorType = _generator.GetType();
+			var property = _serializedGenerator.GetIterator();
+			if (property.NextVisible(true))
+			{
+				do
+				{
+					var field = generatorType.GetField(property.name);
+					if (field == null) continue;
+					if (field.FieldType == typeof(AssetDescriptor)) continue;
+					if (field.FieldType == typeof(AssetDescriptor[])) continue;
+					if (field.FieldType == typeof(List<AssetDescriptor>)) continue;
+					if (!IsInAssetGeneratorSubclass(field)) continue;
+
+					var labelAttribute = GetAttribute<LabelAttribute>(field);
+					var labelContent = new GUIContent(
+						labelAttribute != null ? labelAttribute.text : property.displayName,
+						property.tooltip);
+
+					if (typeof(Component).IsAssignableFrom(field.FieldType))
+					{
+						property.objectReferenceValue = EditorGUILayoutExtensions.ObjectField(labelContent, property.objectReferenceValue, field.FieldType, false);
+					}
+					else if (field.FieldType == typeof(AssetInputSlot))
+					{
+						if (AssetInputSlotPropertyDrawer.ShouldShowInputGUI(property, field))
+						{
+							EditorGUILayout.PropertyField(property, labelContent, true);
+						}
+					}
+					else
+					{
+						EditorGUILayout.PropertyField(property, labelContent, true);
+					}
+				} while (property.NextVisible(false));
+			}
+		}
 
 		public override void OnInspectorGUI()
 		{
+			_serializedGenerator.Update();
+
 			OnPropertiesGUI();
 
 			OnOutputsGUI();
-		}
 
-		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot)
-		{
-			OnDependencyGUI(label, inputSlot, false, inputSlot.isOptional);
-		}
-
-		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, bool hideForOneOption)
-		{
-			OnDependencyGUI(label, inputSlot, hideForOneOption, inputSlot.isOptional);
-		}
-
-		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, bool hideForOneOption, bool hideForNoOption)
-		{
-			OnDependencyGUI(label, inputSlot, hideForOneOption, hideForNoOption, (AssetDescriptor asset) => { return inputSlot.assetType.IsAssignableFrom(asset.assetType); });
-		}
-
-		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, System.Predicate<AssetDescriptor> predicate)
-		{
-			OnDependencyGUI(label, inputSlot, false, inputSlot.isOptional, predicate);
-		}
-
-		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, bool hideForOneOption, System.Predicate<AssetDescriptor> predicate)
-		{
-			OnDependencyGUI(label, inputSlot, hideForOneOption, inputSlot.isOptional, predicate);
-		}
-
-		protected void OnDependencyGUI(string label, AssetInputSlot inputSlot, bool hideForOneOption, bool hideForNoOption, System.Predicate<AssetDescriptor> predicate)
-		{
-			var potentialSources = _generator.collection.GetMatchingGeneratedAssets(_generator, predicate);
-			if (potentialSources.Count == 0 && hideForNoOption)
-			{
-				inputSlot.source = null;
-			}
-			else if (potentialSources.Count == 1 && hideForOneOption)
-			{
-				inputSlot.source = potentialSources[0];
-			}
-			else if (inputSlot.isOptional)
-			{
-				var sourceIndex = potentialSources.IndexOf(inputSlot.source) + 1;
-
-				var potentialSourcesContent = new GUIContent[potentialSources.Count + 1];
-				potentialSourcesContent[0] = new GUIContent("None");
-				for (int i = 0; i < potentialSources.Count; ++i)
-				{
-					potentialSourcesContent[i + 1] = new GUIContent(potentialSources[i].name);
-				}
-
-				sourceIndex = EditorGUILayout.Popup(new GUIContent(label), sourceIndex, potentialSourcesContent);
-				if (sourceIndex > 0)
-				{
-					inputSlot.source = potentialSources[sourceIndex - 1];
-				}
-				else
-				{
-					inputSlot.source = null;
-				}
-			}
-			else if (potentialSources.Count > 0)
-			{
-				var sourceIndex = potentialSources.IndexOf(inputSlot.source);
-				if (sourceIndex == -1) sourceIndex = 0;
-
-				var potentialSourcesContent = new GUIContent[potentialSources.Count];
-				for (int i = 0; i < potentialSources.Count; ++i)
-				{
-					potentialSourcesContent[i] = new GUIContent(potentialSources[i].name);
-				}
-
-				sourceIndex = EditorGUILayout.Popup(new GUIContent(label), sourceIndex, potentialSourcesContent);
-				inputSlot.source = potentialSources[sourceIndex];
-			}
-			else
-			{
-				var potentialSourcesContent = new GUIContent[1];
-				potentialSourcesContent[0] = new GUIContent("(none available)");
-				EditorGUILayout.Popup(new GUIContent(label), 0, potentialSourcesContent);
-				inputSlot.source = null;
-			}
+			_serializedGenerator.ApplyModifiedProperties();
 		}
 
 		protected virtual void OnOutputsGUI()

@@ -71,8 +71,9 @@ namespace Experilous
 			{
 				foreach (var input in inputs)
 				{
-					if (!input.isOptional && input.source == null)
+					if (input == null || !input.isOptional && input.source == null)
 					{
+						if (input == null) throw new System.InvalidOperationException(name);
 						return false;
 					}
 				}

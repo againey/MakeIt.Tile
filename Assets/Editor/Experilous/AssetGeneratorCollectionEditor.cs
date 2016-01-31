@@ -7,8 +7,9 @@ using System.Reflection;
 
 namespace Experilous.Topological
 {
-	[System.Serializable ]
-	public abstract class AssetGeneratorCollectionEditor : Editor
+	[System.Serializable]
+	[CustomEditor(typeof(AssetGeneratorCollection), true)]
+	public class AssetGeneratorCollectionEditor : Editor
 	{
 		[SerializeField] protected AssetGeneratorCollection _generatorCollection;
 		[SerializeField] protected string _generationName;
@@ -235,7 +236,7 @@ namespace Experilous.Topological
 					var attributes = generatorType.GetCustomAttributes(typeof(AssetGeneratorAttribute), true);
 					foreach (AssetGeneratorAttribute attribute in attributes)
 					{
-						if (generatorCollectionType.IsAssignableFrom(attribute.assetGeneratorCollectionType))
+						if (attribute.assetGeneratorCollectionType.IsAssignableFrom(generatorCollectionType))
 						{
 							var categoryGUI = categoryGUIs.Find((AddGeneratorCategoryGUI existingCategoryGUI) =>
 							{

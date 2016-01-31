@@ -4,26 +4,36 @@ namespace Experilous
 {
 	public class NativeRandomEngineFactory : RandomEngineFactory
 	{
-		public override IRandomEngine Create()
+		public static NativeRandomEngineFactory Create()
+		{
+			return CreateInstance<NativeRandomEngineFactory>();
+		}
+
+		public static NativeRandomEngineFactory Create(string name)
+		{
+			var instance = Create();
+			instance.name = name;
+			return instance;
+		}
+
+		public override IRandomEngine CreateEngine()
 		{
 			return new NativeRandomEngine();
 		}
 
-		public override IRandomEngine Create(int seed)
+		public override IRandomEngine CreateEngine(int seed)
 		{
-			return new NativeRandomEngine(seed);
+			return NativeRandomEngine.Create(seed);
 		}
 
-		public override IRandomEngine Create(params int[] seed)
+		public override IRandomEngine CreateEngine(params int[] seed)
 		{
-			if (seed == null || seed.Length == 0) return new NativeRandomEngine();
-			return new NativeRandomEngine(Hash(seed));
+			return NativeRandomEngine.Create(seed);
 		}
 
-		public override IRandomEngine Create(string seed)
+		public override IRandomEngine CreateEngine(string seed)
 		{
-			if (seed == null || seed.Length == 0) return new NativeRandomEngine();
-			return new NativeRandomEngine(Hash(seed));
+			return NativeRandomEngine.Create(seed);
 		}
 	}
 }

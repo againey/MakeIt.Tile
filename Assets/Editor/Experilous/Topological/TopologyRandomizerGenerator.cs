@@ -13,31 +13,31 @@ namespace Experilous.Topological
 			Spherical,
 		}
 
+		[AutoSelect] public AssetInputSlot topologyInputSlot;
+		public AssetInputSlot vertexPositionsInputSlot;
+		[AutoSelect] public AssetInputSlot edgeWrapInputSlot;
+		[AutoSelect] [Label("Attribute Adapter")] public AssetInputSlot positionalAttributeAdapterInputSlot;
+
 		public SurfaceType surfaceType = SurfaceType.Planar;
 
 		public int passCount = 1;
-		public float frequency = 0.1f;
+		[Range(0f, 1f)] public float frequency = 0.1f;
 
-		public int randomSeed = 0;
+		public AssetGeneratorRandomization randomization;
 
-		public int minVertexNeighbors = 3;
-		public int maxVertexNeighbors = 5;
-		public int minFaceNeighbors = 3;
-		public int maxFaceNeighbors = 9;
+		[Range(2, 20)] public int minVertexNeighbors = 3;
+		[Range(2, 20)] public int maxVertexNeighbors = 5;
+		[Range(3, 20)] public int minFaceNeighbors = 3;
+		[Range(3, 20)] public int maxFaceNeighbors = 7;
 
-		public bool lockBoundaryPositions = true;
+		[Label("Lock Boundaries")] public bool lockBoundaryPositions = true;
 
-		public float relaxForRegularityWeight = 0.5f;
+		[Range(0f, 1f)] public float relaxForRegularityWeight = 0.5f;
 
-		public int maxRelaxIterations = 20;
-		public float relaxRelativePrecision = 0.95f;
+		[Range(0f, 1f)] public int maxRelaxIterations = 20;
+		[Range(0f, 1f)] public float relaxRelativePrecision = 0.95f;
 		public int maxRepairIterations = 20;
 		public float repairRate = 0.5f;
-
-		public AssetInputSlot topologyInputSlot;
-		public AssetInputSlot vertexPositionsInputSlot;
-		public AssetInputSlot edgeWrapInputSlot;
-		public AssetInputSlot positionalAttributeAdapterInputSlot;
 
 		protected override void Initialize(bool reset = true)
 		{
@@ -46,6 +46,9 @@ namespace Experilous.Topological
 			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateOptionalMutating(this, typeof(IVertexAttribute<Vector3>));
 			if (reset || edgeWrapInputSlot == null) edgeWrapInputSlot = AssetInputSlot.CreateOptionalMutating(this, typeof(IEdgeAttribute<EdgeWrap>));
 			if (reset || positionalAttributeAdapterInputSlot == null) positionalAttributeAdapterInputSlot = AssetInputSlot.CreateOptional(this, typeof(PositionalAttributeAdapter));
+
+			// Fields
+			randomization.Initialize(this, reset);
 		}
 
 		public override IEnumerable<AssetInputSlot> inputs
@@ -56,6 +59,7 @@ namespace Experilous.Topological
 				yield return vertexPositionsInputSlot;
 				yield return edgeWrapInputSlot;
 				yield return positionalAttributeAdapterInputSlot;
+				foreach (var input in randomization.inputs) yield return input;
 			}
 		}
 
@@ -68,7 +72,7 @@ namespace Experilous.Topological
 				? positionalAttributeAdapterInputSlot.GetAsset<PositionalAttributeAdapter>()
 				: PositionalAttributeAdapter.Create();
 
-			var random = new Random(new NativeRandomEngine(randomSeed));
+			var random = new Random(randomization.GetRandomEngine());
 
 			System.Func<float> relaxIterationFunction = null;
 			System.Func<bool> repairFunction = null;

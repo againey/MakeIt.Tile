@@ -14,9 +14,9 @@ namespace Experilous.Topological
 
 		public SurfaceType surfaceType;
 
-		public AssetInputSlot topologyInputSlot;
+		[AutoSelect] public AssetInputSlot topologyInputSlot;
 		public AssetInputSlot vertexPositionsInputSlot;
-		public AssetInputSlot positionalAttributeAdapterInputSlot;
+		[AutoSelect] [Label("Attribute Adapter")] public AssetInputSlot positionalAttributeAdapterInputSlot;
 
 		public AssetDescriptor faceCentroidsDescriptor;
 		public AssetDescriptor wrappedFaceCentroidsDescriptor;

@@ -9,9 +9,9 @@ namespace Experilous.Topological
 	{
 		public Index2D axisDivisions = new Index2D(1, 1);
 
-		public AssetInputSlot topologyInputSlot;
+		[AutoSelect] public AssetInputSlot topologyInputSlot;
 		public AssetInputSlot facePositionsInputSlot;
-		public AssetInputSlot surfaceDescriptorInputSlot;
+		[AutoSelect] public AssetInputSlot surfaceDescriptorInputSlot;
 
 		public AssetDescriptor faceGroupCollectionDescriptor;
 		public AssetDescriptor faceGroupIndicesDescriptor;

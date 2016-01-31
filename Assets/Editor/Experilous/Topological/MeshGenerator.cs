@@ -14,15 +14,16 @@ namespace Experilous.Topological
 		}
 
 		public SourceType sourceType = SourceType.InternalFaces;
-		public bool centerOnGroupAverage = false;
 
-		public AssetInputSlot topologyInputSlot;
+		[AutoSelect] public AssetInputSlot topologyInputSlot;
 		public AssetInputSlot faceGroupCollectionInputSlot;
 		public AssetInputSlot faceGroupInputSlot;
 		public AssetInputSlot vertexPositionsInputSlot;
 		public AssetInputSlot faceCentroidsInputSlot;
 		public AssetInputSlot faceNormalsInputSlot;
 		public AssetInputSlot faceColorsInputSlot;
+
+		public bool centerOnGroupAverage = false;
 
 		public AssetDescriptor meshCollectionDescriptor;
 		public AssetDescriptor[] meshDescriptors;

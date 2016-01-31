@@ -17,7 +17,7 @@ namespace Experilous.Topological
 
 		public CalculationMethod calculationMethod;
 
-		public AssetInputSlot topologyInputSlot;
+		[AutoSelect] public AssetInputSlot topologyInputSlot;
 		public AssetInputSlot vertexPositionsInputSlot;
 		public AssetInputSlot facePositionsInputSlot;
 		public AssetInputSlot faceNormalsInputSlot;

@@ -1,24 +1,56 @@
-﻿namespace Experilous
+﻿using UnityEngine;
+
+namespace Experilous
 {
-	public class NativeRandomEngine : BufferedRandomEngine
+	public class NativeRandomEngine : BaseRandomEngine
 	{
-		private System.Random _random;
+		[SerializeField] private System.Random _random;
+		[SerializeField] private byte[] _buffer = new byte[4];
 
-		public NativeRandomEngine()
+		public static NativeRandomEngine Create()
 		{
-			_random = new System.Random();
+			var instance = CreateInstance<NativeRandomEngine>();
+			instance._random = new System.Random();
+			return instance;
 		}
 
-		public NativeRandomEngine(int seed)
+		public static NativeRandomEngine Create(int seed)
 		{
-			_random = new System.Random(seed);
+			var instance = CreateInstance<NativeRandomEngine>();
+			instance._random = new System.Random(seed);
+			return instance;
 		}
 
-		public override uint Next()
+		public static NativeRandomEngine Create(params int[] seed)
 		{
-			byte[] buffer = new byte[4];
-			_random.NextBytes(buffer);
-			return System.BitConverter.ToUInt32(buffer, 0);
+			var instance = CreateInstance<NativeRandomEngine>();
+			instance._random = new System.Random((int)RandomSeedUtility.Seed32(seed));
+			return instance;
+		}
+
+		public static NativeRandomEngine Create(string seed)
+		{
+			var instance = CreateInstance<NativeRandomEngine>();
+			instance._random = new System.Random((int)RandomSeedUtility.Seed32(seed));
+			return instance;
+		}
+
+		public static NativeRandomEngine Create(IRandomEngine seeder)
+		{
+			var instance = CreateInstance<NativeRandomEngine>();
+			instance._random = new System.Random((int)seeder.Next32());
+			return instance;
+		}
+
+		public override uint Next32()
+		{
+			_random.NextBytes(_buffer);
+			return System.BitConverter.ToUInt32(_buffer, 0);
+		}
+
+		public override ulong Next64()
+		{
+			return ((ulong)Next32() << 32) | Next32();
 		}
 	}
 }

@@ -21,20 +21,26 @@ namespace Experilous
 
 		[SerializeField] private bool _isEnabled = true;
 		[SerializeField] private Availability _availability = Availability.Always;
+		[SerializeField] private bool _canBeAvailableAfterGeneration = true;
 
 		[SerializeField] private List<AssetInputSlot> _consumers;
 
 		public static AssetDescriptor Create<TAsset>(AssetGenerator generator, string name, bool isEnabled = true, Availability availability = Availability.Always)
 		{
-			return Create(generator, typeof(TAsset), name, null, isEnabled, availability);
+			return Create(generator, typeof(TAsset), name, null, isEnabled, availability, true);
 		}
 
-		public static AssetDescriptor CreateGrouped<TAsset>(AssetGenerator generator, string name, string groupName, bool isEnabled = true, Availability availability = Availability.Always)
+		public static AssetDescriptor CreateGrouped<TAsset>(AssetGenerator generator, string name, string path, bool isEnabled = true, Availability availability = Availability.Always)
 		{
-			return Create(generator, typeof(TAsset), name, groupName, isEnabled, availability);
+			return Create(generator, typeof(TAsset), name, path, isEnabled, availability, true);
 		}
 
-		private static AssetDescriptor Create(AssetGenerator generator, System.Type assetType, string name, string path, bool isEnabled, Availability availability)
+		public static AssetDescriptor CreateUnpersisted<TAsset>(AssetGenerator generator, string name, bool isEnabled = true)
+		{
+			return Create(generator, typeof(TAsset), name, null, isEnabled, Availability.DuringGeneration, false);
+		}
+
+		private static AssetDescriptor Create(AssetGenerator generator, System.Type assetType, string name, string path, bool isEnabled, Availability availability, bool canBeAvailableAfterGeneration)
 		{
 			if (generator == null)
 				throw new System.ArgumentNullException("generator");
@@ -44,6 +50,10 @@ namespace Experilous
 				throw new System.ArgumentException("Asset descriptor must be given a non-empty name.", "name");
 			if (assetType == typeof(GameObject) && availability == Availability.DuringGeneration)
 				throw new System.ArgumentException("Assets of type GameObject must always be available after generation.", "availability");
+			if (assetType == typeof(GameObject) && canBeAvailableAfterGeneration == false)
+				throw new System.ArgumentException("Assets of type GameObject must always be available after generation.", "canBeAvailableAfterGeneration");
+			if ((availability & Availability.AfterGeneration) != 0 && canBeAvailableAfterGeneration == false)
+				throw new System.ArgumentException("Inconsistent argument values.", "canBeAvailableAfterGeneration");
 
 			var descriptor = CreateInstance<AssetDescriptor>();
 			descriptor._generator = generator;
@@ -51,9 +61,10 @@ namespace Experilous
 			descriptor._path = string.IsNullOrEmpty(path) ? null : path;
 			descriptor._isEnabled = isEnabled;
 			descriptor._availability = availability;
+			descriptor._canBeAvailableAfterGeneration = canBeAvailableAfterGeneration;
 			descriptor._consumers = new List<AssetInputSlot>();
 			descriptor.name = name;
-			descriptor.hideFlags = HideFlags.HideInHierarchy;
+			descriptor.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector | HideFlags.NotEditable;
 			return descriptor;
 		}
 
@@ -62,10 +73,11 @@ namespace Experilous
 		public Object asset { get { return _asset; } }
 
 		public string path { get { return _path; } set { _path = value; } }
-		public bool canBeGrouped { get { return _assetType != typeof(GameObject); } }
+		public bool canBeGrouped { get { return isAvailableAfterGeneration; } }
 
 		public bool isEnabled { get { return _isEnabled; } set { _isEnabled = value; } }
 		public Availability availability { get { return _availability; } set { _availability = value; } }
+		public bool canBeAvailableAfterGeneration { get { return _canBeAvailableAfterGeneration; } }
 		public bool mustBeAvailableAfterGeneration { get { return _assetType == typeof(GameObject); } }
 		public bool isAvailableDuringGeneration { get { return _isEnabled && (_availability & Availability.DuringGeneration) != 0; } }
 		public bool isAvailableAfterGeneration { get { return _isEnabled && (_availability & Availability.AfterGeneration) != 0; } }
@@ -83,6 +95,11 @@ namespace Experilous
 		public void RemoveConsumer(AssetInputSlot consumer)
 		{
 			_consumers.Remove(consumer);
+		}
+
+		public void CleanConsumers()
+		{
+			_consumers.RemoveAll((AssetInputSlot input) => { return input == null; });
 		}
 
 		public AssetReferenceDescriptor ReferencedBy(AssetDescriptor referencer)

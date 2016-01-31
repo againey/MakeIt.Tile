@@ -7,7 +7,7 @@ namespace Experilous.Topological
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(UtilitiesCategory), "Spherical Partitioning")]
 	public class SphericalPartitioningGenerator : AssetGenerator
 	{
-		public AssetInputSlot topologyInputSlot;
+		[AutoSelect] public AssetInputSlot topologyInputSlot;
 		public AssetInputSlot vertexPositionsInputSlot;
 
 		public AssetDescriptor partitioningDescriptor;

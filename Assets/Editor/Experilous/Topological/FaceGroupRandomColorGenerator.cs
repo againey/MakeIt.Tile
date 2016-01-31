@@ -10,6 +10,8 @@ namespace Experilous.Topological
 		public AssetInputSlot faceGroupCollectionInputSlot;
 		public AssetInputSlot faceGroupIndicesInputSlot;
 
+		public AssetGeneratorRandomization randomization;
+
 		public AssetDescriptor faceGroupColorsDescriptor;
 		public AssetDescriptor faceColorsDescriptor;
 
@@ -18,6 +20,9 @@ namespace Experilous.Topological
 			// Inputs
 			if (reset || faceGroupCollectionInputSlot == null) faceGroupCollectionInputSlot = AssetInputSlot.CreateRequired(this, typeof(FaceGroupCollection));
 			if (reset || faceGroupIndicesInputSlot == null) faceGroupIndicesInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<int>));
+
+			// Fields
+			randomization.Initialize(this, reset);
 
 			// Outputs
 			if (reset || faceGroupColorsDescriptor == null) faceGroupColorsDescriptor = AssetDescriptor.CreateGrouped<IFaceGroupAttribute<Color>>(this, "Random Face Group Colors", "Attributes");
@@ -30,6 +35,7 @@ namespace Experilous.Topological
 			{
 				yield return faceGroupCollectionInputSlot;
 				yield return faceGroupIndicesInputSlot;
+				foreach (var input in randomization.inputs) yield return input;
 			}
 		}
 
@@ -47,7 +53,7 @@ namespace Experilous.Topological
 			var faceGroups = faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>().faceGroups;
 			var faceGroupColorsArray = new Color[faceGroups.Length];
 
-			var random = new Random(new NativeRandomEngine(2));
+			var random = new Random(randomization.GetRandomEngine());
 
 			for (int i = 0; i < faceGroups.Length; ++i)
 			{

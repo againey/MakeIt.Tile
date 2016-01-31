@@ -5,6 +5,8 @@ using System.IO;
 
 namespace Experilous
 {
+	[AssetGeneratorCategory(typeof(AssetGeneratorCollection), "Utilities")] public struct UtilitiesCategory { }
+
 	public abstract class AssetGeneratorCollection : ScriptableObject
 	{
 		[SerializeField] private bool _initialized = false;
@@ -322,6 +324,27 @@ namespace Experilous
 			return matchingGeneratedAssets;
 		}
 
+		public int GetMatchingGeneratedAssetsCount(AssetGenerator excludedGenerator, System.Predicate<AssetDescriptor> predicate)
+		{
+			var count = 0;
+
+			foreach (var generator in _generators)
+			{
+				if (!ReferenceEquals(generator, excludedGenerator))
+				{
+					foreach (var output in generator.outputs)
+					{
+						if (output != null && output.isAvailableDuringGeneration && predicate(output))
+						{
+							++count;
+						}
+					}
+				}
+			}
+
+			return count;
+		}
+
 		public string[] GetAllAssetPaths(string emptyPath = null)
 		{
 			var assetPathsSet = new HashSet<string>();
@@ -490,6 +513,15 @@ namespace Experilous
 				}
 			}
 
+			// Clean up any dangling output consumer references.
+			foreach (var generator in _generators)
+			{
+				foreach (var output in generator.outputs)
+				{
+					output.CleanConsumers();
+				}
+			}
+
 			var orderedGenerators = new List<AssetGenerator>();
 			var unorderedGenerators = new List<AssetGenerator>();
 
@@ -595,6 +627,15 @@ namespace Experilous
 				}
 			}
 			_persistedAssets = persistedAssets;
+
+			// Clean up any dangling output consumer references.
+			foreach (var generator in _generators)
+			{
+				foreach (var output in generator.outputs)
+				{
+					output.CleanConsumers();
+				}
+			}
 
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();

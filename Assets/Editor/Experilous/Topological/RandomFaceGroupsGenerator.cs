@@ -7,10 +7,12 @@ namespace Experilous.Topological
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(UtilitiesCategory), "Random Face Groups")]
 	public class RandomFaceGroupsGenerator : AssetGenerator
 	{
-		public bool clustered = true;
-		public int groupCount = 1;
+		[AutoSelect] public AssetInputSlot topologyInputSlot;
 
-		public AssetInputSlot topologyInputSlot;
+		public int groupCount = 1;
+		public bool clustered = true;
+
+		public AssetGeneratorRandomization randomization;
 
 		public AssetDescriptor faceGroupCollectionDescriptor;
 		public AssetDescriptor faceGroupIndicesDescriptor;
@@ -20,6 +22,9 @@ namespace Experilous.Topological
 		{
 			// Inputs
 			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
+
+			// Fields
+			randomization.Initialize(this, reset);
 
 			// Outputs
 			if (reset || faceGroupCollectionDescriptor == null) faceGroupCollectionDescriptor = AssetDescriptor.CreateGrouped<FaceGroupCollection>(this, "Random Face Groups", "Random Face Groups");
@@ -32,6 +37,7 @@ namespace Experilous.Topological
 			get
 			{
 				yield return topologyInputSlot;
+				foreach (var input in randomization.inputs) yield return input;
 			}
 		}
 
@@ -39,7 +45,6 @@ namespace Experilous.Topological
 		{
 			get
 			{
-
 				yield return faceGroupCollectionDescriptor;
 				yield return faceGroupIndicesDescriptor;
 
@@ -69,7 +74,7 @@ namespace Experilous.Topological
 
 			//if (clustered || true) //TODO create an unclustered version
 			{
-				var random = new Random(new NativeRandomEngine(0));
+				var random = new Random(randomization.GetRandomEngine());
 
 				var visitor = new RandomAdjacentFaceVisitor(topology, random.engine);
 

@@ -14,7 +14,7 @@ namespace Experilous
 		{
 			if (assetGeneratorCollectionType == null)
 				throw new ArgumentNullException(string.Format("The asset generator collection type supplied for the AssetGeneratorCategory attribute with name \"{1}\" should not be but was null.", name), "assetGeneratorCollectionType");
-			if (!assetGeneratorCollectionType.IsSubclassOf(typeof(AssetGeneratorCollection)))
+			if (!typeof(AssetGeneratorCollection).IsAssignableFrom(assetGeneratorCollectionType))
 				throw new ArgumentException(string.Format("The asset generator collection type {0} supplied for the AssetGeneratorCategory attribute with name \"{1}\" should be but was not a subclass of AssetGeneratorCollection.", assetGeneratorCollectionType.Name, name), "assetGeneratorCollectionType");
 
 			_assetGeneratorCollectionType = assetGeneratorCollectionType;

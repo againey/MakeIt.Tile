@@ -61,7 +61,7 @@ namespace Experilous
 
 		public static float HalfOpenRange(float lowerInclusive, float upperExclusive, IRandomEngine engine)
 		{
-			return (engine.Next() / 4294967296f) * (upperExclusive - lowerInclusive) + lowerInclusive;
+			return (engine.Next32() / 4294967296f) * (upperExclusive - lowerInclusive) + lowerInclusive;
 		}
 
 		public float HalfOpenRange(float lowerInclusive, float upperExclusive)
@@ -71,7 +71,7 @@ namespace Experilous
 
 		public static float HalfOpenRange(float upperExclusive, IRandomEngine engine)
 		{
-			return (engine.Next() / 4294967296f) * upperExclusive;
+			return (engine.Next32() / 4294967296f) * upperExclusive;
 		}
 
 		public float HalfOpenRange(float upperExclusive)
@@ -81,7 +81,7 @@ namespace Experilous
 
 		public static float HalfOpenFloatUnit(IRandomEngine engine)
 		{
-			return engine.Next() / 4294967296f;
+			return engine.Next32() / 4294967296f;
 		}
 
 		public float HalfOpenFloatUnit()
@@ -131,7 +131,7 @@ namespace Experilous
 
 		public static float ClosedRange(float lowerInclusive, float upperExclusive, IRandomEngine engine)
 		{
-			return (engine.Next() / 4294967295f) * (upperExclusive - lowerInclusive) + lowerInclusive;
+			return (engine.Next32() / 4294967295f) * (upperExclusive - lowerInclusive) + lowerInclusive;
 		}
 
 		public float ClosedRange(float lowerInclusive, float upperExclusive)
@@ -141,7 +141,7 @@ namespace Experilous
 
 		public static float ClosedRange(float upperExclusive, IRandomEngine engine)
 		{
-			return (engine.Next() / 4294967295f) * upperExclusive;
+			return (engine.Next32() / 4294967295f) * upperExclusive;
 		}
 
 		public float ClosedRange(float upperExclusive)
@@ -151,7 +151,7 @@ namespace Experilous
 
 		public static float ClosedFloatUnit(IRandomEngine engine)
 		{
-			return engine.Next() / 4294967295f;
+			return engine.Next32() / 4294967295f;
 		}
 
 		public float ClosedFloatUnit()
@@ -175,7 +175,7 @@ namespace Experilous
 			char[] buffer = new char[length];
 			for (int i = 0; i < length; ++i)
 			{
-				buffer[i] = _hexadecimalCharacters[_engine.NextBits(4)];
+				buffer[i] = _hexadecimalCharacters[_engine.Next32(4)];
 			}
 			return new string(buffer);
 		}

@@ -6,9 +6,9 @@ namespace Experilous.Topological
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(MeshCategory), "Prefab")]
 	public class PrefabGenerator : AssetGenerator
 	{
-		public MeshFilter meshPrefab;
-
 		public AssetInputSlot meshCollectionInputSlot;
+
+		public MeshFilter meshPrefab;
 
 		public AssetDescriptor prefabDescriptor;
 

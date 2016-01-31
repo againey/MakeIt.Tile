@@ -26,16 +26,26 @@ namespace Experilous
 			(int)AssetDescriptor.Availability.AfterGeneration,
 		};
 
-		protected static GUIContent[] _restrictedAvailabilityContent = new GUIContent[]
+		protected static GUIContent[] _alwaysAfterAvailabilityContent = new GUIContent[]
 		{
 			new GUIContent("Available Always"),
 			new GUIContent("Available After Generation"),
 		};
 
-		protected static int[] _restrictedAvailabilityValues = new int[]
+		protected static int[] _alwaysAfterAvailabilityValues = new int[]
 		{
 			(int)AssetDescriptor.Availability.Always,
 			(int)AssetDescriptor.Availability.AfterGeneration,
+		};
+
+		protected static GUIContent[] _neverAfterAvailabilityContent = new GUIContent[]
+		{
+			new GUIContent("Available During Generation"),
+		};
+
+		protected static int[] _neverAfterAvailabilityValues = new int[]
+		{
+			(int)AssetDescriptor.Availability.DuringGeneration,
 		};
 
 		protected void OnEnable()
@@ -77,11 +87,15 @@ namespace Experilous
 				GUI.enabled = descriptor.isEnabled;
 				if (descriptor.mustBeAvailableAfterGeneration)
 				{
-					descriptor.availability = (AssetDescriptor.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _restrictedAvailabilityContent, _restrictedAvailabilityValues);
+					descriptor.availability = (AssetDescriptor.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _alwaysAfterAvailabilityContent, _alwaysAfterAvailabilityValues);
+				}
+				else if (descriptor.canBeAvailableAfterGeneration)
+				{
+					descriptor.availability = (AssetDescriptor.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _fullAvailabilityContent, _fullAvailabilityValues);
 				}
 				else
 				{
-					descriptor.availability = (AssetDescriptor.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _fullAvailabilityContent, _fullAvailabilityValues);
+					descriptor.availability = (AssetDescriptor.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _neverAfterAvailabilityContent, _neverAfterAvailabilityValues);
 				}
 				EditorGUILayout.EndHorizontal();
 			}
