@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
+using Experilous.Randomization;
 
 namespace Experilous.Topological
 {
@@ -53,7 +53,7 @@ namespace Experilous.Topological
 			var faceGroups = faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>().faceGroups;
 			var faceGroupColorsArray = new Color[faceGroups.Length];
 
-			var random = new Random(randomization.GetRandomEngine());
+			var random = new RandomUtility(randomization.GetRandomEngine());
 
 			for (int i = 0; i < faceGroups.Length; ++i)
 			{

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
+using Experilous.Randomization;
 
 namespace Experilous.Topological
 {
@@ -74,7 +74,7 @@ namespace Experilous.Topological
 
 			//if (clustered || true) //TODO create an unclustered version
 			{
-				var random = new Random(randomization.GetRandomEngine());
+				var random = new RandomUtility(randomization.GetRandomEngine());
 
 				var visitor = new RandomAdjacentFaceVisitor(topology, random.engine);
 

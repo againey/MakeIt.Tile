@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using Experilous.Randomization;
 
 namespace Experilous.Topological
 {
@@ -72,7 +73,7 @@ namespace Experilous.Topological
 				? positionalAttributeAdapterInputSlot.GetAsset<PositionalAttributeAdapter>()
 				: PositionalAttributeAdapter.Create();
 
-			var random = new Random(randomization.GetRandomEngine());
+			var random = new RandomUtility(randomization.GetRandomEngine());
 
 			System.Func<float> relaxIterationFunction = null;
 			System.Func<bool> repairFunction = null;

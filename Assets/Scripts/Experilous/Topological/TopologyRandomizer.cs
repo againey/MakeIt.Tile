@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+﻿using Experilous.Randomization;
 
 namespace Experilous.Topological
 {
 	public static class TopologyRandomizer
 	{
-		public static void Randomize(Topology topology, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, Experilous.Random random, System.Action relaxFunction)
+		public static void Randomize(Topology topology, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, RandomUtility random, System.Action relaxFunction)
 		{
 			var perPassRandomizationFrequency = frequency / passCount;
 
@@ -68,7 +68,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public static void Randomize(Topology topology, IEdgeAttribute<EdgeWrap> edgeWrap, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, Experilous.Random random, System.Action relaxFunction)
+		public static void Randomize(Topology topology, IEdgeAttribute<EdgeWrap> edgeWrap, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, RandomUtility random, System.Action relaxFunction)
 		{
 			var perPassRandomizationFrequency = frequency / passCount;
 
