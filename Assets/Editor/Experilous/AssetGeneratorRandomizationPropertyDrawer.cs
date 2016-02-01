@@ -33,11 +33,30 @@ namespace Experilous
 					margins += CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.textField);
 					break;
 				case AssetGeneratorRandomization.SeedSource.RandomEngine:
+				case AssetGeneratorRandomization.SeedSource.RandomEngineAndSystemTime:
 					if (AssetInputSlotPropertyDrawer.ShouldShowInputGUI(property.FindPropertyRelative("randomEngineSeedInputSlot"), fieldInfo.FieldType.GetField("randomEngineSeedInputSlot")))
 					{
 						lines += 1;
 						margins += CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.popup);
 					}
+					break;
+				case AssetGeneratorRandomization.SeedSource.RandomEngineAndNumerical:
+					if (AssetInputSlotPropertyDrawer.ShouldShowInputGUI(property.FindPropertyRelative("randomEngineSeedInputSlot"), fieldInfo.FieldType.GetField("randomEngineSeedInputSlot")))
+					{
+						lines += 1;
+						margins += CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.popup);
+					}
+					lines += 1;
+					margins += CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.numberField);
+					break;
+				case AssetGeneratorRandomization.SeedSource.RandomEngineAndTextual:
+					if (AssetInputSlotPropertyDrawer.ShouldShowInputGUI(property.FindPropertyRelative("randomEngineSeedInputSlot"), fieldInfo.FieldType.GetField("randomEngineSeedInputSlot")))
+					{
+						lines += 1;
+						margins += CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.popup);
+					}
+					lines += 1;
+					margins += CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.textField);
 					break;
 			}
 
@@ -89,10 +108,37 @@ namespace Experilous
 						property.FindPropertyRelative("seedText"), new GUIContent("Seed Text"));
 					break;
 				case AssetGeneratorRandomization.SeedSource.RandomEngine:
+				case AssetGeneratorRandomization.SeedSource.RandomEngineAndSystemTime:
 					yCurrent += EditorGUIUtility.singleLineHeight + CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.popup);
 					AssetInputSlotPropertyDrawer.ShowInputGUI(
 						new Rect(position.xMin, yCurrent, position.width, EditorGUIUtility.singleLineHeight), new GUIContent("Seeder"),
 						property.FindPropertyRelative("randomEngineSeedInputSlot"), fieldInfo.FieldType.GetField("randomEngineSeedInputSlot"));
+					break;
+				case AssetGeneratorRandomization.SeedSource.RandomEngineAndNumerical:
+					if (AssetInputSlotPropertyDrawer.ShouldShowInputGUI(property.FindPropertyRelative("randomEngineSeedInputSlot"), fieldInfo.FieldType.GetField("randomEngineSeedInputSlot")))
+					{
+						yCurrent += EditorGUIUtility.singleLineHeight + CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.popup);
+						AssetInputSlotPropertyDrawer.ShowInputGUI(
+							new Rect(position.xMin, yCurrent, position.width, EditorGUIUtility.singleLineHeight), new GUIContent("Seeder"),
+							property.FindPropertyRelative("randomEngineSeedInputSlot"), fieldInfo.FieldType.GetField("randomEngineSeedInputSlot"));
+					}
+					yCurrent += EditorGUIUtility.singleLineHeight + CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.numberField);
+					EditorGUI.PropertyField(
+						new Rect(position.xMin,yCurrent, position.width, EditorGUIUtility.singleLineHeight),
+						property.FindPropertyRelative("seedNumber"), new GUIContent("Seed Number"));
+					break;
+				case AssetGeneratorRandomization.SeedSource.RandomEngineAndTextual:
+					if (AssetInputSlotPropertyDrawer.ShouldShowInputGUI(property.FindPropertyRelative("randomEngineSeedInputSlot"), fieldInfo.FieldType.GetField("randomEngineSeedInputSlot")))
+					{
+						yCurrent += EditorGUIUtility.singleLineHeight + CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.popup);
+						AssetInputSlotPropertyDrawer.ShowInputGUI(
+							new Rect(position.xMin, yCurrent, position.width, EditorGUIUtility.singleLineHeight), new GUIContent("Seeder"),
+							property.FindPropertyRelative("randomEngineSeedInputSlot"), fieldInfo.FieldType.GetField("randomEngineSeedInputSlot"));
+					}
+					yCurrent += EditorGUIUtility.singleLineHeight + CombinedVerticalFieldMargins(EditorStyles.popup, EditorStyles.textField);
+					EditorGUI.PropertyField(
+						new Rect(position.xMin, yCurrent, position.width, EditorGUIUtility.singleLineHeight),
+						property.FindPropertyRelative("seedText"), new GUIContent("Seed Text"));
 					break;
 			}
 

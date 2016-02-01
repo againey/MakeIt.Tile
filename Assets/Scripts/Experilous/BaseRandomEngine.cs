@@ -2,7 +2,7 @@
 
 namespace Experilous
 {
-	public abstract class BaseRandomEngine : ScriptableObject, IRandomEngine
+	public abstract class BaseRandomEngine : ScriptableObject
 	{
 		private static sbyte[] _log2CeilLookupTable = // Table[i] = Ceil(Log2(i))
 		{
@@ -120,11 +120,9 @@ namespace Experilous
 			if (upperBound == 0) throw new System.ArgumentOutOfRangeException("upperBound");
 			var bitsNeeded = Log2Ceil(upperBound);
 			uint random;
-			int count = 0;
 			do
 			{
 				random = Next32(bitsNeeded);
-				if (++count > 1000) throw new System.InvalidOperationException(string.Format("{0}, {1}, {2}", upperBound, random, bitsNeeded));
 			}
 			while (random >= upperBound);
 			return random;

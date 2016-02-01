@@ -66,7 +66,7 @@ namespace Experilous
 			return !autoSelect || !(count == 0 && input.isOptional || count == 1 && input.isRequired);
 		}
 
-		public static void ShowInputGUI(Rect position, GUIContent label, SerializedProperty property, FieldInfo field)
+		public static bool ShowInputGUI(Rect position, GUIContent label, SerializedProperty property, FieldInfo field)
 		{
 			if (property.objectReferenceValue != null && property.objectReferenceValue is AssetInputSlot)
 			{
@@ -75,26 +75,30 @@ namespace Experilous
 				{
 					var autoSelectAttribute = GetAttribute<AutoSelectAttribute>(field);
 
-					ShowInputGUI(position, label, input, autoSelectAttribute != null);
+					return ShowInputGUI(position, label, input, autoSelectAttribute != null);
 				}
 			}
+
+			return false;
 		}
 
-		public static void ShowInputGUI(Rect position, GUIContent label, AssetInputSlot input, bool autoSelect = false)
+		public static bool ShowInputGUI(Rect position, GUIContent label, AssetInputSlot input, bool autoSelect = false)
 		{
-			ShowInputGUI(position, label, input, autoSelect, GetDefaultPredicate(input));
+			return ShowInputGUI(position, label, input, autoSelect, GetDefaultPredicate(input));
 		}
 
-		public static void ShowInputGUI(Rect position, GUIContent label, AssetInputSlot input, bool autoSelect, Predicate<AssetDescriptor> predicate)
+		public static bool ShowInputGUI(Rect position, GUIContent label, AssetInputSlot input, bool autoSelect, Predicate<AssetDescriptor> predicate)
 		{
 			var potentialSources = input.generator.collection.GetMatchingGeneratedAssets(input.generator, predicate);
 			if (autoSelect && potentialSources.Count == 0 && input.isOptional)
 			{
 				input.source = null;
+				return false;
 			}
 			else if (autoSelect && potentialSources.Count == 1 && input.isRequired)
 			{
 				input.source = potentialSources[0];
+				return false;
 			}
 			else
 			{
@@ -134,6 +138,8 @@ namespace Experilous
 				{
 					input.source = null;
 				}
+
+				return true;
 			}
 		}
 

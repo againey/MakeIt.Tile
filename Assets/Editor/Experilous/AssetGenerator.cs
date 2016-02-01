@@ -71,9 +71,8 @@ namespace Experilous
 			{
 				foreach (var input in inputs)
 				{
-					if (input == null || !input.isOptional && input.source == null)
+					if (!input.isOptional && input.source == null)
 					{
-						if (input == null) throw new System.InvalidOperationException(name);
 						return false;
 					}
 				}
@@ -113,6 +112,11 @@ namespace Experilous
 		public virtual void Reset()
 		{
 			Initialize(true);
+		}
+		
+		public virtual void Update()
+		{
+			Initialize(false);
 		}
 
 		public void EditScript()

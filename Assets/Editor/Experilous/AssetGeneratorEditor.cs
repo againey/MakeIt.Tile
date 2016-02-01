@@ -93,11 +93,17 @@ namespace Experilous
 		{
 			_serializedGenerator.Update();
 
+			EditorGUI.BeginChangeCheck();
+
 			OnPropertiesGUI();
 
 			OnOutputsGUI();
 
-			_serializedGenerator.ApplyModifiedProperties();
+			if (EditorGUI.EndChangeCheck())
+			{
+				_serializedGenerator.ApplyModifiedProperties();
+				_generator.Update();
+			}
 		}
 
 		protected virtual void OnOutputsGUI()

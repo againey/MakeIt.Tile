@@ -35,7 +35,6 @@ namespace Experilous.Topological
 		private GUIStyle _popupSelectionLabelStyle;
 		private float _sectionEndSpaceHeight;
 
-		private Rect _addVertexAttributesButtonRect;
 		private Rect _addGeneratorButtonRect;
 
 		private static Dictionary<System.Type, List<AddGeneratorCategoryGUI>> _addGeneratorCategoryGUIs = new Dictionary<System.Type, List<AddGeneratorCategoryGUI>>();

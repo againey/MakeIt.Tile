@@ -61,7 +61,7 @@ namespace Experilous
 
 		public static float HalfOpenRange(float lowerInclusive, float upperExclusive, IRandomEngine engine)
 		{
-			return (engine.Next32() / 4294967296f) * (upperExclusive - lowerInclusive) + lowerInclusive;
+			return (upperExclusive - lowerInclusive) * HalfOpenFloatUnit(engine) + lowerInclusive;
 		}
 
 		public float HalfOpenRange(float lowerInclusive, float upperExclusive)
@@ -71,7 +71,7 @@ namespace Experilous
 
 		public static float HalfOpenRange(float upperExclusive, IRandomEngine engine)
 		{
-			return (engine.Next32() / 4294967296f) * upperExclusive;
+			return upperExclusive * HalfOpenFloatUnit(engine);
 		}
 
 		public float HalfOpenRange(float upperExclusive)
@@ -79,14 +79,44 @@ namespace Experilous
 			return HalfOpenRange(upperExclusive, _engine);
 		}
 
+		public static double HalfOpenRange(double lowerInclusive, double upperExclusive, IRandomEngine engine)
+		{
+			return (upperExclusive - lowerInclusive) * HalfOpenDoubleUnit(engine) + lowerInclusive;
+		}
+
+		public double HalfOpenRange(double lowerInclusive, double upperExclusive)
+		{
+			return HalfOpenRange(lowerInclusive, upperExclusive, _engine);
+		}
+
+		public static double HalfOpenRange(double upperExclusive, IRandomEngine engine)
+		{
+			return upperExclusive * HalfOpenDoubleUnit(engine);
+		}
+
+		public double HalfOpenRange(double upperExclusive)
+		{
+			return HalfOpenRange(upperExclusive, _engine);
+		}
+
 		public static float HalfOpenFloatUnit(IRandomEngine engine)
 		{
-			return engine.Next32() / 4294967296f;
+			return (float)System.BitConverter.Int64BitsToDouble((long)(0x3FF0000000000000UL | 0x000FFFFFE0000000UL & ((ulong)engine.Next32() << 29))) - 1.0f;
 		}
 
 		public float HalfOpenFloatUnit()
 		{
 			return HalfOpenFloatUnit(_engine);
+		}
+
+		public static double HalfOpenDoubleUnit(IRandomEngine engine)
+		{
+			return System.BitConverter.Int64BitsToDouble((long)(0x3FF0000000000000UL | 0x000FFFFFFFFFFFFFUL & engine.Next64())) - 1.0;
+		}
+
+		public double HalfOpenDoubleUnit()
+		{
+			return HalfOpenDoubleUnit(_engine);
 		}
 
 		public static int ClosedRange(int lowerInclusive, int upperInclusive, IRandomEngine engine)
@@ -129,34 +159,66 @@ namespace Experilous
 			return ClosedRange(upperExclusive, _engine);
 		}
 
-		public static float ClosedRange(float lowerInclusive, float upperExclusive, IRandomEngine engine)
+		public static float ClosedRange(float lowerInclusive, float upperInclusive, IRandomEngine engine)
 		{
-			return (engine.Next32() / 4294967295f) * (upperExclusive - lowerInclusive) + lowerInclusive;
+			return (upperInclusive - lowerInclusive) * ClosedFloatUnit(engine) + lowerInclusive;
 		}
 
-		public float ClosedRange(float lowerInclusive, float upperExclusive)
+		public float ClosedRange(float lowerInclusive, float upperInclusive)
 		{
-			return ClosedRange(lowerInclusive, upperExclusive, _engine);
+			return ClosedRange(lowerInclusive, upperInclusive, _engine);
 		}
 
-		public static float ClosedRange(float upperExclusive, IRandomEngine engine)
+		public static float ClosedRange(float upperInclusive, IRandomEngine engine)
 		{
-			return (engine.Next32() / 4294967295f) * upperExclusive;
+			return upperInclusive * ClosedFloatUnit(engine);
 		}
 
-		public float ClosedRange(float upperExclusive)
+		public float ClosedRange(float upperInclusive)
 		{
-			return ClosedRange(upperExclusive, _engine);
+			return ClosedRange(upperInclusive, _engine);
+		}
+
+		public static double ClosedRange(double lowerInclusive, double upperInclusive, IRandomEngine engine)
+		{
+			return (upperInclusive - lowerInclusive) * ClosedDoubleUnit(engine) + lowerInclusive;
+		}
+
+		public double ClosedRange(double lowerInclusive, double upperInclusive)
+		{
+			return ClosedRange(lowerInclusive, upperInclusive, _engine);
+		}
+
+		public static double ClosedRange(double upperInclusive, IRandomEngine engine)
+		{
+			return upperInclusive * ClosedDoubleUnit(engine);
+		}
+
+		public double ClosedRange(double upperInclusive)
+		{
+			return ClosedRange(upperInclusive, _engine);
 		}
 
 		public static float ClosedFloatUnit(IRandomEngine engine)
 		{
-			return engine.Next32() / 4294967295f;
+			var random = engine.NextLessThanOrEqual(0x00800000U);
+			return (random != 0x00800000U) ? (float)System.BitConverter.Int64BitsToDouble((long)(0x3FF0000000000000UL | 0x000FFFFFE0000000UL & ((ulong)random << 29))) - 1.0f : 1.0f;
 		}
 
 		public float ClosedFloatUnit()
 		{
 			return ClosedFloatUnit(_engine);
+		}
+
+		public static double ClosedDoubleUnit(IRandomEngine engine)
+		{
+			var random = engine.NextLessThanOrEqual(0x0010000000000000UL);
+			return (random != 0x0010000000000000UL) ? System.BitConverter.Int64BitsToDouble((long)(0x3FF0000000000000UL | 0x000FFFFFE0000000UL & random)) - 1.0 : 1.0;
+		}
+
+		public double ClosedDoubleUnit()
+		{
+			return ClosedDoubleUnit(_engine);
 		}
 
 		public static Vector2 UnitVector2(IRandomEngine engine)
