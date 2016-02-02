@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
@@ -37,7 +38,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			GameObject prefab;
 
@@ -106,6 +107,16 @@ namespace Experilous.Topological
 			prefab.name = name;
 
 			prefabDescriptor.SetAsset(prefab);
+
+			yield break;
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.2f;
+			}
 		}
 	}
 }

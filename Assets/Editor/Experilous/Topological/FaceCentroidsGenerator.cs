@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
@@ -60,7 +61,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexPositions = vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>();
@@ -84,6 +85,16 @@ namespace Experilous.Topological
 				var positionalAttributeAdapter = positionalAttributeAdapterInputSlot.GetAsset<PositionalAttributeAdapter>();
 				var wrappedFaceCentroids = positionalAttributeAdapter.Adapt(faceCentroidsDescriptor.GetAsset<IFaceAttribute<Vector3>>());
 				wrappedFaceCentroidsDescriptor.SetAsset(wrappedFaceCentroids);
+			}
+
+			yield break;
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.025f;
 			}
 		}
 	}

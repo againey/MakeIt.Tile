@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using Experilous.Randomization;
 
@@ -66,7 +67,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var faceGroupIndices = new int[topology.internalFaces.Count].AsFaceAttribute();
@@ -128,6 +129,8 @@ namespace Experilous.Topological
 
 			faceGroupCollectionDescriptor.SetAsset(faceGroupCollection);
 			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.CreateInstance(faceGroupIndices.array));
+
+			yield break;
 		}
 
 		public override bool canGenerate
@@ -136,6 +139,14 @@ namespace Experilous.Topological
 			{
 				return base.canGenerate &&
 					groupCount >= 1;
+			}
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.1f;
 			}
 		}
 	}

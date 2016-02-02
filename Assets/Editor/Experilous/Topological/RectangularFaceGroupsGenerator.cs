@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
@@ -65,7 +65,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var facePositions = facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>();
@@ -149,6 +149,8 @@ namespace Experilous.Topological
 			faceGroupCollectionDescriptor.path = faceGroupCollectionDescriptor.name;
 			faceGroupCollectionDescriptor.SetAsset(faceGroupCollection);
 			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.CreateInstance(faceGroupIndices));
+
+			yield break;
 		}
 
 		public override bool canGenerate
@@ -158,6 +160,14 @@ namespace Experilous.Topological
 				return base.canGenerate &&
 					axisDivisions.x >= 1 &&
 					axisDivisions.y >= 1;
+			}
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.05f;
 			}
 		}
 	}

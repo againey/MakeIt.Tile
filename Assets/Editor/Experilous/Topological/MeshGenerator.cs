@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
@@ -91,7 +92,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			var meshes = new List<Mesh>();
 			var meshOffsets = new List<Vector3>();
@@ -183,6 +184,8 @@ namespace Experilous.Topological
 				meshCollection.meshes[i] = new MeshCollection.OrientedMesh(meshDescriptors[i].GetAsset<Mesh>(), meshOffsets[i]);
 			}
 			meshCollectionDescriptor.SetAsset(meshCollection);
+
+			yield break;
 		}
 
 		private IFaceAttribute<Color> GetFaceColors()
@@ -235,6 +238,14 @@ namespace Experilous.Topological
 			}
 
 			return sum / faces.Count;
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.2f;
+			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous
@@ -8,7 +9,7 @@ namespace Experilous
 	{
 		public AssetGeneratorCollection collection;
 
-		public abstract void Generate();
+		public abstract IEnumerator BeginGeneration();
 
 		public static TGenerator CreateInstance<TGenerator>(AssetGeneratorCollection collection, string name) where TGenerator : AssetGenerator
 		{
@@ -78,6 +79,14 @@ namespace Experilous
 				}
 
 				return true;
+			}
+		}
+
+		public virtual float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.01f;
 			}
 		}
 

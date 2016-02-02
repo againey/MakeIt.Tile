@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
@@ -105,7 +106,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			switch (planarTileShape)
 			{
@@ -115,6 +116,8 @@ namespace Experilous.Topological
 				default:
 					throw new System.NotImplementedException();
 			}
+
+			yield break;
 		}
 
 		public override bool canGenerate
@@ -127,6 +130,14 @@ namespace Experilous.Topological
 					horizontalAxis != new Vector3(0f, 0f, 0f) &&
 					verticalAxis != new Vector3(0f, 0f, 0f) &&
 					Mathf.Abs(Vector3.Dot(horizontalAxis, verticalAxis)) < 0.99f; //Axes are not nearly parallel
+			}
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.1f;
 			}
 		}
 

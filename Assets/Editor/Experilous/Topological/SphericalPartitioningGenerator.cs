@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
@@ -47,10 +47,11 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			var partitioning = SphericalPartitioning.CreateInstance(topologyInputSlot.GetAsset<Topology>(), vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>());
 			partitioningDescriptor.SetAsset(partitioning);
+			yield break;
 		}
 	}
 }

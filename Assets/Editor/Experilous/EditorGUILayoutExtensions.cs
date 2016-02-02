@@ -292,5 +292,25 @@ namespace Experilous
 			GUIUtility.keyboardControl = controlID;
 			EditorWindow.focusedWindow.Repaint();
 		}
+
+		public static bool CenteredButton(string content, float widthProportion)
+		{
+			var rect = EditorGUILayout.GetControlRect(false, GUI.skin.button.CalcHeight(new GUIContent("Generate"), Screen.width * widthProportion), GUI.skin.button);
+			var fullWidth = rect.width;
+			var buttonWidth = fullWidth * widthProportion;
+			rect.xMin = (fullWidth - buttonWidth) * 0.5f;
+			rect.width = buttonWidth;
+			return GUI.Button(rect, content);
+		}
+
+		public static bool CenteredButton(string content, float widthProportion, ref Rect rect)
+		{
+			rect = EditorGUILayout.GetControlRect(false, GUI.skin.button.CalcHeight(new GUIContent("Generate"), Screen.width * widthProportion), GUI.skin.button);
+			var fullWidth = rect.width;
+			var buttonWidth = fullWidth * widthProportion;
+			rect.xMin = (fullWidth - buttonWidth) * 0.5f;
+			rect.width = buttonWidth;
+			return GUI.Button(rect, content);
+		}
 	}
 }

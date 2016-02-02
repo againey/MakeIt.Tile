@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -19,6 +20,14 @@ namespace Experilous
 
 		public string generationName;
 		public string generationPath;
+
+		[System.NonSerialized] private IEnumerator _generationIterator;
+		[System.NonSerialized] private float _generationProgress;
+		[System.NonSerialized] private string _generationMessage;
+
+		public bool isGenerating { get { return _generationIterator != null; } }
+		public float generationProgress { get { return _generationProgress; } }
+		public string generationMessage { get { return _generationMessage; } }
 
 		public Object SetAsset(AssetDescriptor descriptor, Object asset)
 		{
@@ -386,7 +395,7 @@ namespace Experilous
 		public virtual bool CanAdd(AssetGenerator generator)
 		{
 			if (generator == null) throw new System.ArgumentNullException("generator");
-			return !_generators.Contains(generator);
+			return !isGenerating && !_generators.Contains(generator);
 		}
 
 		public virtual void Insert(int index, AssetGenerator generator)
@@ -400,7 +409,7 @@ namespace Experilous
 		{
 			if (generator == null) throw new System.ArgumentNullException("generator");
 			if (index < 0 || index > _generators.Count) throw new System.ArgumentOutOfRangeException("generator");
-			return !_generators.Contains(generator);
+			return !isGenerating && !_generators.Contains(generator);
 		}
 
 		public virtual void Remove(AssetGenerator generator)
@@ -426,7 +435,7 @@ namespace Experilous
 		public virtual bool CanRemove(AssetGenerator generator)
 		{
 			if (generator == null) throw new System.ArgumentNullException("generator");
-			return _generators.Contains(generator);
+			return !isGenerating && _generators.Contains(generator);
 		}
 
 		public virtual void MoveUp(AssetGenerator generator)
@@ -442,7 +451,7 @@ namespace Experilous
 		{
 			if (generator == null) throw new System.ArgumentNullException("generator");
 			var index = _generators.IndexOf(generator);
-			return (index != -1 && index > 0);
+			return (!isGenerating && index != -1 && index > 0);
 		}
 
 		public virtual void MoveDown(AssetGenerator generator)
@@ -458,7 +467,7 @@ namespace Experilous
 		{
 			if (generator == null) throw new System.ArgumentNullException("generator");
 			var index = _generators.IndexOf(generator);
-			return (index != -1 && index < _generators.Count - 1);
+			return (!isGenerating && index != -1 && index < _generators.Count - 1);
 		}
 
 		public void CreateAsset()
@@ -481,8 +490,104 @@ namespace Experilous
 			AssetUtility.SelectAsset(this);
 		}
 
+		private object UpdateGenerationProgress(int currentStep, string newMessage, List<AssetGenerator> generators = null)
+		{
+			if (currentStep == 0) _generationProgress = 0f;
+
+			float estimatedConsumedTime, estimatedRemainingTime;
+			var estimatedTotalTime = GetEstimatedTimes(currentStep, generators != null ? generators : _generators, out estimatedConsumedTime, out estimatedRemainingTime);
+
+			_generationProgress = Mathf.Max(_generationProgress, estimatedConsumedTime / estimatedTotalTime);
+			if (newMessage != null) _generationMessage = newMessage;
+			return null;
+		}
+
 		public void Generate(string generationName, string generationPath)
 		{
+			_generationIterator = BeginGeneration(generationName, generationPath);
+
+			EditorApplication.delayCall += GenerationUpdate;
+		}
+
+		public void GenerationUpdate()
+		{
+			if (_generationIterator != null)
+			{
+				var currentTime = Time.realtimeSinceStartup;
+				var startTime = currentTime;
+				do
+				{
+					if (!_generationIterator.MoveNext()) _generationIterator = null;
+					currentTime = Time.realtimeSinceStartup;
+				} while (_generationIterator != null && currentTime >= startTime && currentTime - startTime < 0.1f);
+
+				Editor editor = null;
+				Editor.CreateCachedEditor(this, null, ref editor);
+				if (editor != null) editor.Repaint();
+
+				if (_generationIterator != null)
+				{
+					EditorApplication.delayCall += GenerationUpdate;
+				}
+			}
+		}
+
+		// Pre-Generation Steps
+		private float estimatedStartupTime { get { return 0.01f; } }
+		private float estimatedRefreshDatabase0Time { get { return 0.02f; } }
+		private float estimatedUpdateAssetCollectionTime { get { return 0.01f; } }
+		private float estimatedGetDependencyOrderedGeneratorsTime { get { return 0.01f; } }
+
+		// Post-Generation Steps
+		private float estimatedEmbedAssetsTime { get { return 0.01f; } }
+		private float estimatedDestroyLeftoversTime { get { return 0.01f; } }
+		private float estimatedSaveDatabaseTime { get { return (_embeddedAssets.Count + _persistedAssets.Count) * 0.006f; } }
+		private float estimatedRefreshDatabase1Time { get { return 0.02f; } }
+		private float estimatedDeleteEmptyFoldersTime { get { return 0.01f; } }
+		private float estimatedRefreshDatabase2Time { get { return 0.02f; } }
+
+		private static void AddTime(bool consumed, float time, ref float consumedTime, ref float remainingTime)
+		{
+			if (consumed)
+			{
+				consumedTime += time;
+			}
+			else
+			{
+				remainingTime += time;
+			}
+		}
+
+		private float GetEstimatedTimes(int currentStep, List<AssetGenerator> generators, out float consumedTime, out float remainingTime)
+		{
+			consumedTime = remainingTime = 0f;
+
+			AddTime(currentStep >= 1, estimatedStartupTime, ref consumedTime, ref remainingTime);
+			AddTime(currentStep >= 2, estimatedRefreshDatabase0Time, ref consumedTime, ref remainingTime);
+			AddTime(currentStep >= 3, estimatedUpdateAssetCollectionTime, ref consumedTime, ref remainingTime);
+			AddTime(currentStep >= 4, estimatedGetDependencyOrderedGeneratorsTime, ref consumedTime, ref remainingTime);
+
+			for (int i = 0; i < generators.Count; ++i)
+			{
+				AddTime(currentStep >= 5 + i, generators[i].estimatedGenerationTime, ref consumedTime, ref remainingTime);
+			}
+
+			AddTime(currentStep >= 4 + generators.Count + 1, estimatedEmbedAssetsTime, ref consumedTime, ref remainingTime);
+			AddTime(currentStep >= 4 + generators.Count + 2, estimatedDestroyLeftoversTime, ref consumedTime, ref remainingTime);
+			AddTime(currentStep >= 4 + generators.Count + 3, estimatedSaveDatabaseTime, ref consumedTime, ref remainingTime);
+			AddTime(currentStep >= 4 + generators.Count + 4, estimatedRefreshDatabase1Time, ref consumedTime, ref remainingTime);
+			AddTime(currentStep >= 4 + generators.Count + 5, estimatedDeleteEmptyFoldersTime, ref consumedTime, ref remainingTime);
+			AddTime(currentStep >= 4 + generators.Count + 6, estimatedRefreshDatabase2Time, ref consumedTime, ref remainingTime);
+
+			return consumedTime + remainingTime;
+		}
+
+		private IEnumerator BeginGeneration(string generationName, string generationPath)
+		{
+			yield return UpdateGenerationProgress(0, "Preparing...");
+
+			var currentStep = 0;
+
 			var oldGenerationName = this.generationName;
 			var oldGenerationPath = this.generationPath;
 			this.generationName = generationName;
@@ -490,8 +595,94 @@ namespace Experilous
 
 			_persistedAssets.RemoveAll((Object obj) => { return obj == null; });
 
+			yield return UpdateGenerationProgress(++currentStep, "Preparing...");
+
 			AssetDatabase.Refresh();
 
+			yield return UpdateGenerationProgress(++currentStep, "Preparing...");
+
+			UpdateAssetCollection();
+
+			yield return UpdateGenerationProgress(++currentStep, "Preparing...");
+
+			var generators = GetDependencyOrderedGenerators();
+
+			// Generate all assets, moving or renaming the outputs if necessary.
+			var persistedAssets = new List<Object>();
+			foreach (var generator in generators)
+			{
+				yield return UpdateGenerationProgress(++currentStep, string.Format("Generating ({0}/{1})...", currentStep - 4, generators.Count));
+
+				for (int i = 0; i < 50; ++i)
+				{
+					System.Threading.Thread.Sleep(10);
+				}
+
+				var generation = generator.BeginGeneration();
+				while (generation.MoveNext())
+				{
+					yield return UpdateGenerationProgress(currentStep, string.Format("Generating ({0}/{1})...", currentStep - 4, generators.Count));
+				}
+
+				foreach (var output in generator.outputs)
+				{
+					if (AssetDatabase.Contains(output.asset))
+					{
+						persistedAssets.Add(output.asset);
+					}
+				}
+			}
+
+			yield return UpdateGenerationProgress(++currentStep, "Finalizing...", _generators);
+
+			// Embed objects within generator collection.
+			var embeddedAssets = EmbedAssets();
+
+			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
+
+			DestroyLeftovers(embeddedAssets, persistedAssets);
+
+			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
+
+			EditorUtility.SetDirty(this);
+			AssetDatabase.SaveAssets();
+
+			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
+
+			AssetDatabase.Refresh();
+
+			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
+
+			if (!string.IsNullOrEmpty(oldGenerationName) && !string.IsNullOrEmpty(oldGenerationPath))
+			{
+				AssetUtility.RecursivelyDeleteEmptyFolders(AssetUtility.GetCanonicalPath(Path.Combine(oldGenerationPath, oldGenerationName)));
+			}
+
+			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
+
+			AssetDatabase.Refresh();
+
+			yield return UpdateGenerationProgress(++currentStep, "Generation Complete");
+		}
+
+		public virtual bool canGenerate
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(generationName)) return false;
+				if (string.IsNullOrEmpty(generationPath)) return false;
+
+				foreach (var generator in _generators)
+				{
+					if (!generator.canGenerate) return false;
+				}
+
+				return true;
+			}
+		}
+
+		private void UpdateAssetCollection()
+		{
 			if (_assetCollection == null || !AssetDatabase.Contains(_assetCollection))
 			{
 				_assetCollection = AssetCollection.Create("Asset Collection");
@@ -512,7 +703,10 @@ namespace Experilous
 					if (!string.IsNullOrEmpty(errorMessage)) throw new System.InvalidOperationException(errorMessage);
 				}
 			}
+		}
 
+		private List<AssetGenerator> GetDependencyOrderedGenerators()
+		{
 			// Clean up any dangling output consumer references.
 			foreach (var generator in _generators)
 			{
@@ -561,21 +755,11 @@ namespace Experilous
 				unorderedGenerators.RemoveRange(insertionIndex, removalCount);
 			}
 
-			// Generate all assets, moving or renaming the outputs if necessary.
-			var persistedAssets = new List<Object>();
-			foreach (var generator in orderedGenerators)
-			{
-				generator.Generate();
-				foreach (var output in generator.outputs)
-				{
-					if (AssetDatabase.Contains(output.asset))
-					{
-						persistedAssets.Add(output.asset);
-					}
-				}
-			}
+			return orderedGenerators;
+		}
 
-			// Embed objects within generator collection.
+		private List<Object> EmbedAssets()
+		{
 			var embeddedAssets = new List<Object>();
 			embeddedAssets.Add(this);
 
@@ -606,6 +790,11 @@ namespace Experilous
 				}
 			}
 
+			return embeddedAssets;
+		}
+
+		private void DestroyLeftovers(List<Object> embeddedAssets, List<Object> persistedAssets)
+		{
 			// Destroy any prior embedded objects that are no longer part of the collection.
 			foreach (var priorEmbeddedAsset in _embeddedAssets)
 			{
@@ -635,34 +824,6 @@ namespace Experilous
 				{
 					output.CleanConsumers();
 				}
-			}
-
-			EditorUtility.SetDirty(this);
-			AssetDatabase.SaveAssets();
-
-			AssetDatabase.Refresh();
-
-			if (!string.IsNullOrEmpty(oldGenerationName) && !string.IsNullOrEmpty(oldGenerationPath))
-			{
-				AssetUtility.RecursivelyDeleteEmptyFolders(AssetUtility.GetCanonicalPath(Path.Combine(oldGenerationPath, oldGenerationName)));
-			}
-
-			AssetDatabase.Refresh();
-		}
-
-		public virtual bool canGenerate
-		{
-			get
-			{
-				if (string.IsNullOrEmpty(generationName)) return false;
-				if (string.IsNullOrEmpty(generationPath)) return false;
-
-				foreach (var generator in _generators)
-				{
-					if (!generator.canGenerate) return false;
-				}
-
-				return true;
 			}
 		}
 	}

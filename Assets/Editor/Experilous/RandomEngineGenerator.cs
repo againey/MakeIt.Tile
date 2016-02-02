@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Experilous.Randomization;
 
 namespace Experilous
@@ -35,9 +36,10 @@ namespace Experilous
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			randomEngineDescriptor.SetAsset(randomization.GetRandomEngine());
+			yield break;
 		}
 	}
 }

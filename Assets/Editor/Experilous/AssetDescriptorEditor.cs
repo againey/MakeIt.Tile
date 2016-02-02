@@ -84,7 +84,7 @@ namespace Experilous
 			{
 				EditorGUILayout.BeginHorizontal();
 				descriptor.isEnabled = EditorGUILayout.ToggleLeft("Enabled", descriptor.isEnabled, GUILayout.Width(EditorStyles.toggle.CalcSize(new GUIContent("Enabled")).x));
-				GUI.enabled = descriptor.isEnabled;
+				GUIExtensions.PushEnable(descriptor.isEnabled);
 				if (descriptor.mustBeAvailableAfterGeneration)
 				{
 					descriptor.availability = (AssetDescriptor.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _alwaysAfterAvailabilityContent, _alwaysAfterAvailabilityValues);
@@ -103,7 +103,7 @@ namespace Experilous
 			{
 				EditorGUILayout.BeginHorizontal();
 				descriptor.isEnabled = EditorGUILayout.Toggle(descriptor.isEnabled, GUILayout.Width(EditorStyles.toggle.CalcSize(GUIContent.none).x));
-				GUI.enabled = descriptor.isEnabled;
+				GUIExtensions.PushEnable(descriptor.isEnabled);
 				EditorGUILayout.LabelField(new GUIContent(string.Format("{0} ({1})", descriptor.name, descriptor.assetType.GetPrettyName()), descriptor.assetType.GetPrettyName(true)));
 				EditorGUILayout.EndHorizontal();
 			}
@@ -147,7 +147,7 @@ namespace Experilous
 			EditorGUILayout.EndHorizontal();
 			EditorGUILayout.EndVertical();
 
-			GUI.enabled = true;
+			GUIExtensions.PopEnable();
 		}
 	}
 }

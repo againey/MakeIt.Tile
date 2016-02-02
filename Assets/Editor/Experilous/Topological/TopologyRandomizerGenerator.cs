@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
 using Experilous.Randomization;
 
@@ -64,7 +65,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexPositions = vertexPositionsInputSlot.source != null ? vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>() : null;
@@ -256,6 +257,16 @@ namespace Experilous.Topological
 			if (vertexPositions != null)
 			{
 				EditorUtility.SetDirty((Object)vertexPositions);
+			}
+
+			yield break;
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return passCount * maxRelaxIterations * 0.1f;
 			}
 		}
 	}

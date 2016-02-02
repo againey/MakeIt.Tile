@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
@@ -71,7 +71,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			var topologyAsset = topologyInputSlot.GetAsset<Topology>();
 			var faceNormalsAsset = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count], "Face Normals");
@@ -94,6 +94,16 @@ namespace Experilous.Topological
 			}
 
 			faceNormalsDescriptor.SetAsset(faceNormalsAsset);
+
+			yield break;
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.05f;
+			}
 		}
 	}
 }

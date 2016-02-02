@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Experilous.Topological
@@ -47,7 +48,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Generate()
+		public override IEnumerator BeginGeneration()
 		{
 			Topology topology;
 			Vector3[] vertexPositions;
@@ -90,6 +91,16 @@ namespace Experilous.Topological
 
 			topologyDescriptor.SetAsset(topology);
 			vertexPositionsDescriptor.SetAsset(Vector3VertexAttribute.CreateInstance(vertexPositions, "Vertex Positions"));
+
+			yield break;
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.15f;
+			}
 		}
 	}
 }

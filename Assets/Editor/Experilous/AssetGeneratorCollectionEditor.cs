@@ -96,6 +96,9 @@ namespace Experilous.Topological
 		{
 			InitializeStyles();
 
+			GUIExtensions.ResetEnable();
+			GUIExtensions.PushEnable(!_generatorCollection.isGenerating);
+
 			EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
 
 			_generationName = EditorGUILayout.TextField("Generation Name", _generationName);
@@ -118,13 +121,22 @@ namespace Experilous.Topological
 			}
 			EditorGUILayout.EndHorizontal();
 
-			GUI.enabled = _generatorCollection.canGenerate;
-
-			if (CenteredButton("Generate", 0.6f))
+			if (_generatorCollection.isGenerating)
 			{
-				_generatorCollection.Generate(_generationName, _generationPath);
+				GUIExtensions.PushEnable(true, true);
+				var rect = EditorGUILayout.GetControlRect(false, GUI.skin.button.CalcHeight(new GUIContent("Generate"), Screen.width * 0.6f), GUI.skin.button);
+				EditorGUI.ProgressBar(rect, _generatorCollection.generationProgress, _generatorCollection.generationMessage);
+				GUIExtensions.PopEnable();
 			}
-			GUI.enabled = true;
+			else
+			{
+				GUIExtensions.PushEnable(_generatorCollection.canGenerate);
+				if (EditorGUILayoutExtensions.CenteredButton("Generate", 0.6f))
+				{
+					_generatorCollection.Generate(_generationName, _generationPath);
+				}
+				GUIExtensions.PopEnable();
+			}
 			EditorGUILayout.EndVertical();
 
 			GUILayout.Space(_sectionEndSpaceHeight);
@@ -158,6 +170,8 @@ namespace Experilous.Topological
 			GUILayout.Space(_sectionEndSpaceHeight);
 
 			OnAddGeneratorButtonGUI();
+
+			GUIExtensions.PopEnable();
 		}
 
 		private static AddGeneratorCategoryGUI AddCategory(List<AddGeneratorCategoryGUI> categoryGUIs, System.Type categoryType)
@@ -267,7 +281,7 @@ namespace Experilous.Topological
 
 		private void OnAddGeneratorButtonGUI()
 		{
-			if (CenteredButton("Add Generator", 0.6f, ref _addGeneratorButtonRect))
+			if (EditorGUILayoutExtensions.CenteredButton("Add Generator", 0.6f, ref _addGeneratorButtonRect))
 			{
 				List<AddGeneratorCategoryGUI> categoryGUIs;
 				var collectionType = _generatorCollection.GetType();
@@ -374,13 +388,13 @@ namespace Experilous.Topological
 				{
 					foreach (var category in _categories)
 					{
-						GUI.enabled = category.items.Count > 0;
+						GUIExtensions.PushEnable(category.items.Count > 0);
 						if (GUILayout.Button(category.content, _categoryStyle))
 						{
 							_openCategory = category;
 						}
 					}
-					GUI.enabled = true;
+					GUIExtensions.PopEnable();
 				}
 				else
 				{
@@ -395,43 +409,6 @@ namespace Experilous.Topological
 				}
 
 				editorWindow.Repaint();
-			}
-		}
-
-		protected bool CenteredButton(string content, float widthProportion)
-		{
-			if (widthProportion >= 1f || widthProportion <= 0f)
-			{
-				return GUILayout.Button(content);
-			}
-			else
-			{
-				EditorGUILayout.BeginHorizontal();
-				EditorGUILayout.Space();
-				bool clicked = GUILayout.Button(content, GUILayout.Width(Screen.width * widthProportion));
-				EditorGUILayout.Space();
-				EditorGUILayout.EndHorizontal();
-				return clicked;
-			}
-		}
-
-		protected bool CenteredButton(string content, float widthProportion, ref Rect buttonRect)
-		{
-			if (widthProportion >= 1f || widthProportion <= 0f)
-			{
-				var clicked = GUILayout.Button(content);
-				buttonRect = (Event.current.type == EventType.Repaint) ? GUILayoutUtility.GetLastRect() : buttonRect;
-				return clicked;
-			}
-			else
-			{
-				EditorGUILayout.BeginHorizontal();
-				EditorGUILayout.Space();
-				bool clicked = GUILayout.Button(content, GUILayout.Width(Screen.width * widthProportion));
-				buttonRect = (Event.current.type == EventType.Repaint) ? GUILayoutUtility.GetLastRect() : buttonRect;
-				EditorGUILayout.Space();
-				EditorGUILayout.EndHorizontal();
-				return clicked;
 			}
 		}
 
