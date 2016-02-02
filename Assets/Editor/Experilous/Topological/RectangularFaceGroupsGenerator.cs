@@ -71,40 +71,48 @@ namespace Experilous.Topological
 			var facePositions = facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>();
 			var surfaceDescriptor = surfaceDescriptorInputSlot.GetAsset<PlanarSurfaceDescriptor>();
 
-			var axis0Vector = surfaceDescriptor.axis0.vector;
-			var axis1Vector = surfaceDescriptor.axis1.vector;
-			var surfaceNormal = Vector3.Cross(axis0Vector, axis1Vector).normalized;
-			var axis0Normal = Vector3.Cross(axis0Vector, surfaceNormal).normalized;
-			var axis1Normal = Vector3.Cross(axis1Vector, surfaceNormal).normalized;
-			var axis0DividedVector = axis0Vector / axisDivisions.x;
-			var axis1DividedVector = axis1Vector / axisDivisions.y;
-			var axis0Dot = Vector3.Dot(axis1Normal, axis0DividedVector);
-			var axis1Dot = Vector3.Dot(axis0Normal, axis1DividedVector);
-			var origin = new Vector3(0f, 0f, 0f); //TODO this should come from somewhere, probably surface descriptor
-
-			var faceGroupFaceIndices = new List<int>[axisDivisions.x * axisDivisions.y];
-			for (int i = 0; i < faceGroupFaceIndices.Length; ++i)
-			{
-				faceGroupFaceIndices[i] = new List<int>();
-			}
-
-			foreach (var face in topology.internalFaces)
-			{
-				var facePosition = facePositions[face];
-
-				var axis0Offset = Vector3.Dot(axis1Normal, facePosition - origin) / axis0Dot;
-				var axis1Offset = Vector3.Dot(axis0Normal, facePosition - origin) / axis1Dot;
-
-				var axis0Index = Mathf.Clamp(Mathf.FloorToInt(axis0Offset), 0, axisDivisions.x - 1);
-				var axis1Index = Mathf.Clamp(Mathf.FloorToInt(axis1Offset), 0, axisDivisions.y - 1);
-
-				faceGroupFaceIndices[axis0Index + axis1Index * axisDivisions.x].Add(face.index);
-			}
-
 			int groupCount = 0;
-			foreach (var group in faceGroupFaceIndices)
+			var faceGroupFaceIndices = new List<int>[axisDivisions.x * axisDivisions.y];
+
+			var waitHandle = collection.GenerateConcurrently(() =>
 			{
-				if (group.Count > 0) ++groupCount;
+				var axis0Vector = surfaceDescriptor.axis0.vector;
+				var axis1Vector = surfaceDescriptor.axis1.vector;
+				var surfaceNormal = Vector3.Cross(axis0Vector, axis1Vector).normalized;
+				var axis0Normal = Vector3.Cross(axis0Vector, surfaceNormal).normalized;
+				var axis1Normal = Vector3.Cross(axis1Vector, surfaceNormal).normalized;
+				var axis0DividedVector = axis0Vector / axisDivisions.x;
+				var axis1DividedVector = axis1Vector / axisDivisions.y;
+				var axis0Dot = Vector3.Dot(axis1Normal, axis0DividedVector);
+				var axis1Dot = Vector3.Dot(axis0Normal, axis1DividedVector);
+				var origin = new Vector3(0f, 0f, 0f); //TODO this should come from somewhere, probably surface descriptor
+
+				for (int i = 0; i < faceGroupFaceIndices.Length; ++i)
+				{
+					faceGroupFaceIndices[i] = new List<int>();
+				}
+
+				foreach (var face in topology.internalFaces)
+				{
+					var facePosition = facePositions[face];
+
+					var axis0Offset = Vector3.Dot(axis1Normal, facePosition - origin) / axis0Dot;
+					var axis1Offset = Vector3.Dot(axis0Normal, facePosition - origin) / axis1Dot;
+
+					var axis0Index = Mathf.Clamp(Mathf.FloorToInt(axis0Offset), 0, axisDivisions.x - 1);
+					var axis1Index = Mathf.Clamp(Mathf.FloorToInt(axis1Offset), 0, axisDivisions.y - 1);
+
+					faceGroupFaceIndices[axis0Index + axis1Index * axisDivisions.x].Add(face.index);
+				}
+
+				foreach (var group in faceGroupFaceIndices)
+				{
+					if (group.Count > 0) ++groupCount;
+				}
+			});
+			while (waitHandle.WaitOne(10) == false)
+			{
+				yield return null;
 			}
 
 			faceGroupDescriptors = AssetGeneratorUtility.ResizeArray(faceGroupDescriptors, groupCount);

@@ -75,22 +75,30 @@ namespace Experilous.Topological
 		{
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexNormals = Vector3VertexAttribute.CreateInstance(new Vector3[topology.vertices.Count], "Vertex Normals");
-			switch (calculationMethod)
+
+			var waitHandle = collection.GenerateConcurrently(() =>
 			{
-				case CalculationMethod.FromVertexPositions:
-					VertexAttributeUtility.CalculateVertexNormalsFromVertexPositions(topology.vertices, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), vertexNormals);
-					break;
-				case CalculationMethod.FromFacePositions:
-					VertexAttributeUtility.CalculateVertexNormalsFromFacePositions(topology.vertices, facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), vertexNormals);
-					break;
-				case CalculationMethod.FromFaceNormals:
-					VertexAttributeUtility.CalculateVertexNormalsFromFaceNormals(topology.vertices, faceNormalsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), vertexNormals);
-					break;
-				case CalculationMethod.FromSphericalVertexPositions:
-					VertexAttributeUtility.CalculateSphericalVertexNormalsFromVertexPositions(topology.vertices, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), vertexNormals);
-					break;
-				default:
-					throw new System.NotImplementedException();
+				switch (calculationMethod)
+				{
+					case CalculationMethod.FromVertexPositions:
+						VertexAttributeUtility.CalculateVertexNormalsFromVertexPositions(topology.vertices, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), vertexNormals);
+						break;
+					case CalculationMethod.FromFacePositions:
+						VertexAttributeUtility.CalculateVertexNormalsFromFacePositions(topology.vertices, facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), vertexNormals);
+						break;
+					case CalculationMethod.FromFaceNormals:
+						VertexAttributeUtility.CalculateVertexNormalsFromFaceNormals(topology.vertices, faceNormalsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), vertexNormals);
+						break;
+					case CalculationMethod.FromSphericalVertexPositions:
+						VertexAttributeUtility.CalculateSphericalVertexNormalsFromVertexPositions(topology.vertices, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), vertexNormals);
+						break;
+					default:
+						throw new System.NotImplementedException();
+				}
+			});
+			while (waitHandle.WaitOne(10) == false)
+			{
+				yield return null;
 			}
 
 			vertexNormalsDescriptor.SetAsset(vertexNormals);

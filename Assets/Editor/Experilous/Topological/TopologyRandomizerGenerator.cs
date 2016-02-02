@@ -238,18 +238,32 @@ namespace Experilous.Topological
 				}
 			}
 
+			var waitHandle = collection.GenerateConcurrently(() =>
+			{
+				if (edgeWrap == null)
+				{
+					TopologyRandomizer.Randomize(topology, passCount, frequency,
+						minVertexNeighbors, maxVertexNeighbors, minFaceNeighbors, maxFaceNeighbors,
+						lockBoundaryPositions, random, relaxationLoopFunction);
+				}
+				else
+				{
+					TopologyRandomizer.Randomize(topology, edgeWrap, passCount, frequency,
+						minVertexNeighbors, maxVertexNeighbors, minFaceNeighbors, maxFaceNeighbors,
+						lockBoundaryPositions, random, relaxationLoopFunction);
+				}
+			});
+			while (waitHandle.WaitOne(10) == false)
+			{
+				yield return null;
+			}
+
 			if (edgeWrap == null)
 			{
-				TopologyRandomizer.Randomize(topology, passCount, frequency,
-					minVertexNeighbors, maxVertexNeighbors, minFaceNeighbors, maxFaceNeighbors,
-					lockBoundaryPositions, random, relaxationLoopFunction);
 				EditorUtility.SetDirty(topology);
 			}
 			else
 			{
-				TopologyRandomizer.Randomize(topology, edgeWrap, passCount, frequency,
-					minVertexNeighbors, maxVertexNeighbors, minFaceNeighbors, maxFaceNeighbors,
-					lockBoundaryPositions, random, relaxationLoopFunction);
 				EditorUtility.SetDirty(topology);
 				EditorUtility.SetDirty((Object)edgeWrap);
 			}

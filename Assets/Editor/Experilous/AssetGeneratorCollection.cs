@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace Experilous
 {
@@ -24,6 +25,7 @@ namespace Experilous
 		[System.NonSerialized] private IEnumerator _generationIterator;
 		[System.NonSerialized] private float _generationProgress;
 		[System.NonSerialized] private string _generationMessage;
+		[System.NonSerialized] private EventWaitHandle _concurrentWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 
 		public bool isGenerating { get { return _generationIterator != null; } }
 		public float generationProgress { get { return _generationProgress; } }
@@ -490,7 +492,20 @@ namespace Experilous
 			AssetUtility.SelectAsset(this);
 		}
 
-		private object UpdateGenerationProgress(int currentStep, string newMessage, List<AssetGenerator> generators = null)
+		public WaitHandle GenerateConcurrently(System.Action concurrentAction)
+		{
+			_concurrentWaitHandle.Reset();
+			ThreadPool.QueueUserWorkItem(ExecuteWaitableAction, concurrentAction);
+			return _concurrentWaitHandle;
+		}
+
+		private void ExecuteWaitableAction(object action)
+		{
+			((System.Action)action)();
+			_concurrentWaitHandle.Set();
+		}
+
+		private object UpdateGenerationProgress(int currentStep, string newMessage = null, List<AssetGenerator> generators = null)
 		{
 			if (currentStep == 0) _generationProgress = 0f;
 
@@ -506,7 +521,7 @@ namespace Experilous
 		{
 			_generationIterator = BeginGeneration(generationName, generationPath);
 
-			EditorApplication.delayCall += GenerationUpdate;
+			GenerationUpdate();
 		}
 
 		public void GenerationUpdate()
@@ -519,7 +534,7 @@ namespace Experilous
 				{
 					if (!_generationIterator.MoveNext()) _generationIterator = null;
 					currentTime = Time.realtimeSinceStartup;
-				} while (_generationIterator != null && currentTime >= startTime && currentTime - startTime < 0.1f);
+				} while (_generationIterator != null && currentTime >= startTime && currentTime - startTime < 0.05f);
 
 				Editor editor = null;
 				Editor.CreateCachedEditor(this, null, ref editor);
@@ -613,15 +628,10 @@ namespace Experilous
 			{
 				yield return UpdateGenerationProgress(++currentStep, string.Format("Generating ({0}/{1})...", currentStep - 4, generators.Count));
 
-				for (int i = 0; i < 50; ++i)
-				{
-					System.Threading.Thread.Sleep(10);
-				}
-
 				var generation = generator.BeginGeneration();
 				while (generation.MoveNext())
 				{
-					yield return UpdateGenerationProgress(currentStep, string.Format("Generating ({0}/{1})...", currentStep - 4, generators.Count));
+					yield return UpdateGenerationProgress(currentStep);
 				}
 
 				foreach (var output in generator.outputs)

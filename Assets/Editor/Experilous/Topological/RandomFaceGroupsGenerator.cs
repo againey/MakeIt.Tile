@@ -83,25 +83,32 @@ namespace Experilous.Topological
 
 				faceGroupFaceIndices = new List<int>[clampedRootCount];
 
-				for (int faceGroupIndex = 0; faceGroupIndex < clampedRootCount; ++faceGroupIndex)
+				var waitHandle = collection.GenerateConcurrently(() =>
 				{
-					faceGroupFaceIndices[faceGroupIndex] = new List<int>();
-
-					Topology.Face face;
-					do
+					for (int faceGroupIndex = 0; faceGroupIndex < clampedRootCount; ++faceGroupIndex)
 					{
-						face = topology.faces[random.HalfOpenRange(0, topology.internalFaces.Count)];
-					} while (visitor.IsRoot(face));
-					visitor.AddRoot(face);
-					faceGroupIndices[face] = faceGroupIndex;
-					faceGroupFaceIndices[faceGroupIndex].Add(face.index);
-				}
+						faceGroupFaceIndices[faceGroupIndex] = new List<int>();
 
-				foreach (var edge in (IEnumerable<Topology.FaceEdge>)visitor)
+						Topology.Face face;
+						do
+						{
+							face = topology.faces[random.HalfOpenRange(0, topology.internalFaces.Count)];
+						} while (visitor.IsRoot(face));
+						visitor.AddRoot(face);
+						faceGroupIndices[face] = faceGroupIndex;
+						faceGroupFaceIndices[faceGroupIndex].Add(face.index);
+					}
+
+					foreach (var edge in (IEnumerable<Topology.FaceEdge>)visitor)
+					{
+						var faceGroupIndex = faceGroupIndices[edge.nearFace];
+						faceGroupIndices[edge.farFace] = faceGroupIndex;
+						faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace.index);
+					}
+				});
+				while (waitHandle.WaitOne(10) == false)
 				{
-					var faceGroupIndex = faceGroupIndices[edge.nearFace];
-					faceGroupIndices[edge.farFace] = faceGroupIndex;
-					faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace.index);
+					yield return null;
 				}
 			}
 

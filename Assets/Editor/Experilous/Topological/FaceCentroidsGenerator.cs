@@ -66,16 +66,24 @@ namespace Experilous.Topological
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexPositions = vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>();
 			var faceCentroids = Vector3FaceAttribute.CreateInstance(new Vector3[topology.internalFaces.Count], "Face Centroids");
-			switch (surfaceType)
+
+			var waitHandle = collection.GenerateConcurrently(() =>
 			{
-				case SurfaceType.Flat:
-					FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, faceCentroids);
-					break;
-				case SurfaceType.Spherical:
-					FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, 1f, faceCentroids);
-					break;
-				default:
-					throw new System.NotImplementedException();
+				switch (surfaceType)
+				{
+					case SurfaceType.Flat:
+						FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, faceCentroids);
+						break;
+					case SurfaceType.Spherical:
+						FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, 1f, faceCentroids);
+						break;
+					default:
+						throw new System.NotImplementedException();
+				}
+			});
+			while (waitHandle.WaitOne(10) == false)
+			{
+				yield return null;
 			}
 
 			faceCentroidsDescriptor.SetAsset(faceCentroids);
