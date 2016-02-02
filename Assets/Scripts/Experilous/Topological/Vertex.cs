@@ -1,15 +1,11 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
 	public partial class Topology
 	{
-		[SerializeField]
-		private ushort[] _vertexNeighborCounts;
-		[SerializeField]
-		private int[] _vertexFirstEdgeIndices;
-
 		public struct Vertex : IEquatable<Vertex>, IComparable<Vertex>
 		{
 			private Topology _topology;
@@ -24,8 +20,8 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public int neighborCount { get { return _topology._vertexNeighborCounts[_index]; } }
-			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology._vertexFirstEdgeIndices[_index]); } }
+			public int neighborCount { get { return _topology.vertexNeighborCounts[_index]; } }
+			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology.vertexFirstEdgeIndices[_index]); } }
 
 			public bool isInitialized { get { return _topology != null; } }
 
@@ -38,11 +34,6 @@ namespace Experilous.Topological
 							return true;
 					return false;
 				}
-			}
-
-			public static implicit operator int(Vertex vertex)
-			{
-				return vertex._index;
 			}
 
 			public T Attribute<T>(T[] attributeArray)
@@ -61,7 +52,7 @@ namespace Experilous.Topological
 					_index = index;
 				}
 
-				public int Count { get { return _topology._vertexNeighborCounts[_index]; } }
+				public int Count { get { return _topology.vertexNeighborCounts[_index]; } }
 				
 				public struct VertexEdgeEnumerator
 				{
@@ -85,7 +76,7 @@ namespace Experilous.Topological
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology._edgeData[_currentEdgeIndex]._vNext;
+							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex]._vNext;
 							return true;
 						}
 						else
@@ -103,7 +94,7 @@ namespace Experilous.Topological
 
 				public VertexEdgeEnumerator GetEnumerator()
 				{
-					return new VertexEdgeEnumerator(_topology, _topology._vertexFirstEdgeIndices[_index]);
+					return new VertexEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
 				}
 			}
 
@@ -180,7 +171,7 @@ namespace Experilous.Topological
 
 			public VerticesIndexer(Topology topology) { _topology = topology; }
 			public Vertex this[int i] { get { return new Vertex(_topology, i); } }
-			public int Count { get { return _topology._vertexFirstEdgeIndices.Length; } }
+			public int Count { get { return _topology.vertexFirstEdgeIndices.Length; } }
 			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology); }
 
 			public struct VertexEnumerator
@@ -190,7 +181,7 @@ namespace Experilous.Topological
 
 				public VertexEnumerator(Topology topology) { _topology = topology; _current = -1; }
 				public Vertex Current { get { return new Vertex(_topology, _current); } }
-				public bool MoveNext() { return ++_current < _topology._vertexFirstEdgeIndices.Length; }
+				public bool MoveNext() { return ++_current < _topology.vertexFirstEdgeIndices.Length; }
 				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
@@ -198,17 +189,247 @@ namespace Experilous.Topological
 		public VerticesIndexer vertices { get { return new VerticesIndexer(this); } }
 	}
 
-	public static class VertexExtensions
+	public interface IVertexAttribute<T> : IList<T>
 	{
-		public static T Of<T>(this T[] attributArray, Topology.Vertex vertex)
+		T this[Topology.Vertex v] { get; set; }
+		T this[Topology.HalfEdge e] { get; set; }
+		T this[Topology.VertexEdge e] { get; set; }
+		T this[Topology.FaceEdge e] { get; set; }
+	}
+
+	public struct VertexAttributeArrayWrapper<T> : IVertexAttribute<T>
+	{
+		public T[] array;
+
+		public VertexAttributeArrayWrapper(T[] array)
 		{
-			return attributArray[vertex.index];
+			this.array = array;
+		}
+
+		public VertexAttributeArrayWrapper(int elementCount)
+		{
+			array = new T[elementCount];
+		}
+
+		public T this[int i]
+		{
+			get { return array[i]; }
+			set { array[i] = value; }
+		}
+
+		public T this[Topology.Vertex v]
+		{
+			get { return array[v.index]; }
+			set { array[v.index] = value; }
+		}
+
+		public T this[Topology.HalfEdge e]
+		{
+			get { return array[e.farVertex.index]; }
+			set { array[e.farVertex.index] = value; }
+		}
+
+		public T this[Topology.VertexEdge e]
+		{
+			get { return array[e.farVertex.index]; }
+			set { array[e.farVertex.index] = value; }
+		}
+
+		public T this[Topology.FaceEdge e]
+		{
+			get { return array[e.nextVertex.index]; }
+			set { array[e.nextVertex.index] = value; }
+		}
+
+		public int Count { get { return array.Length; } }
+		public bool IsReadOnly { get { return true; } }
+		public void Add(T item) { throw new NotSupportedException(); }
+		public void Clear() { throw new NotSupportedException(); }
+		public bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+		public void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+		public IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+		public int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
+		public void Insert(int index, T item) { throw new NotSupportedException(); }
+		public bool Remove(T item) { throw new NotSupportedException(); }
+		public void RemoveAt(int index) { throw new NotSupportedException(); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+	}
+
+	public abstract class VertexAttribute<T> : ScriptableObject, IVertexAttribute<T>
+	{
+		public abstract T this[int i] { get; set; }
+		public abstract T this[Topology.Vertex v] { get; set; }
+		public abstract T this[Topology.HalfEdge e] { get; set; }
+		public abstract T this[Topology.VertexEdge e] { get; set; }
+		public abstract T this[Topology.FaceEdge e] { get; set; }
+
+		public virtual int Count { get { throw new NotSupportedException(); } }
+		public virtual bool IsReadOnly { get { return true; } }
+		public virtual void Add(T item) { throw new NotSupportedException(); }
+		public virtual void Clear() { throw new NotSupportedException(); }
+		public virtual bool Contains(T item) { throw new NotSupportedException(); }
+		public virtual void CopyTo(T[] array, int arrayIndex) { throw new NotSupportedException(); }
+		public virtual IEnumerator<T> GetEnumerator() { throw new NotSupportedException(); }
+		public virtual int IndexOf(T item) { throw new NotSupportedException(); }
+		public virtual void Insert(int index, T item) { throw new NotSupportedException(); }
+		public virtual bool Remove(T item) { throw new NotSupportedException(); }
+		public virtual void RemoveAt(int index) { throw new NotSupportedException(); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+	}
+
+	public class VertexConstantAttribute<T> : VertexAttribute<T> where T : new()
+	{
+		public T constant;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : VertexConstantAttribute<T>
+		{
+			return CreateInstance<TDerived>();
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T constant) where TDerived : VertexConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.constant = constant;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T constant, string name) where TDerived : VertexConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.constant = constant;
+			instance.name = name;
+			return instance;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : VertexConstantAttribute<T>
+		{
+			var instance = CreateInstance<TDerived>();
+			instance.name = name;
+			return instance;
+		}
+
+		protected TDerived CloneDerived<TDerived>() where TDerived : VertexConstantAttribute<T>
+		{
+			var clone = CreateInstance<TDerived>();
+			clone.constant = constant;
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
+		public override T this[int i]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.Vertex v]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.HalfEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.VertexEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
+		}
+
+		public override T this[Topology.FaceEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
 		}
 	}
 
-	public interface IVertexAttribute<T> where T : new()
+	public class VertexArrayAttribute<T> : VertexAttribute<T> where T : new()
 	{
-		T this[int i] { get; set; }
-		T this[Topology.Vertex v] { get; set; }
+		public T[] array;
+
+		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : VertexArrayAttribute<T>
+		{
+			return CreateInstance<TDerived>();
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : VertexArrayAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.array = array;
+			return attribute;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : VertexArrayAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.array = array;
+			attribute.name = name;
+			return attribute;
+		}
+
+		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : VertexArrayAttribute<T>
+		{
+			var attribute = CreateInstance<TDerived>();
+			attribute.name = name;
+			return attribute;
+		}
+
+		protected TDerived CloneDerived<TDerived>() where TDerived : VertexArrayAttribute<T>
+		{
+			var clone = CreateInstance<TDerived>();
+			clone.array = (T[])array.Clone();
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
+		public override T this[int i]
+		{
+			get { return array[i]; }
+			set { array[i] = value; }
+		}
+
+		public override T this[Topology.Vertex v]
+		{
+			get { return array[v.index]; }
+			set { array[v.index] = value; }
+		}
+
+		public override T this[Topology.HalfEdge e]
+		{
+			get { return array[e.farVertex.index]; }
+			set { array[e.farVertex.index] = value; }
+		}
+
+		public override T this[Topology.VertexEdge e]
+		{
+			get { return array[e.farVertex.index]; }
+			set { array[e.farVertex.index] = value; }
+		}
+
+		public override T this[Topology.FaceEdge e]
+		{
+			get { return array[e.nextVertex.index]; }
+			set { array[e.nextVertex.index] = value; }
+		}
+
+		public override int Count { get { return array.Length; } }
+		public override bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+		public override void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+		public override IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+		public override int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
+	}
+
+	public static class VertexExtensions
+	{
+		public static VertexAttributeArrayWrapper<T> AsVertexAttribute<T>(this T[] array)
+		{
+			return new VertexAttributeArrayWrapper<T>(array);
+		}
 	}
 }

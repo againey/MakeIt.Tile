@@ -38,7 +38,7 @@ namespace Experilous.Topological
 			_faceDistanceCalculator = faceDistanceCalculator;
 		}
 
-		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnCumulativeEuclideanDistance(Vector3[] faceCentroids)
+		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnCumulativeEuclideanDistance(IFaceAttribute<Vector3> faceCentroids)
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
@@ -46,7 +46,7 @@ namespace Experilous.Topological
 			};
 		}
 
-		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnRootEuclideanDistance(Topology.Face root, Vector3[] faceCentroids)
+		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnRootEuclideanDistance(Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
@@ -54,19 +54,35 @@ namespace Experilous.Topological
 			};
 		}
 
-		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnCumulativeSphericalDistance(Vector3[] faceCentroids)
+		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnCumulativeSphericalDistance(IFaceAttribute<Vector3> faceCentroids)
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
-				return priorDistance + SphericalManifold.AngleBetweenUnitVectors(faceCentroids[edge.nearFace], faceCentroids[edge.farFace]);
+				return priorDistance + MathUtility.AngleBetweenUnitVectors(faceCentroids[edge.nearFace], faceCentroids[edge.farFace]);
 			};
 		}
 
-		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnRootSphericalDistance(Topology.Face root, Vector3[] faceCentroids)
+		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnCumulativeSphericalDistance(IFaceAttribute<Vector3> faceCentroids, float sphereRadius)
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
-				return SphericalManifold.AngleBetweenUnitVectors(faceCentroids[root], faceCentroids[edge.farFace]);
+				return priorDistance + MathUtility.SphericalArcLength(faceCentroids[edge.nearFace], faceCentroids[edge.farFace], sphereRadius);
+			};
+		}
+
+		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnRootSphericalDistance(Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
+		{
+			return (Topology.FaceEdge edge, float priorDistance) =>
+			{
+				return MathUtility.AngleBetweenUnitVectors(faceCentroids[root], faceCentroids[edge.farFace]);
+			};
+		}
+
+		protected static FaceDistanceCalculatorDelegate GetFaceDistanceCalculatorBasedOnRootSphericalDistance(Topology.Face root, IFaceAttribute<Vector3> faceCentroids, float sphereRadius)
+		{
+			return (Topology.FaceEdge edge, float priorDistance) =>
+			{
+				return MathUtility.SphericalArcLength(faceCentroids[root], faceCentroids[edge.farFace], sphereRadius);
 			};
 		}
 
@@ -256,22 +272,22 @@ namespace Experilous.Topological
 		{
 		}
 
-		public static BreadthFirstFaceVisitor CreateBasedOnCumulativeEuclideanDistance(Topology topology, Topology.Face root, Vector3[] faceCentroids)
+		public static BreadthFirstFaceVisitor CreateBasedOnCumulativeEuclideanDistance(Topology topology, Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return new BreadthFirstFaceVisitor(topology, root, GetFaceDistanceCalculatorBasedOnCumulativeEuclideanDistance(faceCentroids));
 		}
 
-		public static BreadthFirstFaceVisitor CreateBasedOnRootEuclideanDistance(Topology topology, Topology.Face root, Vector3[] faceCentroids)
+		public static BreadthFirstFaceVisitor CreateBasedOnRootEuclideanDistance(Topology topology, Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return new BreadthFirstFaceVisitor(topology, root, GetFaceDistanceCalculatorBasedOnRootEuclideanDistance(root, faceCentroids));
 		}
 
-		public static BreadthFirstFaceVisitor CreateBasedOnCumulativeSphericalDistance(Topology topology, Topology.Face root, Vector3[] faceCentroids)
+		public static BreadthFirstFaceVisitor CreateBasedOnCumulativeSphericalDistance(Topology topology, Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return new BreadthFirstFaceVisitor(topology, root, GetFaceDistanceCalculatorBasedOnCumulativeSphericalDistance(faceCentroids));
 		}
 
-		public static BreadthFirstFaceVisitor CreateBasedOnRootSphericalDistance(Topology topology, Topology.Face root, Vector3[] faceCentroids)
+		public static BreadthFirstFaceVisitor CreateBasedOnRootSphericalDistance(Topology topology, Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return new BreadthFirstFaceVisitor(topology, root, GetFaceDistanceCalculatorBasedOnRootSphericalDistance(root, faceCentroids));
 		}
@@ -304,22 +320,22 @@ namespace Experilous.Topological
 		{
 		}
 
-		public static DepthFirstFaceVisitor CreateBasedOnCumulativeEuclideanDistance(Topology topology, Topology.Face root, Vector3[] faceCentroids)
+		public static DepthFirstFaceVisitor CreateBasedOnCumulativeEuclideanDistance(Topology topology, Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return new DepthFirstFaceVisitor(topology, root, GetFaceDistanceCalculatorBasedOnCumulativeEuclideanDistance(faceCentroids));
 		}
 
-		public static DepthFirstFaceVisitor CreateBasedOnRootEuclideanDistance(Topology topology, Topology.Face root, Vector3[] faceCentroids)
+		public static DepthFirstFaceVisitor CreateBasedOnRootEuclideanDistance(Topology topology, Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return new DepthFirstFaceVisitor(topology, root, GetFaceDistanceCalculatorBasedOnRootEuclideanDistance(root, faceCentroids));
 		}
 
-		public static DepthFirstFaceVisitor CreateBasedOnCumulativeSphericalDistance(Topology topology, Topology.Face root, Vector3[] faceCentroids)
+		public static DepthFirstFaceVisitor CreateBasedOnCumulativeSphericalDistance(Topology topology, Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return new DepthFirstFaceVisitor(topology, root, GetFaceDistanceCalculatorBasedOnCumulativeSphericalDistance(faceCentroids));
 		}
 
-		public static DepthFirstFaceVisitor CreateBasedOnRootSphericalDistance(Topology topology, Topology.Face root, Vector3[] faceCentroids)
+		public static DepthFirstFaceVisitor CreateBasedOnRootSphericalDistance(Topology topology, Topology.Face root, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return new DepthFirstFaceVisitor(topology, root, GetFaceDistanceCalculatorBasedOnRootSphericalDistance(root, faceCentroids));
 		}

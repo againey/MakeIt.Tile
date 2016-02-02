@@ -4,8 +4,7 @@ using System.Collections.Generic;
 
 namespace Experilous.Topological
 {
-	[Serializable]
-	public class SphericalPartitioning
+	public class SphericalPartitioning : ScriptableObject
 	{
 		[Serializable]
 		private struct Partition
@@ -30,7 +29,7 @@ namespace Experilous.Topological
 			{
 			}
 
-			public Partition(Topology.VertexEdge edge, Vector3[] vertexPositions)
+			public Partition(Topology.VertexEdge edge, IVertexAttribute<Vector3> vertexPositions)
 				: this(vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.prevFace.index, edge.nextFace.index)
 			{
 			}
@@ -76,19 +75,18 @@ namespace Experilous.Topological
 			}
 		}
 
-		[SerializeField]
-		private Manifold _manifold;
+		[SerializeField] private Topology _topology;
+		[SerializeField] private Partition[] _partitionBinaryTree;
 
-		[SerializeField]
-		private Partition[] _partitionBinaryTree;
-
-		public SphericalPartitioning(Manifold manifold)
+		public static SphericalPartitioning CreateInstance(Topology topology, IVertexAttribute<Vector3> vertexPositions)
 		{
-			_manifold = manifold;
+			var partitioning = CreateInstance<SphericalPartitioning>();
 
-			var edges = manifold.topology.vertexEdges;
-			var positions = manifold.vertexPositions;
-			_partitionBinaryTree = new Partition[edges.Count];
+			partitioning._topology = topology;
+
+			var edges = partitioning._topology.vertexEdges;
+			var positions = vertexPositions;
+			partitioning._partitionBinaryTree = new Partition[edges.Count];
 
 			int edgesProcessed = 0;
 			int increment = 1;
@@ -108,7 +106,7 @@ namespace Experilous.Topological
 				++edgesProcessed;
 				if (edges[edgeIndex] < edges[edgeIndex].twin)
 				{
-					_partitionBinaryTree[0] = new Partition(edges[edgeIndex], positions);
+					partitioning._partitionBinaryTree[0] = new Partition(edges[edgeIndex], positions);
 					edgeIndex = (edgeIndex + increment) % edges.Count;
 					break;
 				}
@@ -122,15 +120,17 @@ namespace Experilous.Topological
 				++edgesProcessed;
 				if (edges[edgeIndex] < edges[edgeIndex].twin)
 				{
-					PartitionEdge(edges[edgeIndex], positions, ref nextPartitionIndex);
+					partitioning.PartitionEdge(edges[edgeIndex], positions, ref nextPartitionIndex);
 				}
 				edgeIndex = (edgeIndex + increment) % edges.Count;
 			}
 
-			if (nextPartitionIndex < _partitionBinaryTree.Length)
+			if (nextPartitionIndex < partitioning._partitionBinaryTree.Length)
 			{
-				TruncateBinaryTree(nextPartitionIndex);
+				partitioning.TruncateBinaryTree(nextPartitionIndex);
 			}
+
+			return partitioning;
 		}
 
 		private int GetHeight(int partitionIndex)
@@ -141,7 +141,7 @@ namespace Experilous.Topological
 				partition._overPartitionIndex != 0 ? GetHeight(partition._overPartitionIndex) : 0);
 		}
 
-		private void PartitionEdge(Topology.VertexEdge edge, Vector3[] vertexPositions, ref int nextPartitionIndex)
+		private void PartitionEdge(Topology.VertexEdge edge, IVertexAttribute<Vector3> vertexPositions, ref int nextPartitionIndex)
 		{
 			PartitionEdge(0, vertexPositions[edge.nearVertex], vertexPositions[edge.farVertex], edge.index, edge.prevFace.index, edge.nextFace.index, ref nextPartitionIndex);
 		}
@@ -235,12 +235,12 @@ namespace Experilous.Topological
 			if (partition.IsUnder(centerRay))
 			{
 				if (partition._underPartitionIndex != 0) return Intersect(centerRay, partition._underPartitionIndex);
-				else return _manifold.topology.internalFaces[partition._underFaceIndex];
+				else return _topology.internalFaces[partition._underFaceIndex];
 			}
 			else
 			{
 				if (partition._overPartitionIndex != 0) return Intersect(centerRay, partition._overPartitionIndex);
-				else return _manifold.topology.internalFaces[partition._overFaceIndex];
+				else return _topology.internalFaces[partition._overFaceIndex];
 			}
 		}
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Randomization;
 
 namespace Experilous.Topological
 {
@@ -98,6 +99,11 @@ namespace Experilous.Topological
 			}
 		}
 
+		public bool IsRoot(Topology.Face face)
+		{
+			return _visitedFaces[face.index];
+		}
+
 		public IEnumerator<Topology.Face> GetEnumerator()
 		{
 			return new FaceEnumerator(this);
@@ -177,7 +183,7 @@ namespace Experilous.Topological
 			{
 				while (_queuedEdgeIndices.Count > 0)
 				{
-					var queueIndex = Experilous.Random.HalfOpenRange(_queuedEdgeIndices.Count, _randomEngine);
+					var queueIndex = RandomUtility.HalfOpenRange(_queuedEdgeIndices.Count, _randomEngine);
 					var lastIndex = _queuedEdgeIndices.Count - 1;
 					var edgeIndex = _queuedEdgeIndices[queueIndex];
 					var edge = _topology.faceEdges[edgeIndex];
