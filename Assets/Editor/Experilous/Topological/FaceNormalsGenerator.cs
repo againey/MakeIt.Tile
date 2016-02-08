@@ -73,24 +73,24 @@ namespace Experilous.Topological
 
 		public override IEnumerator BeginGeneration()
 		{
-			var topologyAsset = topologyInputSlot.GetAsset<Topology>();
-			var faceNormalsAsset = Vector3FaceAttribute.CreateInstance(new Vector3[topologyAsset.internalFaces.Count], "Face Normals");
+			var topology = topologyInputSlot.GetAsset<Topology>();
+			var faceNormals = Vector3FaceAttribute.Create(new Vector3[topology.internalFaces.Count]).SetName("Face Normals");
 
 			var waitHandle = collection.GenerateConcurrently(() =>
 			{
 				switch (calculationMethod)
 				{
 					case CalculationMethod.FromFacePositions:
-						FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
+						FaceAttributeUtility.CalculateFaceNormalsFromFacePositions(topology.internalFaces, facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), faceNormals);
 						break;
 					case CalculationMethod.FromVertexPositions:
-						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topologyAsset.internalFaces, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
+						FaceAttributeUtility.CalculateFaceNormalsFromVertexPositions(topology.internalFaces, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), faceNormals);
 						break;
 					case CalculationMethod.FromVertexNormals:
-						FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topologyAsset.internalFaces, vertexNormalsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), faceNormalsAsset);
+						FaceAttributeUtility.CalculateFaceNormalsFromVertexNormals(topology.internalFaces, vertexNormalsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), faceNormals);
 						break;
 					case CalculationMethod.FromSphericalFacePositions:
-						FaceAttributeUtility.CalculateSphericalFaceNormalsFromFacePositions(topologyAsset.internalFaces, facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), faceNormalsAsset);
+						FaceAttributeUtility.CalculateSphericalFaceNormalsFromFacePositions(topology.internalFaces, facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), faceNormals);
 						break;
 					default:
 						throw new System.NotImplementedException();
@@ -101,7 +101,7 @@ namespace Experilous.Topological
 				yield return null;
 			}
 
-			faceNormalsDescriptor.SetAsset(faceNormalsAsset);
+			faceNormalsDescriptor.SetAsset(faceNormals);
 
 			yield break;
 		}

@@ -78,7 +78,7 @@ namespace Experilous.Topological
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex]._fNext;
+							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex].fNext;
 							return true;
 						}
 						else
@@ -307,40 +307,11 @@ namespace Experilous.Topological
 	{
 		public T constant;
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : FaceConstantAttribute<T>
-		{
-			return CreateInstance<TDerived>();
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T constant) where TDerived : FaceConstantAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(T constant) where TDerived : FaceConstantAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
 			instance.constant = constant;
 			return instance;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T constant, string name) where TDerived : FaceConstantAttribute<T>
-		{
-			var instance = CreateInstance<TDerived>();
-			instance.constant = constant;
-			instance.name = name;
-			return instance;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : FaceConstantAttribute<T>
-		{
-			var instance = CreateInstance<TDerived>();
-			instance.name = name;
-			return instance;
-		}
-
-		protected TDerived CloneDerived<TDerived>() where TDerived : FaceConstantAttribute<T>
-		{
-			var clone = CreateInstance<TDerived>();
-			clone.constant = constant;
-			clone.name = name;
-			clone.hideFlags = hideFlags;
-			return clone;
 		}
 
 		public override T this[int i]
@@ -378,40 +349,16 @@ namespace Experilous.Topological
 	{
 		public T[] array;
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : FaceArrayAttribute<T>
-		{
-			return CreateInstance<TDerived>();
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : FaceArrayAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(T[] array) where TDerived : FaceArrayAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
 			instance.array = array;
 			return instance;
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : FaceArrayAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(int faceCount) where TDerived : FaceArrayAttribute<T>
 		{
-			var instance = CreateInstance<TDerived>();
-			instance.array = array;
-			instance.name = name;
-			return instance;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : FaceArrayAttribute<T>
-		{
-			var instance = CreateInstance<TDerived>();
-			instance.name = name;
-			return instance;
-		}
-
-		protected TDerived CloneDerived<TDerived>() where TDerived : FaceArrayAttribute<T>
-		{
-			var clone = CreateInstance<TDerived>();
-			clone.array = (T[])array.Clone();
-			clone.name = name;
-			clone.hideFlags = hideFlags;
-			return clone;
+			return CreateDerived<TDerived>(new T[faceCount]);
 		}
 
 		public override T this[int i]
@@ -455,11 +402,6 @@ namespace Experilous.Topological
 	{
 		public IntFaceAttribute faceGroupIndices;
 		public TFaceGroupAttribute faceGroupData;
-
-		public T GetAttribute(Topology.Face face)
-		{
-			return faceGroupData[faceGroupIndices[face]];
-		}
 
 		public override T this[int i]
 		{

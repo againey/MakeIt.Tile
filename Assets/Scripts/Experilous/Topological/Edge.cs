@@ -25,24 +25,26 @@ namespace Experilous.Topological
 			// n:  Next edge when going around vertex r clockwise
 			// N:  Next edge when going around face R clockwise
 
-			public int _twin; // The other edge between the same two vertices and same two faces, but going the opposite direction.
-			public int _vNext; // The next edge after this one when going clockwise around the implicit near vertex.
-			public int _fNext; // The next edge this one when going clockwise around the implicit near face.
-			public int _vertex; // The vertex at the far end of this edge that preceeds the below face when going clockwise around the implicit near vertex.
-			public int _face; // The face on the far side of this edge that follows after the above vertex when going clockwise around the implicit near vertex.
+			public int twin; // The other edge between the same two vertices and same two faces, but going the opposite direction.
+			public int vNext; // The next edge after this one when going clockwise around the implicit near vertex.
+			public int fNext; // The next edge this one when going clockwise around the implicit near face.
+			public int vertex; // The vertex at the far end of this edge that preceeds the below face when going clockwise around the implicit near vertex.
+			public int face; // The face on the far side of this edge that follows after the above vertex when going clockwise around the implicit near vertex.
+			public EdgeWrap wrap; // The wrap-around flags when transitioning among vertices, edges, and faces.
 
-			public EdgeData(int twin, int vNext, int fNext, int vertex, int face)
+			public EdgeData(int twin, int vNext, int fNext, int vertex, int face, EdgeWrap wrap = EdgeWrap.None)
 			{
-				_twin = twin;
-				_vNext = vNext;
-				_fNext = fNext;
-				_vertex = vertex;
-				_face = face;
+				this.twin = twin;
+				this.vNext = vNext;
+				this.fNext = fNext;
+				this.vertex = vertex;
+				this.face = face;
+				this.wrap = wrap;
 			}
 
 			public override string ToString()
 			{
-				return string.Format("EdgeData ({0}, {1}, {2}, {3}, {4})", _twin, _vNext, _fNext, _vertex, _face);
+				return string.Format("EdgeData ({0}, {1}, {2}, {3}, {4})", twin, vNext, fNext, vertex, face);
 			}
 		}
 
@@ -78,17 +80,19 @@ namespace Experilous.Topological
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
-			public int twinIndex { get { return _topology.edgeData[_index]._twin; } }
+			public int twinIndex { get { return _topology.edgeData[_index].twin; } }
 
-			public HalfEdge twin { get { return new HalfEdge(_topology, _topology.edgeData[_index]._twin); } }
-			public HalfEdge prevAroundVertex { get { return new HalfEdge(_topology, _topology.edgeData[_topology.edgeData[_index]._twin]._fNext); } }
-			public HalfEdge nextAroundVertex { get { return new HalfEdge(_topology, _topology.edgeData[_index]._vNext); } }
-			public HalfEdge prevAroundFace { get { return new HalfEdge(_topology, _topology.edgeData[_topology.edgeData[_index]._vNext]._twin); } }
-			public HalfEdge nextAroundFace { get { return new HalfEdge(_topology, _topology.edgeData[_index]._fNext); } }
-			public Vertex nearVertex { get { return new Vertex(_topology, _topology.edgeData[_topology.edgeData[_index]._twin]._vertex); } }
-			public Vertex farVertex { get { return new Vertex(_topology, _topology.edgeData[_index]._vertex); } }
-			public Face nearFace { get { return new Face(_topology, _topology.edgeData[_topology.edgeData[_index]._twin]._face); } }
-			public Face farFace { get { return new Face(_topology, _topology.edgeData[_index]._face); } }
+			public HalfEdge twin { get { return new HalfEdge(_topology, _topology.edgeData[_index].twin); } }
+			public HalfEdge prevAroundVertex { get { return new HalfEdge(_topology, _topology.edgeData[_topology.edgeData[_index].twin].fNext); } }
+			public HalfEdge nextAroundVertex { get { return new HalfEdge(_topology, _topology.edgeData[_index].vNext); } }
+			public HalfEdge prevAroundFace { get { return new HalfEdge(_topology, _topology.edgeData[_topology.edgeData[_index].vNext].twin); } }
+			public HalfEdge nextAroundFace { get { return new HalfEdge(_topology, _topology.edgeData[_index].fNext); } }
+			public Vertex nearVertex { get { return new Vertex(_topology, _topology.edgeData[_topology.edgeData[_index].twin].vertex); } }
+			public Vertex farVertex { get { return new Vertex(_topology, _topology.edgeData[_index].vertex); } }
+			public Face nearFace { get { return new Face(_topology, _topology.edgeData[_topology.edgeData[_index].twin].face); } }
+			public Face farFace { get { return new Face(_topology, _topology.edgeData[_index].face); } }
+
+			public EdgeWrap wrap { get { return _topology.edgeData[_index].wrap; } }
 
 			public bool isBoundary { get { return farFace.isExternal != nearFace.isExternal; } }
 			public bool isOuterBoundary { get { return farFace.isExternal; } }
@@ -179,6 +183,8 @@ namespace Experilous.Topological
 			public Face prevFace { get { return _halfEdge.farFace; } }
 			public Face nextFace { get { return _halfEdge.nearFace; } }
 
+			public EdgeWrap wrap { get { return _halfEdge.wrap; } }
+
 			public bool isBoundary { get { return _halfEdge.isBoundary; } }
 			public bool isOuterBoundary { get { return _halfEdge.isOuterBoundary; } }
 			public bool isInnerBoundary { get { return _halfEdge.isInnerBoundary; } }
@@ -268,6 +274,8 @@ namespace Experilous.Topological
 			public Face nearFace { get { return _halfEdge.nearFace; } }
 			public Face farFace { get { return _halfEdge.farFace; } }
 
+			public EdgeWrap wrap { get { return _halfEdge.wrap; } }
+
 			public bool isBoundary { get { return _halfEdge.isBoundary; } }
 			public bool isOuterBoundary { get { return _halfEdge.isOuterBoundary; } }
 			public bool isInnerBoundary { get { return _halfEdge.isInnerBoundary; } }
@@ -323,92 +331,71 @@ namespace Experilous.Topological
 		public struct HalfEdgesIndexer
 		{
 			private Topology _topology;
-			private int _first;
-			private int _last;
 
-			public HalfEdgesIndexer(Topology topology){ _topology = topology; _first = 0; _last = _topology.edgeData.Length; }
-			public HalfEdgesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
-			public HalfEdge this[int i] { get { return new HalfEdge(_topology, _first + i); } }
-			public int Count { get { return _last - _first; } }
-			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology, _first, _last); }
+			public HalfEdgesIndexer(Topology topology) { _topology = topology; }
+			public HalfEdge this[int i] { get { return new HalfEdge(_topology, i); } }
+			public int Count { get { return _topology.edgeData.Length; } }
+			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology); }
 
 			public struct EdgeEnumerator
 			{
 				private Topology _topology;
-				private int _index;
-				private int _next;
-				private int _last;
+				private int _current;
 
-				public EdgeEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
-				public HalfEdge Current { get { return new HalfEdge(_topology, _index); } }
-				public bool MoveNext() { return (_index = _next++) != _last; }
+				public EdgeEnumerator(Topology topology) { _topology = topology; _current = -1; }
+				public HalfEdge Current { get { return new HalfEdge(_topology, _current); } }
+				public bool MoveNext() { return ++_current < _topology.edgeData.Length; }
 				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
 		public HalfEdgesIndexer halfEdges { get { return new HalfEdgesIndexer(this); } }
-		public HalfEdgesIndexer internalHalfEdges { get { return new HalfEdgesIndexer(this, 0, firstExternalEdgeIndex); } }
-		public HalfEdgesIndexer externalHalfEdges { get { return new HalfEdgesIndexer(this, firstExternalEdgeIndex, edgeData.Length); } }
 
 		public struct VertexEdgesIndexer
 		{
 			private Topology _topology;
-			private int _first;
-			private int _last;
 
-			public VertexEdgesIndexer(Topology topology){ _topology = topology; _first = 0; _last = _topology.edgeData.Length; }
-			public VertexEdgesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
-			public VertexEdge this[int i] { get { return new VertexEdge(_topology, _first + i); } }
-			public int Count { get { return _last - _first; } }
-			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology, _first, _last); }
+			public VertexEdgesIndexer(Topology topology) { _topology = topology; }
+			public VertexEdge this[int i] { get { return new VertexEdge(_topology, i); } }
+			public int Count { get { return _topology.edgeData.Length; } }
+			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology); }
 
 			public struct EdgeEnumerator
 			{
 				private Topology _topology;
-				private int _index;
-				private int _next;
-				private int _last;
+				private int _current;
 
-				public EdgeEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
-				public VertexEdge Current { get { return new VertexEdge(_topology, _index); } }
-				public bool MoveNext() { return (_index = _next++) != _last; }
+				public EdgeEnumerator(Topology topology) { _topology = topology; _current = -1; }
+				public VertexEdge Current { get { return new VertexEdge(_topology, _current); } }
+				public bool MoveNext() { return ++_current < _topology.edgeData.Length; }
 				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
 		public VertexEdgesIndexer vertexEdges { get { return new VertexEdgesIndexer(this); } }
-		public VertexEdgesIndexer internalVertexEdges { get { return new VertexEdgesIndexer(this, 0, firstExternalEdgeIndex); } }
-		public VertexEdgesIndexer externalVertexEdges { get { return new VertexEdgesIndexer(this, firstExternalEdgeIndex, edgeData.Length); } }
 
 		public struct FaceEdgesIndexer
 		{
 			private Topology _topology;
-			private int _first;
-			private int _last;
 
-			public FaceEdgesIndexer(Topology topology){ _topology = topology; _first = 0; _last = _topology.edgeData.Length; }
-			public FaceEdgesIndexer(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; }
-			public FaceEdge this[int i] { get { return new FaceEdge(_topology, _first + i); } }
-			public int Count { get { return _last - _first; } }
-			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology, _first, _last); }
+			public FaceEdgesIndexer(Topology topology) { _topology = topology; }
+			public FaceEdge this[int i] { get { return new FaceEdge(_topology, i); } }
+			public int Count { get { return _topology.edgeData.Length; } }
+			public EdgeEnumerator GetEnumerator() { return new EdgeEnumerator(_topology); }
 
 			public struct EdgeEnumerator
 			{
 				private Topology _topology;
-				private int _index;
-				private int _next;
-				private int _last;
+				private int _current;
 
-				public EdgeEnumerator(Topology topology, int first, int last) { _topology = topology; _index = 0; _next = first; _last = last; }
-				public FaceEdge Current { get { return new FaceEdge(_topology, _index); } }
-				public bool MoveNext() { return (_index = _next++) != _last; }
+				public EdgeEnumerator(Topology topology) { _topology = topology; _current = -1; }
+				public FaceEdge Current { get { return new FaceEdge(_topology, _current); } }
+				public bool MoveNext() { return ++_current < _topology.edgeData.Length; }
 				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
 		public FaceEdgesIndexer faceEdges { get { return new FaceEdgesIndexer(this); } }
-		public FaceEdgesIndexer internalFaceEdges { get { return new FaceEdgesIndexer(this, 0, firstExternalEdgeIndex); } }
-		public FaceEdgesIndexer externalFaceEdges { get { return new FaceEdgesIndexer(this, firstExternalEdgeIndex, edgeData.Length); } }
 	}
 
 	public interface IEdgeAttribute<T> : IList<T>
@@ -495,40 +482,11 @@ namespace Experilous.Topological
 	{
 		public T constant;
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : EdgeConstantAttribute<T>
-		{
-			return CreateInstance<TDerived>();
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T constant) where TDerived : EdgeConstantAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(T constant) where TDerived : EdgeConstantAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
 			instance.constant = constant;
 			return instance;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T constant, string name) where TDerived : EdgeConstantAttribute<T>
-		{
-			var instance = CreateInstance<TDerived>();
-			instance.constant = constant;
-			instance.name = name;
-			return instance;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : EdgeConstantAttribute<T>
-		{
-			var instance = CreateInstance<TDerived>();
-			instance.name = name;
-			return instance;
-		}
-
-		protected TDerived CloneDerived<TDerived>() where TDerived : EdgeConstantAttribute<T>
-		{
-			var clone = CreateInstance<TDerived>();
-			clone.constant = constant;
-			clone.name = name;
-			clone.hideFlags = hideFlags;
-			return clone;
 		}
 
 		public override T this[int i]
@@ -560,40 +518,16 @@ namespace Experilous.Topological
 	{
 		public T[] array;
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : EdgeArrayAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(T[] array) where TDerived : EdgeArrayAttribute<T>
 		{
-			return CreateInstance<TDerived>();
+			var instance = CreateInstance<TDerived>();
+			instance.array = array;
+			return instance;
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : EdgeArrayAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(int faceCount) where TDerived : EdgeArrayAttribute<T>
 		{
-			var attribute = CreateInstance<TDerived>();
-			attribute.array = array;
-			return attribute;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : EdgeArrayAttribute<T>
-		{
-			var attribute = CreateInstance<TDerived>();
-			attribute.array = array;
-			attribute.name = name;
-			return attribute;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : EdgeArrayAttribute<T>
-		{
-			var attribute = CreateInstance<TDerived>();
-			attribute.name = name;
-			return attribute;
-		}
-
-		protected TDerived CloneDerived<TDerived>() where TDerived : EdgeArrayAttribute<T>
-		{
-			var clone = CreateInstance<TDerived>();
-			clone.array = (T[])array.Clone();
-			clone.name = name;
-			clone.hideFlags = hideFlags;
-			return clone;
+			return CreateDerived<TDerived>(new T[faceCount]);
 		}
 
 		public override T this[int i]

@@ -9,9 +9,9 @@ namespace Experilous.Topological
 	{
 		public Index2D axisDivisions = new Index2D(1, 1);
 
+		[AutoSelect] public AssetInputSlot surfaceInputSlot;
 		[AutoSelect] public AssetInputSlot topologyInputSlot;
 		public AssetInputSlot facePositionsInputSlot;
-		[AutoSelect] public AssetInputSlot surfaceDescriptorInputSlot;
 
 		public AssetDescriptor faceGroupCollectionDescriptor;
 		public AssetDescriptor faceGroupIndicesDescriptor;
@@ -20,9 +20,9 @@ namespace Experilous.Topological
 		protected override void Initialize(bool reset = true)
 		{
 			// Inputs
+			if (reset || surfaceInputSlot == null) surfaceInputSlot = AssetInputSlot.CreateRequired(this, typeof(PlanarSurface));
 			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
 			if (reset || facePositionsInputSlot == null) facePositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
-			if (reset || surfaceDescriptorInputSlot == null) surfaceDescriptorInputSlot = AssetInputSlot.CreateRequired(this, typeof(PlanarSurfaceDescriptor));
 
 			// Outputs
 			if (reset || faceGroupCollectionDescriptor == null) faceGroupCollectionDescriptor = AssetDescriptor.CreateGrouped<FaceGroupCollection>(this, "Face Groups", "Face Groups");
@@ -34,9 +34,9 @@ namespace Experilous.Topological
 		{
 			get
 			{
+				yield return surfaceInputSlot;
 				yield return topologyInputSlot;
 				yield return facePositionsInputSlot;
-				yield return surfaceDescriptorInputSlot;
 			}
 		}
 
@@ -67,9 +67,9 @@ namespace Experilous.Topological
 
 		public override IEnumerator BeginGeneration()
 		{
+			var surfaceDescriptor = surfaceInputSlot.GetAsset<PlanarSurface>();
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var facePositions = facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>();
-			var surfaceDescriptor = surfaceDescriptorInputSlot.GetAsset<PlanarSurfaceDescriptor>();
 
 			int groupCount = 0;
 			var faceGroupFaceIndices = new List<int>[axisDivisions.x * axisDivisions.y];
@@ -130,7 +130,7 @@ namespace Experilous.Topological
 					if (group.Count > 0)
 					{
 						var faceGroupName = string.Format("Face Group [{0}, {1}]", axis0Index, axis1Index);
-						var faceGroup = ArrayFaceGroup.Create(topology, group.ToArray(), faceGroupName);
+						var faceGroup = ArrayFaceGroup.Create(topology, group.ToArray()).SetName(faceGroupName);
 
 						if (faceGroupDescriptors[groupIndex] == null)
 						{
@@ -156,7 +156,7 @@ namespace Experilous.Topological
 
 			faceGroupCollectionDescriptor.path = faceGroupCollectionDescriptor.name;
 			faceGroupCollectionDescriptor.SetAsset(faceGroupCollection);
-			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.CreateInstance(faceGroupIndices));
+			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.Create(faceGroupIndices));
 
 			yield break;
 		}

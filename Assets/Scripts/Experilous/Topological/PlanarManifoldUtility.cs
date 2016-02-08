@@ -5,50 +5,6 @@ namespace Experilous.Topological
 {
 	public static class PlanarManifoldUtility
 	{
-		#region Generation
-
-		public static void Generate(RowMajorQuadGridFaceNeighborIndexer neighborIndexer, RowMajorQuadGridVertexIndexer2D vertexIndexer, PlanarSurfaceDescriptor surfaceDescriptor, Vector3 origin, out Topology topology, out Vector3[] vertexPositions)
-		{
-			topology = TopologyBuilder.BuildTopoogy(neighborIndexer, "Topology");
-
-			vertexPositions = new Vector3[vertexIndexer.vertexCount];
-
-			for (int i = 0; i < vertexIndexer.vertexCount; ++i)
-			{
-				var index2D = vertexIndexer.GetVertexIndex2D(i);
-				vertexPositions[i] =
-					index2D.x * surfaceDescriptor.axis0.vector / neighborIndexer.faceColumnCount +
-					index2D.y * surfaceDescriptor.axis1.vector / neighborIndexer.faceRowCount + origin;
-			}
-		}
-
-		public static void Generate(WrappedRowMajorQuadGridFaceNeighborIndexer neighborIndexer, WrappedRowMajorQuadGridVertexIndexer2D vertexIndexer, PlanarSurfaceDescriptor surfaceDescriptor, Vector3 origin, out Topology topology, out Vector3[] vertexPositions, out EdgeWrap[] edgeWrapData)
-		{
-			topology = TopologyBuilder.BuildTopoogy(neighborIndexer, "Topology");
-
-			vertexPositions = new Vector3[vertexIndexer.vertexCount];
-
-			for (int i = 0; i < vertexIndexer.vertexCount; ++i)
-			{
-				var index2D = vertexIndexer.GetVertexIndex2D(i);
-				vertexPositions[i] =
-					index2D.x * surfaceDescriptor.axis0.vector / neighborIndexer.faceColumnCount +
-					index2D.y * surfaceDescriptor.axis1.vector / neighborIndexer.faceRowCount + origin;
-			}
-
-			edgeWrapData = new EdgeWrap[neighborIndexer.edgeCount];
-
-			for (int i = 0; i < neighborIndexer.faceCount; ++i)
-			{
-				for (int j = 0; j < neighborIndexer.GetNeighborCount(i); ++j)
-				{
-					edgeWrapData[neighborIndexer.GetNeighborEdgeIndex(i, j)] = neighborIndexer.GetEdgeWrapData(i, j);
-				}
-			}
-		}
-
-		#endregion
-
 		#region Modification
 
 		public static void MakeDual(Topology topology, IVertexAttribute<Vector3> vertexPositions, out Vector3[] dualVertexPositions)
@@ -115,10 +71,10 @@ namespace Experilous.Topological
 
 		public static IVertexAttribute<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float totalArea, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions)
 		{
-			return RelaxForEqualArea(topology, vertexPositions, totalArea, lockBoundaryPositions, relaxedVertexPositions, new Vector3[topology.internalFaces.Count].AsFaceAttribute(), new float[topology.vertices.Count].AsVertexAttribute());
+			return RelaxVertexPositionsForEqualArea(topology, vertexPositions, totalArea, lockBoundaryPositions, relaxedVertexPositions, new Vector3[topology.internalFaces.Count].AsFaceAttribute(), new float[topology.vertices.Count].AsVertexAttribute());
 		}
 
-		public static IVertexAttribute<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float totalArea, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions, IFaceAttribute<Vector3> faceCentroids, IVertexAttribute<float> vertexAreas)
+		public static IVertexAttribute<Vector3> RelaxVertexPositionsForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float totalArea, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions, IFaceAttribute<Vector3> faceCentroids, IVertexAttribute<float> vertexAreas)
 		{
 			var idealArea = totalArea / topology.vertices.Count;
 

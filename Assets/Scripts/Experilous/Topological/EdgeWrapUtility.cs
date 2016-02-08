@@ -48,6 +48,51 @@ namespace Experilous.Topological
 			return edgeWrap & (EdgeWrap)mask;
 		}
 
+		public static EdgeWrap InvertEdgeRelations(EdgeWrap edgeWrap)
+		{
+			// Invert the positive and negative directions.
+			var negAsPos = (uint)(edgeWrap & EdgeWrap.Neg) >> 1;
+			var posAsNeg = (uint)(edgeWrap & EdgeWrap.Pos) << 1;
+			var invertedDirections = (EdgeWrap)(negAsPos | posAsNeg);
+
+			// Swap the edge-to and to-edge relations.
+			return
+				ShiftToEdgeAsEdgeTo(invertedDirections) & EdgeWrap.EdgeTo |
+				ShiftEdgeToAsToEdge(invertedDirections) & EdgeWrap.ToEdge;
+		}
+
+		public static EdgeWrap InvertVertexEdgeRelations(EdgeWrap edgeWrap)
+		{
+			return InvertEdgeRelations(edgeWrap) & (EdgeWrap.VertToEdge | EdgeWrap.EdgeToVert) |
+				edgeWrap & (EdgeWrap.FaceToEdge | EdgeWrap.EdgeToFace);
+		}
+
+		public static EdgeWrap InvertFaceEdgeRelations(EdgeWrap edgeWrap)
+		{
+			return InvertEdgeRelations(edgeWrap) & (EdgeWrap.FaceToEdge | EdgeWrap.EdgeToFace) |
+				edgeWrap & (EdgeWrap.VertToEdge | EdgeWrap.EdgeToVert);
+		}
+
+		public static EdgeWrap Invert(EdgeWrap edgeWrap)
+		{
+			return FromEdgeRelations(InvertEdgeRelations(edgeWrap));
+		}
+
+		public static void CrossMergeTwins(ref EdgeWrap halfEdge0, ref EdgeWrap halfEdge1)
+		{
+			var invertedHalfEdge0 = InvertEdgeRelations(halfEdge0);
+			var invertedHalfEdge1 = InvertEdgeRelations(halfEdge1);
+			halfEdge0 = FromEdgeRelations(halfEdge0 | invertedHalfEdge1);
+			halfEdge1 = FromEdgeRelations(invertedHalfEdge0 | halfEdge1);
+		}
+
+		public static EdgeWrap SwapAxes(EdgeWrap edgeWrap)
+		{
+			return
+				ShiftAxis0AsAxis1(edgeWrap) & EdgeWrap.Axis1 |
+				ShiftAxis1AsAxis0(edgeWrap) & EdgeWrap.Axis0;
+		}
+
 		public static Generic VertToVertAsGeneric(EdgeWrap edgeWrap)
 		{
 			return (Generic)((uint)(edgeWrap & EdgeWrap.VertToVert) >> 16);
@@ -88,6 +133,16 @@ namespace Experilous.Topological
 			return (Generic)((uint)(edgeWrap & EdgeWrap.FaceToFace) >> 28);
 		}
 
+		public static EdgeWrap ShiftToEdgeAsEdgeTo(EdgeWrap toEdge)
+		{
+			return (EdgeWrap)((uint)toEdge << 8);
+		}
+
+		public static EdgeWrap ShiftEdgeToAsToEdge(EdgeWrap edgeTo)
+		{
+			return (EdgeWrap)((uint)edgeTo >> 8);
+		}
+
 		private static EdgeWrap ShiftVertToVertAsVertToEdge(EdgeWrap vertToVert)
 		{
 			return (EdgeWrap)((uint)vertToVert >> 16);
@@ -126,6 +181,16 @@ namespace Experilous.Topological
 		private static EdgeWrap ShiftFaceToFaceAsFaceToVert(EdgeWrap faceToFace)
 		{
 			return (EdgeWrap)((uint)faceToFace >> 4);
+		}
+
+		private static EdgeWrap ShiftAxis0AsAxis1(EdgeWrap axis0)
+		{
+			return (EdgeWrap)((uint)axis0 << 2);
+		}
+
+		private static EdgeWrap ShiftAxis1AsAxis0(EdgeWrap axis1)
+		{
+			return (EdgeWrap)((uint)axis1 >> 2);
 		}
 
 		public static EdgeWrap ChainVertToVertToEdge(EdgeWrap vert0ToVert1, EdgeWrap vert1ToEdge)

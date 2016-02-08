@@ -127,7 +127,7 @@ namespace Experilous.Topological
 
 			for (int faceGroupIndex = 0; faceGroupIndex < faceGroupFaceIndices.Length; ++faceGroupIndex)
 			{
-				var faceGroup = ArrayFaceGroup.Create(topology, faceGroupFaceIndices[faceGroupIndex].ToArray(), faceGroupDescriptors[faceGroupIndex].name);
+				var faceGroup = ArrayFaceGroup.Create(topology, faceGroupFaceIndices[faceGroupIndex].ToArray()).SetName(faceGroupDescriptors[faceGroupIndex].name);
 				faceGroupCollection.faceGroups[faceGroupIndex] = faceGroupDescriptors[faceGroupIndex].SetAsset(faceGroup);
 			}
 
@@ -135,7 +135,7 @@ namespace Experilous.Topological
 			faceGroupIndicesDescriptor.path = faceGroupCollectionDescriptor.name;
 
 			faceGroupCollectionDescriptor.SetAsset(faceGroupCollection);
-			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.CreateInstance(faceGroupIndices.array));
+			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.Create(faceGroupIndices.array));
 
 			yield break;
 		}

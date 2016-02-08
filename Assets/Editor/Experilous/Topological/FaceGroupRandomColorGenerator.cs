@@ -51,7 +51,8 @@ namespace Experilous.Topological
 
 		public override IEnumerator BeginGeneration()
 		{
-			var faceGroups = faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>().faceGroups;
+			var faceGroupCollection = faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>();
+			var faceGroups = faceGroupCollection.faceGroups;
 			var faceGroupColorsArray = new Color[faceGroups.Length];
 
 			var random = new RandomUtility(randomization.GetRandomEngine());
@@ -61,8 +62,10 @@ namespace Experilous.Topological
 				faceGroupColorsArray[i] = new Color(random.ClosedFloatUnit(), random.ClosedFloatUnit(), random.ClosedFloatUnit());
 			}
 
-			faceGroupColorsDescriptor.SetAsset(ColorFaceGroupAttribute.CreateInstance(faceGroupColorsArray));
-			faceColorsDescriptor.SetAsset(ColorFaceGroupLookupFaceAttribute.CreateInstance(faceGroupIndicesInputSlot.GetAsset<IntFaceAttribute>(), faceGroupColorsDescriptor.GetAsset<ColorFaceGroupAttribute>()));
+			faceGroupColorsDescriptor.SetAsset(ColorFaceGroupAttribute.Create(faceGroupColorsArray).SetName((faceGroupCollection.name + " Colors").TrimStart()));
+			faceColorsDescriptor.SetAsset(ColorFaceGroupLookupFaceAttribute.Create(
+				faceGroupIndicesInputSlot.GetAsset<IntFaceAttribute>(),
+				faceGroupColorsDescriptor.GetAsset<ColorFaceGroupAttribute>()).SetName("Face Colors"));
 
 			yield break;
 		}

@@ -15,8 +15,11 @@ namespace Experilous
 		[SerializeField] private int _instanceID;
 
 		[SerializeField] protected List<AssetGenerator> _generators = new List<AssetGenerator>();
+
 		[SerializeField] protected List<Object> _embeddedAssets = new List<Object>();
-		[SerializeField] protected List<Object> _persistedAssets = new List<Object>();
+		[SerializeField] protected List<Object> _persistedAssets  = new List<Object>();
+		[SerializeField] protected List<AssetDescriptor> _persistedAssetSources  = new List<AssetDescriptor>();
+
 		[SerializeField] protected AssetCollection _assetCollection;
 
 		public string generationName;
@@ -37,14 +40,29 @@ namespace Experilous
 			{
 				if (ShouldPersist(descriptor))
 				{
+					var persistedAssetIndex = _persistedAssetSources.IndexOf(descriptor);
+					Object persistedAsset = persistedAssetIndex != -1 ? _persistedAssets[persistedAssetIndex] : null;
+
 					if ((descriptor.availability & AssetDescriptor.Availability.AfterGeneration) != 0)
 					{
-						return PersistAsset(descriptor.asset, asset, descriptor.name, descriptor.path);
+						persistedAsset = PersistAsset(persistedAsset, asset, descriptor.name, descriptor.path);
 					}
 					else
 					{
-						return PersistHiddenAsset(descriptor.asset, asset, descriptor.name);
+						persistedAsset = PersistHiddenAsset(persistedAsset, asset, descriptor.name);
 					}
+
+					if (persistedAssetIndex != -1)
+					{
+						_persistedAssets[persistedAssetIndex] = persistedAsset;
+					}
+					else
+					{
+						_persistedAssets.Add(persistedAsset);
+						_persistedAssetSources.Add(descriptor);
+					}
+
+					return persistedAsset;
 				}
 				else
 				{
@@ -60,9 +78,12 @@ namespace Experilous
 
 		public void ClearAsset(AssetDescriptor descriptor)
 		{
-			if (descriptor.asset != null)
+			var persistedAssetIndex = _persistedAssetSources.IndexOf(descriptor);
+			if (persistedAssetIndex != -1)
 			{
-				AssetUtility.DeleteAsset(descriptor.asset);
+				AssetUtility.DeleteAsset(_persistedAssets[persistedAssetIndex]);
+				_persistedAssets.RemoveAt(persistedAssetIndex);
+				_persistedAssetSources.RemoveAt(persistedAssetIndex);
 			}
 		}
 
@@ -308,7 +329,15 @@ namespace Experilous
 				}
 
 				_persistedAssets.Clear();
+				_persistedAssetSources.Clear();
 				_assetCollection = null;
+
+				var original = EditorUtility.InstanceIDToObject(_instanceID) as AssetGeneratorCollection;
+				if (original != null && original.generationName == generationName && original.generationPath == generationPath && AssetDatabase.Contains(this))
+				{
+					var copyPath = AssetDatabase.GetAssetPath(this);
+					generationName = Path.GetFileNameWithoutExtension(copyPath);
+				}
 
 				_instanceID = GetInstanceID();
 			}
@@ -501,8 +530,14 @@ namespace Experilous
 
 		private void ExecuteWaitableAction(object action)
 		{
-			((System.Action)action)();
-			_concurrentWaitHandle.Set();
+			try
+			{
+				((System.Action)action)();
+			}
+			finally
+			{
+				_concurrentWaitHandle.Set();
+			}
 		}
 
 		private object UpdateGenerationProgress(int currentStep, string newMessage = null, List<AssetGenerator> generators = null)
@@ -532,7 +567,18 @@ namespace Experilous
 				var startTime = currentTime;
 				do
 				{
-					if (!_generationIterator.MoveNext()) _generationIterator = null;
+					try
+					{
+						if (!_generationIterator.MoveNext())
+						{
+							_generationIterator = null;
+						}
+					}
+					catch (System.Exception)
+					{
+						_generationIterator = null;
+						throw;
+					}
 					currentTime = Time.realtimeSinceStartup;
 				} while (_generationIterator != null && currentTime >= startTime && currentTime - startTime < 0.05f);
 
@@ -608,7 +654,17 @@ namespace Experilous
 			this.generationName = generationName;
 			this.generationPath = generationPath;
 
+			for (int i = 0; i < _persistedAssets.Count; ++i)
+			{
+				if (_persistedAssets[i] == null || _persistedAssetSources[i] == null)
+				{
+					_persistedAssets[i] = null;
+					_persistedAssetSources[i] = null;
+				}
+			}
+
 			_persistedAssets.RemoveAll((Object obj) => { return obj == null; });
+			_persistedAssetSources.RemoveAll((AssetDescriptor descriptor) => { return descriptor == null; });
 
 			yield return UpdateGenerationProgress(++currentStep, "Preparing...");
 
@@ -624,6 +680,7 @@ namespace Experilous
 
 			// Generate all assets, moving or renaming the outputs if necessary.
 			var persistedAssets = new List<Object>();
+			var persistedAssetSources = new List<AssetDescriptor>();
 			foreach (var generator in generators)
 			{
 				yield return UpdateGenerationProgress(++currentStep, string.Format("Generating ({0}/{1})...", currentStep - 4, generators.Count));
@@ -631,7 +688,18 @@ namespace Experilous
 				var generation = generator.BeginGeneration();
 				while (generation.MoveNext())
 				{
-					yield return UpdateGenerationProgress(currentStep);
+					if (generation.Current is WaitHandle)
+					{
+						var waitHandle = (WaitHandle)generation.Current;
+						while (waitHandle.WaitOne(10) == false)
+						{
+							yield return UpdateGenerationProgress(currentStep);
+						}
+					}
+					else
+					{
+						yield return UpdateGenerationProgress(currentStep);
+					}
 				}
 
 				foreach (var output in generator.outputs)
@@ -639,6 +707,7 @@ namespace Experilous
 					if (AssetDatabase.Contains(output.asset))
 					{
 						persistedAssets.Add(output.asset);
+						persistedAssetSources.Add(output);
 					}
 				}
 			}
@@ -650,7 +719,7 @@ namespace Experilous
 
 			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
 
-			DestroyLeftovers(embeddedAssets, persistedAssets);
+			DestroyLeftovers(embeddedAssets, persistedAssets, persistedAssetSources);
 
 			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
 
@@ -722,6 +791,7 @@ namespace Experilous
 			{
 				foreach (var output in generator.outputs)
 				{
+					if (output == null) continue;
 					output.CleanConsumers();
 				}
 			}
@@ -803,7 +873,7 @@ namespace Experilous
 			return embeddedAssets;
 		}
 
-		private void DestroyLeftovers(List<Object> embeddedAssets, List<Object> persistedAssets)
+		private void DestroyLeftovers(List<Object> embeddedAssets, List<Object> persistedAssets, List<AssetDescriptor> persistedAssetSources)
 		{
 			// Destroy any prior embedded objects that are no longer part of the collection.
 			foreach (var priorEmbeddedAsset in _embeddedAssets)
@@ -816,16 +886,17 @@ namespace Experilous
 			_embeddedAssets = embeddedAssets;
 
 			// Delete any external assets that are no longer part of the collection.
-			foreach (var priorPersistedAsset in _persistedAssets)
+			for (int i = 0; i < _persistedAssets.Count; ++i)
 			{
-				if (priorPersistedAsset != null && AssetDatabase.Contains(priorPersistedAsset) && !persistedAssets.Contains(priorPersistedAsset))
+				if (!persistedAssets.Contains(_persistedAssets[i]) && !persistedAssetSources.Contains(_persistedAssetSources[i]))
 				{
-					_assetCollection.Remove(priorPersistedAsset);
+					_assetCollection.Remove(_persistedAssets[i]);
 					EditorUtility.SetDirty(_assetCollection);
-					AssetUtility.DeleteAsset(priorPersistedAsset);
+					AssetUtility.DeleteAsset(_persistedAssets[i]);
 				}
 			}
 			_persistedAssets = persistedAssets;
+			_persistedAssetSources = persistedAssetSources;
 
 			// Clean up any dangling output consumer references.
 			foreach (var generator in _generators)

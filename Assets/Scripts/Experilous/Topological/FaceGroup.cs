@@ -102,40 +102,16 @@ namespace Experilous.Topological
 	{
 		public T[] array;
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : FaceGroupArrayAttribute<T>
-		{
-			return CreateInstance<TDerived>();
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : FaceGroupArrayAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(T[] array) where TDerived : FaceGroupArrayAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
 			instance.array = array;
 			return instance;
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : FaceGroupArrayAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(int groupCount) where TDerived : FaceGroupArrayAttribute<T>
 		{
-			var instance = CreateInstance<TDerived>();
-			instance.array = array;
-			instance.name = name;
-			return instance;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : FaceGroupArrayAttribute<T>
-		{
-			var instance = CreateInstance<TDerived>();
-			instance.name = name;
-			return instance;
-		}
-
-		protected TDerived CloneDerived<TDerived>() where TDerived : FaceGroupArrayAttribute<T>
-		{
-			var clone = CreateInstance<TDerived>();
-			clone.array = (T[])array.Clone();
-			clone.name = name;
-			clone.hideFlags = hideFlags;
-			return clone;
+			return CreateDerived<TDerived>(new T[groupCount]);
 		}
 
 		public override T this[int i]

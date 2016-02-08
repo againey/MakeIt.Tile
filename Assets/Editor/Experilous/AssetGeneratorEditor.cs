@@ -38,18 +38,6 @@ namespace Experilous
 			return true;
 		}
 
-		private static TAttribute GetAttribute<TAttribute>(FieldInfo field) where TAttribute : Attribute
-		{
-			foreach (var attribute in field.GetCustomAttributes(true))
-			{
-				if (attribute is TAttribute)
-				{
-					return (TAttribute)attribute;
-				}
-			}
-			return null;
-		}
-
 		protected virtual void OnPropertiesGUI()
 		{
 			var generatorType = _generator.GetType();
@@ -65,21 +53,14 @@ namespace Experilous
 					if (field.FieldType == typeof(List<AssetDescriptor>)) continue;
 					if (!IsInAssetGeneratorSubclass(field)) continue;
 
-					var labelAttribute = GetAttribute<LabelAttribute>(field);
+					var labelAttribute = Utility.GetAttribute<LabelAttribute>(field);
 					var labelContent = new GUIContent(
 						labelAttribute != null ? labelAttribute.text : property.displayName,
 						property.tooltip);
 
 					if (typeof(Component).IsAssignableFrom(field.FieldType))
 					{
-						property.objectReferenceValue = EditorGUILayoutExtensions.ObjectField(labelContent, property.objectReferenceValue, field.FieldType, false);
-					}
-					else if (field.FieldType == typeof(AssetInputSlot))
-					{
-						if (AssetInputSlotPropertyDrawer.ShouldShowInputGUI(property, field))
-						{
-							EditorGUILayout.PropertyField(property, labelContent, true);
-						}
+						field.SetValue(property.serializedObject.targetObject, EditorGUILayoutExtensions.ObjectField(labelContent, property.objectReferenceValue, field.FieldType, false));
 					}
 					else
 					{
@@ -103,6 +84,7 @@ namespace Experilous
 			{
 				_serializedGenerator.ApplyModifiedProperties();
 				_generator.Update();
+				_generator.Pregenerate();
 			}
 		}
 

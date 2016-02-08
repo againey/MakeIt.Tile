@@ -112,6 +112,9 @@ namespace Experilous.Topological
 		NegAxis1 = NonEdgeNegAxis1 | EdgeNegAxis1,
 		Neg = NegAxis0 | NegAxis1,
 
+		Axis0 = PosAxis0 | NegAxis0,
+		Axis1 = PosAxis1 | NegAxis1,
+
 		All = Pos | Neg,
 	}
 }

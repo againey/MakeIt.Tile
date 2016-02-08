@@ -114,20 +114,29 @@ namespace Experilous
 
 		public TAsset GetAsset<TAsset>() where TAsset : class
 		{
-			return (TAsset)(object)_asset;
+			return _asset as TAsset;
 		}
 
-		public Object SetAsset(Object newAsset)
+		public TAsset SetAsset<TAsset>(TAsset newAsset, bool persist = true) where TAsset : class
 		{
+			var assetObject = (Object)(object)newAsset;
+
 			// Are we setting or clearing the generated asset?
-			if (newAsset != null)
+			if (assetObject != null)
 			{
-				if (!assetType.IsInstanceOfType(newAsset))
+				if (!assetType.IsInstanceOfType(assetObject))
 				{
 					throw new System.ArgumentException("The new asset instance was not of the type specified by this asset descriptor's asset type.", "newAsset");
 				}
 
-				_asset = _generator.collection.SetAsset(this, newAsset);
+				if (persist)
+				{
+					_asset = _generator.collection.SetAsset(this, assetObject as Object);
+				}
+				else
+				{
+					_asset = assetObject;
+				}
 			}
 			// New instance is null; clear any stored asset.
 			else
@@ -135,38 +144,30 @@ namespace Experilous
 				ClearAsset();
 			}
 
-			return _asset;
+			return (TAsset)(object)_asset;
 		}
 
-		public Object SetAsset(ref Object newAsset)
+		public TAsset SetAsset<TAsset>(ref TAsset newAsset, bool persist = true) where TAsset : class
 		{
-			newAsset = SetAsset(newAsset);
+			newAsset = SetAsset(newAsset, persist);
 			return newAsset;
 		}
 
-		public TAsset SetAsset<TAsset>(TAsset newAsset) where TAsset : class
-		{
-			return (TAsset)(object)SetAsset((Object)(object)newAsset);
-		}
-
-		public TAsset SetAsset<TAsset>(ref TAsset newAsset) where TAsset : class
-		{
-			newAsset = (TAsset)(object)SetAsset((Object)(object)newAsset);
-			return newAsset;
-		}
-
-		public void ClearAsset()
+		public void ClearAsset(bool persist = true)
 		{
 			if (_asset != null)
 			{
-				_generator.collection.ClearAsset(this);
+				if (persist)
+				{
+					_generator.collection.ClearAsset(this);
+				}
 				_asset = null;
 			}
 		}
 
-		public void ResetAsset()
+		public void Persist()
 		{
-			_asset = null;
+			_asset = _generator.collection.SetAsset(this, _asset);
 		}
 	}
 }

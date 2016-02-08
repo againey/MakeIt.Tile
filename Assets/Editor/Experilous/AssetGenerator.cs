@@ -11,6 +11,19 @@ namespace Experilous
 
 		public abstract IEnumerator BeginGeneration();
 
+		public static TGenerator CreateInstance<TGenerator>(AssetGeneratorCollection collection) where TGenerator : AssetGenerator
+		{
+			var assetGeneratorAttribute = Utility.GetAttribute<AssetGeneratorAttribute>(typeof(TGenerator));
+			if (assetGeneratorAttribute != null)
+			{
+				return CreateInstance<TGenerator>(collection, assetGeneratorAttribute.name);
+			}
+			else
+			{
+				return CreateInstance<TGenerator>(collection, typeof(TGenerator).GetPrettyName());
+			}
+		}
+
 		public static TGenerator CreateInstance<TGenerator>(AssetGeneratorCollection collection, string name) where TGenerator : AssetGenerator
 		{
 			var generator = CreateInstance<TGenerator>();
@@ -114,7 +127,7 @@ namespace Experilous
 			Initialize(false);
 			foreach (var output in outputs)
 			{
-				output.ResetAsset();
+				output.ClearAsset(false);
 			}
 		}
 
@@ -126,6 +139,10 @@ namespace Experilous
 		public virtual void Update()
 		{
 			Initialize(false);
+		}
+
+		public virtual void Pregenerate()
+		{
 		}
 
 		public void EditScript()

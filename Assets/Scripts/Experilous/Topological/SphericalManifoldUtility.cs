@@ -208,10 +208,10 @@ namespace Experilous.Topological
 
 		public static IVertexAttribute<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions)
 		{
-			return RelaxForEqualArea(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, relaxedVertexPositions, new Vector3[topology.internalFaces.Count].AsFaceAttribute(), new float[topology.faceEdges.Count].AsEdgeAttribute(), new float[topology.vertices.Count].AsVertexAttribute());
+			return RelaxVertexPositionsForEqualArea(topology, vertexPositions, circumsphereRadius, lockBoundaryPositions, relaxedVertexPositions, new Vector3[topology.internalFaces.Count].AsFaceAttribute(), new float[topology.faceEdges.Count].AsEdgeAttribute(), new float[topology.vertices.Count].AsVertexAttribute());
 		}
 
-		public static IVertexAttribute<Vector3> RelaxForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions, IFaceAttribute<Vector3> faceCentroids, IEdgeAttribute<float> faceCentroidAngles, IVertexAttribute<float> vertexAreas)
+		public static IVertexAttribute<Vector3> RelaxVertexPositionsForEqualArea(Topology topology, IVertexAttribute<Vector3> vertexPositions, float circumsphereRadius, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions, IFaceAttribute<Vector3> faceCentroids, IEdgeAttribute<float> faceCentroidAngles, IVertexAttribute<float> vertexAreas)
 		{
 			var idealArea = circumsphereRadius * circumsphereRadius * 4f * Mathf.PI / topology.vertices.Count;
 

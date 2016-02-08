@@ -393,8 +393,8 @@ namespace Experilous.Topological
 						{
 							_openCategory = category;
 						}
+						GUIExtensions.PopEnable();
 					}
-					GUIExtensions.PopEnable();
 				}
 				else
 				{

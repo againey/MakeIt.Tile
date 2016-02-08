@@ -2,13 +2,9 @@
 
 namespace Experilous.Topological
 {
-	public class Vector3EdgeAttribute : EdgeArrayAttribute<Vector3>, System.ICloneable
+	public class Vector3EdgeAttribute : EdgeArrayAttribute<Vector3>
 	{
-		public static Vector3EdgeAttribute CreateInstance() { return CreateDerivedInstance<Vector3EdgeAttribute>(); }
-		public static Vector3EdgeAttribute CreateInstance(Vector3[] array) { return CreateDerivedInstance<Vector3EdgeAttribute>(array); }
-		public static Vector3EdgeAttribute CreateInstance(Vector3[] array, string name) { return CreateDerivedInstance<Vector3EdgeAttribute>(array, name); }
-		public static new Vector3EdgeAttribute CreateInstance(string name) { return CreateDerivedInstance<Vector3EdgeAttribute>(name); }
-		object System.ICloneable.Clone() { return Clone(); }
-		public Vector3EdgeAttribute Clone() { return CloneDerived<Vector3EdgeAttribute>(); }
+		public static Vector3EdgeAttribute Create(Vector3[] array) { return CreateDerived<Vector3EdgeAttribute>(array); }
+		public static Vector3EdgeAttribute Create(int edgeCount) { return CreateDerived<Vector3EdgeAttribute>(edgeCount); }
 	}
 }

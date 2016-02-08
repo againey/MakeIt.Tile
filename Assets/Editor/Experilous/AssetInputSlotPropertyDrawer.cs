@@ -16,7 +16,7 @@ namespace Experilous
 			}
 			else
 			{
-				return 0;
+				return -Mathf.Max(EditorStyles.popup.margin.top, EditorStyles.popup.margin.bottom);
 			}
 		}
 
@@ -44,7 +44,7 @@ namespace Experilous
 				var input = (AssetInputSlot)property.objectReferenceValue;
 				if (input.isActive)
 				{
-					var autoSelectAttribute = GetAttribute<AutoSelectAttribute>(field);
+					var autoSelectAttribute = Utility.GetAttribute<AutoSelectAttribute>(field);
 
 					return ShouldShowInputGUI(input, autoSelectAttribute != null);
 				}
@@ -73,7 +73,7 @@ namespace Experilous
 				var input = (AssetInputSlot)property.objectReferenceValue;
 				if (input.isActive)
 				{
-					var autoSelectAttribute = GetAttribute<AutoSelectAttribute>(field);
+					var autoSelectAttribute = Utility.GetAttribute<AutoSelectAttribute>(field);
 
 					return ShowInputGUI(position, label, input, autoSelectAttribute != null);
 				}
@@ -141,18 +141,6 @@ namespace Experilous
 
 				return true;
 			}
-		}
-
-		private static TAttribute GetAttribute<TAttribute>(FieldInfo field) where TAttribute : Attribute
-		{
-			foreach (var attribute in field.GetCustomAttributes(true))
-			{
-				if (attribute is TAttribute)
-				{
-					return (TAttribute)attribute;
-				}
-			}
-			return null;
 		}
 	}
 }

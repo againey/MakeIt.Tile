@@ -76,7 +76,7 @@ namespace Experilous.Topological
 						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
-							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex]._vNext;
+							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex].vNext;
 							return true;
 						}
 						else
@@ -281,40 +281,11 @@ namespace Experilous.Topological
 	{
 		public T constant;
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : VertexConstantAttribute<T>
-		{
-			return CreateInstance<TDerived>();
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T constant) where TDerived : VertexConstantAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(T constant) where TDerived : VertexConstantAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
 			instance.constant = constant;
 			return instance;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T constant, string name) where TDerived : VertexConstantAttribute<T>
-		{
-			var instance = CreateInstance<TDerived>();
-			instance.constant = constant;
-			instance.name = name;
-			return instance;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : VertexConstantAttribute<T>
-		{
-			var instance = CreateInstance<TDerived>();
-			instance.name = name;
-			return instance;
-		}
-
-		protected TDerived CloneDerived<TDerived>() where TDerived : VertexConstantAttribute<T>
-		{
-			var clone = CreateInstance<TDerived>();
-			clone.constant = constant;
-			clone.name = name;
-			clone.hideFlags = hideFlags;
-			return clone;
 		}
 
 		public override T this[int i]
@@ -352,40 +323,16 @@ namespace Experilous.Topological
 	{
 		public T[] array;
 
-		protected static TDerived CreateDerivedInstance<TDerived>() where TDerived : VertexArrayAttribute<T>
-		{
-			return CreateInstance<TDerived>();
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array) where TDerived : VertexArrayAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(T[] array) where TDerived : VertexArrayAttribute<T>
 		{
 			var attribute = CreateInstance<TDerived>();
 			attribute.array = array;
 			return attribute;
 		}
 
-		protected static TDerived CreateDerivedInstance<TDerived>(T[] array, string name) where TDerived : VertexArrayAttribute<T>
+		protected static TDerived CreateDerived<TDerived>(int vertexCount) where TDerived : VertexArrayAttribute<T>
 		{
-			var attribute = CreateInstance<TDerived>();
-			attribute.array = array;
-			attribute.name = name;
-			return attribute;
-		}
-
-		protected static TDerived CreateDerivedInstance<TDerived>(string name) where TDerived : VertexArrayAttribute<T>
-		{
-			var attribute = CreateInstance<TDerived>();
-			attribute.name = name;
-			return attribute;
-		}
-
-		protected TDerived CloneDerived<TDerived>() where TDerived : VertexArrayAttribute<T>
-		{
-			var clone = CreateInstance<TDerived>();
-			clone.array = (T[])array.Clone();
-			clone.name = name;
-			clone.hideFlags = hideFlags;
-			return clone;
+			return CreateDerived<TDerived>(new T[vertexCount]);
 		}
 
 		public override T this[int i]

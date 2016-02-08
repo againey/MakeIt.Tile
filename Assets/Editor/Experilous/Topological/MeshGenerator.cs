@@ -38,7 +38,7 @@ namespace Experilous.Topological
 			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
 			if (reset || faceNormalsInputSlot == null) faceNormalsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
 			if (reset || faceCentroidsInputSlot == null) faceCentroidsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
-			if (reset || faceColorsInputSlot == null) faceColorsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Color>));
+			if (reset || faceColorsInputSlot == null) faceColorsInputSlot = AssetInputSlot.CreateOptional(this, typeof(IFaceAttribute<Color>));
 
 			// Outputs
 			if (reset || meshCollectionDescriptor == null) meshCollectionDescriptor = AssetDescriptor.CreateGrouped<MeshCollection>(this, "Mesh Collection", "Meshes");
@@ -196,7 +196,7 @@ namespace Experilous.Topological
 			}
 			else
 			{
-				return ConstantColorFaceAttribute.CreateInstance(Color.white);
+				return ConstantColorFaceAttribute.Create(Color.white);
 			}
 		}
 

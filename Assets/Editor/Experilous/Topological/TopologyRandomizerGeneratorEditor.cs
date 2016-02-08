@@ -10,12 +10,9 @@ namespace Experilous.Topological
 		{
 			var generator = (TopologyRandomizerGenerator)target;
 
+			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("surfaceInputSlot"));
 			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("topologyInputSlot"));
 			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("vertexPositionsInputSlot"));
-			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("edgeWrapInputSlot"));
-			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("positionalAttributeAdapterInputSlot"));
-
-			generator.surfaceType = (TopologyRandomizerGenerator.SurfaceType)EditorGUILayout.EnumPopup("Surface Type", generator.surfaceType);
 
 			generator.passCount = EditorGUILayout.IntField("Passes", generator.passCount);
 			generator.frequency = EditorGUILayout.Slider("Frequency", generator.frequency, 0f, 1f);

@@ -17,7 +17,7 @@ namespace Experilous.Topological
 
 					var verticesCanChange =
 						minVertexNeighbors < maxVertexNeighbors &&
-						TopologyUtility.CanSpinEdgeForward(vertexEdge) &&
+						topology.CanSpinEdgeForward(vertexEdge) &&
 						(!lockBoundaryVertices || !vertexEdge.isBoundary && !faceEdge.isBoundary && !vertexEdge.nearVertex.hasExternalFaceNeighbor && !vertexEdge.farVertex.hasExternalFaceNeighbor) &&
 						vertexEdge.farVertex.neighborCount > minVertexNeighbors &&
 						twinVertexEdge.farVertex.neighborCount > minVertexNeighbors &&
@@ -26,7 +26,7 @@ namespace Experilous.Topological
 
 					var facesCanChange =
 						minFaceNeighbors < maxFaceNeighbors &&
-						TopologyUtility.CanSpinEdgeForward(faceEdge) &&
+						topology.CanSpinEdgeForward(faceEdge) &&
 						(!lockBoundaryVertices || !vertexEdge.isBoundary && !faceEdge.isBoundary && !vertexEdge.nearVertex.hasExternalFaceNeighbor && !vertexEdge.farVertex.hasExternalFaceNeighbor) &&
 						(vertexEdge.prevFace.isExternal || vertexEdge.prevFace.neighborCount > minFaceNeighbors) &&
 						(twinVertexEdge.prevFace.isExternal || twinVertexEdge.prevFace.neighborCount > minFaceNeighbors) &&
@@ -40,11 +40,11 @@ namespace Experilous.Topological
 						{
 							if (randomValue < perPassRandomizationFrequency * 0.5f)
 							{
-								TopologyUtility.SpinEdgeForward(vertexEdge);
+								topology.SpinEdgeForward(vertexEdge);
 							}
 							else
 							{
-								TopologyUtility.SpinEdgeForward(faceEdge);
+								topology.SpinEdgeForward(faceEdge);
 							}
 						}
 					}
@@ -54,75 +54,11 @@ namespace Experilous.Topological
 						{
 							if (verticesCanChange)
 							{
-								TopologyUtility.SpinEdgeForward(vertexEdge);
+								topology.SpinEdgeForward(vertexEdge);
 							}
 							else
 							{
-								TopologyUtility.SpinEdgeForward(faceEdge);
-							}
-						}
-					}
-				}
-
-				if (relaxFunction != null) relaxFunction();
-			}
-		}
-
-		public static void Randomize(Topology topology, IEdgeAttribute<EdgeWrap> edgeWrap, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, RandomUtility random, System.Action relaxFunction)
-		{
-			var perPassRandomizationFrequency = frequency / passCount;
-
-			for (int pass = 0; pass < passCount; ++pass)
-			{
-				foreach (var vertexEdge in topology.vertexEdges)
-				{
-					var twinVertexEdge = vertexEdge.twin;
-					var faceEdge = vertexEdge.faceEdge;
-
-					var verticesCanChange =
-						minVertexNeighbors < maxVertexNeighbors &&
-						TopologyUtility.CanSpinEdgeForward(vertexEdge) &&
-						(!lockBoundaryVertices || !vertexEdge.isBoundary && !faceEdge.isBoundary && !vertexEdge.nearVertex.hasExternalFaceNeighbor && !vertexEdge.farVertex.hasExternalFaceNeighbor) &&
-						vertexEdge.farVertex.neighborCount > minVertexNeighbors &&
-						twinVertexEdge.farVertex.neighborCount > minVertexNeighbors &&
-						vertexEdge.faceEdge.next.nextVertex.neighborCount < maxVertexNeighbors &&
-						twinVertexEdge.faceEdge.next.nextVertex.neighborCount < maxVertexNeighbors;
-
-					var facesCanChange =
-						minFaceNeighbors < maxFaceNeighbors &&
-						TopologyUtility.CanSpinEdgeForward(faceEdge) &&
-						(!lockBoundaryVertices || !vertexEdge.isBoundary && !faceEdge.isBoundary && !vertexEdge.nearVertex.hasExternalFaceNeighbor && !vertexEdge.farVertex.hasExternalFaceNeighbor) &&
-						(vertexEdge.prevFace.isExternal || vertexEdge.prevFace.neighborCount > minFaceNeighbors) &&
-						(twinVertexEdge.prevFace.isExternal || twinVertexEdge.prevFace.neighborCount > minFaceNeighbors) &&
-						(vertexEdge.next.nextFace.isExternal || vertexEdge.next.nextFace.neighborCount < maxFaceNeighbors) &&
-						(twinVertexEdge.next.nextFace.isExternal || twinVertexEdge.next.nextFace.neighborCount < maxFaceNeighbors);
-
-					if (verticesCanChange && facesCanChange)
-					{
-						var randomValue = random.HalfOpenFloatUnit();
-						if (randomValue < perPassRandomizationFrequency)
-						{
-							if (randomValue < perPassRandomizationFrequency * 0.5f)
-							{
-								TopologyUtility.SpinEdgeForward(vertexEdge, edgeWrap);
-							}
-							else
-							{
-								TopologyUtility.SpinEdgeForward(faceEdge, edgeWrap);
-							}
-						}
-					}
-					else if (verticesCanChange || facesCanChange)
-					{
-						if (random.HalfOpenFloatUnit() < perPassRandomizationFrequency)
-						{
-							if (verticesCanChange)
-							{
-								TopologyUtility.SpinEdgeForward(vertexEdge, edgeWrap);
-							}
-							else
-							{
-								TopologyUtility.SpinEdgeForward(faceEdge, edgeWrap);
+								topology.SpinEdgeForward(faceEdge);
 							}
 						}
 					}

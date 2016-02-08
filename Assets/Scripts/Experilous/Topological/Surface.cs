@@ -1,0 +1,58 @@
+﻿using UnityEngine;
+
+namespace Experilous.Topological
+{
+	public interface ISurface
+	{
+		bool isFlat { get; }
+		bool isCurved { get; }
+
+		bool isConvex { get; }
+		bool isConcave { get; }
+
+		Vector3 OffsetVertToVertAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 OffsetVertToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 OffsetVertToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 OffsetEdgeToVertAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 OffsetEdgeToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 OffsetFaceToVertAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 OffsetFaceToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 OffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
+
+		Vector3 ReverseOffsetVertToVertAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 ReverseOffsetVertToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 ReverseOffsetVertToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 ReverseOffsetEdgeToVertAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 ReverseOffsetEdgeToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 ReverseOffsetFaceToVertAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 ReverseOffsetFaceToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap);
+		Vector3 ReverseOffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
+	}
+
+	public abstract class Surface : ScriptableObject
+	{
+		public abstract bool isFlat { get; }
+		public abstract bool isCurved { get; }
+
+		public abstract bool isConvex { get; }
+		public abstract bool isConcave { get; }
+
+		public virtual Vector3 OffsetVertToVertAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 OffsetVertToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 OffsetVertToFaceAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 OffsetEdgeToVertAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 OffsetEdgeToFaceAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 OffsetFaceToVertAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 OffsetFaceToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 OffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+
+		public virtual Vector3 ReverseOffsetVertToVertAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 ReverseOffsetVertToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 ReverseOffsetVertToFaceAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 ReverseOffsetEdgeToVertAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 ReverseOffsetEdgeToFaceAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 ReverseOffsetFaceToVertAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 ReverseOffsetFaceToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+		public virtual Vector3 ReverseOffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
+	}
+}

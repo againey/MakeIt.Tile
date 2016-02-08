@@ -74,7 +74,7 @@ namespace Experilous.Topological
 		public override IEnumerator BeginGeneration()
 		{
 			var topology = topologyInputSlot.GetAsset<Topology>();
-			var vertexNormals = Vector3VertexAttribute.CreateInstance(new Vector3[topology.vertices.Count], "Vertex Normals");
+			var vertexNormals = Vector3VertexAttribute.Create(new Vector3[topology.vertices.Count]).SetName("Vertex Normals");
 
 			var waitHandle = collection.GenerateConcurrently(() =>
 			{

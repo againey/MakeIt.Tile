@@ -17,13 +17,6 @@ namespace Experilous.Topological
 			return instance;
 		}
 
-		public static ArrayFaceGroup Create(Topology topology, int[] faceIndices, string name)
-		{
-			var instance = Create(topology, faceIndices);
-			instance.name = name;
-			return instance;
-		}
-
 		public override int Count { get { return faceIndices.Length; } }
 
 		protected override Topology topology { get { return _topology; } }
