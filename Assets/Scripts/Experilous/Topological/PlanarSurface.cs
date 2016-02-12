@@ -19,53 +19,42 @@ namespace Experilous.Topological
 	{
 		public PlanarAxis axis0;
 		public PlanarAxis axis1;
+		public Vector3 origin;
 		public Vector3 normal;
 		public bool isInverted;
 
 		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, bool isInverted = false)
-		{
-			axis0 = new PlanarAxis(axisVector0);
-			axis1 = new PlanarAxis(axisVector1);
-			normal = Vector3.Cross(axis1.vector, axis0.vector).normalized * (isInverted ? -1f : 1f);
-			this.isInverted = isInverted;
-		}
+			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), Vector3.zero, isInverted) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 origin, bool isInverted = false)
+			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), origin, isInverted) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 origin, Vector3 normal)
+			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), origin, normal) { }
 
 		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, bool isInverted = false)
+			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), Vector3.zero, isInverted) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 origin, bool isInverted = false)
+			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), origin, isInverted) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 origin, Vector3 normal)
+			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), origin, normal) { }
+
+		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, bool isInverted = false)
 		{
-			axis0 = new PlanarAxis(axisVector0, isAxisWrapped0);
-			axis1 = new PlanarAxis(axisVector1, isAxisWrapped1);
+			this.axis0 = axis0;
+			this.axis1 = axis1;
+			this.origin = origin;
 			normal = Vector3.Cross(axis1.vector, axis0.vector).normalized * (isInverted ? -1f : 1f);
 			this.isInverted = isInverted;
 		}
 
-		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, bool isInverted = false)
+		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, Vector3 normal)
 		{
 			this.axis0 = axis0;
 			this.axis1 = axis1;
-			normal = Vector3.Cross(axis1.vector, axis0.vector).normalized * (isInverted ? -1f : 1f);
-			this.isInverted = isInverted;
-		}
-
-		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 normal)
-		{
-			axis0 = new PlanarAxis(axisVector0);
-			axis1 = new PlanarAxis(axisVector1);
-			this.normal = normal.normalized;
-			isInverted = Vector3.Dot(normal, Vector3.Cross(axis1.vector, axis0.vector)) < 0f;
-		}
-
-		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 normal)
-		{
-			axis0 = new PlanarAxis(axisVector0, isAxisWrapped0);
-			axis1 = new PlanarAxis(axisVector1, isAxisWrapped1);
-			this.normal = normal.normalized;
-			isInverted = Vector3.Dot(normal, Vector3.Cross(axis1.vector, axis0.vector)) < 0f;
-		}
-
-		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 normal)
-		{
-			this.axis0 = axis0;
-			this.axis1 = axis1;
+			this.origin = origin;
 			this.normal = normal.normalized;
 			isInverted = Vector3.Dot(normal, Vector3.Cross(axis1.vector, axis0.vector)) < 0f;
 		}
@@ -75,24 +64,31 @@ namespace Experilous.Topological
 	{
 		public PlanarAxis axis0;
 		public PlanarAxis axis1;
-		public Vector3 normal;
+		public Vector3 origin;
+		public Vector3 surfaceNormal;
+		public Vector3 axis0Normal;
+		public Vector3 axis1Normal;
 		public bool isInverted;
 
 		public static PlanarSurface Create(PlanarDescriptor descriptor)
 		{
-			var instance = CreateInstance<PlanarSurface>();
-			instance.axis0 = descriptor.axis0;
-			instance.axis1 = descriptor.axis1;
-			instance.normal = descriptor.normal;
-			instance.isInverted = descriptor.isInverted;
-			return instance;
+			return CreateInstance<PlanarSurface>().Reset(descriptor);
 		}
 
-		public static PlanarSurface Create(PlanarDescriptor descriptor, string name)
+		public PlanarSurface Reset(PlanarDescriptor descriptor)
 		{
-			var instance = Create(descriptor);
-			instance.name = name;
-			return instance;
+			axis0 = descriptor.axis0;
+			axis1 = descriptor.axis1;
+			origin = descriptor.origin;
+			surfaceNormal = descriptor.normal;
+			isInverted = descriptor.isInverted;
+
+			axis0Normal = Vector3.Cross(axis0.vector, surfaceNormal);
+			axis1Normal = Vector3.Cross(axis1.vector, surfaceNormal);
+			if (Vector3.Dot(axis0Normal, axis1.vector) < 0f) axis0Normal = -axis0Normal;
+			if (Vector3.Dot(axis1Normal, axis0.vector) < 0f) axis1Normal = -axis1Normal;
+
+			return this;
 		}
 
 		public PlanarAxis GetAxis(int axisIndex)
@@ -120,6 +116,43 @@ namespace Experilous.Topological
 
 		public override bool isConvex { get { return true; } }
 		public override bool isConcave { get { return false; } }
+
+		public Index2D GetWrapIndex2D(Vector3 position)
+		{
+			Index2D index2D = new Index2D(0, 0);
+			var relativePosition = position - origin;
+			if (axis0.isWrapped)
+			{
+				var numerator = Vector3.Dot(axis1Normal, relativePosition);
+				var denominator = Vector3.Dot(axis1Normal, axis0.vector);
+				index2D.x = Mathf.FloorToInt(numerator / -denominator);
+			}
+			if (axis1.isWrapped)
+			{
+				var numerator = Vector3.Dot(axis0Normal, relativePosition);
+				var denominator = Vector3.Dot(axis0Normal, axis1.vector);
+				index2D.y = Mathf.FloorToInt(numerator / -denominator);
+			}
+			return index2D;
+		}
+
+		public Vector3 GetWrappedPosition(Vector3 position)
+		{
+			var relativePosition = position - origin;
+			if (axis0.isWrapped)
+			{
+				var numerator = Vector3.Dot(axis1Normal, relativePosition);
+				var denominator = Vector3.Dot(axis1Normal, axis0.vector);
+				position += Mathf.Floor(numerator / denominator) * axis0.vector;
+			}
+			if (axis1.isWrapped)
+			{
+				var numerator = Vector3.Dot(axis0Normal, relativePosition);
+				var denominator = Vector3.Dot(axis0Normal, axis1.vector);
+				position += Mathf.Floor(numerator / denominator) * axis1.vector;
+			}
+			return position;
+		}
 
 		private Vector3 OffsetAttribute(Vector3 position, EdgeWrapUtility.Generic edgeWrap)
 		{

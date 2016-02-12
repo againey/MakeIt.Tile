@@ -235,6 +235,7 @@ namespace Experilous.Topological
 				new PlanarDescriptor(
 					new PlanarAxis(finalHorizontalAxis, (wrapOptions & WrapOptions.WrapHorizontally) != 0),
 					new PlanarAxis(finalVerticalAxis, (wrapOptions & WrapOptions.WrapVertically) != 0),
+					originPosition,
 					finalNormal),
 				size);
 
@@ -484,6 +485,7 @@ namespace Experilous.Topological
 					new PlanarDescriptor(
 						new PlanarAxis(finalHorizontalAxis, (wrapOptions & WrapOptions.WrapHorizontally) != 0),
 						new PlanarAxis(finalVerticalAxis, (wrapOptions & WrapOptions.WrapVertically) != 0),
+						originPosition,
 						finalNormal),
 					new HexGridDescriptor(finalHorizontalAxisStyle, finalVerticalAxisStyle, finalAxisRelation, finalVariableRowLength),
 					size);

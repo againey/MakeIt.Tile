@@ -30,12 +30,9 @@ namespace Experilous.Topological
 
 		public RectangularQuadGrid Reset(PlanarDescriptor planarDescriptor, Index2D size)
 		{
-			axis0 = planarDescriptor.axis0;
-			axis1 = planarDescriptor.axis1;
+			Reset(planarDescriptor);
 			faceAxis0 = planarDescriptor.axis0.vector;
 			faceAxis1 = planarDescriptor.axis1.vector;
-			normal = planarDescriptor.normal;
-			isInverted = planarDescriptor.isInverted;
 			this.size = size;
 			Initialize();
 			return this;
@@ -85,6 +82,7 @@ namespace Experilous.Topological
 			{
 				var index2D = GetVertexIndex2D(i);
 				vertexPositions[i] =
+					origin +
 					index2D.x * faceAxis0 +
 					index2D.y * faceAxis1;
 			}

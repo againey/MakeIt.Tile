@@ -102,12 +102,9 @@ namespace Experilous.Topological
 
 		public RectangularHexGrid Reset(PlanarDescriptor planarDescriptor, HexGridDescriptor hexDescriptor, Index2D size)
 		{
-			axis0 = planarDescriptor.axis0;
-			axis1 = planarDescriptor.axis1;
+			Reset(planarDescriptor);
 			faceAxis0 = planarDescriptor.axis0.vector;
 			faceAxis1 = planarDescriptor.axis1.vector;
-			normal = planarDescriptor.normal;
-			isInverted = planarDescriptor.isInverted;
 			axis0Style = hexDescriptor.axisStyle0;
 			axis1Style = hexDescriptor.axisStyle1;
 			axisRelation = hexDescriptor.axisRelation;
@@ -426,7 +423,7 @@ namespace Experilous.Topological
 			{
 				int col, row;
 				GetVertexColRow(i, out col, out row);
-				var vertexPosition = col * rowAxis + (row / 2) * columnAxisDouble;
+				var vertexPosition = origin + col * rowAxis + (row / 2) * columnAxisDouble;
 				if (MathUtility.IsOdd(col)) vertexPosition += rowAxisOddOffset;
 				if (MathUtility.IsOdd(row)) vertexPosition += columnAxisOddOffset;
 				vertexPositions[i] = vertexPosition;
