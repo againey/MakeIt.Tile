@@ -16,7 +16,7 @@ namespace Experilous.Topological
 
 		public SphericalDescriptor(Vector3 primaryPoleNormal, float radius)
 		{
-			this.primaryPoleNormal = primaryPoleNormal;
+			this.primaryPoleNormal = primaryPoleNormal.normalized;
 			this.radius = radius;
 		}
 	}
@@ -43,5 +43,29 @@ namespace Experilous.Topological
 
 		public override bool isConvex { get { return true; } }
 		public override bool isConcave { get { return false; } }
+
+		public override Vector3 Project(Vector3 position)
+		{
+			if (position != Vector3.zero)
+			{
+				return position.Scaled(radius);
+			}
+			else
+			{
+				return primaryPoleNormal.Scaled(radius);
+			}
+		}
+
+		public override Vector3 GetNormal(Vector3 position)
+		{
+			if (position != Vector3.zero)
+			{
+				return position.normalized;
+			}
+			else
+			{
+				return primaryPoleNormal;
+			}
+		}
 	}
 }

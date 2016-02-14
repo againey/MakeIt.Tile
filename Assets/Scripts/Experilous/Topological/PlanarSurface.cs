@@ -117,6 +117,19 @@ namespace Experilous.Topological
 		public override bool isConvex { get { return true; } }
 		public override bool isConcave { get { return false; } }
 
+		public override Vector3 Project(Vector3 position)
+		{
+			var normal = Vector3.Cross(axis1.vector, axis0.vector);
+			var plane = new Plane(normal, origin);
+			var line = new Ray(position, normal);
+			return MathUtility.Intersect(plane, line);
+		}
+
+		public override Vector3 GetNormal(Vector3 position)
+		{
+			return surfaceNormal;
+		}
+
 		public Index2D GetWrapIndex2D(Vector3 position)
 		{
 			Index2D index2D = new Index2D(0, 0);

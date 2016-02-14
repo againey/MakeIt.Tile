@@ -2,47 +2,55 @@
 using System.Collections;
 using System.Collections.Generic;
 using Experilous.Randomization;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(UtilitiesCategory), "Random Face Groups")]
-	public class RandomFaceGroupsGenerator : AssetGenerator
+	public class RandomFaceGroupsGenerator : Generator
 	{
-		[AutoSelect] public AssetInputSlot topologyInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
 
-		public int groupCount = 1;
-		public bool clustered = true;
+		public int groupCount;
+		public bool clustered;
 
-		public AssetGeneratorRandomization randomization;
+		public RandomnessDescriptor randomness;
 
-		public AssetDescriptor faceGroupCollectionDescriptor;
-		public AssetDescriptor faceGroupIndicesDescriptor;
-		public AssetDescriptor[] faceGroupDescriptors;
+		public OutputSlot faceGroupCollectionDescriptor;
+		public OutputSlot faceGroupIndicesDescriptor;
+		public OutputSlot[] faceGroupDescriptors;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 
 			// Fields
-			randomization.Initialize(this, reset);
+			groupCount = 1;
+			clustered = true;
+			randomness.Initialize(this);
 
 			// Outputs
-			if (reset || faceGroupCollectionDescriptor == null) faceGroupCollectionDescriptor = AssetDescriptor.CreateGrouped<FaceGroupCollection>(this, "Random Face Groups", "Random Face Groups");
-			if (reset || faceGroupIndicesDescriptor == null) faceGroupIndicesDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<int>>(this, "Face Group Indices", "Attributes");
-			if (reset || faceGroupDescriptors == null) faceGroupDescriptors = new AssetDescriptor[0];
+			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionDescriptor, this, "Random Face Groups", "Random Face Groups");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesDescriptor, this, "Random Face Group Indices", "Attributes");
+			faceGroupDescriptors = new OutputSlot[0];
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		protected override void OnUpdate()
+		{
+			randomness.Update();
+		}
+
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
 				yield return topologyInputSlot;
-				foreach (var input in randomization.inputs) yield return input;
+				yield return randomness.randomEngineSeedInputSlot;
 			}
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -56,13 +64,13 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetReferenceDescriptor> references
+		public override IEnumerable<InternalSlotConnection> internalConnections
 		{
 			get
 			{
 				foreach (var faceGroupDescriptor in faceGroupDescriptors)
 				{
-					yield return faceGroupDescriptor.ReferencedBy(faceGroupCollectionDescriptor);
+					yield return faceGroupCollectionDescriptor.Uses(faceGroupDescriptor);
 				}
 			}
 		}
@@ -75,7 +83,7 @@ namespace Experilous.Topological
 
 			//if (clustered || true) //TODO create an unclustered version
 			{
-				var random = new RandomUtility(randomization.GetRandomEngine());
+				var random = new RandomUtility(randomness.GetRandomEngine());
 
 				var visitor = new RandomAdjacentFaceVisitor(topology, random.engine);
 
@@ -83,7 +91,7 @@ namespace Experilous.Topological
 
 				faceGroupFaceIndices = new List<int>[clampedRootCount];
 
-				var waitHandle = collection.GenerateConcurrently(() =>
+				var waitHandle = executive.GenerateConcurrently(() =>
 				{
 					for (int faceGroupIndex = 0; faceGroupIndex < clampedRootCount; ++faceGroupIndex)
 					{
@@ -112,15 +120,16 @@ namespace Experilous.Topological
 				}
 			}
 
-			faceGroupDescriptors = AssetGeneratorUtility.ResizeArray(faceGroupDescriptors, faceGroupFaceIndices.Length,
+			faceGroupDescriptors = GeneratorUtility.ResizeArray(faceGroupDescriptors, faceGroupFaceIndices.Length,
 				(int index) =>
 				{
-					return AssetDescriptor.CreateGrouped<FaceGroup>(this, string.Format("Face Cluster {0}", index), faceGroupCollectionDescriptor.name);
+					return OutputSlot.CreateGrouped<FaceGroup>(this, string.Format("Face Cluster {0}", index), faceGroupCollectionDescriptor.name);
 				},
-				(AssetDescriptor descriptor, int index) =>
+				(OutputSlot output, int index) =>
 				{
-					descriptor.path = faceGroupCollectionDescriptor.name;
-					return descriptor;
+					output.DisconnectAll();
+					output.path = faceGroupCollectionDescriptor.name;
+					return output;
 				});
 
 			var faceGroupCollection = FaceGroupCollection.Create(faceGroupFaceIndices.Length);

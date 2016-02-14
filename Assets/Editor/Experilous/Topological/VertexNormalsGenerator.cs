@@ -1,69 +1,69 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(VertexAttributesCategory), "Vertex Normals")]
-	public class VertexNormalsGenerator : AssetGenerator
+	public class VertexNormalsGenerator : Generator
 	{
 		public enum CalculationMethod
 		{
+			FromSurfaceNormal,
 			FromVertexPositions,
 			FromFacePositions,
 			FromFaceNormals,
-			FromSphericalVertexPositions,
 		}
 
 		public CalculationMethod calculationMethod;
 
-		[AutoSelect] public AssetInputSlot topologyInputSlot;
-		public AssetInputSlot vertexPositionsInputSlot;
-		public AssetInputSlot facePositionsInputSlot;
-		public AssetInputSlot faceNormalsInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
+		[AutoSelect] public InputSlot surfaceInputSlot;
+		public InputSlot vertexPositionsInputSlot;
+		public InputSlot facePositionsInputSlot;
+		public InputSlot faceNormalsInputSlot;
 
-		public AssetDescriptor vertexNormalsDescriptor;
+		public OutputSlot vertexNormalsDescriptor;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
-			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
-			if (reset || facePositionsInputSlot == null) facePositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
-			if (reset || faceNormalsInputSlot == null) faceNormalsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
+			InputSlot.CreateOrResetRequired<Surface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequired<IVertexAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
+			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref facePositionsInputSlot, this);
+			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref faceNormalsInputSlot, this);
+
+			// Fields
+			calculationMethod = CalculationMethod.FromSurfaceNormal;
 
 			// Outputs
-			if (reset || vertexNormalsDescriptor == null) vertexNormalsDescriptor = AssetDescriptor.CreateGrouped<IVertexAttribute<Vector3>>(this, "Vertex Normals", "Attributes");
+			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexNormalsDescriptor, this, "Vertex Normals", "Attributes");
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		protected override void OnUpdate()
+		{
+			surfaceInputSlot.isActive = (calculationMethod == CalculationMethod.FromSurfaceNormal);
+			vertexPositionsInputSlot.isActive = (calculationMethod == CalculationMethod.FromSurfaceNormal || calculationMethod == CalculationMethod.FromVertexPositions);
+			facePositionsInputSlot.isActive = (calculationMethod == CalculationMethod.FromFacePositions);
+			faceNormalsInputSlot.isActive = (calculationMethod == CalculationMethod.FromFaceNormals);
+		}
+
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
-				switch (calculationMethod)
-				{
-					case CalculationMethod.FromVertexPositions:
-						yield return topologyInputSlot;
-						yield return vertexPositionsInputSlot;
-						break;
-					case CalculationMethod.FromFacePositions:
-						yield return topologyInputSlot;
-						yield return facePositionsInputSlot;
-						break;
-					case CalculationMethod.FromFaceNormals:
-						yield return topologyInputSlot;
-						yield return faceNormalsInputSlot;
-						break;
-					case CalculationMethod.FromSphericalVertexPositions:
-						yield return vertexPositionsInputSlot;
-						break;
-					default:
-						throw new System.NotImplementedException();
-				}
+				yield return topologyInputSlot;
+				yield return surfaceInputSlot;
+				yield return vertexPositionsInputSlot;
+				yield return vertexPositionsInputSlot;
+				yield return facePositionsInputSlot;
+				yield return faceNormalsInputSlot;
 			}
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -76,10 +76,13 @@ namespace Experilous.Topological
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexNormals = Vector3VertexAttribute.Create(new Vector3[topology.vertices.Count]).SetName("Vertex Normals");
 
-			var waitHandle = collection.GenerateConcurrently(() =>
+			yield return executive.GenerateConcurrently(() =>
 			{
 				switch (calculationMethod)
 				{
+					case CalculationMethod.FromSurfaceNormal:
+						VertexAttributeUtility.CalculateVertexNormalsFromSurface(topology.vertices, surfaceInputSlot.GetAsset<Surface>(), vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), vertexNormals);
+						break;
 					case CalculationMethod.FromVertexPositions:
 						VertexAttributeUtility.CalculateVertexNormalsFromVertexPositions(topology.vertices, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), vertexNormals);
 						break;
@@ -89,17 +92,10 @@ namespace Experilous.Topological
 					case CalculationMethod.FromFaceNormals:
 						VertexAttributeUtility.CalculateVertexNormalsFromFaceNormals(topology.vertices, faceNormalsInputSlot.GetAsset<IFaceAttribute<Vector3>>(), vertexNormals);
 						break;
-					case CalculationMethod.FromSphericalVertexPositions:
-						VertexAttributeUtility.CalculateSphericalVertexNormalsFromVertexPositions(topology.vertices, vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>(), vertexNormals);
-						break;
 					default:
 						throw new System.NotImplementedException();
 				}
 			});
-			while (waitHandle.WaitOne(10) == false)
-			{
-				yield return null;
-			}
 
 			vertexNormalsDescriptor.SetAsset(vertexNormals);
 

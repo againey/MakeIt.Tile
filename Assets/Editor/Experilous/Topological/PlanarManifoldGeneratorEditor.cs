@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[CustomEditor(typeof(PlanarManifoldGenerator))]
-	public class PlanarManifoldGeneratorEditor : AssetGeneratorEditor
+	public class PlanarManifoldGeneratorEditor : GeneratorEditor
 	{
 		public enum RestrictedHorizontalAxisOptions
 		{
@@ -16,6 +17,8 @@ namespace Experilous.Topological
 		{
 			BottomToTop,
 			TopToBottom,
+			NearToFar,
+			FarToNear,
 		}
 
 		protected override void OnPropertiesGUI()
@@ -47,6 +50,8 @@ namespace Experilous.Topological
 					{
 						case PlanarManifoldGenerator.VerticalAxisOptions.BottomToTop:
 						case PlanarManifoldGenerator.VerticalAxisOptions.TopToBottom:
+						case PlanarManifoldGenerator.VerticalAxisOptions.NearToFar:
+						case PlanarManifoldGenerator.VerticalAxisOptions.FarToNear:
 							generator.verticalAxisLength = EditorGUILayout.FloatField("Vertical Axis Length", generator.verticalAxisLength);
 							break;
 						case PlanarManifoldGenerator.VerticalAxisOptions.Custom:
@@ -105,6 +110,8 @@ namespace Experilous.Topological
 							{
 								case PlanarManifoldGenerator.VerticalAxisOptions.BottomToTop:
 								case PlanarManifoldGenerator.VerticalAxisOptions.TopToBottom:
+								case PlanarManifoldGenerator.VerticalAxisOptions.NearToFar:
+								case PlanarManifoldGenerator.VerticalAxisOptions.FarToNear:
 									generator.verticalAxisLength = EditorGUILayout.FloatField("Vertical Axis Length", generator.verticalAxisLength);
 									break;
 								case PlanarManifoldGenerator.VerticalAxisOptions.Custom:

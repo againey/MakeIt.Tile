@@ -2,45 +2,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using Experilous.Randomization;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(FaceAttributesCategory), "Group Random Colors")]
-	public class FaceGroupRandomColorGenerator : AssetGenerator
+	public class FaceGroupRandomColorGenerator : Generator
 	{
-		public AssetInputSlot faceGroupCollectionInputSlot;
-		public AssetInputSlot faceGroupIndicesInputSlot;
+		public InputSlot faceGroupCollectionInputSlot;
+		public InputSlot faceGroupIndicesInputSlot;
 
-		public AssetGeneratorRandomization randomization;
+		public RandomnessDescriptor randomness;
 
-		public AssetDescriptor faceGroupColorsDescriptor;
-		public AssetDescriptor faceColorsDescriptor;
+		public OutputSlot faceGroupColorsDescriptor;
+		public OutputSlot faceColorsDescriptor;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || faceGroupCollectionInputSlot == null) faceGroupCollectionInputSlot = AssetInputSlot.CreateRequired(this, typeof(FaceGroupCollection));
-			if (reset || faceGroupIndicesInputSlot == null) faceGroupIndicesInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<int>));
+			InputSlot.CreateOrResetRequired<FaceGroupCollection>(ref faceGroupCollectionInputSlot, this);
+			InputSlot.CreateOrResetRequired<IFaceAttribute<int>>(ref faceGroupIndicesInputSlot, this);
 
 			// Fields
-			randomization.Initialize(this, reset);
+			randomness.Initialize(this);
 
 			// Outputs
-			if (reset || faceGroupColorsDescriptor == null) faceGroupColorsDescriptor = AssetDescriptor.CreateGrouped<IFaceGroupAttribute<Color>>(this, "Random Face Group Colors", "Attributes");
-			if (reset || faceColorsDescriptor == null) faceColorsDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<Color>>(this, "Random Face Colors", "Attributes");
+			OutputSlot.CreateOrResetGrouped<IFaceGroupAttribute<Color>>(ref faceGroupColorsDescriptor, this, "Random Face Group Colors", "Attributes");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Color>>(ref faceColorsDescriptor, this, "Random Face Colors", "Attributes");
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
 				yield return faceGroupCollectionInputSlot;
 				yield return faceGroupIndicesInputSlot;
-				foreach (var input in randomization.inputs) yield return input;
+				yield return randomness.randomEngineSeedInputSlot;
 			}
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -55,7 +56,7 @@ namespace Experilous.Topological
 			var faceGroups = faceGroupCollection.faceGroups;
 			var faceGroupColorsArray = new Color[faceGroups.Length];
 
-			var random = new RandomUtility(randomization.GetRandomEngine());
+			var random = new RandomUtility(randomness.GetRandomEngine());
 
 			for (int i = 0; i < faceGroups.Length; ++i)
 			{

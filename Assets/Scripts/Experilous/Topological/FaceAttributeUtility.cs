@@ -51,6 +51,21 @@ namespace Experilous.Topological
 
 		#region IList<float> CalculateFaceNormals...(...)
 
+		public static IFaceAttribute<Vector3> CalculateFaceNormalsFromSurface(Topology.FacesIndexer faces, Surface surface, IFaceAttribute<Vector3> facePositions)
+		{
+			return CalculateFaceNormalsFromSurface(faces, surface, facePositions, new Vector3[faces.Count].AsFaceAttribute());
+		}
+
+		public static IFaceAttribute<Vector3> CalculateFaceNormalsFromSurface(Topology.FacesIndexer faces, Surface surface, IFaceAttribute<Vector3> facePositions, IFaceAttribute<Vector3> faceNormals)
+		{
+			foreach (var face in faces)
+			{
+				faceNormals[face] = surface.GetNormal(facePositions[face]);
+			}
+
+			return faceNormals;
+		}
+
 		public static IFaceAttribute<Vector3> CalculateFaceNormalsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions)
 		{
 			return CalculateFaceNormalsFromFacePositions(faces, facePositions, new Vector3[faces.Count].AsFaceAttribute());

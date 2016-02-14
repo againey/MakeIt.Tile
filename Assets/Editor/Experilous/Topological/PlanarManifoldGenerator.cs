@@ -2,11 +2,12 @@
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(TopologyCategory), "Planar Manifold")]
-	public class PlanarManifoldGenerator : AssetGenerator
+	public class PlanarManifoldGenerator : Generator
 	{
 		public enum PlanarTileShapes
 		{
@@ -34,6 +35,8 @@ namespace Experilous.Topological
 		{
 			BottomToTop,
 			TopToBottom,
+			NearToFar,
+			FarToNear,
 			Custom,
 		}
 
@@ -60,30 +63,32 @@ namespace Experilous.Topological
 			Automatic,
 			Forward,
 			Back,
+			Up,
+			Down,
 			Custom,
 		}
 
-		public PlanarTileShapes planarTileShape = PlanarTileShapes.Quadrilateral;
-		public Index2D size = new Index2D(64, 64);
-		public HorizontalAxisOptions quadGridHorizontalAxisOptions = HorizontalAxisOptions.LeftToRight;
-		public VerticalAxisOptions quadGridVerticalAxisOptions = VerticalAxisOptions.BottomToTop;
-		public HexGridAxisStyleOptions hexGridAxisStyleOptions = HexGridAxisStyleOptions.ObliqueAcute;
-		public HexGridAxisOptions hexGridAxisOptions = HexGridAxisOptions.AngledVerticalAxis;
-		public HorizontalAxisOptions hexGridHorizontalAxisOptions = HorizontalAxisOptions.LeftToRight;
-		public VerticalAxisOptions hexGridVerticalAxisOptions = VerticalAxisOptions.BottomToTop;
-		public Vector3 horizontalAxis = Vector3.right;
-		public Vector3 verticalAxis = Vector3.up;
-		public float horizontalAxisLength = 1f;
-		public float verticalAxisLength = 1f;
-		public bool variableRowLength = false;
-		public NormalOptions normalOptions = NormalOptions.Back;
-		public Vector3 normal = Vector3.back;
-		public Vector3 originPosition = Vector3.zero;
-		public WrapOptions wrapOptions = WrapOptions.NoWrap;
+		public PlanarTileShapes planarTileShape;
+		public Index2D size;
+		public HorizontalAxisOptions quadGridHorizontalAxisOptions;
+		public VerticalAxisOptions quadGridVerticalAxisOptions;
+		public HexGridAxisStyleOptions hexGridAxisStyleOptions;
+		public HexGridAxisOptions hexGridAxisOptions;
+		public HorizontalAxisOptions hexGridHorizontalAxisOptions;
+		public VerticalAxisOptions hexGridVerticalAxisOptions;
+		public Vector3 horizontalAxis;
+		public Vector3 verticalAxis;
+		public float horizontalAxisLength;
+		public float verticalAxisLength;
+		public bool variableRowLength;
+		public NormalOptions normalOptions;
+		public Vector3 normal;
+		public Vector3 originPosition;
+		public WrapOptions wrapOptions;
 
-		public AssetDescriptor surfaceDescriptor;
-		public AssetDescriptor topologyDescriptor;
-		public AssetDescriptor vertexPositionsDescriptor;
+		public OutputSlot surfaceDescriptor;
+		public OutputSlot topologyDescriptor;
+		public OutputSlot vertexPositionsDescriptor;
 
 		[SerializeField] private bool _pregenerationFailed = false;
 
@@ -102,15 +107,34 @@ namespace Experilous.Topological
 			collection.CreateAsset();
 		}
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
+			// Fields
+			planarTileShape = PlanarTileShapes.Quadrilateral;
+			size = new Index2D(64, 64);
+			quadGridHorizontalAxisOptions = HorizontalAxisOptions.LeftToRight;
+			quadGridVerticalAxisOptions = VerticalAxisOptions.BottomToTop;
+			hexGridAxisStyleOptions = HexGridAxisStyleOptions.ObliqueAcute;
+			hexGridAxisOptions = HexGridAxisOptions.AngledVerticalAxis;
+			hexGridHorizontalAxisOptions = HorizontalAxisOptions.LeftToRight;
+			hexGridVerticalAxisOptions = VerticalAxisOptions.BottomToTop;
+			horizontalAxis = Vector3.right;
+			verticalAxis = Vector3.up;
+			horizontalAxisLength = 1f;
+			verticalAxisLength = 1f;
+			variableRowLength = false;
+			normalOptions = NormalOptions.Back;
+			normal = Vector3.back;
+			originPosition = Vector3.zero;
+			wrapOptions = WrapOptions.NoWrap;
+
 			// Outputs
-			if (reset || surfaceDescriptor == null) surfaceDescriptor = AssetDescriptor.CreateGrouped<PlanarSurface>(this, "Surface", "Descriptors");
-			if (reset || topologyDescriptor == null) topologyDescriptor = AssetDescriptor.CreateGrouped<Topology>(this, "Topology", "Descriptors");
-			if (reset || vertexPositionsDescriptor == null) vertexPositionsDescriptor = AssetDescriptor.CreateGrouped<IVertexAttribute<Vector3>>(this, "Vertex Positions", "Attributes");
+			OutputSlot.CreateOrResetGrouped<PlanarSurface>(ref surfaceDescriptor, this, "Surface", "Descriptors");
+			OutputSlot.CreateOrResetGrouped<Topology>(ref topologyDescriptor, this, "Topology", "Descriptors");
+			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexPositionsDescriptor, this, "Vertex Positions", "Attributes");
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -120,15 +144,15 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetReferenceDescriptor> references
+		public override IEnumerable<InternalSlotConnection> internalConnections
 		{
 			get
 			{
-				yield return topologyDescriptor.ReferencedBy(surfaceDescriptor);
+				yield return surfaceDescriptor.Uses(topologyDescriptor);
 			}
 		}
 
-		public override void Pregenerate()
+		protected override void OnUpdate()
 		{
 			try
 			{
@@ -217,6 +241,8 @@ namespace Experilous.Topological
 			{
 				case VerticalAxisOptions.BottomToTop: finalVerticalAxis = Vector3.up * verticalAxisLength; break;
 				case VerticalAxisOptions.TopToBottom: finalVerticalAxis = Vector3.down * verticalAxisLength; break;
+				case VerticalAxisOptions.NearToFar: finalVerticalAxis = Vector3.forward * verticalAxisLength; break;
+				case VerticalAxisOptions.FarToNear: finalVerticalAxis = Vector3.back * verticalAxisLength; break;
 				case VerticalAxisOptions.Custom: finalVerticalAxis = verticalAxis; break;
 				default: throw new System.NotImplementedException();
 			}
@@ -227,6 +253,8 @@ namespace Experilous.Topological
 				case NormalOptions.Automatic: finalNormal = Vector3.Cross(finalVerticalAxis, finalHorizontalAxis).normalized; break;
 				case NormalOptions.Forward: finalNormal = Vector3.forward; break;
 				case NormalOptions.Back: finalNormal = Vector3.back; break;
+				case NormalOptions.Up: finalNormal = Vector3.up; break;
+				case NormalOptions.Down: finalNormal = Vector3.down; break;
 				case NormalOptions.Custom: finalNormal = normal.normalized; break;
 				default: throw new System.NotImplementedException();
 			}
@@ -259,12 +287,32 @@ namespace Experilous.Topological
 			const float angledShort = 0.5f;
 			const float angledLong = RectangularHexGrid.halfSqrtThree;
 
+			Vector3 basicHorizontalAxis;
+			Vector3 basicVerticalAxis;
 			Vector3 finalHorizontalAxis;
 			Vector3 finalVerticalAxis;
 			HexGridAxisStyles finalHorizontalAxisStyle;
 			HexGridAxisStyles finalVerticalAxisStyle;
 			HexGridAxisRelations finalAxisRelation;
 			bool finalVariableRowLength;
+
+			switch (hexGridHorizontalAxisOptions)
+			{
+				case HorizontalAxisOptions.LeftToRight: basicHorizontalAxis = Vector3.right; break;
+				case HorizontalAxisOptions.RightToLeft: basicHorizontalAxis = Vector3.left; break;
+				case HorizontalAxisOptions.Custom: basicHorizontalAxis = horizontalAxis; break;
+				default: throw new System.NotImplementedException();
+			}
+
+			switch (hexGridVerticalAxisOptions)
+			{
+				case VerticalAxisOptions.BottomToTop: basicVerticalAxis = Vector3.up; break;
+				case VerticalAxisOptions.TopToBottom: basicVerticalAxis = Vector3.down; break;
+				case VerticalAxisOptions.NearToFar: basicVerticalAxis = Vector3.forward; break;
+				case VerticalAxisOptions.FarToNear: basicVerticalAxis = Vector3.back; break;
+				case VerticalAxisOptions.Custom: basicVerticalAxis = verticalAxis; break;
+				default: throw new System.NotImplementedException();
+			}
 
 			switch (hexGridAxisStyleOptions)
 			{
@@ -274,57 +322,29 @@ namespace Experilous.Topological
 					finalAxisRelation = HexGridAxisRelations.Acute;
 					finalVariableRowLength = false;
 
+					if (hexGridAxisOptions != HexGridAxisOptions.Custom)
+					{
+						if (hexGridHorizontalAxisOptions == HorizontalAxisOptions.Custom) throw new System.NotSupportedException();
+						if (hexGridVerticalAxisOptions == VerticalAxisOptions.Custom) throw new System.NotSupportedException();
+					}
+
 					switch (hexGridAxisOptions)
 					{
 						case HexGridAxisOptions.AngledVerticalAxis:
-							switch (hexGridHorizontalAxisOptions)
-							{
-								case HorizontalAxisOptions.LeftToRight:
-									finalHorizontalAxis = Vector3.right * horizontalAxisLength;
-									finalVerticalAxis = hexGridVerticalAxisOptions == VerticalAxisOptions.BottomToTop
-										? new Vector3(angledShort, angledLong, 0f) * verticalAxisLength
-										: new Vector3(angledShort, -angledLong, 0f) * verticalAxisLength;
-									break;
-								case HorizontalAxisOptions.RightToLeft:
-									finalHorizontalAxis = Vector3.left * horizontalAxisLength;
-									finalVerticalAxis = hexGridVerticalAxisOptions == VerticalAxisOptions.BottomToTop
-										? new Vector3(-angledShort, angledLong, 0f) * verticalAxisLength
-										: new Vector3(-angledShort, -angledLong, 0f) * verticalAxisLength;
-									break;
-								case HorizontalAxisOptions.Custom: throw new System.NotSupportedException();
-								default: throw new System.NotImplementedException();
-							}
+							finalHorizontalAxis = basicHorizontalAxis * horizontalAxisLength;
+							finalVerticalAxis = basicVerticalAxis * (verticalAxisLength * angledLong) + basicHorizontalAxis * angledShort;
 							break;
 						case HexGridAxisOptions.AngledHorizontalAxis:
-							switch (hexGridVerticalAxisOptions)
-							{
-								case VerticalAxisOptions.BottomToTop:
-									finalHorizontalAxis = hexGridHorizontalAxisOptions == HorizontalAxisOptions.LeftToRight
-										? new Vector3(angledLong, angledShort, 0f) * horizontalAxisLength
-										: new Vector3(-angledLong, angledShort, 0f) * horizontalAxisLength;
-									finalVerticalAxis = Vector3.up * verticalAxisLength;
-									break;
-								case VerticalAxisOptions.TopToBottom:
-									finalHorizontalAxis = hexGridHorizontalAxisOptions == HorizontalAxisOptions.LeftToRight
-										? new Vector3(angledLong, -angledShort, 0f) * horizontalAxisLength
-										: new Vector3(-angledLong, -angledShort, 0f) * horizontalAxisLength;
-									finalVerticalAxis = Vector3.down * verticalAxisLength;
-									break;
-								case VerticalAxisOptions.Custom: throw new System.NotSupportedException();
-								default: throw new System.NotImplementedException();
-							}
+							finalHorizontalAxis = basicHorizontalAxis * (horizontalAxisLength * angledLong) + basicVerticalAxis * angledShort;
+							finalVerticalAxis = basicVerticalAxis * verticalAxisLength;
 							break;
 						case HexGridAxisOptions.RightAngleAxes:
-							finalHorizontalAxis = hexGridHorizontalAxisOptions == HorizontalAxisOptions.LeftToRight
-								? Vector3.right * horizontalAxisLength
-								: Vector3.left * horizontalAxisLength;
-							finalVerticalAxis = hexGridVerticalAxisOptions == VerticalAxisOptions.BottomToTop
-								? Vector3.up * verticalAxisLength
-								: Vector3.down * verticalAxisLength;
+							finalHorizontalAxis = basicHorizontalAxis * horizontalAxisLength;
+							finalVerticalAxis = basicVerticalAxis * verticalAxisLength;
 							break;
 						case HexGridAxisOptions.Custom:
-							finalHorizontalAxis = horizontalAxis;
-							finalVerticalAxis = verticalAxis;
+							finalHorizontalAxis = basicHorizontalAxis;
+							finalVerticalAxis = basicVerticalAxis;
 							break;
 						default: throw new System.NotImplementedException();
 					}
@@ -335,81 +355,29 @@ namespace Experilous.Topological
 					finalAxisRelation = HexGridAxisRelations.Obtuse;
 					finalVariableRowLength = false;
 
+					if (hexGridAxisOptions != HexGridAxisOptions.Custom)
+					{
+						if (hexGridHorizontalAxisOptions == HorizontalAxisOptions.Custom) throw new System.NotSupportedException();
+						if (hexGridVerticalAxisOptions == VerticalAxisOptions.Custom) throw new System.NotSupportedException();
+					}
+
 					switch (hexGridAxisOptions)
 					{
 						case HexGridAxisOptions.AngledVerticalAxis:
-							switch (hexGridHorizontalAxisOptions)
-							{
-								case HorizontalAxisOptions.LeftToRight:
-									finalHorizontalAxis = Vector3.right * horizontalAxisLength;
-									switch (hexGridVerticalAxisOptions)
-									{
-										case VerticalAxisOptions.BottomToTop: finalVerticalAxis = new Vector3(-angledShort, angledLong, 0f) * verticalAxisLength; break;
-										case VerticalAxisOptions.TopToBottom: finalVerticalAxis = new Vector3(-angledShort, -angledLong, 0f) * verticalAxisLength; break;
-										case VerticalAxisOptions.Custom: throw new System.NotSupportedException();
-										default: throw new System.NotImplementedException();
-									}
-									break;
-								case HorizontalAxisOptions.RightToLeft:
-									finalHorizontalAxis = Vector3.left * horizontalAxisLength;
-									switch (hexGridVerticalAxisOptions)
-									{
-										case VerticalAxisOptions.BottomToTop: finalVerticalAxis = new Vector3(angledShort, angledLong, 0f) * verticalAxisLength; break;
-										case VerticalAxisOptions.TopToBottom: finalVerticalAxis = new Vector3(angledShort, -angledLong, 0f) * verticalAxisLength; break;
-										case VerticalAxisOptions.Custom: throw new System.NotSupportedException();
-										default: throw new System.NotImplementedException();
-									}
-									break;
-								case HorizontalAxisOptions.Custom: throw new System.NotSupportedException();
-								default: throw new System.NotImplementedException();
-							}
+							finalHorizontalAxis = basicHorizontalAxis * horizontalAxisLength;
+							finalVerticalAxis = basicVerticalAxis * (verticalAxisLength * angledLong) - basicHorizontalAxis * angledShort;
 							break;
 						case HexGridAxisOptions.AngledHorizontalAxis:
-							switch (hexGridVerticalAxisOptions)
-							{
-								case VerticalAxisOptions.BottomToTop:
-									switch (hexGridHorizontalAxisOptions)
-									{
-										case HorizontalAxisOptions.LeftToRight: finalHorizontalAxis = new Vector3(angledLong, -angledShort, 0f) * horizontalAxisLength; break;
-										case HorizontalAxisOptions.RightToLeft: finalHorizontalAxis = new Vector3(-angledLong, -angledShort, 0f) * horizontalAxisLength; break;
-										case HorizontalAxisOptions.Custom: throw new System.NotSupportedException();
-										default: throw new System.NotImplementedException();
-									}
-									finalVerticalAxis = Vector3.up * verticalAxisLength;
-									break;
-								case VerticalAxisOptions.TopToBottom:
-									switch (hexGridHorizontalAxisOptions)
-									{
-										case HorizontalAxisOptions.LeftToRight: finalHorizontalAxis = new Vector3(angledLong, angledShort, 0f) * horizontalAxisLength; break;
-										case HorizontalAxisOptions.RightToLeft: finalHorizontalAxis = new Vector3(-angledLong, angledShort, 0f) * horizontalAxisLength; break;
-										case HorizontalAxisOptions.Custom: throw new System.NotSupportedException();
-										default: throw new System.NotImplementedException();
-									}
-									finalVerticalAxis = Vector3.down * verticalAxisLength;
-									break;
-								case VerticalAxisOptions.Custom: throw new System.NotSupportedException();
-								default: throw new System.NotImplementedException();
-							}
+							finalHorizontalAxis = basicHorizontalAxis * (horizontalAxisLength * angledLong) - basicVerticalAxis * angledShort;
+							finalVerticalAxis = basicVerticalAxis * verticalAxisLength;
 							break;
 						case HexGridAxisOptions.RightAngleAxes:
-							switch (hexGridHorizontalAxisOptions)
-							{
-								case HorizontalAxisOptions.LeftToRight: finalHorizontalAxis = Vector3.right * horizontalAxisLength; break;
-								case HorizontalAxisOptions.RightToLeft: finalHorizontalAxis = Vector3.left * horizontalAxisLength; break;
-								case HorizontalAxisOptions.Custom: throw new System.NotSupportedException();
-								default: throw new System.NotImplementedException();
-							}
-							switch (hexGridVerticalAxisOptions)
-							{
-								case VerticalAxisOptions.BottomToTop: finalVerticalAxis = Vector3.up * verticalAxisLength; break;
-								case VerticalAxisOptions.TopToBottom: finalVerticalAxis = Vector3.down * verticalAxisLength; break;
-								case VerticalAxisOptions.Custom: throw new System.NotSupportedException();
-								default: throw new System.NotImplementedException();
-							}
+							finalHorizontalAxis = basicHorizontalAxis * horizontalAxisLength;
+							finalVerticalAxis = basicVerticalAxis * verticalAxisLength;
 							break;
 						case HexGridAxisOptions.Custom:
-							finalHorizontalAxis = horizontalAxis;
-							finalVerticalAxis = verticalAxis;
+							finalHorizontalAxis = basicHorizontalAxis;
+							finalVerticalAxis = basicVerticalAxis;
 							break;
 						default: throw new System.NotImplementedException();
 					}
@@ -421,25 +389,9 @@ namespace Experilous.Topological
 					finalAxisRelation = hexGridAxisStyleOptions == HexGridAxisStyleOptions.StaggeredVerticallyAcute
 						? HexGridAxisRelations.Acute : HexGridAxisRelations.Obtuse;
 					finalVariableRowLength = variableRowLength;
-
-					switch (hexGridHorizontalAxisOptions)
-					{
-						case HorizontalAxisOptions.LeftToRight: finalHorizontalAxis = Vector3.right * horizontalAxisLength; break;
-						case HorizontalAxisOptions.RightToLeft: finalHorizontalAxis = Vector3.left * horizontalAxisLength; break;
-						case HorizontalAxisOptions.Custom: finalHorizontalAxis = horizontalAxis; break;
-						default: throw new System.NotImplementedException();
-					}
-
-					switch (hexGridVerticalAxisOptions)
-					{
-						case VerticalAxisOptions.BottomToTop: finalVerticalAxis = Vector3.up * verticalAxisLength; break;
-						case VerticalAxisOptions.TopToBottom: finalVerticalAxis = Vector3.down * verticalAxisLength; break;
-						case VerticalAxisOptions.Custom: finalVerticalAxis = verticalAxis; break;
-						default: throw new System.NotImplementedException();
-					}
-
+					finalHorizontalAxis = basicHorizontalAxis;
+					finalVerticalAxis = basicVerticalAxis;
 					break;
-
 				case HexGridAxisStyleOptions.StaggeredHorizontallyAcute:
 				case HexGridAxisStyleOptions.StaggeredHorizontallyObtuse:
 					finalHorizontalAxisStyle = HexGridAxisStyles.Staggered;
@@ -447,25 +399,9 @@ namespace Experilous.Topological
 					finalAxisRelation = hexGridAxisStyleOptions == HexGridAxisStyleOptions.StaggeredHorizontallyAcute
 						? HexGridAxisRelations.Acute : HexGridAxisRelations.Obtuse;
 					finalVariableRowLength = variableRowLength;
-
-					switch (hexGridHorizontalAxisOptions)
-					{
-						case HorizontalAxisOptions.LeftToRight: finalHorizontalAxis = Vector3.right * horizontalAxisLength; break;
-						case HorizontalAxisOptions.RightToLeft: finalHorizontalAxis = Vector3.left * horizontalAxisLength; break;
-						case HorizontalAxisOptions.Custom: finalHorizontalAxis = horizontalAxis; break;
-						default: throw new System.NotImplementedException();
-					}
-
-					switch (hexGridVerticalAxisOptions)
-					{
-						case VerticalAxisOptions.BottomToTop: finalVerticalAxis = Vector3.up * verticalAxisLength; break;
-						case VerticalAxisOptions.TopToBottom: finalVerticalAxis = Vector3.down * verticalAxisLength; break;
-						case VerticalAxisOptions.Custom: finalVerticalAxis = horizontalAxis; break;
-						default: throw new System.NotImplementedException();
-					}
-
+					finalHorizontalAxis = basicHorizontalAxis;
+					finalVerticalAxis = basicVerticalAxis;
 					break;
-
 				default: throw new System.NotImplementedException();
 			}
 
@@ -475,6 +411,8 @@ namespace Experilous.Topological
 				case NormalOptions.Automatic: finalNormal = Vector3.Cross(finalVerticalAxis, finalHorizontalAxis).normalized; break;
 				case NormalOptions.Forward: finalNormal = Vector3.forward; break;
 				case NormalOptions.Back: finalNormal = Vector3.back; break;
+				case NormalOptions.Up: finalNormal = Vector3.up; break;
+				case NormalOptions.Down: finalNormal = Vector3.down; break;
 				case NormalOptions.Custom: finalNormal = normal.normalized; break;
 				default: throw new System.NotImplementedException();
 			}

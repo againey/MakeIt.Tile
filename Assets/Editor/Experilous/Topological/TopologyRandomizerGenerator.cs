@@ -3,54 +3,77 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using Experilous.Randomization;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(TopologyCategory), "Topology Randomizer")]
-	public class TopologyRandomizerGenerator : AssetGenerator
+	public class TopologyRandomizerGenerator : Generator
 	{
-		[AutoSelect] public AssetInputSlot surfaceInputSlot;
-		[AutoSelect] public AssetInputSlot topologyInputSlot;
-		public AssetInputSlot vertexPositionsInputSlot;
+		[AutoSelect] public InputSlot surfaceInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
+		public InputSlot vertexPositionsInputSlot;
 
-		public int passCount = 1;
-		[Range(0f, 1f)] public float frequency = 0.1f;
+		public int passCount;
+		[Range(0f, 1f)] public float frequency;
 
-		public AssetGeneratorRandomization randomization;
+		public RandomnessDescriptor randomness;
 
-		[Range(2, 20)] public int minVertexNeighbors = 3;
-		[Range(2, 20)] public int maxVertexNeighbors = 5;
-		[Range(3, 20)] public int minFaceNeighbors = 3;
-		[Range(3, 20)] public int maxFaceNeighbors = 7;
+		[Range(2, 20)] public int minVertexNeighbors;
+		[Range(2, 20)] public int maxVertexNeighbors;
+		[Range(3, 20)] public int minFaceNeighbors;
+		[Range(3, 20)] public int maxFaceNeighbors;
 
-		[Label("Lock Boundaries")] public bool lockBoundaryPositions = true;
+		[Label("Lock Boundaries")] public bool lockBoundaryPositions;
 
-		[Range(0f, 1f)] public float relaxForRegularityWeight = 0.5f;
+		[Range(0f, 1f)] public float relaxForRegularityWeight;
 
-		[Range(0f, 1f)] public int maxRelaxIterations = 20;
-		[Range(0f, 1f)] public float relaxRelativePrecision = 0.95f;
-		public int maxRepairIterations = 20;
-		public float repairRate = 0.5f;
+		[Range(0f, 1f)] public int maxRelaxIterations;
+		[Range(0f, 1f)] public float relaxRelativePrecision;
+		public int maxRepairIterations;
+		public float repairRate;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || surfaceInputSlot == null) surfaceInputSlot = AssetInputSlot.CreateRequiredMutating(this, typeof(Surface));
-			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequiredMutating(this, typeof(Topology));
-			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateOptionalMutating(this, typeof(IVertexAttribute<Vector3>));
+			InputSlot.CreateOrResetRequiredMutating<Surface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequiredMutating<Topology>(ref topologyInputSlot, this);
+			InputSlot.CreateOrResetOptionalMutating<IVertexAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
 
 			// Fields
-			randomization.Initialize(this, reset);
+			passCount = 1;
+			frequency = 0.1f;
+
+			randomness.Initialize(this);
+
+			minVertexNeighbors = 3;
+			maxVertexNeighbors = 5;
+			minFaceNeighbors = 3;
+			maxFaceNeighbors = 7;
+
+			lockBoundaryPositions = true;
+
+			relaxForRegularityWeight = 0.5f;
+
+			maxRelaxIterations = 20;
+			relaxRelativePrecision = 0.95f;
+			maxRepairIterations = 20;
+			repairRate = 0.5f;
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		protected override void OnUpdate()
+		{
+			randomness.Update();
+		}
+
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
 				yield return surfaceInputSlot;
 				yield return topologyInputSlot;
 				yield return vertexPositionsInputSlot;
-				foreach (var input in randomization.inputs) yield return input;
+				yield return randomness.randomEngineSeedInputSlot;
 			}
 		}
 
@@ -60,7 +83,7 @@ namespace Experilous.Topological
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexPositions = vertexPositionsInputSlot.source != null ? vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>() : null;
 
-			var random = new RandomUtility(randomization.GetRandomEngine());
+			var random = new RandomUtility(randomness.GetRandomEngine());
 
 			System.Func<float> relaxIterationFunction = null;
 			System.Func<bool> repairFunction = null;
@@ -225,16 +248,12 @@ namespace Experilous.Topological
 				}
 			}
 
-			var waitHandle = collection.GenerateConcurrently(() =>
+			yield return executive.GenerateConcurrently(() =>
 			{
 				TopologyRandomizer.Randomize(topology, passCount, frequency,
 					minVertexNeighbors, maxVertexNeighbors, minFaceNeighbors, maxFaceNeighbors,
 					lockBoundaryPositions, random, relaxationLoopFunction);
 			});
-			while (waitHandle.WaitOne(10) == false)
-			{
-				yield return null;
-			}
 
 			EditorUtility.SetDirty(topology);
 

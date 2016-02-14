@@ -353,7 +353,22 @@ namespace Experilous.Topological
 
 		private void InitializeEdgeMetrics()
 		{
-			_edgeCount = _internalFaceCount * 6 + _faceRowCount * 4 + _faceColumnCountFirst * 2 + _faceColumnCountLast * 2 - 2;
+			if (_wrapRows && _wrapCols)
+			{
+				_edgeCount = _internalFaceCount * 6;
+			}
+			else if (_wrapRows)
+			{
+				_edgeCount = _internalFaceCount * 6 + _faceRowCount * 4;
+			}
+			else if (_wrapCols)
+			{
+				_edgeCount = _internalFaceCount * 6 + _faceColumnCount * 4;
+			}
+			else
+			{
+				_edgeCount = _internalFaceCount * 6 + _faceRowCount * 4 + _faceColumnCountFirst * 2 + _faceColumnCountLast * 2 - 2;
+			}
 		}
 
 		public int vertexCount { get { return _vertexCount; } }

@@ -2,11 +2,12 @@
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(TopologyCategory), "Spherical Manifold")]
-	public class SphericalManifoldGenerator : AssetGenerator
+	public class SphericalManifoldGenerator : Generator
 	{
 		public enum SphericalPolyhedrons
 		{
@@ -17,14 +18,14 @@ namespace Experilous.Topological
 			Icosahedron,
 		}
 
-		public SphericalPolyhedrons sphericalPolyhedron = SphericalPolyhedrons.Icosahedron;
-		public float radius = 1f;
-		public int subdivisionDegree = 10;
-		public bool useDualPolyhedron = true;
+		public SphericalPolyhedrons sphericalPolyhedron;
+		public float radius;
+		public int subdivisionDegree;
+		public bool useDualPolyhedron;
 
-		public AssetDescriptor surfaceDescriptor;
-		public AssetDescriptor topologyDescriptor;
-		public AssetDescriptor vertexPositionsDescriptor;
+		public OutputSlot surfaceDescriptor;
+		public OutputSlot topologyDescriptor;
+		public OutputSlot vertexPositionsDescriptor;
 
 		[MenuItem("Assets/Create/Topology/Spherical Manifold Generator")]
 		public static void CreateDefaultGeneratorCollection()
@@ -41,15 +42,21 @@ namespace Experilous.Topological
 			collection.CreateAsset();
 		}
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
+			// Fields
+			sphericalPolyhedron = SphericalPolyhedrons.Icosahedron;
+			radius = 1f;
+			subdivisionDegree = 10;
+			useDualPolyhedron = true;
+
 			// Outputs
-			if (reset || surfaceDescriptor == null) surfaceDescriptor = AssetDescriptor.CreateGrouped<SphericalSurface>(this, "Spherical Surface", "Descriptors");
-			if (reset || topologyDescriptor == null) topologyDescriptor = AssetDescriptor.CreateGrouped<Topology>(this, "Topology", "Descriptors");
-			if (reset || vertexPositionsDescriptor == null) vertexPositionsDescriptor = AssetDescriptor.CreateGrouped<IVertexAttribute<Vector3>>(this, "Vertex Positions", "Attributes");
+			OutputSlot.CreateOrResetGrouped<SphericalSurface>(ref surfaceDescriptor, this, "Spherical Surface", "Descriptors");
+			OutputSlot.CreateOrResetGrouped<Topology>(ref topologyDescriptor, this, "Topology", "Descriptors");
+			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexPositionsDescriptor, this, "Vertex Positions", "Attributes");
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -59,7 +66,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override void Pregenerate()
+		protected override void OnUpdate()
 		{
 			var surface = surfaceDescriptor.GetAsset<SphericalSurface>();
 			if (surface == null) surface = surfaceDescriptor.SetAsset(CreateInstance<SphericalSurface>(), false);

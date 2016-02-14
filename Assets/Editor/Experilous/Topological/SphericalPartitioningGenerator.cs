@@ -1,28 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(UtilitiesCategory), "Spherical Partitioning")]
-	public class SphericalPartitioningGenerator : AssetGenerator
+	public class SphericalPartitioningGenerator : Generator
 	{
-		[AutoSelect] public AssetInputSlot topologyInputSlot;
-		public AssetInputSlot vertexPositionsInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
+		public InputSlot vertexPositionsInputSlot;
 
-		public AssetDescriptor partitioningDescriptor;
+		public OutputSlot partitioningDescriptor;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
-			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
+			InputSlot.CreateOrResetRequired<IVertexAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
 
 			// Outputs
-			if (reset || partitioningDescriptor == null) partitioningDescriptor = AssetDescriptor.Create<SphericalPartitioning>(this, "Partitioning");
+			OutputSlot.CreateOrReset<SphericalPartitioning>(ref partitioningDescriptor, this, "Partitioning");
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
@@ -31,7 +32,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -39,11 +40,11 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetReferenceDescriptor> references
+		public override IEnumerable<InternalSlotConnection> internalConnections
 		{
 			get
 			{
-				if (topologyInputSlot.source != null) yield return topologyInputSlot.source.ReferencedBy(partitioningDescriptor);
+				if (topologyInputSlot.source != null) yield return partitioningDescriptor.Uses(topologyInputSlot.source);
 			}
 		}
 

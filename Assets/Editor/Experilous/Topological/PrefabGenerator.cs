@@ -1,28 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(MeshCategory), "Prefab")]
-	public class PrefabGenerator : AssetGenerator
+	public class PrefabGenerator : Generator
 	{
-		public AssetInputSlot meshCollectionInputSlot;
+		public InputSlot meshCollectionInputSlot;
 
 		public MeshFilter meshPrefab;
 
-		public AssetDescriptor prefabDescriptor;
+		public OutputSlot prefabDescriptor;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || meshCollectionInputSlot == null) meshCollectionInputSlot = AssetInputSlot.CreateRequired(this, typeof(MeshCollection));
+			InputSlot.CreateOrResetRequired<MeshCollection>(ref meshCollectionInputSlot, this);
+
+			// Fields
+			meshPrefab = null;
 
 			// Outputs
-			if (reset || prefabDescriptor == null) prefabDescriptor = AssetDescriptor.Create<GameObject>(this, "Prefab");
+			OutputSlot.CreateOrReset<GameObject>(ref prefabDescriptor, this, "Prefab");
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
@@ -30,7 +34,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{

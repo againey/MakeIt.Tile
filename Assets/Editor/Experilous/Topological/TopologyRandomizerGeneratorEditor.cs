@@ -1,23 +1,24 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[CustomEditor(typeof(TopologyRandomizerGenerator))]
-	public class TopologyRandomizerGeneratorEditor : AssetGeneratorEditor
+	public class TopologyRandomizerGeneratorEditor : GeneratorEditor
 	{
 		protected override void OnPropertiesGUI()
 		{
 			var generator = (TopologyRandomizerGenerator)target;
 
-			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("surfaceInputSlot"));
-			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("topologyInputSlot"));
-			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("vertexPositionsInputSlot"));
+			InputSlotEditor.OnInspectorGUI(_serializedGenerator.FindProperty("surfaceInputSlot"));
+			InputSlotEditor.OnInspectorGUI(_serializedGenerator.FindProperty("topologyInputSlot"));
+			InputSlotEditor.OnInspectorGUI(_serializedGenerator.FindProperty("vertexPositionsInputSlot"));
 
 			generator.passCount = EditorGUILayout.IntField("Passes", generator.passCount);
 			generator.frequency = EditorGUILayout.Slider("Frequency", generator.frequency, 0f, 1f);
 
-			EditorGUILayout.PropertyField(_serializedGenerator.FindProperty("randomization"));
+			generator.randomness = RandomnessDescriptorEditor.OnInspectorGUI(GUIContent.none, generator.randomness);
 
 			generator.minVertexNeighbors = EditorGUILayout.IntSlider("Min Vertex Neighbors", generator.minVertexNeighbors, 2, 20);
 			generator.maxVertexNeighbors = EditorGUILayout.IntSlider("Max Vertex Neighbors", generator.maxVertexNeighbors, 2, 20);

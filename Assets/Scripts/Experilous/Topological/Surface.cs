@@ -37,6 +37,9 @@ namespace Experilous.Topological
 		public abstract bool isConvex { get; }
 		public abstract bool isConcave { get; }
 
+		public abstract Vector3 Project(Vector3 position);
+		public abstract Vector3 GetNormal(Vector3 position);
+
 		public virtual Vector3 OffsetVertToVertAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
 		public virtual Vector3 OffsetVertToEdgeAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
 		public virtual Vector3 OffsetVertToFaceAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }

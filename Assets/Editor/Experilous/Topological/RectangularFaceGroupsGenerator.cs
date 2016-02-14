@@ -1,36 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(UtilitiesCategory), "Rectangular Face Groups")]
-	public class RectangularFaceGroupsGenerator : AssetGenerator
+	public class RectangularFaceGroupsGenerator : Generator
 	{
-		public Index2D axisDivisions = new Index2D(1, 1);
+		public Index2D axisDivisions;
 
-		[AutoSelect] public AssetInputSlot surfaceInputSlot;
-		[AutoSelect] public AssetInputSlot topologyInputSlot;
-		public AssetInputSlot facePositionsInputSlot;
+		[AutoSelect] public InputSlot surfaceInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
+		public InputSlot facePositionsInputSlot;
 
-		public AssetDescriptor faceGroupCollectionDescriptor;
-		public AssetDescriptor faceGroupIndicesDescriptor;
-		public AssetDescriptor[] faceGroupDescriptors;
+		public OutputSlot faceGroupCollectionDescriptor;
+		public OutputSlot faceGroupIndicesDescriptor;
+		public OutputSlot[] faceGroupDescriptors;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || surfaceInputSlot == null) surfaceInputSlot = AssetInputSlot.CreateRequired(this, typeof(PlanarSurface));
-			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
-			if (reset || facePositionsInputSlot == null) facePositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
+			InputSlot.CreateOrResetRequired<PlanarSurface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
+			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref facePositionsInputSlot, this);
+
+			// Fields
+			axisDivisions = new Index2D(1, 1);
 
 			// Outputs
-			if (reset || faceGroupCollectionDescriptor == null) faceGroupCollectionDescriptor = AssetDescriptor.CreateGrouped<FaceGroupCollection>(this, "Face Groups", "Face Groups");
-			if (reset || faceGroupIndicesDescriptor == null) faceGroupIndicesDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<int>>(this, "Face Group Indices", "Attributes");
-			if (reset || faceGroupDescriptors == null) faceGroupDescriptors = new AssetDescriptor[0];
+			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionDescriptor, this, "Face Groups", "Face Groups");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesDescriptor, this, "Face Group Indices", "Attributes");
+			faceGroupDescriptors = new OutputSlot[0];
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
@@ -40,7 +44,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -54,13 +58,13 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetReferenceDescriptor> references
+		public override IEnumerable<InternalSlotConnection> internalConnections
 		{
 			get
 			{
 				foreach (var faceGroupDescriptor in faceGroupDescriptors)
 				{
-					yield return faceGroupDescriptor.ReferencedBy(faceGroupCollectionDescriptor);
+					yield return faceGroupCollectionDescriptor.Uses(faceGroupDescriptor);
 				}
 			}
 		}
@@ -74,7 +78,7 @@ namespace Experilous.Topological
 			int groupCount = 0;
 			var faceGroupFaceIndices = new List<int>[axisDivisions.x * axisDivisions.y];
 
-			var waitHandle = collection.GenerateConcurrently(() =>
+			var waitHandle = executive.GenerateConcurrently(() =>
 			{
 				var axis0Vector = surfaceDescriptor.axis0.vector;
 				var axis1Vector = surfaceDescriptor.axis1.vector;
@@ -115,7 +119,16 @@ namespace Experilous.Topological
 				yield return null;
 			}
 
-			faceGroupDescriptors = AssetGeneratorUtility.ResizeArray(faceGroupDescriptors, groupCount);
+			faceGroupDescriptors = GeneratorUtility.ResizeArray(faceGroupDescriptors, groupCount,
+				(int index) =>
+				{
+					return null;
+				},
+				(OutputSlot output, int index) =>
+				{
+					output.DisconnectAll();
+					return output;
+				});
 
 			var faceGroupCollection = FaceGroupCollection.Create(groupCount);
 
@@ -134,7 +147,7 @@ namespace Experilous.Topological
 
 						if (faceGroupDescriptors[groupIndex] == null)
 						{
-							faceGroupDescriptors[groupIndex] = AssetDescriptor.CreateGrouped<FaceGroup>(this, faceGroupName, faceGroupCollectionDescriptor.name);
+							faceGroupDescriptors[groupIndex] = OutputSlot.CreateGrouped<FaceGroup>(this, faceGroupName, faceGroupCollectionDescriptor.name);
 						}
 						else
 						{

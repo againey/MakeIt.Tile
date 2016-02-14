@@ -1,32 +1,36 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(FaceAttributesCategory), "Face Centroids")]
-	public class FaceCentroidsGenerator : AssetGenerator
+	public class FaceCentroidsGenerator : Generator
 	{
 		public bool flatten;
 
-		[AutoSelect] public AssetInputSlot surfaceInputSlot;
-		[AutoSelect] public AssetInputSlot topologyInputSlot;
-		public AssetInputSlot vertexPositionsInputSlot;
+		[AutoSelect] public InputSlot surfaceInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
+		public InputSlot vertexPositionsInputSlot;
 
-		public AssetDescriptor faceCentroidsDescriptor;
+		public OutputSlot faceCentroidsDescriptor;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || surfaceInputSlot == null) surfaceInputSlot = AssetInputSlot.CreateRequired(this, typeof(Surface));
-			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
-			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
+			InputSlot.CreateOrResetRequired<Surface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
+			InputSlot.CreateOrResetRequired<IVertexAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
+
+			// Fields
+			flatten = false;
 
 			// Outputs
-			if (reset || faceCentroidsDescriptor == null) faceCentroidsDescriptor = AssetDescriptor.CreateGrouped<IFaceAttribute<Vector3>>(this, "Face Centroids", "Attributes");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Vector3>>(ref faceCentroidsDescriptor, this, "Face Centroids", "Attributes");
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
@@ -36,7 +40,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -51,7 +55,7 @@ namespace Experilous.Topological
 			var vertexPositions = vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>();
 			var faceCentroids = PositionalFaceAttribute.Create(surface, new Vector3[topology.internalFaces.Count]).SetName("Face Centroids");
 
-			var waitHandle = collection.GenerateConcurrently(() =>
+			yield return executive.GenerateConcurrently(() =>
 			{
 				if (flatten || surface is PlanarSurface)
 				{
@@ -67,10 +71,6 @@ namespace Experilous.Topological
 					throw new System.NotImplementedException();
 				}
 			});
-			while (waitHandle.WaitOne(10) == false)
-			{
-				yield return null;
-			}
 
 			faceCentroidsDescriptor.SetAsset(faceCentroids);
 

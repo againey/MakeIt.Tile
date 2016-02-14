@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.Generation;
 
 namespace Experilous.Topological
 {
 	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(MeshCategory), "Mesh")]
-	public class MeshGenerator : AssetGenerator
+	public class MeshGenerator : Generator
 	{
 		public enum SourceType
 		{
@@ -14,53 +15,55 @@ namespace Experilous.Topological
 			FaceGroup,
 		}
 
-		public SourceType sourceType = SourceType.InternalFaces;
+		public SourceType sourceType;
 
-		[AutoSelect] public AssetInputSlot topologyInputSlot;
-		public AssetInputSlot faceGroupCollectionInputSlot;
-		public AssetInputSlot faceGroupInputSlot;
-		public AssetInputSlot vertexPositionsInputSlot;
-		public AssetInputSlot faceCentroidsInputSlot;
-		public AssetInputSlot faceNormalsInputSlot;
-		public AssetInputSlot faceColorsInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
+		public InputSlot faceGroupCollectionInputSlot;
+		public InputSlot faceGroupInputSlot;
+		public InputSlot vertexPositionsInputSlot;
+		public InputSlot faceCentroidsInputSlot;
+		public InputSlot faceNormalsInputSlot;
+		public InputSlot faceColorsInputSlot;
 
-		public bool centerOnGroupAverage = false;
+		public bool centerOnGroupAverage;
 
-		public AssetDescriptor meshCollectionDescriptor;
-		public AssetDescriptor[] meshDescriptors;
+		public OutputSlot meshCollectionDescriptor;
+		public OutputSlot[] meshDescriptors;
 
-		protected override void Initialize(bool reset = true)
+		protected override void Initialize()
 		{
 			// Inputs
-			if (reset || topologyInputSlot == null) topologyInputSlot = AssetInputSlot.CreateRequired(this, typeof(Topology));
-			if (reset || faceGroupCollectionInputSlot == null) faceGroupCollectionInputSlot = AssetInputSlot.CreateRequired(this, typeof(FaceGroupCollection));
-			if (reset || faceGroupInputSlot == null) faceGroupInputSlot = AssetInputSlot.CreateRequired(this, typeof(FaceGroup));
-			if (reset || vertexPositionsInputSlot == null) vertexPositionsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IVertexAttribute<Vector3>));
-			if (reset || faceNormalsInputSlot == null) faceNormalsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
-			if (reset || faceCentroidsInputSlot == null) faceCentroidsInputSlot = AssetInputSlot.CreateRequired(this, typeof(IFaceAttribute<Vector3>));
-			if (reset || faceColorsInputSlot == null) faceColorsInputSlot = AssetInputSlot.CreateOptional(this, typeof(IFaceAttribute<Color>));
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
+			InputSlot.CreateOrResetRequired<FaceGroupCollection>(ref faceGroupCollectionInputSlot, this);
+			InputSlot.CreateOrResetRequired<FaceGroup>(ref faceGroupInputSlot, this);
+			InputSlot.CreateOrResetRequired<IVertexAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
+			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref faceNormalsInputSlot, this);
+			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref faceCentroidsInputSlot, this);
+			InputSlot.CreateOrResetOptional<IFaceAttribute<Color>>(ref faceColorsInputSlot, this);
+
+			// Fields
+			sourceType = SourceType.InternalFaces;
+			centerOnGroupAverage = false;
 
 			// Outputs
-			if (reset || meshCollectionDescriptor == null) meshCollectionDescriptor = AssetDescriptor.CreateGrouped<MeshCollection>(this, "Mesh Collection", "Meshes");
-			if (reset || meshDescriptors == null) meshDescriptors = new AssetDescriptor[0];
+			OutputSlot.CreateOrResetGrouped<MeshCollection>(ref meshCollectionDescriptor, this, "Mesh Collection", "Meshes");
+			meshDescriptors = new OutputSlot[0];
 		}
 
-		public override IEnumerable<AssetInputSlot> inputs
+		protected override void OnUpdate()
+		{
+			topologyInputSlot.isActive = (sourceType == SourceType.InternalFaces);
+			faceGroupCollectionInputSlot.isActive = (sourceType == SourceType.FaceGroupCollection);
+			faceGroupInputSlot.isActive = (sourceType == SourceType.FaceGroup);
+		}
+
+		public override IEnumerable<InputSlot> inputs
 		{
 			get
 			{
-				switch (sourceType)
-				{
-					case SourceType.InternalFaces:
-						yield return topologyInputSlot;
-						break;
-					case SourceType.FaceGroupCollection:
-						yield return faceGroupCollectionInputSlot;
-						break;
-					case SourceType.FaceGroup:
-						yield return faceGroupInputSlot;
-						break;
-				}
+				yield return topologyInputSlot;
+				yield return faceGroupCollectionInputSlot;
+				yield return faceGroupInputSlot;
 				yield return vertexPositionsInputSlot;
 				yield return faceNormalsInputSlot;
 				yield return faceCentroidsInputSlot;
@@ -68,7 +71,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetDescriptor> outputs
+		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
@@ -81,13 +84,13 @@ namespace Experilous.Topological
 			}
 		}
 
-		public override IEnumerable<AssetReferenceDescriptor> references
+		public override IEnumerable<InternalSlotConnection> internalConnections
 		{
 			get
 			{
 				foreach (var meshDescriptor in meshDescriptors)
 				{
-					yield return meshDescriptor.ReferencedBy(meshCollectionDescriptor);
+					yield return meshCollectionDescriptor.Uses(meshDescriptor);
 				}
 			}
 		}
@@ -136,7 +139,7 @@ namespace Experilous.Topological
 
 			if (meshDescriptors.Length < meshes.Count)
 			{
-				var newMeshes = new AssetDescriptor[meshes.Count];
+				var newMeshes = new OutputSlot[meshes.Count];
 
 				for (var i = 0; i < meshDescriptors.Length; ++i)
 				{
@@ -144,14 +147,14 @@ namespace Experilous.Topological
 				}
 				for (var i = meshDescriptors.Length; i < newMeshes.Length; ++i)
 				{
-					newMeshes[i] = AssetDescriptor.CreateGrouped<Mesh>(this, "Mesh", "Meshes");
+					newMeshes[i] = OutputSlot.CreateGrouped<Mesh>(this, "Mesh", "Meshes");
 				}
 
 				meshDescriptors = newMeshes;
 			}
 			else if (meshDescriptors.Length > meshes.Count)
 			{
-				var newMeshes = new AssetDescriptor[meshes.Count];
+				var newMeshes = new OutputSlot[meshes.Count];
 
 				for (var i = 0; i < newMeshes.Length; ++i)
 				{

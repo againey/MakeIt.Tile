@@ -7,6 +7,21 @@ namespace Experilous.Topological
 	{
 		#region IList<Vector3> CalculateVertexNormals...(...)
 
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromSurface(Topology.VerticesIndexer vertices, Surface surface, IVertexAttribute<Vector3> vertexPositions)
+		{
+			return CalculateVertexNormalsFromSurface(vertices, surface, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());
+		}
+
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromSurface(Topology.VerticesIndexer vertices, Surface surface, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
+		{
+			foreach (var vertex in vertices)
+			{
+				vertexNormals[vertex] = surface.GetNormal(vertexPositions[vertex]);
+			}
+
+			return vertexNormals;
+		}
+
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions)
 		{
 			return CalculateVertexNormalsFromVertexPositions(vertices, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());

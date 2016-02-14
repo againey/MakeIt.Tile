@@ -295,17 +295,23 @@ namespace Experilous
 
 		public static bool CenteredButton(string content, float widthProportion)
 		{
-			var rect = EditorGUILayout.GetControlRect(false, GUI.skin.button.CalcHeight(new GUIContent("Generate"), Screen.width * widthProportion), GUI.skin.button);
-			var fullWidth = rect.width;
-			var buttonWidth = fullWidth * widthProportion;
-			rect.xMin = (fullWidth - buttonWidth) * 0.5f;
-			rect.width = buttonWidth;
-			return GUI.Button(rect, content);
+			return CenteredButton(content, widthProportion, GUI.skin.button);
 		}
 
-		public static bool CenteredButton(string content, float widthProportion, ref Rect rect)
+		public static bool CenteredButton(string content, float widthProportion, out Rect rect)
 		{
-			rect = EditorGUILayout.GetControlRect(false, GUI.skin.button.CalcHeight(new GUIContent("Generate"), Screen.width * widthProportion), GUI.skin.button);
+			return CenteredButton(content, widthProportion, GUI.skin.button, out rect);
+		}
+
+		public static bool CenteredButton(string content, float widthProportion, GUIStyle style)
+		{
+			Rect rect;
+			return CenteredButton(content, widthProportion, style, out rect);
+		}
+
+		public static bool CenteredButton(string content, float widthProportion, GUIStyle style, out Rect rect)
+		{
+			rect = EditorGUILayout.GetControlRect(false, style.CalcHeight(new GUIContent("Generate"), Screen.width * widthProportion), style);
 			var fullWidth = rect.width;
 			var buttonWidth = fullWidth * widthProportion;
 			rect.xMin = (fullWidth - buttonWidth) * 0.5f;
