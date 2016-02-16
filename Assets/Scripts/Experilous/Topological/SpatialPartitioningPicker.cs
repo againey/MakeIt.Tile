@@ -5,11 +5,10 @@ using System;
 
 namespace Experilous.Topological
 {
-	[RequireComponent(typeof(Collider))]
-	public class PlanarPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+	public class SpatialPartitioningPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
 		public new Camera camera;
-		public PlanarPartitioning partitioning;
+		public UniversalFaceSpatialPartitioning partitioning;
 
 		[Serializable]
 		public class PickStartEvent : UnityEvent<Topology.Face> { }
@@ -38,15 +37,23 @@ namespace Experilous.Topological
 		{
 			if (_pickActive && partitioning != null)
 			{
-				var ray = camera.ScreenPointToRay(Input.mousePosition);
-				RaycastHit raycastHit;
-				if (_collider.Raycast(ray, out raycastHit, float.PositiveInfinity))
+				PickChange(Input.mousePosition);
+			}
+
+			if (_collider == null)
+			{
+				if (!_pickActive)
 				{
-					var face = partitioning.Intersect(raycastHit.point - transform.position);
-					if (face.isInitialized && _pickEnd.Value != face)
+					if (Input.GetMouseButtonDown(0))
 					{
-						_pickEnd = face;
-						OnPickChange.Invoke(_pickStart.Value, _pickEnd.Value);
+						PickStart(Input.mousePosition);
+					}
+				}
+				else
+				{
+					if (Input.GetMouseButtonUp(0))
+					{
+						PickEnd();
 					}
 				}
 			}
@@ -56,13 +63,7 @@ namespace Experilous.Topological
 		{
 			if (!_pickActive)
 			{
-				var face = partitioning.Intersect(eventData.pointerCurrentRaycast.worldPosition - transform.position);
-				if (face.isInitialized)
-				{
-					_pickStart = _pickEnd = face;
-					_pickActive = true;
-					OnPickStart.Invoke(_pickStart.Value);
-				}
+				PickStart(eventData.pressPosition);
 			}
 		}
 
@@ -70,11 +71,39 @@ namespace Experilous.Topological
 		{
 			if (_pickActive)
 			{
-				_pickActive = false;
-				OnPickEnd.Invoke(_pickStart.Value, _pickEnd.Value);
-				_pickStart = null;
-				_pickEnd = null;
+				PickEnd();
 			}
+		}
+
+		private void PickStart(Vector2 mousePosition)
+		{
+			var ray = transform.InverseTransformRay(camera.ScreenPointToRay(mousePosition));
+			var face = partitioning.FindFace(ray);
+			if (face)
+			{
+				_pickStart = _pickEnd = face;
+				_pickActive = true;
+				OnPickStart.Invoke(_pickStart.Value);
+			}
+		}
+
+		private void PickChange(Vector2 mousePosition)
+		{
+			var ray = transform.InverseTransformRay(camera.ScreenPointToRay(mousePosition));
+			var face = partitioning.FindFace(ray);
+			if (face && _pickEnd.Value != face)
+			{
+				_pickEnd = face;
+				OnPickChange.Invoke(_pickStart.Value, _pickEnd.Value);
+			}
+		}
+
+		private void PickEnd()
+		{
+			_pickActive = false;
+			OnPickEnd.Invoke(_pickStart.Value, _pickEnd.Value);
+			_pickStart = null;
+			_pickEnd = null;
 		}
 
 		public void LogPickStart(Topology.Face pickStart)

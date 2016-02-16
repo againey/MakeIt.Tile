@@ -44,6 +44,30 @@ namespace Experilous.Topological
 		public override bool isConvex { get { return true; } }
 		public override bool isConcave { get { return false; } }
 
+		public override Vector3 Intersect(Ray ray)
+		{
+			Vector3 intersection;
+			Intersect(ray, out intersection);
+			return intersection;
+		}
+
+		public override Vector3 Intersect(ScaledRay ray)
+		{
+			Vector3 intersection;
+			Intersect(ray, out intersection);
+			return intersection;
+		}
+
+		public override bool Intersect(Ray ray, out Vector3 intersection)
+		{
+			return Intersect((ScaledRay)ray, out intersection);
+		}
+
+		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
+		{
+			return MathUtility.IntersectForwardExternal(new Sphere(Vector3.zero, radius), ray, out intersection);
+		}
+
 		public override Vector3 Project(Vector3 position)
 		{
 			if (position != Vector3.zero)

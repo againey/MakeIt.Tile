@@ -25,7 +25,7 @@ namespace Experilous.Topological
 			public int neighborCount { get { return (int)_topology.faceNeighborCounts[_index]; } }
 			public FaceEdge firstEdge { get { return new FaceEdge(_topology, _topology.faceFirstEdgeIndices[_index]); } }
 
-			public bool isInitialized { get { return _topology != null; } }
+			public static implicit operator bool(Face face) { return face._topology != null; }
 
 			public bool hasExternalFaceNeighbor
 			{
@@ -36,11 +36,6 @@ namespace Experilous.Topological
 							return true;
 					return false;
 				}
-			}
-
-			public T Attribute<T>(T[] attributeArray)
-			{
-				return attributeArray[_index];
 			}
 
 			public struct FaceEdgesIndexer
@@ -406,31 +401,31 @@ namespace Experilous.Topological
 		public override T this[int i]
 		{
 			get { return faceGroupData[faceGroupIndices[i]]; }
-			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+			set { throw new NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 
 		public override T this[Topology.Face f]
 		{
 			get { return faceGroupData[faceGroupIndices[f]]; }
-			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+			set { throw new NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 
 		public override T this[Topology.HalfEdge e]
 		{
 			get { return faceGroupData[faceGroupIndices[e.farFace]]; }
-			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+			set { throw new NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 
 		public override T this[Topology.VertexEdge e]
 		{
 			get { return faceGroupData[faceGroupIndices[e.prevFace]]; }
-			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+			set { throw new NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 
 		public override T this[Topology.FaceEdge e]
 		{
 			get { return faceGroupData[faceGroupIndices[e.farFace]]; }
-			set { throw new System.NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
+			set { throw new NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 	}
 

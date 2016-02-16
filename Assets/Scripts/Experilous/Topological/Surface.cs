@@ -37,6 +37,11 @@ namespace Experilous.Topological
 		public abstract bool isConvex { get; }
 		public abstract bool isConcave { get; }
 
+		public abstract Vector3 Intersect(Ray ray);
+		public abstract Vector3 Intersect(ScaledRay ray);
+		public abstract bool Intersect(Ray ray, out Vector3 intersection);
+		public abstract bool Intersect(ScaledRay ray, out Vector3 intersection);
+
 		public abstract Vector3 Project(Vector3 position);
 		public abstract Vector3 GetNormal(Vector3 position);
 

@@ -68,6 +68,7 @@ namespace Experilous.Topological
 		public Vector3 surfaceNormal;
 		public Vector3 axis0Normal;
 		public Vector3 axis1Normal;
+		public SerializablePlane plane;
 		public bool isInverted;
 
 		public static PlanarSurface Create(PlanarDescriptor descriptor)
@@ -87,6 +88,9 @@ namespace Experilous.Topological
 			axis1Normal = Vector3.Cross(axis1.vector, surfaceNormal);
 			if (Vector3.Dot(axis0Normal, axis1.vector) < 0f) axis0Normal = -axis0Normal;
 			if (Vector3.Dot(axis1Normal, axis0.vector) < 0f) axis1Normal = -axis1Normal;
+
+			plane = new SerializablePlane(Vector3.Cross(axis1.vector, axis0.vector), origin);
+			if (Vector3.Dot(plane.normal, surfaceNormal) < 0f) plane = plane.Flip();
 
 			return this;
 		}
@@ -117,11 +121,29 @@ namespace Experilous.Topological
 		public override bool isConvex { get { return true; } }
 		public override bool isConcave { get { return false; } }
 
+		public override Vector3 Intersect(Ray ray)
+		{
+			return MathUtility.Intersect(plane, ray);
+		}
+
+		public override Vector3 Intersect(ScaledRay ray)
+		{
+			return MathUtility.Intersect(plane, ray);
+		}
+
+		public override bool Intersect(Ray ray, out Vector3 intersection)
+		{
+			return MathUtility.Intersect(plane, ray, out intersection);
+		}
+
+		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
+		{
+			return MathUtility.Intersect(plane, ray, out intersection);
+		}
+
 		public override Vector3 Project(Vector3 position)
 		{
-			var normal = Vector3.Cross(axis1.vector, axis0.vector);
-			var plane = new Plane(normal, origin);
-			var line = new Ray(position, normal);
+			var line = new Ray(position, plane.normal);
 			return MathUtility.Intersect(plane, line);
 		}
 

@@ -23,7 +23,7 @@ namespace Experilous.Topological
 			public int neighborCount { get { return _topology.vertexNeighborCounts[_index]; } }
 			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology.vertexFirstEdgeIndices[_index]); } }
 
-			public bool isInitialized { get { return _topology != null; } }
+			public static implicit operator bool(Vertex vertex) { return vertex._topology != null; }
 
 			public bool hasExternalFaceNeighbor
 			{
@@ -34,11 +34,6 @@ namespace Experilous.Topological
 							return true;
 					return false;
 				}
-			}
-
-			public T Attribute<T>(T[] attributeArray)
-			{
-				return attributeArray[_index];
 			}
 
 			public struct VertexEdgesIndexer

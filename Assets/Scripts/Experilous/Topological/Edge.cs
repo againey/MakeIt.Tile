@@ -95,6 +95,7 @@ namespace Experilous.Topological
 			public EdgeWrap wrap { get { return _topology.edgeData[_index].wrap; } }
 
 			public bool isBoundary { get { return farFace.isExternal != nearFace.isExternal; } }
+			public bool isNonBoundary { get { return farFace.isExternal == nearFace.isExternal; } }
 			public bool isOuterBoundary { get { return farFace.isExternal; } }
 			public bool isInnerBoundary { get { return nearFace.isExternal; } }
 			public bool isInternal { get { return nearFace.isInternal; } }
@@ -102,6 +103,8 @@ namespace Experilous.Topological
 
 			public VertexEdge vertexEdge { get { return new VertexEdge(_topology, _index); } }
 			public FaceEdge faceEdge { get { return new FaceEdge(_topology, _index); } }
+
+			public static implicit operator bool(HalfEdge edge) { return edge._topology != null; }
 
 			public override bool Equals(object other)
 			{
@@ -186,6 +189,7 @@ namespace Experilous.Topological
 			public EdgeWrap wrap { get { return _halfEdge.wrap; } }
 
 			public bool isBoundary { get { return _halfEdge.isBoundary; } }
+			public bool isNonBoundary { get { return _halfEdge.isNonBoundary; } }
 			public bool isOuterBoundary { get { return _halfEdge.isOuterBoundary; } }
 			public bool isInnerBoundary { get { return _halfEdge.isInnerBoundary; } }
 			public bool isInternal { get { return _halfEdge.isInternal; } }
@@ -193,6 +197,8 @@ namespace Experilous.Topological
 
 			public HalfEdge halfEdge { get { return _halfEdge; } }
 			public FaceEdge faceEdge { get { return new FaceEdge(_halfEdge); } }
+
+			public static implicit operator bool(VertexEdge edge) { return edge._halfEdge; }
 
 			public override bool Equals(object other)
 			{
@@ -277,6 +283,7 @@ namespace Experilous.Topological
 			public EdgeWrap wrap { get { return _halfEdge.wrap; } }
 
 			public bool isBoundary { get { return _halfEdge.isBoundary; } }
+			public bool isNonBoundary { get { return _halfEdge.isNonBoundary; } }
 			public bool isOuterBoundary { get { return _halfEdge.isOuterBoundary; } }
 			public bool isInnerBoundary { get { return _halfEdge.isInnerBoundary; } }
 			public bool isInternal { get { return _halfEdge.isInternal; } }
@@ -284,6 +291,8 @@ namespace Experilous.Topological
 
 			public HalfEdge halfEdge { get { return _halfEdge; } }
 			public VertexEdge vertexEdge { get { return new VertexEdge(_halfEdge); } }
+
+			public static implicit operator bool(FaceEdge edge) { return edge._halfEdge; }
 
 			public override bool Equals(object other)
 			{
