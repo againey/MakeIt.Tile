@@ -1,25 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Experilous
+namespace Experilous.Generation
 {
 	public class AssetCollection : ScriptableObject
 	{
+		public GeneratorExecutive executive;
 		public List<Object> discreteAssets;
 		public List<Object> embeddedAssets;
 
-		public static AssetCollection Create()
+		public static AssetCollection Create(GeneratorExecutive executive)
 		{
 			var instance = CreateInstance<AssetCollection>();
+			instance.executive = executive;
 			instance.discreteAssets = new List<Object>();
 			instance.embeddedAssets = new List<Object>();
-			return instance;
-		}
-
-		public static AssetCollection Create(string name)
-		{
-			var instance = Create();
-			instance.name = name;
 			return instance;
 		}
 

@@ -11,9 +11,6 @@ namespace Experilous.Generation
 
 	public abstract class GeneratorExecutive : ScriptableObject
 	{
-		[SerializeField] private bool _initialized = false;
-		[SerializeField] private int _instanceID;
-
 		[SerializeField] protected List<Generator> _generators = new List<Generator>();
 
 		[SerializeField] protected AssetCollection _assetCollection;
@@ -328,14 +325,11 @@ namespace Experilous.Generation
 
 		protected void OnEnable()
 		{
-			if (!_initialized)
+			if (_assetCollection != null && !ReferenceEquals(_assetCollection.executive, this))
 			{
-				_initialized = true;
-				_instanceID = GetInstanceID();
-			}
-			else if (_instanceID != GetInstanceID())
-			{
-				//Asset was copied outside of Unity; all generated assets should be reset.
+				var original = _assetCollection.executive;
+
+				// Generator executive asset was copied; all generated assets should be detached.
 				foreach (var generator in _generators)
 				{
 					foreach (var output in generator.activeOutputs)
@@ -346,14 +340,11 @@ namespace Experilous.Generation
 
 				_assetCollection = null;
 
-				var original = EditorUtility.InstanceIDToObject(_instanceID) as GeneratorExecutive;
 				if (original != null && original.generationName == generationName && original.generationPath == generationPath && AssetDatabase.Contains(this))
 				{
 					var copyPath = AssetDatabase.GetAssetPath(this);
 					generationName = Path.GetFileNameWithoutExtension(copyPath);
 				}
-
-				_instanceID = GetInstanceID();
 			}
 		}
 
@@ -787,7 +778,7 @@ namespace Experilous.Generation
 		{
 			if (_assetCollection == null || !AssetDatabase.Contains(_assetCollection))
 			{
-				_assetCollection = AssetCollection.Create("Asset Collection");
+				_assetCollection = AssetCollection.Create(this).SetName("Asset Collection");
 				var assetCollectionPath = GetAssetPath(_assetCollection.name, null, "asset");
 				AssetUtility.CreatePathFolders(assetCollectionPath);
 				AssetDatabase.CreateAsset(_assetCollection, assetCollectionPath);
