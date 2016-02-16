@@ -24,7 +24,7 @@ namespace Experilous.Topological
 		public InputSlot vertexPositionsInputSlot;
 		public InputSlot vertexNormalsInputSlot;
 
-		public OutputSlot faceNormalsDescriptor;
+		public OutputSlot faceNormalsOutputSlot;
 
 		protected override void Initialize()
 		{
@@ -39,7 +39,7 @@ namespace Experilous.Topological
 			calculationMethod = CalculationMethod.FromSurfaceNormal;
 
 			// Outputs
-			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Vector3>>(ref faceNormalsDescriptor, this, "Face Normals", "Attributes");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Vector3>>(ref faceNormalsOutputSlot, this, "Face Normals", "Attributes");
 		}
 
 		protected override void OnUpdate()
@@ -66,7 +66,7 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return faceNormalsDescriptor;
+				yield return faceNormalsOutputSlot;
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace Experilous.Topological
 				}
 			});
 
-			faceNormalsDescriptor.SetAsset(faceNormals);
+			faceNormalsOutputSlot.SetAsset(faceNormals);
 
 			yield break;
 		}

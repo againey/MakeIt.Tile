@@ -16,9 +16,9 @@ namespace Experilous.Topological
 
 		public RandomnessDescriptor randomness;
 
-		public OutputSlot faceGroupCollectionDescriptor;
-		public OutputSlot faceGroupIndicesDescriptor;
-		public OutputSlot[] faceGroupDescriptors;
+		public OutputSlot faceGroupCollectionOutputSlot;
+		public OutputSlot faceGroupIndicesOutputSlot;
+		public OutputSlot[] faceGroupOutputSlots;
 
 		protected override void Initialize()
 		{
@@ -31,9 +31,9 @@ namespace Experilous.Topological
 			randomness.Initialize(this);
 
 			// Outputs
-			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionDescriptor, this, "Random Face Groups", "Random Face Groups");
-			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesDescriptor, this, "Random Face Group Indices", "Attributes");
-			faceGroupDescriptors = new OutputSlot[0];
+			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionOutputSlot, this, "Random Face Groups", "Face Groups");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesOutputSlot, this, "Random Face Group Indices", "Attributes");
+			faceGroupOutputSlots = new OutputSlot[0];
 		}
 
 		protected override void OnUpdate()
@@ -54,12 +54,12 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return faceGroupCollectionDescriptor;
-				yield return faceGroupIndicesDescriptor;
+				yield return faceGroupCollectionOutputSlot;
+				yield return faceGroupIndicesOutputSlot;
 
-				foreach (var faceGroupDescriptor in faceGroupDescriptors)
+				foreach (var faceGroupOutputSlot in faceGroupOutputSlots)
 				{
-					yield return faceGroupDescriptor;
+					yield return faceGroupOutputSlot;
 				}
 			}
 		}
@@ -68,9 +68,9 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				foreach (var faceGroupDescriptor in faceGroupDescriptors)
+				foreach (var faceGroupOutputSlot in faceGroupOutputSlots)
 				{
-					yield return faceGroupCollectionDescriptor.Uses(faceGroupDescriptor);
+					yield return faceGroupCollectionOutputSlot.Uses(faceGroupOutputSlot);
 				}
 			}
 		}
@@ -120,15 +120,15 @@ namespace Experilous.Topological
 				}
 			}
 
-			faceGroupDescriptors = GeneratorUtility.ResizeArray(faceGroupDescriptors, faceGroupFaceIndices.Length,
+			faceGroupOutputSlots = GeneratorUtility.ResizeArray(faceGroupOutputSlots, faceGroupFaceIndices.Length,
 				(int index) =>
 				{
-					return OutputSlot.CreateGrouped<FaceGroup>(this, string.Format("Face Cluster {0}", index), faceGroupCollectionDescriptor.name);
+					return OutputSlot.CreateGrouped<FaceGroup>(this, string.Format("Face Group {0}", index), faceGroupCollectionOutputSlot.name, true, OutputSlot.Availability.DuringGeneration);
 				},
 				(OutputSlot output, int index) =>
 				{
 					output.DisconnectAll();
-					output.path = faceGroupCollectionDescriptor.name;
+					output.path = faceGroupCollectionOutputSlot.name;
 					return output;
 				});
 
@@ -136,15 +136,12 @@ namespace Experilous.Topological
 
 			for (int faceGroupIndex = 0; faceGroupIndex < faceGroupFaceIndices.Length; ++faceGroupIndex)
 			{
-				var faceGroup = ArrayFaceGroup.Create(topology, faceGroupFaceIndices[faceGroupIndex].ToArray()).SetName(faceGroupDescriptors[faceGroupIndex].name);
-				faceGroupCollection.faceGroups[faceGroupIndex] = faceGroupDescriptors[faceGroupIndex].SetAsset(faceGroup);
+				var faceGroup = ArrayFaceGroup.Create(topology, faceGroupFaceIndices[faceGroupIndex].ToArray()).SetName(faceGroupOutputSlots[faceGroupIndex].name);
+				faceGroupCollection.faceGroups[faceGroupIndex] = faceGroupOutputSlots[faceGroupIndex].SetAsset(faceGroup);
 			}
 
-			faceGroupCollectionDescriptor.path = faceGroupCollectionDescriptor.name;
-			faceGroupIndicesDescriptor.path = faceGroupCollectionDescriptor.name;
-
-			faceGroupCollectionDescriptor.SetAsset(faceGroupCollection);
-			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.Create(faceGroupIndices.array));
+			faceGroupCollectionOutputSlot.SetAsset(faceGroupCollection);
+			faceGroupIndicesOutputSlot.SetAsset(IntFaceAttribute.Create(faceGroupIndices.array));
 
 			yield break;
 		}

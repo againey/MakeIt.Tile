@@ -27,8 +27,8 @@ namespace Experilous.Topological
 
 		public bool centerOnGroupAverage;
 
-		public OutputSlot meshCollectionDescriptor;
-		public OutputSlot[] meshDescriptors;
+		public OutputSlot meshCollectionOutputSlot;
+		public OutputSlot[] meshOutputSlots;
 
 		protected override void Initialize()
 		{
@@ -46,8 +46,8 @@ namespace Experilous.Topological
 			centerOnGroupAverage = false;
 
 			// Outputs
-			OutputSlot.CreateOrResetGrouped<MeshCollection>(ref meshCollectionDescriptor, this, "Mesh Collection", "Meshes");
-			meshDescriptors = new OutputSlot[0];
+			OutputSlot.CreateOrResetGrouped<MeshCollection>(ref meshCollectionOutputSlot, this, "Mesh Collection", "Meshes");
+			meshOutputSlots = new OutputSlot[0];
 		}
 
 		protected override void OnUpdate()
@@ -75,9 +75,9 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return meshCollectionDescriptor;
+				yield return meshCollectionOutputSlot;
 
-				foreach (var mesh in meshDescriptors)
+				foreach (var mesh in meshOutputSlots)
 				{
 					yield return mesh;
 				}
@@ -88,9 +88,9 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				foreach (var meshDescriptor in meshDescriptors)
+				foreach (var meshOutputSlot in meshOutputSlots)
 				{
-					yield return meshCollectionDescriptor.Uses(meshDescriptor);
+					yield return meshCollectionOutputSlot.Uses(meshOutputSlot);
 				}
 			}
 		}
@@ -137,56 +137,56 @@ namespace Experilous.Topological
 				}
 			}
 
-			if (meshDescriptors.Length < meshes.Count)
+			if (meshOutputSlots.Length < meshes.Count)
 			{
 				var newMeshes = new OutputSlot[meshes.Count];
 
-				for (var i = 0; i < meshDescriptors.Length; ++i)
+				for (var i = 0; i < meshOutputSlots.Length; ++i)
 				{
-					newMeshes[i] = meshDescriptors[i];
+					newMeshes[i] = meshOutputSlots[i];
 				}
-				for (var i = meshDescriptors.Length; i < newMeshes.Length; ++i)
+				for (var i = meshOutputSlots.Length; i < newMeshes.Length; ++i)
 				{
 					newMeshes[i] = OutputSlot.CreateGrouped<Mesh>(this, "Mesh", "Meshes");
 				}
 
-				meshDescriptors = newMeshes;
+				meshOutputSlots = newMeshes;
 			}
-			else if (meshDescriptors.Length > meshes.Count)
+			else if (meshOutputSlots.Length > meshes.Count)
 			{
 				var newMeshes = new OutputSlot[meshes.Count];
 
 				for (var i = 0; i < newMeshes.Length; ++i)
 				{
-					newMeshes[i] = meshDescriptors[i];
+					newMeshes[i] = meshOutputSlots[i];
 				}
 
-				meshDescriptors = newMeshes;
+				meshOutputSlots = newMeshes;
 			}
 
-			if (meshDescriptors.Length == 1)
+			if (meshOutputSlots.Length == 1)
 			{
-				meshDescriptors[0].name = "Mesh";
+				meshOutputSlots[0].name = "Mesh";
 			}
-			else if (meshDescriptors.Length > 1)
+			else if (meshOutputSlots.Length > 1)
 			{
-				for (int i = 0; i < meshDescriptors.Length; ++i)
+				for (int i = 0; i < meshOutputSlots.Length; ++i)
 				{
-					meshDescriptors[i].name = string.Format("Submesh {0}", i);
+					meshOutputSlots[i].name = string.Format("Submesh {0}", i);
 				}
 			}
 
-			for (int i = 0; i < meshDescriptors.Length; ++i)
+			for (int i = 0; i < meshOutputSlots.Length; ++i)
 			{
-				meshDescriptors[i].SetAsset(meshes[i]);
+				meshOutputSlots[i].SetAsset(meshes[i]);
 			}
 
-			var meshCollection = MeshCollection.Create(meshDescriptors.Length);
-			for (int i = 0; i < meshDescriptors.Length; ++i)
+			var meshCollection = MeshCollection.Create(meshOutputSlots.Length);
+			for (int i = 0; i < meshOutputSlots.Length; ++i)
 			{
-				meshCollection.meshes[i] = new MeshCollection.OrientedMesh(meshDescriptors[i].GetAsset<Mesh>(), meshOffsets[i]);
+				meshCollection.meshes[i] = new MeshCollection.OrientedMesh(meshOutputSlots[i].GetAsset<Mesh>(), meshOffsets[i]);
 			}
-			meshCollectionDescriptor.SetAsset(meshCollection);
+			meshCollectionOutputSlot.SetAsset(meshCollection);
 
 			yield break;
 		}

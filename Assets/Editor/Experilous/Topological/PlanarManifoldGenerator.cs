@@ -86,9 +86,9 @@ namespace Experilous.Topological
 		public Vector3 originPosition;
 		public WrapOptions wrapOptions;
 
-		public OutputSlot surfaceDescriptor;
-		public OutputSlot topologyDescriptor;
-		public OutputSlot vertexPositionsDescriptor;
+		public OutputSlot surfaceOutputSlot;
+		public OutputSlot topologyOutputSlot;
+		public OutputSlot vertexPositionsOutputSlot;
 
 		[SerializeField] private bool _pregenerationFailed = false;
 
@@ -96,14 +96,43 @@ namespace Experilous.Topological
 		public static void CreateDefaultGeneratorCollection()
 		{
 			var collection = TopologyGeneratorCollection.Create("New Planar Manifold");
-			collection.Add(CreateInstance<PlanarManifoldGenerator>(collection, "Manifold"));
+
+			var manifoldGenerator = collection.Add(CreateInstance<PlanarManifoldGenerator>(collection, "Manifold"));
 			collection.Add(CreateInstance<RandomEngineGenerator>(collection));
-			collection.Add(CreateInstance<TopologyRandomizerGenerator>(collection));
-			collection.Add(CreateInstance<FaceCentroidsGenerator>(collection));
-			collection.Add(CreateInstance<FaceNormalsGenerator>(collection));
-			collection.Add(CreateInstance<RectangularFaceGroupsGenerator>(collection));
-			collection.Add(CreateInstance<MeshGenerator>(collection));
-			collection.Add(CreateInstance<PrefabGenerator>(collection));
+			var faceCentroidsGenerator = collection.Add(CreateInstance<FaceCentroidsGenerator>(collection));
+			var faceNormalsGenerator = collection.Add(CreateInstance<FaceNormalsGenerator>(collection));
+			var rectangularFaceGroupsGenerator = collection.Add(CreateInstance<RectangularFaceGroupsGenerator>(collection));
+			var meshGenerator = collection.Add(CreateInstance<MeshGenerator>(collection));
+			var prefabGenerator = collection.Add(CreateInstance<PrefabGenerator>(collection));
+			var faceSpatialPartitioningGenerator = collection.Add(CreateInstance<FaceSpatialPartitioningGenerator>(collection));
+
+			faceCentroidsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			faceCentroidsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			faceCentroidsGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
+
+			faceNormalsGenerator.calculationMethod = FaceNormalsGenerator.CalculationMethod.FromSurfaceNormal;
+			faceNormalsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			faceNormalsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			faceNormalsGenerator.facePositionsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
+
+			rectangularFaceGroupsGenerator.axisDivisions = new Index2D(4, 4);
+			rectangularFaceGroupsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			rectangularFaceGroupsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			rectangularFaceGroupsGenerator.facePositionsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
+
+			meshGenerator.sourceType = MeshGenerator.SourceType.FaceGroupCollection;
+			meshGenerator.faceGroupCollectionInputSlot.source = rectangularFaceGroupsGenerator.faceGroupCollectionOutputSlot;
+			meshGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
+			meshGenerator.faceCentroidsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
+			meshGenerator.faceNormalsInputSlot.source = faceNormalsGenerator.faceNormalsOutputSlot;
+			meshGenerator.centerOnGroupAverage = true;
+
+			prefabGenerator.meshCollectionInputSlot.source = meshGenerator.meshCollectionOutputSlot;
+
+			faceSpatialPartitioningGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			faceSpatialPartitioningGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			faceSpatialPartitioningGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
+
 			collection.CreateAsset();
 		}
 
@@ -129,18 +158,18 @@ namespace Experilous.Topological
 			wrapOptions = WrapOptions.NoWrap;
 
 			// Outputs
-			OutputSlot.CreateOrResetGrouped<PlanarSurface>(ref surfaceDescriptor, this, "Surface", "Descriptors");
-			OutputSlot.CreateOrResetGrouped<Topology>(ref topologyDescriptor, this, "Topology", "Descriptors");
-			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexPositionsDescriptor, this, "Vertex Positions", "Attributes");
+			OutputSlot.CreateOrReset<PlanarSurface>(ref surfaceOutputSlot, this, "Surface");
+			OutputSlot.CreateOrReset<Topology>(ref topologyOutputSlot, this, "Topology");
+			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexPositionsOutputSlot, this, "Vertex Positions", "Attributes");
 		}
 
 		public override IEnumerable<OutputSlot> outputs
 		{
 			get
 			{
-				yield return surfaceDescriptor;
-				yield return topologyDescriptor;
-				yield return vertexPositionsDescriptor;
+				yield return surfaceOutputSlot;
+				yield return topologyOutputSlot;
+				yield return vertexPositionsOutputSlot;
 			}
 		}
 
@@ -148,7 +177,7 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return surfaceDescriptor.Uses(topologyDescriptor);
+				yield return surfaceOutputSlot.Uses(topologyOutputSlot);
 			}
 		}
 
@@ -224,8 +253,8 @@ namespace Experilous.Topological
 
 		private void CreateQuadGridManifold(bool generate = true)
 		{
-			var surface = surfaceDescriptor.GetAsset<RectangularQuadGrid>();
-			if (surface == null) surface = surfaceDescriptor.SetAsset(CreateInstance<RectangularQuadGrid>(), false);
+			var surface = surfaceOutputSlot.GetAsset<RectangularQuadGrid>();
+			if (surface == null) surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularQuadGrid>(), false);
 
 			Vector3 finalHorizontalAxis;
 			switch (quadGridHorizontalAxisOptions)
@@ -273,16 +302,16 @@ namespace Experilous.Topological
 
 				var topology = surface.CreateManifold(out vertexPositionsArray);
 
-				surfaceDescriptor.Persist();
-				topologyDescriptor.SetAsset(topology);
-				vertexPositionsDescriptor.SetAsset(PositionalVertexAttribute.Create(surfaceDescriptor.GetAsset<Surface>(), vertexPositionsArray));
+				surfaceOutputSlot.Persist();
+				topologyOutputSlot.SetAsset(topology);
+				vertexPositionsOutputSlot.SetAsset(PositionalVertexAttribute.Create(surfaceOutputSlot.GetAsset<Surface>(), vertexPositionsArray));
 			}
 		}
 
 		private void CreateHexGridManifold(bool generate = true)
 		{
-			var surface = surfaceDescriptor.GetAsset<RectangularHexGrid>();
-			if (surface == null) surface = surfaceDescriptor.SetAsset(CreateInstance<RectangularHexGrid>(), false);
+			var surface = surfaceOutputSlot.GetAsset<RectangularHexGrid>();
+			if (surface == null) surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularHexGrid>(), false);
 
 			const float angledShort = 0.5f;
 			const float angledLong = RectangularHexGrid.halfSqrtThree;
@@ -435,9 +464,9 @@ namespace Experilous.Topological
 
 				var topology = surface.CreateManifold(out vertexPositionsArray);
 
-				surfaceDescriptor.Persist();
-				topologyDescriptor.SetAsset(topology);
-				vertexPositionsDescriptor.SetAsset(PositionalVertexAttribute.Create(surfaceDescriptor.GetAsset<Surface>(), vertexPositionsArray));
+				surfaceOutputSlot.Persist();
+				topologyOutputSlot.SetAsset(topology);
+				vertexPositionsOutputSlot.SetAsset(PositionalVertexAttribute.Create(surfaceOutputSlot.GetAsset<Surface>(), vertexPositionsArray));
 			}
 		}
 	}

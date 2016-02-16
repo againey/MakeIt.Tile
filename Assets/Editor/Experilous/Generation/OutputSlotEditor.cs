@@ -57,8 +57,6 @@ namespace Experilous.Generation
 		{
 			InitializeStyles();
 
-			var descriptor = (OutputSlot)output;
-
 			float foldoutMinWidth, foldoutMaxWidth;
 			EditorStyles.foldout.CalcMinMaxWidth(GUIContent.none, out foldoutMinWidth, out foldoutMaxWidth);
 
@@ -73,28 +71,28 @@ namespace Experilous.Generation
 			if (output.uiFoldout)
 			{
 				EditorGUILayout.BeginHorizontal();
-				descriptor.isEnabled = EditorGUILayout.ToggleLeft("Enabled", descriptor.isEnabled, GUILayout.Width(EditorStyles.toggle.CalcSize(new GUIContent("Enabled")).x));
-				GUIExtensions.PushEnable(descriptor.isEnabled);
-				if (descriptor.mustBeAvailableAfterGeneration)
+				output.isEnabled = EditorGUILayout.ToggleLeft("Enabled", output.isEnabled, GUILayout.Width(EditorStyles.toggle.CalcSize(new GUIContent("Enabled")).x));
+				GUIExtensions.PushEnable(output.isEnabled);
+				if (output.mustBeAvailableAfterGeneration)
 				{
-					descriptor.availability = (OutputSlot.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _alwaysAfterAvailabilityContent, _alwaysAfterAvailabilityValues);
+					output.availability = (OutputSlot.Availability)EditorGUILayout.IntPopup((int)output.availability, _alwaysAfterAvailabilityContent, _alwaysAfterAvailabilityValues);
 				}
-				else if (descriptor.canBeAvailableAfterGeneration)
+				else if (output.canBeAvailableAfterGeneration)
 				{
-					descriptor.availability = (OutputSlot.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _fullAvailabilityContent, _fullAvailabilityValues);
+					output.availability = (OutputSlot.Availability)EditorGUILayout.IntPopup((int)output.availability, _fullAvailabilityContent, _fullAvailabilityValues);
 				}
 				else
 				{
-					descriptor.availability = (OutputSlot.Availability)EditorGUILayout.IntPopup((int)descriptor.availability, _neverAfterAvailabilityContent, _neverAfterAvailabilityValues);
+					output.availability = (OutputSlot.Availability)EditorGUILayout.IntPopup((int)output.availability, _neverAfterAvailabilityContent, _neverAfterAvailabilityValues);
 				}
 				EditorGUILayout.EndHorizontal();
 			}
 			else
 			{
 				EditorGUILayout.BeginHorizontal();
-				descriptor.isEnabled = EditorGUILayout.Toggle(descriptor.isEnabled, GUILayout.Width(EditorStyles.toggle.CalcSize(GUIContent.none).x));
-				GUIExtensions.PushEnable(descriptor.isEnabled);
-				EditorGUILayout.LabelField(new GUIContent(string.Format("{0} ({1})", descriptor.name, descriptor.assetType.GetPrettyName()), descriptor.assetType.GetPrettyName(true)));
+				output.isEnabled = EditorGUILayout.Toggle(output.isEnabled, GUILayout.Width(EditorStyles.toggle.CalcSize(GUIContent.none).x));
+				GUIExtensions.PushEnable(output.isEnabled);
+				EditorGUILayout.LabelField(new GUIContent(string.Format("{0} ({1})", output.name, output.assetType.GetPrettyName()), output.assetType.GetPrettyName(true)));
 				EditorGUILayout.EndHorizontal();
 			}
 
@@ -105,29 +103,29 @@ namespace Experilous.Generation
 				var labelWidth = 0f;
 				labelWidth = Mathf.Max(labelWidth, EditorStyles.label.CalcSize(new GUIContent("Name")).x);
 				labelWidth = Mathf.Max(labelWidth, EditorStyles.label.CalcSize(new GUIContent("Type")).x);
-				if (descriptor.canBeGrouped) labelWidth = Mathf.Max(labelWidth, EditorStyles.label.CalcSize(new GUIContent("Group")).x);
+				if (output.canBeGrouped) labelWidth = Mathf.Max(labelWidth, EditorStyles.label.CalcSize(new GUIContent("Group")).x);
 
 				EditorGUIUtility.labelWidth = labelWidth;
-				descriptor.name = EditorGUILayout.TextField("Name", descriptor.name);
+				output.name = EditorGUILayout.TextField("Name", output.name);
 
-				if (descriptor.canBeGrouped)
+				if (output.canBeGrouped)
 				{
 					EditorGUILayout.BeginHorizontal();
-					descriptor.path = EditorGUILayout.TextField("Path", descriptor.path);
-					var assetPaths = descriptor.generator.executive.GetAllAssetPaths("<none>");
-					var currentPathIndex = System.Array.IndexOf(assetPaths, descriptor.path);
+					output.path = EditorGUILayout.TextField("Path", output.path);
+					var assetPaths = output.generator.executive.GetAllAssetPaths("<none>");
+					var currentPathIndex = System.Array.IndexOf(assetPaths, output.path);
 					if (currentPathIndex == -1) currentPathIndex = 0;
 					currentPathIndex = EditorGUILayout.Popup(currentPathIndex, assetPaths, GUILayout.Width(EditorGUIUtility.singleLineHeight));
-					descriptor.path = currentPathIndex == 0 ? "" : assetPaths[currentPathIndex];
+					output.path = currentPathIndex == 0 ? "" : assetPaths[currentPathIndex];
 					EditorGUILayout.EndHorizontal();
 				}
 
 				EditorGUILayout.BeginHorizontal();
 				EditorGUILayout.PrefixLabel("Type");
-				EditorGUILayout.SelectableLabel(descriptor.assetType.GetPrettyName(), EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight));
+				EditorGUILayout.SelectableLabel(output.assetType.GetPrettyName(), EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight));
 				EditorGUILayout.EndHorizontal();
 				var typeRect = GUILayoutUtility.GetLastRect();
-				GUI.Label(typeRect, new GUIContent("", descriptor.assetType.GetPrettyName(true)));
+				GUI.Label(typeRect, new GUIContent("", output.assetType.GetPrettyName(true)));
 
 				EditorGUIUtility.labelWidth = priorLabelWidth;
 			}

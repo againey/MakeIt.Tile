@@ -14,9 +14,9 @@ namespace Experilous.Topological
 		[AutoSelect] public InputSlot topologyInputSlot;
 		public InputSlot facePositionsInputSlot;
 
-		public OutputSlot faceGroupCollectionDescriptor;
-		public OutputSlot faceGroupIndicesDescriptor;
-		public OutputSlot[] faceGroupDescriptors;
+		public OutputSlot faceGroupCollectionOutputSlot;
+		public OutputSlot faceGroupIndicesOutputSlot;
+		public OutputSlot[] faceGroupOutputSlots;
 
 		protected override void Initialize()
 		{
@@ -29,9 +29,9 @@ namespace Experilous.Topological
 			axisDivisions = new Index2D(1, 1);
 
 			// Outputs
-			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionDescriptor, this, "Face Groups", "Face Groups");
-			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesDescriptor, this, "Face Group Indices", "Attributes");
-			faceGroupDescriptors = new OutputSlot[0];
+			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionOutputSlot, this, "Rectangular Face Groups", "Face Groups");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesOutputSlot, this, "Rectangular Face Group Indices", "Attributes");
+			faceGroupOutputSlots = new OutputSlot[0];
 		}
 
 		public override IEnumerable<InputSlot> inputs
@@ -48,10 +48,10 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return faceGroupCollectionDescriptor;
-				yield return faceGroupIndicesDescriptor;
+				yield return faceGroupCollectionOutputSlot;
+				yield return faceGroupIndicesOutputSlot;
 
-				foreach (var faceGroup in faceGroupDescriptors)
+				foreach (var faceGroup in faceGroupOutputSlots)
 				{
 					yield return faceGroup;
 				}
@@ -62,16 +62,16 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				foreach (var faceGroupDescriptor in faceGroupDescriptors)
+				foreach (var faceGroupOutputSlot in faceGroupOutputSlots)
 				{
-					yield return faceGroupCollectionDescriptor.Uses(faceGroupDescriptor);
+					yield return faceGroupCollectionOutputSlot.Uses(faceGroupOutputSlot);
 				}
 			}
 		}
 
 		public override IEnumerator BeginGeneration()
 		{
-			var surfaceDescriptor = surfaceInputSlot.GetAsset<PlanarSurface>();
+			var surface = surfaceInputSlot.GetAsset<PlanarSurface>();
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var facePositions = facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>();
 
@@ -80,8 +80,8 @@ namespace Experilous.Topological
 
 			var waitHandle = executive.GenerateConcurrently(() =>
 			{
-				var axis0Vector = surfaceDescriptor.axis0.vector;
-				var axis1Vector = surfaceDescriptor.axis1.vector;
+				var axis0Vector = surface.axis0.vector;
+				var axis1Vector = surface.axis1.vector;
 				var surfaceNormal = Vector3.Cross(axis0Vector, axis1Vector).normalized;
 				var axis0Normal = Vector3.Cross(axis0Vector, surfaceNormal).normalized;
 				var axis1Normal = Vector3.Cross(axis1Vector, surfaceNormal).normalized;
@@ -89,7 +89,7 @@ namespace Experilous.Topological
 				var axis1DividedVector = axis1Vector / axisDivisions.y;
 				var axis0Dot = Vector3.Dot(axis1Normal, axis0DividedVector);
 				var axis1Dot = Vector3.Dot(axis0Normal, axis1DividedVector);
-				var origin = new Vector3(0f, 0f, 0f); //TODO this should come from somewhere, probably surface descriptor
+				var origin = new Vector3(0f, 0f, 0f); //TODO this should come from somewhere, probably surface
 
 				for (int i = 0; i < faceGroupFaceIndices.Length; ++i)
 				{
@@ -119,7 +119,7 @@ namespace Experilous.Topological
 				yield return null;
 			}
 
-			faceGroupDescriptors = GeneratorUtility.ResizeArray(faceGroupDescriptors, groupCount,
+			faceGroupOutputSlots = GeneratorUtility.ResizeArray(faceGroupOutputSlots, groupCount,
 				(int index) =>
 				{
 					return null;
@@ -145,17 +145,17 @@ namespace Experilous.Topological
 						var faceGroupName = string.Format("Face Group [{0}, {1}]", axis0Index, axis1Index);
 						var faceGroup = ArrayFaceGroup.Create(topology, group.ToArray()).SetName(faceGroupName);
 
-						if (faceGroupDescriptors[groupIndex] == null)
+						if (faceGroupOutputSlots[groupIndex] == null)
 						{
-							faceGroupDescriptors[groupIndex] = OutputSlot.CreateGrouped<FaceGroup>(this, faceGroupName, faceGroupCollectionDescriptor.name);
+							faceGroupOutputSlots[groupIndex] = OutputSlot.CreateGrouped<FaceGroup>(this, faceGroupName, faceGroupCollectionOutputSlot.name, true, OutputSlot.Availability.DuringGeneration);
 						}
 						else
 						{
-							faceGroupDescriptors[groupIndex].name = faceGroupName;
-							faceGroupDescriptors[groupIndex].path = faceGroupCollectionDescriptor.name;
+							faceGroupOutputSlots[groupIndex].name = faceGroupName;
+							faceGroupOutputSlots[groupIndex].path = faceGroupCollectionOutputSlot.name;
 						}
 
-						faceGroupCollection.faceGroups[groupIndex] = faceGroupDescriptors[groupIndex].SetAsset(faceGroup);
+						faceGroupCollection.faceGroups[groupIndex] = faceGroupOutputSlots[groupIndex].SetAsset(faceGroup);
 
 						foreach (var faceIndex in group)
 						{
@@ -167,9 +167,8 @@ namespace Experilous.Topological
 				}
 			}
 
-			faceGroupCollectionDescriptor.path = faceGroupCollectionDescriptor.name;
-			faceGroupCollectionDescriptor.SetAsset(faceGroupCollection);
-			faceGroupIndicesDescriptor.SetAsset(IntFaceAttribute.Create(faceGroupIndices));
+			faceGroupCollectionOutputSlot.SetAsset(faceGroupCollection);
+			faceGroupIndicesOutputSlot.SetAsset(IntFaceAttribute.Create(faceGroupIndices));
 
 			yield break;
 		}

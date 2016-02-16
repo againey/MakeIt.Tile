@@ -12,8 +12,6 @@ namespace Experilous.Generation
 	public class GeneratorExecutiveEditor : Editor
 	{
 		[SerializeField] protected GeneratorExecutive _executor;
-		[SerializeField] protected string _generationName;
-		[SerializeField] protected string _generationPath;
 
 		[System.Serializable]
 		public class GeneratorEditorState
@@ -32,7 +30,6 @@ namespace Experilous.Generation
 		[SerializeField] private GeneratorEditorStateDictionary _editorStates = new GeneratorEditorStateDictionary();
 
 		[System.NonSerialized] private GUIStyle _generateButtonStyle;
-		[System.NonSerialized] private GUIStyle _centeredLabelStyle;
 		[System.NonSerialized] private GUIStyle _boldFoldoutStyle;
 		[System.NonSerialized] private GUIStyle _popupSelectionLabelStyle;
 		private float _sectionEndSpaceHeight;
@@ -56,9 +53,6 @@ namespace Experilous.Generation
 			}
 
 			_sectionEndSpaceHeight = 0f;
-
-			if (string.IsNullOrEmpty(_generationName)) _generationName = _executor.generationName;
-			if (string.IsNullOrEmpty(_generationPath)) _generationPath = _executor.generationPath;
 		}
 
 		private void InitializeStyles()
@@ -68,19 +62,6 @@ namespace Experilous.Generation
 				_generateButtonStyle = new GUIStyle(GUI.skin.button);
 				_generateButtonStyle.padding.top += 4;
 				_generateButtonStyle.padding.bottom += 4;
-			}
-
-			if (_centeredLabelStyle == null)
-			{
-				_centeredLabelStyle = new GUIStyle(EditorStyles.boldLabel);
-				_centeredLabelStyle.alignment = TextAnchor.LowerCenter;
-				_centeredLabelStyle.border.bottom = 1;
-				var background = new Texture2D(1, 2, TextureFormat.ARGB32, false, false);
-				background.filterMode = FilterMode.Point;
-				background.SetPixel(0, 0, new Color(0f, 0f, 0f, 1f));
-				background.SetPixel(0, 1, new Color(0f, 0f, 0f, 0f));
-				background.Apply();
-				_centeredLabelStyle.normal.background = background;
 			}
 
 			if (_boldFoldoutStyle == null)
@@ -120,82 +101,34 @@ namespace Experilous.Generation
 
 			EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
 
-			_generationName = EditorGUILayout.TextField("Generation Name", _generationName);
-			EditorGUILayout.BeginHorizontal();
-			_generationPath = EditorGUILayout.TextField("Generation Path", _generationPath, GUILayout.ExpandWidth(true));
-			if (GUILayout.Button("...", GUILayout.ExpandWidth(false)))
-			{
-				var path = EditorUtility.SaveFolderPanel("Select Generation Folder", AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.canonicalProjectPath, _generationPath)), "");
-				if (!string.IsNullOrEmpty(path))
-				{
-					try
-					{
-						_generationPath = AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.projectRelativeDataPath, AssetUtility.TrimDataPath(path)));
-					}
-					catch (System.InvalidOperationException)
-					{
-						EditorUtility.DisplayDialog("Select Generation Folder", string.Format("The selected folder must be within the project's data folder ({0}).", AssetUtility.projectRelativeDataPath), "OK");
-					}
-				}
-			}
-			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.BeginHorizontal();
-			{
-				EditorGUILayout.BeginVertical();
-				{
-					GUILayout.Label("Generator", _centeredLabelStyle);
-					EditorGUILayout.BeginHorizontal();
-					{
-						EditorGUILayout.BeginVertical();
-						{
-							if (GUILayout.Button("Save")) _executor.Save();
-							if (GUILayout.Button("Reload")) _executor.Reload();
-						}
-						EditorGUILayout.EndVertical();
-						EditorGUILayout.BeginVertical();
-						{
-							GUIExtensions.PushEnable(_executor.canCopy);
-							if (GUILayout.Button("Copy"))
-							{
-								_executor.Copy();
-							}
-							GUIExtensions.PopEnable();
-
-							if (GUILayout.Button("Delete")) _executor.Delete();
-						}
-						EditorGUILayout.EndVertical();
-					}
-					EditorGUILayout.EndHorizontal();
-				}
-				EditorGUILayout.EndVertical();
-				GUILayout.Space(10f);
-				EditorGUILayout.BeginVertical();
-				{
-					GUILayout.Label("Assets", _centeredLabelStyle);
-					EditorGUILayout.BeginHorizontal();
-					{
-						EditorGUILayout.BeginVertical();
-						{
-							if (GUILayout.Button("Move")) _executor.Move();
-							if (GUILayout.Button("Clean")) _executor.Clean();
-						}
-						EditorGUILayout.EndVertical();
-					}
-					EditorGUILayout.EndHorizontal();
-				}
-				EditorGUILayout.EndVertical();
-			}
-			EditorGUILayout.EndHorizontal();
-
-			GUILayout.Space(_sectionEndSpaceHeight / 2);
-
 			GUIExtensions.PushEnable(_executor.canGenerate);
 			if (GUILayout.Button("Generate", _generateButtonStyle))
 			{
-				_executor.Generate(_generationName, _generationPath);
+				_executor.Generate();
 			}
 			GUIExtensions.PopEnable();
+
+			GUILayout.Space(_sectionEndSpaceHeight / 2);
+
+			EditorGUILayout.BeginHorizontal();
+			{
+				if (GUILayout.Button(new GUIContent("Detach Assets", "Disassociate all assets from this generator.")))
+				{
+					if (EditorUtility.DisplayDialog("Detach Assets", "This will disassociate all assets from this generator, which means that these assets will no longer be automatically destroyed or replaced by future executions of the generator.\n\nIt is recommended that you move these assets to another location before you execute the generator again, so that they do not conflict with newly generated assets.", "OK", "Cancel"))
+					{
+						_executor.DetachAssets();
+					}
+				}
+
+				if (GUILayout.Button(new GUIContent("Delete Assets", "Delete all assets generated by this generator.")))
+				{
+					if (EditorUtility.DisplayDialog("Delete Assets", "This will delete all assets generated by and still associated with this generator.\n\nAre you sure you want to proceed?", "OK", "Cancel"))
+					{
+						_executor.DeleteAssets();
+					}
+				}
+			}
+			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.EndVertical();
 

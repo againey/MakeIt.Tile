@@ -96,6 +96,8 @@ namespace Experilous.Generation
 			{
 				_serializedGenerator.ApplyModifiedProperties();
 				_generator.Update();
+				_generator.executive.UpdateGenerators();
+				_generator.executive.Save();
 			}
 		}
 

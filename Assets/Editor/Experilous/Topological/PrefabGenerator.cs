@@ -12,7 +12,7 @@ namespace Experilous.Topological
 
 		public MeshFilter meshPrefab;
 
-		public OutputSlot prefabDescriptor;
+		public OutputSlot prefabOutputSlot;
 
 		protected override void Initialize()
 		{
@@ -23,7 +23,7 @@ namespace Experilous.Topological
 			meshPrefab = null;
 
 			// Outputs
-			OutputSlot.CreateOrReset<GameObject>(ref prefabDescriptor, this, "Prefab");
+			OutputSlot.CreateOrReset<GameObject>(ref prefabOutputSlot, this, "Prefab");
 		}
 
 		public override IEnumerable<InputSlot> inputs
@@ -38,7 +38,7 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return prefabDescriptor;
+				yield return prefabOutputSlot;
 			}
 		}
 
@@ -110,7 +110,7 @@ namespace Experilous.Topological
 
 			prefab.name = name;
 
-			prefabDescriptor.SetAsset(prefab);
+			prefabOutputSlot.SetAsset(prefab);
 
 			yield break;
 		}

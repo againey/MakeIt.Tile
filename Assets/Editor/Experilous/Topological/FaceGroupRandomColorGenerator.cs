@@ -14,8 +14,8 @@ namespace Experilous.Topological
 
 		public RandomnessDescriptor randomness;
 
-		public OutputSlot faceGroupColorsDescriptor;
-		public OutputSlot faceColorsDescriptor;
+		public OutputSlot faceGroupColorsOutputSlot;
+		public OutputSlot faceColorsOutputSlot;
 
 		protected override void Initialize()
 		{
@@ -27,8 +27,8 @@ namespace Experilous.Topological
 			randomness.Initialize(this);
 
 			// Outputs
-			OutputSlot.CreateOrResetGrouped<IFaceGroupAttribute<Color>>(ref faceGroupColorsDescriptor, this, "Random Face Group Colors", "Attributes");
-			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Color>>(ref faceColorsDescriptor, this, "Random Face Colors", "Attributes");
+			OutputSlot.CreateOrResetGrouped<IFaceGroupAttribute<Color>>(ref faceGroupColorsOutputSlot, this, "Random Face Group Colors", "Attributes");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Color>>(ref faceColorsOutputSlot, this, "Random Face Colors", "Attributes");
 		}
 
 		public override IEnumerable<InputSlot> inputs
@@ -45,8 +45,8 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return faceGroupColorsDescriptor;
-				yield return faceColorsDescriptor;
+				yield return faceGroupColorsOutputSlot;
+				yield return faceColorsOutputSlot;
 			}
 		}
 
@@ -63,10 +63,10 @@ namespace Experilous.Topological
 				faceGroupColorsArray[i] = new Color(random.ClosedFloatUnit(), random.ClosedFloatUnit(), random.ClosedFloatUnit());
 			}
 
-			faceGroupColorsDescriptor.SetAsset(ColorFaceGroupAttribute.Create(faceGroupColorsArray).SetName((faceGroupCollection.name + " Colors").TrimStart()));
-			faceColorsDescriptor.SetAsset(ColorFaceGroupLookupFaceAttribute.Create(
+			faceGroupColorsOutputSlot.SetAsset(ColorFaceGroupAttribute.Create(faceGroupColorsArray).SetName((faceGroupCollection.name + " Colors").TrimStart()));
+			faceColorsOutputSlot.SetAsset(ColorFaceGroupLookupFaceAttribute.Create(
 				faceGroupIndicesInputSlot.GetAsset<IntFaceAttribute>(),
-				faceGroupColorsDescriptor.GetAsset<ColorFaceGroupAttribute>()).SetName("Face Colors"));
+				faceGroupColorsOutputSlot.GetAsset<ColorFaceGroupAttribute>()).SetName("Face Colors"));
 
 			yield break;
 		}

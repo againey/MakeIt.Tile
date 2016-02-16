@@ -9,7 +9,7 @@ namespace Experilous.Generation
 	{
 		[Label(null)] public RandomnessDescriptor randomness;
 
-		public OutputSlot randomEngineDescriptor;
+		public OutputSlot randomEngineOutputSlot;
 
 		protected override void Initialize()
 		{
@@ -17,7 +17,7 @@ namespace Experilous.Generation
 			randomness.Initialize(this);
 
 			// Outputs
-			OutputSlot.CreateOrResetUnpersisted<IRandomEngine>(ref randomEngineDescriptor, this, "Random Engine", true);
+			OutputSlot.CreateOrResetUnpersisted<IRandomEngine>(ref randomEngineOutputSlot, this, "Random Engine", true);
 		}
 
 		protected override void OnUpdate()
@@ -37,13 +37,13 @@ namespace Experilous.Generation
 		{
 			get
 			{
-				yield return randomEngineDescriptor;
+				yield return randomEngineOutputSlot;
 			}
 		}
 
 		public override IEnumerator BeginGeneration()
 		{
-			randomEngineDescriptor.SetAsset(randomness.GetRandomEngine());
+			randomEngineOutputSlot.SetAsset(randomness.GetRandomEngine());
 			yield break;
 		}
 	}

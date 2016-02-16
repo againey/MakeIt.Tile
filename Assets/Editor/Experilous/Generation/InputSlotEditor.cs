@@ -9,9 +9,9 @@ namespace Experilous.Generation
 	{
 		public static Predicate<OutputSlot> GetDefaultPredicate(InputSlot input)
 		{
-			return (OutputSlot descriptor) =>
+			return (OutputSlot output) =>
 			{
-				return input.assetType.IsAssignableFrom(descriptor.assetType);
+				return input.assetType.IsAssignableFrom(output.assetType);
 			};
 		}
 

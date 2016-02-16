@@ -86,7 +86,7 @@ namespace Experilous.Generation
 			if (assetType == null)
 				throw new System.ArgumentNullException("assetType");
 			if (string.IsNullOrEmpty(name))
-				throw new System.ArgumentException("Asset descriptor must be given a non-empty name.", "name");
+				throw new System.ArgumentException("Output slot must be given a non-empty name.", "name");
 			if (assetType == typeof(GameObject) && availability == Availability.DuringGeneration)
 				throw new System.ArgumentException("Assets of type GameObject must always be available after generation.", "availability");
 			if (assetType == typeof(GameObject) && persistable == false)
@@ -206,7 +206,7 @@ namespace Experilous.Generation
 			{
 				if (!assetType.IsInstanceOfType(assetObject))
 				{
-					throw new System.ArgumentException("The new asset instance was not of the type specified by this asset descriptor's asset type.", "newAsset");
+					throw new System.ArgumentException("The new asset instance was not of the type specified by this output slot's asset type.", "newAsset");
 				}
 
 				if (persist)

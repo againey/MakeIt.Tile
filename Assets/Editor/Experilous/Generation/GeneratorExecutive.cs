@@ -15,9 +15,6 @@ namespace Experilous.Generation
 
 		[SerializeField] protected AssetCollection _assetCollection;
 
-		public string generationName;
-		public string generationPath;
-
 		[System.NonSerialized] private IEnumerator _generationIterator;
 		[System.NonSerialized] private float _generationProgress;
 		[System.NonSerialized] private string _generationMessage;
@@ -28,21 +25,21 @@ namespace Experilous.Generation
 		public float generationProgress { get { return _generationProgress; } }
 		public string generationMessage { get { return _generationMessage; } }
 
-		public Object SetAsset(OutputSlot descriptor, Object asset)
+		public Object SetAsset(OutputSlot output, Object asset)
 		{
 			if (asset != null)
 			{
-				if (ShouldPersist(descriptor))
+				if (ShouldPersist(output))
 				{
-					Object persistedAsset = descriptor.persistedAsset;
+					Object persistedAsset = output.persistedAsset;
 
-					if ((descriptor.availability & OutputSlot.Availability.AfterGeneration) != 0)
+					if ((output.availability & OutputSlot.Availability.AfterGeneration) != 0)
 					{
-						persistedAsset = PersistAsset(persistedAsset, asset, descriptor.name, descriptor.path);
+						persistedAsset = PersistAsset(persistedAsset, asset, output.name, output.path);
 					}
 					else
 					{
-						persistedAsset = PersistHiddenAsset(persistedAsset, asset, descriptor.name);
+						persistedAsset = PersistHiddenAsset(persistedAsset, asset, output.name);
 					}
 
 					return persistedAsset;
@@ -54,37 +51,37 @@ namespace Experilous.Generation
 			}
 			else
 			{
-				ClearAsset(descriptor);
+				ClearAsset(output);
 				return null;
 			}
 		}
 
-		public void ClearAsset(OutputSlot descriptor)
+		public void ClearAsset(OutputSlot output)
 		{
-			if (descriptor.persistedAsset != null)
+			if (output.persistedAsset != null)
 			{
-				AssetUtility.DeleteAsset(descriptor.persistedAsset);
+				AssetUtility.DeleteAsset(output.persistedAsset);
 			}
 		}
 
-		private bool ShouldPersist(OutputSlot descriptor)
+		private bool ShouldPersist(OutputSlot output)
 		{
-			if (descriptor.isEnabled == false) return false;
-			if ((descriptor.availability & OutputSlot.Availability.AfterGeneration) != 0) return true;
+			if (output.isEnabled == false) return false;
+			if ((output.availability & OutputSlot.Availability.AfterGeneration) != 0) return true;
 
-			foreach (var reference in descriptor.generator.internalConnections)
+			foreach (var reference in output.generator.internalConnections)
 			{
-				if (ReferenceEquals(reference.source, descriptor))
+				if (ReferenceEquals(reference.source, output))
 				{
 					if (ShouldPersist(reference.target)) return true;
 				}
 			}
 
-			foreach (var consumer in descriptor.connections)
+			foreach (var consumer in output.connections)
 			{
 				foreach (var reference in consumer.generator.internalConnections)
 				{
-					if (ReferenceEquals(reference.source, descriptor))
+					if (ReferenceEquals(reference.source, output))
 					{
 						if (ShouldPersist(reference.target)) return true;
 					}
@@ -96,7 +93,7 @@ namespace Experilous.Generation
 
 		public string GetAssetPath(string assetName, string assetPath, string extension)
 		{
-			var fullPath = Path.Combine(generationPath, generationName);
+			var fullPath = AssetUtility.GetProjectRelativeAssetFolder(this);
 			if (!string.IsNullOrEmpty(assetPath)) fullPath = Path.Combine(fullPath, assetPath);
 			fullPath = Path.Combine(fullPath, string.Format("{0}.{1}", assetName, extension));
 			return AssetUtility.GetCanonicalPath(fullPath);
@@ -230,20 +227,36 @@ namespace Experilous.Generation
 
 					// Replace the earlier prefab with the new instance.
 					var prefab = PrefabUtility.ReplacePrefab(newAsset as GameObject, oldAsset, ReplacePrefabOptions.ConnectToPrefab);
+
+					// Add the new prefab to the asset collection.
+					_assetCollection.AddDiscrete(prefab);
+					EditorUtility.SetDirty(_assetCollection);
+
 					// Destroy the template upon which the newly created prefab was based, since it will have been created within the scene.
 					DestroyImmediate(newAsset);
+
 					return prefab;
 				}
 				// The earlier asset and the new instance have different types.
 				else
 				{
+					// There's no way to maintain references, so just delete the old instance.
+					_assetCollection.Remove(oldAsset);
+					DestroyImmediate(oldAsset, true);
+
 					// If there's any asset that is a part of this collection, then rename it so that the new asset can be persisted.
 					FindAndMoveAnyConflictingObject(fullAssetPath);
 
 					// Create a new prefab based on the supplied template.
 					var prefab = PrefabUtility.CreatePrefab(fullAssetPath, newAsset as GameObject);
+
+					// Add the new prefab to the asset collection.
+					_assetCollection.AddDiscrete(prefab);
+					EditorUtility.SetDirty(_assetCollection);
+
 					// Destroy the template upon which the newly created prefab was based, since it will have been created within the scene.
 					DestroyImmediate(newAsset);
+
 					return prefab;
 				}
 			}
@@ -252,8 +265,14 @@ namespace Experilous.Generation
 			{
 				// Create a new prefab based on the supplied template.
 				var prefab = PrefabUtility.CreatePrefab(fullAssetPath, newAsset as GameObject);
+
+				// Add the new prefab to the asset collection.
+				_assetCollection.AddDiscrete(prefab);
+				EditorUtility.SetDirty(_assetCollection);
+
 				// Destroy the template upon which the newly created prefab was based, since it will have been created within the scene.
 				DestroyImmediate(newAsset);
+
 				return prefab;
 			}
 		}
@@ -289,7 +308,7 @@ namespace Experilous.Generation
 				{
 					// There's no way to maintain references, so just delete the old instance.
 					_assetCollection.Remove(oldAsset);
-					DestroyImmediate(oldAsset, true);
+					AssetUtility.DeleteAsset(oldAsset);
 
 					// Persist the new asset.
 					newAsset.name = assetName;
@@ -327,8 +346,6 @@ namespace Experilous.Generation
 		{
 			if (_assetCollection != null && !ReferenceEquals(_assetCollection.executive, this))
 			{
-				var original = _assetCollection.executive;
-
 				// Generator executive asset was copied; all generated assets should be detached.
 				foreach (var generator in _generators)
 				{
@@ -339,12 +356,6 @@ namespace Experilous.Generation
 				}
 
 				_assetCollection = null;
-
-				if (original != null && original.generationName == generationName && original.generationPath == generationPath && AssetDatabase.Contains(this))
-				{
-					var copyPath = AssetDatabase.GetAssetPath(this);
-					generationName = Path.GetFileNameWithoutExtension(copyPath);
-				}
 			}
 		}
 
@@ -421,11 +432,14 @@ namespace Experilous.Generation
 			}
 		}
 
-		public virtual void Add(Generator generator)
+		public virtual TGenerator Add<TGenerator>(TGenerator generator) where TGenerator : Generator
 		{
 			if (!CanAdd(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be added to this collection.", generator.name, generator.GetType().Name));
 
 			_generators.Add(generator);
+			Save();
+
+			return generator;
 		}
 
 		public virtual bool CanAdd(Generator generator)
@@ -434,11 +448,14 @@ namespace Experilous.Generation
 			return !isGenerating && !_generators.Contains(generator);
 		}
 
-		public virtual void Insert(int index, Generator generator)
+		public virtual TGenerator Insert<TGenerator>(int index, TGenerator generator) where TGenerator : Generator
 		{
 			if (!CanInsert(index, generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be insert into this collection.", generator.name, generator.GetType().Name));
 
 			_generators.Insert(index, generator);
+			Save();
+
+			return generator;
 		}
 
 		public virtual bool CanInsert(int index, Generator generator)
@@ -466,6 +483,8 @@ namespace Experilous.Generation
 					}
 				}
 			}
+
+			Save();
 		}
 
 		public virtual bool CanRemove(Generator generator)
@@ -481,6 +500,8 @@ namespace Experilous.Generation
 			var index = _generators.IndexOf(generator);
 			_generators.RemoveAt(index);
 			_generators.Insert(index - 1, generator);
+
+			Save();
 		}
 
 		public virtual bool CanMoveUp(Generator generator)
@@ -497,6 +518,8 @@ namespace Experilous.Generation
 			var index = _generators.IndexOf(generator);
 			_generators.RemoveAt(index);
 			_generators.Insert(index + 1, generator);
+
+			Save();
 		}
 
 		public virtual bool CanMoveDown(Generator generator)
@@ -508,10 +531,12 @@ namespace Experilous.Generation
 
 		public void CreateAsset()
 		{
-			var collectionPath = AssetUtility.selectedFolderOrDefault;
-			if (string.IsNullOrEmpty(generationPath)) generationPath = collectionPath;
-			if (string.IsNullOrEmpty(generationName)) generationName = name;
-			AssetDatabase.CreateAsset(this, AssetUtility.GetCanonicalPath(Path.Combine(collectionPath, name + ".asset")));
+			var generatorPath = AssetUtility.selectedFolderOrDefault;
+			AssetDatabase.CreateFolder(generatorPath, name);
+			generatorPath = Path.Combine(generatorPath, name);
+			generatorPath = Path.Combine(generatorPath, "Generator.asset");
+			generatorPath = AssetUtility.GetCanonicalPath(generatorPath);
+			AssetDatabase.CreateAsset(this, generatorPath);
 			foreach (var generator in _generators)
 			{
 				AssetDatabase.AddObjectToAsset(generator, this);
@@ -562,9 +587,9 @@ namespace Experilous.Generation
 			return null;
 		}
 
-		public void Generate(string generationName, string generationPath)
+		public void Generate()
 		{
-			_generationIterator = BeginGeneration(generationName, generationPath);
+			_generationIterator = BeginGeneration();
 
 			GenerationUpdate();
 		}
@@ -667,16 +692,11 @@ namespace Experilous.Generation
 			return consumedTime + remainingTime;
 		}
 
-		private IEnumerator BeginGeneration(string generationName, string generationPath)
+		private IEnumerator BeginGeneration()
 		{
 			yield return UpdateGenerationProgress(0, "Preparing...");
 
 			var currentStep = 0;
-
-			var oldGenerationName = this.generationName;
-			var oldGenerationPath = this.generationPath;
-			this.generationName = generationName;
-			this.generationPath = generationPath;
 
 			yield return UpdateGenerationProgress(++currentStep, "Preparing...");
 
@@ -733,23 +753,15 @@ namespace Experilous.Generation
 
 			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
 
-			DestroyLeftovers(embeddedAssets, discreteAssets);
+			DestroyLeftoverEmbeddedAssets(embeddedAssets);
+			DestroyLeftoverDiscreteAssets(discreteAssets);
 
 			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
 
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();
 
-			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
-
-			AssetDatabase.Refresh();
-
-			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
-
-			if (!string.IsNullOrEmpty(oldGenerationName) && !string.IsNullOrEmpty(oldGenerationPath))
-			{
-				AssetUtility.RecursivelyDeleteEmptyFolders(AssetUtility.GetCanonicalPath(Path.Combine(oldGenerationPath, oldGenerationName)));
-			}
+			AssetUtility.RecursivelyDeleteEmptyFolders(AssetUtility.GetProjectRelativeAssetFolder(this), false);
 
 			yield return UpdateGenerationProgress(++currentStep, "Finalizing...");
 
@@ -762,9 +774,6 @@ namespace Experilous.Generation
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(generationName)) return false;
-				if (string.IsNullOrEmpty(generationPath)) return false;
-
 				foreach (var generator in _generators)
 				{
 					if (!generator.canGenerate) return false;
@@ -877,7 +886,7 @@ namespace Experilous.Generation
 			return embeddedAssets;
 		}
 
-		private void DestroyLeftovers(List<Object> embeddedAssets, List<Object> discreteAssets)
+		private void DestroyLeftoverEmbeddedAssets(List<Object> embeddedAssets)
 		{
 			// Destroy any prior embedded objects that are no longer part of the collection.
 			foreach (var priorEmbeddedAsset in _assetCollection.embeddedAssets)
@@ -887,53 +896,88 @@ namespace Experilous.Generation
 					DestroyImmediate(priorEmbeddedAsset, true);
 				}
 			}
+		}
 
-			// Destroy any prior embedded objects that are no longer part of the collection.
+		private void DestroyLeftoverDiscreteAssets(List<Object> discreteAssets)
+		{
+			// Destroy any prior discrete objects that are no longer part of the collection.
 			foreach (var priorDiscreteAsset in _assetCollection.discreteAssets)
 			{
 				if (priorDiscreteAsset != null && AssetDatabase.Contains(priorDiscreteAsset) && !discreteAssets.Contains(priorDiscreteAsset))
 				{
-					DestroyImmediate(priorDiscreteAsset, true);
+					AssetUtility.DeleteAsset(priorDiscreteAsset);
 				}
+			}
+		}
+
+		public void UpdateGenerators()
+		{
+			var orderedGenerators = GetDependencyOrderedGenerators();
+			foreach (var generator in orderedGenerators)
+			{
+				generator.Update();
 			}
 		}
 
 		public void Save()
 		{
+			UpdateAssetCollection();
+			DestroyLeftoverEmbeddedAssets(EmbedAssets());
+			EditorUtility.SetDirty(_assetCollection);
+			EditorUtility.SetDirty(this);
 		}
 
-		public void Copy()
+		public void DetachAssets()
 		{
-			if (!canCopy) return;
-
-			var path = AssetUtility.GetProjectRelativeAssetPath(this);
-			var newPath = AssetUtility.GenerateAvailableAssetPath(path, "{0}/{1} (Copy {2}){3}");
-			AssetDatabase.CopyAsset(path, newPath);
-			AssetDatabase.Refresh();
-		}
-
-		public bool canCopy
-		{
-			get
+			foreach (var generator in _generators)
 			{
-				return AssetDatabase.Contains(this);
+				foreach (var output in generator.outputs)
+				{
+					output.ForgetAsset();
+				}
 			}
+
+			if (_assetCollection != null)
+			{
+				_assetCollection.discreteAssets.Clear();
+				EditorUtility.SetDirty(_assetCollection);
+			}
+
+			EditorUtility.SetDirty(this);
+
+			AssetDatabase.SaveAssets();
 		}
 
-		public void Reload()
+		public void DeleteAssets()
 		{
-		}
+			foreach (var generator in _generators)
+			{
+				foreach (var output in generator.outputs)
+				{
+					output.ClearAsset();
+				}
+			}
 
-		public void Delete()
-		{
-		}
+			if (_assetCollection != null)
+			{
+				foreach (var asset in _assetCollection.discreteAssets)
+				{
+					if (asset != null)
+					{
+						AssetUtility.DeleteAsset(asset);
+					}
+				}
 
-		public void Move()
-		{
-		}
+				_assetCollection.discreteAssets.Clear();
+				EditorUtility.SetDirty(_assetCollection);
+			}
 
-		public void Clean()
-		{
+			AssetUtility.RecursivelyDeleteEmptyFolders(AssetUtility.GetProjectRelativeAssetFolder(this), false);
+
+			EditorUtility.SetDirty(this);
+
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 		}
 	}
 }

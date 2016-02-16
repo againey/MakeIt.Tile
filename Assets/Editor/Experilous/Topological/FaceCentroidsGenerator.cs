@@ -14,7 +14,7 @@ namespace Experilous.Topological
 		[AutoSelect] public InputSlot topologyInputSlot;
 		public InputSlot vertexPositionsInputSlot;
 
-		public OutputSlot faceCentroidsDescriptor;
+		public OutputSlot faceCentroidsOutputSlot;
 
 		protected override void Initialize()
 		{
@@ -27,7 +27,7 @@ namespace Experilous.Topological
 			flatten = false;
 
 			// Outputs
-			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Vector3>>(ref faceCentroidsDescriptor, this, "Face Centroids", "Attributes");
+			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Vector3>>(ref faceCentroidsOutputSlot, this, "Face Centroids", "Attributes");
 		}
 
 		public override IEnumerable<InputSlot> inputs
@@ -44,7 +44,7 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return faceCentroidsDescriptor;
+				yield return faceCentroidsOutputSlot;
 			}
 		}
 
@@ -72,7 +72,7 @@ namespace Experilous.Topological
 				}
 			});
 
-			faceCentroidsDescriptor.SetAsset(faceCentroids);
+			faceCentroidsOutputSlot.SetAsset(faceCentroids);
 
 			yield break;
 		}
