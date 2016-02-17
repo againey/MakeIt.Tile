@@ -164,7 +164,7 @@ namespace Experilous.Topological
 			}
 			else
 			{
-				interpolator = (Vector3 p0, Vector3 p1, float t) => { return MathUtility.SlerpSphericalVectors(p0, p1, t, circumsphereRadius); };
+				interpolator = (Vector3 p0, Vector3 p1, float t) => { return Vector3.SlerpUnclamped(p0, p1, t); };
 			}
 			ManifoldUtility.Subdivide(topology, vertexPositions, degree, interpolator, out subdividedTopology, out subdividedVertexPositions);
 		}

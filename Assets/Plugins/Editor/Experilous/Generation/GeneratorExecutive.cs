@@ -921,10 +921,13 @@ namespace Experilous.Generation
 
 		public void Save()
 		{
-			UpdateAssetCollection();
-			DestroyLeftoverEmbeddedAssets(EmbedAssets());
-			EditorUtility.SetDirty(_assetCollection);
-			EditorUtility.SetDirty(this);
+			if (AssetDatabase.Contains(this))
+			{
+				UpdateAssetCollection();
+				DestroyLeftoverEmbeddedAssets(EmbedAssets());
+				EditorUtility.SetDirty(_assetCollection);
+				EditorUtility.SetDirty(this);
+			}
 		}
 
 		public void DetachAssets()

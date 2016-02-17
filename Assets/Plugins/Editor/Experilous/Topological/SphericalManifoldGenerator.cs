@@ -31,14 +31,37 @@ namespace Experilous.Topological
 		public static void CreateDefaultGeneratorCollection()
 		{
 			var collection = TopologyGeneratorCollection.Create("New Spherical Manifold");
-			collection.Add(CreateInstance<SphericalManifoldGenerator>(collection, "Manifold"));
+
+			var manifoldGenerator = collection.Add(CreateInstance<SphericalManifoldGenerator>(collection, "Manifold"));
 			collection.Add(CreateInstance<RandomEngineGenerator>(collection));
-			collection.Add(CreateInstance<TopologyRandomizerGenerator>(collection));
-			collection.Add(CreateInstance<FaceCentroidsGenerator>(collection));
-			collection.Add(CreateInstance<FaceNormalsGenerator>(collection));
-			collection.Add(CreateInstance<RectangularFaceGroupsGenerator>(collection));
-			collection.Add(CreateInstance<MeshGenerator>(collection));
-			collection.Add(CreateInstance<PrefabGenerator>(collection));
+			var faceCentroidsGenerator = collection.Add(CreateInstance<FaceCentroidsGenerator>(collection));
+			var faceNormalsGenerator = collection.Add(CreateInstance<FaceNormalsGenerator>(collection));
+			var meshGenerator = collection.Add(CreateInstance<MeshGenerator>(collection));
+			var prefabGenerator = collection.Add(CreateInstance<PrefabGenerator>(collection));
+			var faceSpatialPartitioningGenerator = collection.Add(CreateInstance<FaceSpatialPartitioningGenerator>(collection));
+
+			faceCentroidsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			faceCentroidsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			faceCentroidsGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
+
+			faceNormalsGenerator.calculationMethod = FaceNormalsGenerator.CalculationMethod.FromSurfaceNormal;
+			faceNormalsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			faceNormalsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			faceNormalsGenerator.facePositionsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
+
+			meshGenerator.sourceType = MeshGenerator.SourceType.InternalFaces;
+			meshGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			meshGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
+			meshGenerator.faceCentroidsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
+			meshGenerator.faceNormalsInputSlot.source = faceNormalsGenerator.faceNormalsOutputSlot;
+			meshGenerator.centerOnGroupAverage = true;
+
+			prefabGenerator.meshCollectionInputSlot.source = meshGenerator.meshCollectionOutputSlot;
+
+			faceSpatialPartitioningGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			faceSpatialPartitioningGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			faceSpatialPartitioningGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
+
 			collection.CreateAsset();
 		}
 
@@ -77,7 +100,7 @@ namespace Experilous.Topological
 		{
 			var surface = surfaceOutputSlot.GetAsset<SphericalSurface>();
 			if (surface == null) surface = surfaceOutputSlot.SetAsset(CreateInstance<SphericalSurface>(), false);
-			surface.Reset(new SphericalDescriptor(Vector3.up, 1f));
+			surface.Reset(new SphericalDescriptor(Vector3.up, radius));
 
 			Topology topology;
 			Vector3[] vertexPositions;
