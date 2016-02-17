@@ -53,7 +53,7 @@ namespace Experilous.Generation
 			}
 		}
 
-		public static void OnInspectorGUI(OutputSlot output)
+		public static bool OnInspectorGUI(OutputSlot output, bool foldout, AnimBool foldoutAnimation)
 		{
 			InitializeStyles();
 
@@ -64,11 +64,11 @@ namespace Experilous.Generation
 
 			EditorGUILayout.BeginHorizontal();
 			var foldoutRect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight, GUILayout.Width(0));
-			output.uiFoldout = EditorGUI.Foldout(foldoutRect, output.uiFoldout, GUIContent.none, false);
-			output.uiFoldoutAnimation.target = output.uiFoldout;
+			foldout = EditorGUI.Foldout(foldoutRect, foldout, GUIContent.none, false);
+			foldoutAnimation.target = foldout;
 			EditorGUILayout.BeginVertical();
 
-			if (output.uiFoldout)
+			if (foldout)
 			{
 				EditorGUILayout.BeginHorizontal();
 				output.isEnabled = EditorGUILayout.ToggleLeft("Enabled", output.isEnabled, GUILayout.Width(EditorStyles.toggle.CalcSize(new GUIContent("Enabled")).x));
@@ -96,7 +96,7 @@ namespace Experilous.Generation
 				EditorGUILayout.EndHorizontal();
 			}
 
-			if (EditorGUILayout.BeginFadeGroup(output.uiFoldoutAnimation.faded))
+			if (EditorGUILayout.BeginFadeGroup(foldoutAnimation.faded))
 			{
 				var priorLabelWidth = EditorGUIUtility.labelWidth;
 
@@ -136,6 +136,8 @@ namespace Experilous.Generation
 			EditorGUILayout.EndVertical();
 
 			GUIExtensions.PopEnable();
+
+			return foldout;
 		}
 	}
 }

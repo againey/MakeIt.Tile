@@ -16,6 +16,23 @@ namespace Experilous.Generation
 		[SerializeField] protected bool _outputFoldout = false;
 		protected AnimBool _outputFoldoutAnimation;
 
+		[Serializable] protected class OutputEditorState
+		{
+			public bool foldout;
+			public AnimBool foldoutAnimation;
+
+			public OutputEditorState(GeneratorEditor editor, bool foldout = false)
+			{
+				this.foldout = foldout;
+				foldoutAnimation = new AnimBool(foldout);
+				foldoutAnimation.valueChanged.AddListener(editor.Repaint);
+			}
+		}
+
+		[Serializable] protected class OutputEditorStateDictionary : SerializableDictionary<OutputSlot, OutputEditorState> { }
+
+		[SerializeField] protected OutputEditorStateDictionary _outputEditorStates = new OutputEditorStateDictionary();
+
 		protected void OnEnable()
 		{
 			_generator = (Generator)target;
@@ -23,6 +40,12 @@ namespace Experilous.Generation
 
 			_outputFoldoutAnimation = new AnimBool(_outputFoldout);
 			_outputFoldoutAnimation.valueChanged.AddListener(Repaint);
+
+			foreach (var outputEditorState in _outputEditorStates.Values)
+			{
+				outputEditorState.foldoutAnimation = new AnimBool(outputEditorState.foldout);
+				outputEditorState.foldoutAnimation.valueChanged.AddListener(Repaint);
+			}
 		}
 
 		private static bool IsInAssetGeneratorSubclass(FieldInfo field)
@@ -122,7 +145,14 @@ namespace Experilous.Generation
 					}
 				}
 
-				OutputSlotEditor.OnInspectorGUI(output);
+				OutputEditorState outputEditorState;
+				if (!_outputEditorStates.TryGetValue(output, out outputEditorState))
+				{
+					outputEditorState = new OutputEditorState(this);
+					_outputEditorStates[output] = outputEditorState;
+				}
+
+				outputEditorState.foldout = OutputSlotEditor.OnInspectorGUI(output, outputEditorState.foldout, outputEditorState.foldoutAnimation);
 			}
 
 			if (hasOutputs)

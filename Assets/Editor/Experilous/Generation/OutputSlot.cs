@@ -31,9 +31,6 @@ namespace Experilous.Generation
 		[SerializeField] public bool isActive;
 		[SerializeField] public bool isEnabled;
 
-		private bool _uiFoldout;
-		private AnimBool _uiFoldoutAnimation = new AnimBool(false);
-
 		public static OutputSlot Create<TAsset>(Generator generator, string name, bool isEnabled = true, Availability availability = Availability.Always)
 		{
 			return new OutputSlot(generator, typeof(TAsset), name, null, isEnabled, availability, true);
@@ -148,9 +145,6 @@ namespace Experilous.Generation
 				return _key;
 			}
 		}
-
-		public bool uiFoldout { get { return _uiFoldout; } set { _uiFoldout = value; } }
-		public AnimBool uiFoldoutAnimation { get { if (_uiFoldoutAnimation == null) _uiFoldoutAnimation = new AnimBool(_uiFoldout); return _uiFoldoutAnimation; } }
 
 		public void Connect(InputSlot source)
 		{
