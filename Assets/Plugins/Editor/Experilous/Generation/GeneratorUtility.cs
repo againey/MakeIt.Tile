@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Experilous.Generation
+﻿namespace Experilous.Generation
 {
 	public static class GeneratorUtility
 	{

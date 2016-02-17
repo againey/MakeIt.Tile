@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Experilous.Topological
+﻿namespace Experilous.Topological
 {
 	public static class EdgeWrapUtility
 	{

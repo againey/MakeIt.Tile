@@ -2,7 +2,6 @@
 using UnityEditor;
 using UnityEditor.AnimatedValues;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 
 namespace Experilous.Generation

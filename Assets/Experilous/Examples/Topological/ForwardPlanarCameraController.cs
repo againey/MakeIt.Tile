@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Experilous.Topological;
 
 namespace Experilous.Examples.Topological
 {
