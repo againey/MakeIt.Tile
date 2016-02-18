@@ -132,19 +132,33 @@ namespace Experilous.Topological
 
 			edgesProcessed = 0;
 
-			// Process all wrapping/boundary edges, which should at or near the leaves of the tree.
+			// Process all wrapping edges, which should be at or near the leaves of the tree.
 			while (edgesProcessed < edges.Count)
 			{
 				++edgesProcessed;
 				var edge = edges[edgeIndex];
 				// If the edge has face-to-face wrapping, then don't restrict to only the earlier twin.
 				// Both twins should be processed.
-				if ((edge.wrap & EdgeWrap.FaceToFace) != EdgeWrap.None)
+				if ((edge.wrap & EdgeWrap.FaceToFace) != EdgeWrap.None && edge.isNonBoundary)
 				{
 					PartitionEdge(edge, vertexPositions, ref nextPartitionIndex);
 				}
-				// If the edge is just a boundary edge, then revert back to only processing the earlier twin.
-				else if (edgeIndex < edge.twinIndex && edge.isBoundary)
+				edgeIndex = (edgeIndex + increment) % edges.Count;
+			}
+
+			edgesProcessed = 0;
+
+			// Process all external edges, which should be at or near the leaves of the tree.
+			// Note that it is critical that boundary edges occur after all wrapping edges.
+			// Otherwise, false negatives (hitting an external face when a wrap should have
+			// led to an internal face instead) or even infinite loops are possible.
+			while (edgesProcessed < edges.Count)
+			{
+				++edgesProcessed;
+				var edge = edges[edgeIndex];
+				// If the edge is a boundary edge, then only process it if it's the external
+				// edge.  The internal half doesn't need to be processed at all.
+				if (edge.isBoundary && edge.isExternal)
 				{
 					PartitionEdge(edge, vertexPositions, ref nextPartitionIndex);
 				}
@@ -263,7 +277,7 @@ namespace Experilous.Topological
 					else
 					{
 						var edge = _topology.faceEdges[partition._overEdgeIndex];
-						if ((edge.wrap & EdgeWrap.FaceToFace) == EdgeWrap.None)
+						if ((edge.wrap & EdgeWrap.FaceToFace) == EdgeWrap.None || edge.isBoundary)
 						{
 							return _topology.faceEdges[partition._overEdgeIndex].farFace;
 						}
