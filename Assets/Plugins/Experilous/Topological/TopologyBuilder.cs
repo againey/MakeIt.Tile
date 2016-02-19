@@ -2,15 +2,11 @@
 
 namespace Experilous.Topological
 {
+	/// <summary>
+	/// Static utility class providing functions which can build a full topology data structure from input data.
+	/// </summary>
 	public static class TopologyBuilder
 	{
-		public static Topology BuildTopoogy(IFaceNeighborIndexer indexer, string name)
-		{
-			var topology = BuildTopoogy(indexer);
-			topology.name = name;
-			return topology;
-		}
-
 		private static void AddEdgeToVertexUnordered(int edgeIndex, int vertexIndex, ushort[] vertexNeighborCounts, int[] vertexFirstEdgeIndices, Topology.EdgeData[] edgeData)
 		{
 			if (vertexNeighborCounts[vertexIndex] != 0)
@@ -85,11 +81,17 @@ namespace Experilous.Topological
 			}
 		}
 
-		// From the information provided by the given face neighbor indexer, construct a full topology.
-		// For the edge wrap data returned by the face neighbor indexer, only the vertex-to-edge, edge-
-		// to-vertex, and face-to-edge data needs to be supplied.  If there are no external faces, then
-		// the edge-to-vertex data is also unnecessary.
-		public static Topology BuildTopoogy(IFaceNeighborIndexer indexer)
+		/// <summary>
+		/// Build a full topology data structure from the minimal data described by a face neighbor indexer.
+		/// </summary>
+		/// <param name="indexer">A minimal description of the faces and their neighbors constituting a topology.</param>
+		/// <returns>A fully constructed topology matching the description of the provided face neighbor indexer.</returns>
+		/// <remarks>
+		/// <para>For the edge wrap data returned by the face neighbor indexer, only the vertex-to-edge, edge-to-vertex,
+		/// and face-to-edge data needs to be supplied.  If there are no external faces, then the edge-to-vertex data is
+		/// also unnecessary.</para>
+		/// </remarks>
+		public static Topology BuildTopology(IFaceNeighborIndexer indexer)
 		{
 			var vertexNeighborCounts = new ushort[indexer.vertexCount];
 			var vertexFirstEdgeIndices = new int[indexer.vertexCount];

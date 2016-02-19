@@ -99,7 +99,7 @@ namespace Experilous.Topological
 			else if (edges.Count % 3 != 0) increment = 3;
 			else if (edges.Count % 2 != 0) increment = 2;
 
-			int edgeIndex = 0;
+			int edgeIndex = (edges.Count * 7) / 16;
 
 			// Find the first edge that will work as the root.  It must be the earlier twin, and should not
 			// have any face-to-face wrapping or be on the boundary between an internal face and external faces.

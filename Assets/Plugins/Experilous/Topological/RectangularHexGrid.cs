@@ -3,34 +3,6 @@ using System;
 
 namespace Experilous.Topological
 {
-	public enum HexGridAxisStyles
-	{
-		Straight,
-		Staggered,
-	}
-
-	public enum HexGridAxisRelations
-	{
-		Acute,
-		Obtuse,
-	}
-
-	public struct HexGridDescriptor
-	{
-		public HexGridAxisStyles axisStyle0;
-		public HexGridAxisStyles axisStyle1;
-		public HexGridAxisRelations axisRelation;
-		public bool variableRowLength;
-
-		public HexGridDescriptor(HexGridAxisStyles axisStyle0, HexGridAxisStyles axisStyle1, HexGridAxisRelations axisRelation, bool variableRowLength = false)
-		{
-			this.axisStyle0 = axisStyle0;
-			this.axisStyle1 = axisStyle1;
-			this.axisRelation = axisRelation;
-			this.variableRowLength = variableRowLength;
-		}
-	}
-
 	public class RectangularHexGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{
 		public HexGridAxisStyles axis0Style;
@@ -109,6 +81,7 @@ namespace Experilous.Topological
 			axisRelation = hexDescriptor.axisRelation;
 			variableRowLength = hexDescriptor.variableRowLength;
 			this.size = size;
+			topology = null;
 			Initialize();
 			return this;
 		}
@@ -378,7 +351,7 @@ namespace Experilous.Topological
 
 		public Topology CreateTopology()
 		{
-			return TopologyBuilder.BuildTopoogy(this);
+			return TopologyBuilder.BuildTopology(this);
 		}
 
 		public Topology CreateManifold(out Vector3[] vertexPositions)
@@ -794,5 +767,33 @@ namespace Experilous.Topological
 		}
 
 		#endregion
+	}
+
+	public enum HexGridAxisStyles
+	{
+		Straight,
+		Staggered,
+	}
+
+	public enum HexGridAxisRelations
+	{
+		Acute,
+		Obtuse,
+	}
+
+	public struct HexGridDescriptor
+	{
+		public HexGridAxisStyles axisStyle0;
+		public HexGridAxisStyles axisStyle1;
+		public HexGridAxisRelations axisRelation;
+		public bool variableRowLength;
+
+		public HexGridDescriptor(HexGridAxisStyles axisStyle0, HexGridAxisStyles axisStyle1, HexGridAxisRelations axisRelation, bool variableRowLength = false)
+		{
+			this.axisStyle0 = axisStyle0;
+			this.axisStyle1 = axisStyle1;
+			this.axisRelation = axisRelation;
+			this.variableRowLength = variableRowLength;
+		}
 	}
 }

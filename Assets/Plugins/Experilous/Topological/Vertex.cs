@@ -6,6 +6,9 @@ namespace Experilous.Topological
 {
 	public partial class Topology
 	{
+		/// <summary>
+		/// A wrapper for conveniently working with a topology vertex, providing access to its core properties and enumeration of its neighbors.
+		/// </summary>
 		public struct Vertex : IEquatable<Vertex>, IComparable<Vertex>
 		{
 			private Topology _topology;
@@ -184,11 +187,46 @@ namespace Experilous.Topological
 		public VerticesIndexer vertices { get { return new VerticesIndexer(this); } }
 	}
 
+	/// <summary>
+	/// Generic interface for accessing attribute values of topology vertices.
+	/// </summary>
+	/// <typeparam name="T">The type of the attribute values.</typeparam>
+	/// <remarks>
+	/// <para>Instead of working with integer indices everywhere, this interface allows attributes to be
+	/// indexed by instances of the Vertex structure directly.</para>
+	/// 
+	/// <para>The three indexers that take an edge as an index permit the possibility of altering the vertex attribute
+	/// lookup dependent upon the context of how the vertex is being accessed.  For most implementations, these three
+	/// indexers are expected to simply defer to the primary indexer using the far/next vertex of the edge.</para>
+	/// </remarks>
 	public interface IVertexAttribute<T> : IList<T>
 	{
+		/// <summary>
+		/// Lookup the attribute value for the vertex indicated.
+		/// </summary>
+		/// <param name="v">The vertex whose attribute value is desired.</param>
+		/// <returns>The attribute value for the vertex indicated.</returns>
 		T this[Topology.Vertex v] { get; set; }
+
+		/// <summary>
+		/// Lookup the attribute value for a vertex relative to an edge.
+		/// </summary>
+		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
+		/// <returns>The attribute value for the far vertex of the indicated edge, relative to that edge.</returns>
 		T this[Topology.HalfEdge e] { get; set; }
+
+		/// <summary>
+		/// Lookup the attribute value for a vertex relative to a neighboring vertex.
+		/// </summary>
+		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
+		/// <returns>The attribute value for the far vertex of the indicated edge, relative to that edge's near vertex.</returns>
 		T this[Topology.VertexEdge e] { get; set; }
+
+		/// <summary>
+		/// Lookup the attribute value for a vertex relative to a neighboring face.
+		/// </summary>
+		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
+		/// <returns>The attribute value for the next vertex of the indicated edge, relative to that edge's near face.</returns>
 		T this[Topology.FaceEdge e] { get; set; }
 	}
 

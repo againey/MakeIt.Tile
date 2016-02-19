@@ -33,6 +33,7 @@ namespace Experilous.Topological
 			faceAxis0 = planarDescriptor.axis0.vector;
 			faceAxis1 = planarDescriptor.axis1.vector;
 			this.size = size;
+			topology = null;
 			Initialize();
 			return this;
 		}
@@ -70,7 +71,7 @@ namespace Experilous.Topological
 
 		public Topology CreateTopology()
 		{
-			return TopologyBuilder.BuildTopoogy(this);
+			return TopologyBuilder.BuildTopology(this);
 		}
 
 		public Topology CreateManifold(out Vector3[] vertexPositions)

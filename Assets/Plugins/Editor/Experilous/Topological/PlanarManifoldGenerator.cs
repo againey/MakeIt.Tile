@@ -254,7 +254,10 @@ namespace Experilous.Topological
 		private void CreateQuadGridManifold(bool generate = true)
 		{
 			var surface = surfaceOutputSlot.GetAsset<RectangularQuadGrid>();
-			if (surface == null) surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularQuadGrid>(), false);
+			if (surface == null || !generate && ReferenceEquals(surface, surfaceOutputSlot.persistedAsset))
+			{
+				surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularQuadGrid>(), false);
+			}
 
 			Vector3 finalHorizontalAxis;
 			switch (quadGridHorizontalAxisOptions)
@@ -301,9 +304,11 @@ namespace Experilous.Topological
 				Vector3[] vertexPositionsArray;
 
 				var topology = surface.CreateManifold(out vertexPositionsArray);
-
-				surfaceOutputSlot.Persist();
 				topologyOutputSlot.SetAsset(topology);
+
+				surface.topology = topologyOutputSlot.GetAsset<Topology>();
+				surfaceOutputSlot.Persist();
+
 				vertexPositionsOutputSlot.SetAsset(PositionalVertexAttribute.Create(surfaceOutputSlot.GetAsset<Surface>(), vertexPositionsArray));
 			}
 		}
@@ -311,7 +316,10 @@ namespace Experilous.Topological
 		private void CreateHexGridManifold(bool generate = true)
 		{
 			var surface = surfaceOutputSlot.GetAsset<RectangularHexGrid>();
-			if (surface == null) surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularHexGrid>(), false);
+			if (surface == null || !generate && ReferenceEquals(surface, surfaceOutputSlot.persistedAsset))
+			{
+				surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularHexGrid>(), false);
+			}
 
 			const float angledShort = 0.5f;
 			const float angledLong = RectangularHexGrid.halfSqrtThree;
@@ -463,9 +471,11 @@ namespace Experilous.Topological
 				Vector3[] vertexPositionsArray;
 
 				var topology = surface.CreateManifold(out vertexPositionsArray);
-
-				surfaceOutputSlot.Persist();
 				topologyOutputSlot.SetAsset(topology);
+
+				surface.topology = topologyOutputSlot.GetAsset<Topology>();
+				surfaceOutputSlot.Persist();
+
 				vertexPositionsOutputSlot.SetAsset(PositionalVertexAttribute.Create(surfaceOutputSlot.GetAsset<Surface>(), vertexPositionsArray));
 			}
 		}

@@ -154,7 +154,11 @@ namespace Experilous.Generation
 					}
 
 					// Update the earlier asset to match the new instance.
-					AssetUtility.UpdateAssetInPlace(newAsset, oldAsset);
+					if (!ReferenceEquals(newAsset, oldAsset))
+					{
+						AssetUtility.UpdateAssetInPlace(newAsset, oldAsset);
+					}
+
 					oldAsset.name = assetName;
 					EditorUtility.SetDirty(oldAsset);
 
@@ -226,7 +230,11 @@ namespace Experilous.Generation
 					}
 
 					// Replace the earlier prefab with the new instance.
-					var prefab = PrefabUtility.ReplacePrefab(newAsset as GameObject, oldAsset, ReplacePrefabOptions.ConnectToPrefab);
+					GameObject prefab = oldAsset;
+					if (!ReferenceEquals(newAsset, oldAsset))
+					{
+						prefab = PrefabUtility.ReplacePrefab(newAsset as GameObject, oldAsset, ReplacePrefabOptions.ConnectToPrefab);
+					}
 
 					// Add the new prefab to the asset collection.
 					_assetCollection.AddDiscrete(prefab);
@@ -292,7 +300,11 @@ namespace Experilous.Generation
 				if (oldAsset.GetType() == newAsset.GetType() && _assetCollection.embeddedAssets.Contains(oldAsset))
 				{
 					// Update the earlier asset to match the new instance.
-					AssetUtility.UpdateAssetInPlace(newAsset, oldAsset);
+					if (!ReferenceEquals(newAsset, oldAsset))
+					{
+						AssetUtility.UpdateAssetInPlace(newAsset, oldAsset);
+					}
+
 					oldAsset.name = assetName;
 					oldAsset.hideFlags |= HideFlags.HideInHierarchy;
 					EditorUtility.SetDirty(oldAsset);

@@ -3,6 +3,82 @@ using System;
 
 namespace Experilous.Topological
 {
+	/// <summary>
+	/// A basic representation of a topology of vertices, connected by edges, delimiting the corners of faces.
+	/// </summary>
+	/// <remarks>
+	/// <para>A topology ignores nearly all aspects of spatial arrangement, and focuses almost entirely on the relations
+	/// among vertices, edges, and faces.  It is similar to a <a href="https://en.wikipedia.org/wiki/Polygon_mesh">polygon mesh</a>,
+	/// but does not store any additional data such as vertex positions or face normals.  That information can be
+	/// stored separately, as will be described below.</para>
+	/// 
+	/// <para>The bulk of relational information is stored within edges, which are themselves stored as half-edge pairs.
+	/// Each half-edge points explicitly at a single target vertex (the "far" vertex); its twin will point in the opposite
+	/// direction at the vertex on the other end of the half-edge pair.  Since each half-edge also stores a reference to
+	/// its twin, one can retrieve the implicit "near" vertex by getting its twin's explicit "far" vertex.  Similarly,
+	/// each half-edge refers to a single face on one side of the edge, while the twin refers to the face on the other
+	/// side.</para>
+	/// 
+	/// <para>Finally, each half-edge stores two additional references, both of which are linked-list references to other
+	/// half-edges.  The first is a link to the next half-edge that shares the same "near" vertex, when rotating clockwise
+	/// around that vertex.  Likewise, the second is a link to the next half-edge that shares the same "near" face, when
+	/// again rotating clockwise around that face.  By navigating these linked lists, it is easy to visit the neighbors
+	/// of a vertex or neighbors of a face in clockwise order.</para>
+	/// 
+	/// <para>The remainder of the core relational data is stored per vertex and per face, and merely consists of an
+	/// initial link to one of the half-edges that is a neighbor of that vertex or face.  Any of the half-edges will do,
+	/// since the linked lists are circular and do not technically have any special first half-edge.  By storing an
+	/// initial half-edge for each vertex and face, however, one is able to quickly find the linked list of neighbors
+	/// for any particular vertex or face that one wants to examine.</para>
+	/// 
+	/// <para>All references are stored as 32-bit integer indices, making them robust and efficient.  Consequently, these
+	/// three pieces of data, the half-edge structures of references, and the initial half-edge indices for vertices and
+	/// faces, are stored in three linear arrays, and contain exactly the number of elements as there are vertices, half-
+	/// edges, and faces.  As a result, it is trivial to create parallel arrays to store additional attributes for each
+	/// of these object types.  If you want to store positions for vertices, create a Vector3[] that is the same length
+	/// as the array storing the per-vertex half-edge indices.  To assign a color to every face, a Color[] array will
+	/// suffice.  Since edges are divided into half-edges, some edge data will inevitably be duplicated, such as pre-
+	/// computed edge lengths, since this value would be the same for each half-edge.  However, other data such as path
+	/// finding costs benefits naturally from the fact that half-edges are inherently directional.  For even better
+	/// utility, use a type that implements <see cref="IVertexAttribute`1{T}"/>, <see cref="IEdgeAttribute`1{T}"/>, or
+	/// <see cref="IFaceAttribute`1{T}"/>.</para>
+	/// 
+	/// <para>Faces have a special distinction of being either internal or external.  Internal faces are the ordinary
+	/// kind of face.  External faces, however, represent the areas outside of a topology, and the primary reason for
+	/// explicitly representing these areas at all is predominately for consistency with edges:  This way, every edge
+	/// is guaranteed to have a face on both sides.  In practice, I found that this works better than letting exterior
+	/// edges use a sentinel index (such as -1) to indicate the lack of a neighboring face.  All external faces come at
+	/// the very end of the face array, and the total number of internal faces is stored, making it easy to iterate over
+	/// just the internal faces for algorithms which ought to ignore external faces.</para>
+	/// 
+	/// <para>In addition to the first half-edge for each vertex and face, the total number of neighbors for each vertex
+	/// and face is also determined and stored.  Otherwise, a linear traversal of a linked list would be required to
+	/// determine the number of neighbors.  Since this is a very basic piece of information that many algorithms will
+	/// refer to frequently, it is pre-computed and saved.  Note that it is stored as a 16-bit ushort, meaning that the
+	/// maximum number of neighbors is 65535.  Generally, this should be vastly more than enough, though it may cause a
+	/// constraint for external faces of very large worlds.  Even then, this should be enough for a 16383 by 16383 square
+	/// world, which is a very large world indeed in terms of tile-based landscapes.  (A "huge" map in Civilization IV,
+	/// for example, was 128x80.)</para>
+	/// 
+	/// <para>One final piece of information is stored in addition to all the above; this data encodes the edge-wrapping
+	/// behavior for worlds that wrap around at some or all boundaries, and is stored per half-edge.  For more information
+	/// one how edge wrapping works, see the <see cref="EdgeWrap"/> enum.</para>
+	/// 
+	/// <para>Accessing this information is made much easier through the interfaces provided by the <see cref="Vertex"/>
+	/// and <see cref="Face"/> types, as well as the <see cref="HalfEdge"/>, <see cref="VertexEdge"/>, and
+	/// <see cref="FaceEdge"/> types.  Refer to documentation for those types for more information.</para>
+	/// </remarks>
+	/// <seealso cref="Vertex"/>
+	/// <seealso cref="Face"/>
+	/// <seealso cref="HalfEdge"/>
+	/// <seealso cref="VertexEdge"/>
+	/// <seealso cref="FaceEdge"/>
+	/// <seealso cref="IVertexAttribute`1{T}"/>
+	/// <seealso cref="IEdgeAttribute`1{T}"/>
+	/// <seealso cref="IFaceAttribute`1{T}"/>
+	/// <seealso cref="EdgeWrap"/>
+	/// <seealso cref="TopologyUtility"/>
+	/// <seealso cref="TopologyBuilder"/>
 	public partial class Topology : ScriptableObject, ICloneable
 	{
 		public ushort[] vertexNeighborCounts;

@@ -74,7 +74,7 @@ namespace Experilous.Topological
 			useDualPolyhedron = true;
 
 			// Outputs
-			OutputSlot.CreateOrReset<SphericalSurface>(ref surfaceOutputSlot, this, "Spherical Surface");
+			OutputSlot.CreateOrReset<SphericalSurface>(ref surfaceOutputSlot, this, "Surface");
 			OutputSlot.CreateOrReset<Topology>(ref topologyOutputSlot, this, "Topology");
 			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexPositionsOutputSlot, this, "Vertex Positions", "Attributes");
 		}

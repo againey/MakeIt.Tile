@@ -48,6 +48,18 @@ namespace Experilous.Topological
 			}
 		}
 
+		/// <summary>
+		/// A wrapper for conveniently working with a topology edge, providing access to its core properties and enumeration of its neighbors.
+		/// </summary>
+		/// <remarks>
+		/// <para>Edge wrappers come in three varieties, HalfEdge, VertexEdge, and FaceEdge.  The HalfEdge variety is focused on
+		/// representing an edge neutrally, not relative to any of its neighboring vertices or faces.</para>
+		/// 
+		/// <para>In addition to providing access to its two vertex and face neighbors, access is also provided to previous and next half-
+		/// edges in the two circular linked lists that every half-edge belongs to, the list of half-edges around a near vertex, and the list
+		/// of half-edges around a near face.  Note that getting the next object requires one less lookup than getting the previous object,
+		/// and is therefore recommended for the majority of cases.</para>
+		/// </remarks>
 		public struct HalfEdge : IEquatable<HalfEdge>, IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<HalfEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>
 		{
 			private Topology _topology;
@@ -81,8 +93,12 @@ namespace Experilous.Topological
 
 			public int index { get { return _index; } }
 			public int twinIndex { get { return _topology.edgeData[_index].twin; } }
+			public bool isFirstTwin { get { return index < twinIndex; } }
+			public bool isSecondTwin { get { return index > twinIndex; } }
 
 			public HalfEdge twin { get { return new HalfEdge(_topology, _topology.edgeData[_index].twin); } }
+			public HalfEdge firstTwin { get { return isFirstTwin ? this : twin; } }
+			public HalfEdge secondTwin { get { return isSecondTwin ? this : twin; } }
 			public HalfEdge prevAroundVertex { get { return new HalfEdge(_topology, _topology.edgeData[_topology.edgeData[_index].twin].fNext); } }
 			public HalfEdge nextAroundVertex { get { return new HalfEdge(_topology, _topology.edgeData[_index].vNext); } }
 			public HalfEdge prevAroundFace { get { return new HalfEdge(_topology, _topology.edgeData[_topology.edgeData[_index].vNext].twin); } }
@@ -149,6 +165,18 @@ namespace Experilous.Topological
 			}
 		}
 
+		/// <summary>
+		/// A wrapper for conveniently working with a topology edge, providing access to its core properties and enumeration of its neighbors.
+		/// </summary>
+		/// <remarks>
+		/// <para>Edge wrappers come in three varieties, HalfEdge, VertexEdge, and FaceEdge.  The VertexEdge variety is focused on
+		/// representing an edge relative to its near vertex, and properties are named relative to rotating clockwise around the near
+		/// vertex where relevant.</para>
+		/// 
+		/// <para>In addition to providing access to its two vertex and face neighbors, access is also provided to previous and next half-
+		/// edges in the circular linked list around this half-edge's near vertex.  Note that getting the next half-edge requires one less
+		/// lookup than getting the previous half-edge, and is therefore recommended for the majority of cases.</para>
+		/// </remarks>
 		public struct VertexEdge : IEquatable<VertexEdge>, IEquatable<FaceEdge>, IComparable<VertexEdge>, IComparable<FaceEdge>
 		{
 			private HalfEdge _halfEdge;
@@ -177,8 +205,12 @@ namespace Experilous.Topological
 
 			public int index { get { return _halfEdge.index; } }
 			public int twinIndex { get { return _halfEdge.twinIndex; } }
+			public bool isFirstTwin { get { return index < twinIndex; } }
+			public bool isSecondTwin { get { return index > twinIndex; } }
 
 			public VertexEdge twin { get { return new VertexEdge(_halfEdge.twin); } }
+			public VertexEdge firstTwin { get { return isFirstTwin ? this : twin; } }
+			public VertexEdge secondTwin { get { return isSecondTwin ? this : twin; } }
 			public VertexEdge prev { get { return new VertexEdge(_halfEdge.prevAroundVertex); } }
 			public VertexEdge next { get { return new VertexEdge(_halfEdge.nextAroundVertex); } }
 			public Vertex nearVertex { get { return _halfEdge.nearVertex; } }
@@ -243,6 +275,18 @@ namespace Experilous.Topological
 			}
 		}
 
+		/// <summary>
+		/// A wrapper for conveniently working with a topology face, providing access to its core properties and enumeration of its neighbors.
+		/// </summary>
+		/// <remarks>
+		/// <para>Edge wrappers come in three varieties, HalfEdge, VertexEdge, and FaceEdge.  The FaceEdge variety is focused on
+		/// representing an edge relative to its near face, and properties are named relative to rotating clockwise around the near
+		/// face where relevant.</para>
+		/// 
+		/// <para>In addition to providing access to its two vertex and face neighbors, access is also provided to previous and next half-
+		/// edges in the circular linked list around this half-edge's near face.  Note that getting the next half-edge requires one less
+		/// lookup than getting the previous half-edge, and is therefore recommended for the majority of cases.</para>
+		/// </remarks>
 		public struct FaceEdge : IEquatable<FaceEdge>, IEquatable<VertexEdge>, IComparable<FaceEdge>, IComparable<VertexEdge>
 		{
 			private HalfEdge _halfEdge;
@@ -271,8 +315,12 @@ namespace Experilous.Topological
 
 			public int index { get { return _halfEdge.index; } }
 			public int twinIndex { get { return _halfEdge.twinIndex; } }
+			public bool isFirstTwin { get { return index < twinIndex; } }
+			public bool isSecondTwin { get { return index > twinIndex; } }
 
 			public FaceEdge twin { get { return new FaceEdge(_halfEdge.twin); } }
+			public FaceEdge firstTwin { get { return isFirstTwin ? this : twin; } }
+			public FaceEdge secondTwin { get { return isSecondTwin ? this : twin; } }
 			public FaceEdge prev { get { return new FaceEdge(_halfEdge.prevAroundFace); } }
 			public FaceEdge next { get { return new FaceEdge(_halfEdge.nextAroundFace); } }
 			public Vertex prevVertex { get { return _halfEdge.nearVertex; } }
@@ -407,10 +455,35 @@ namespace Experilous.Topological
 		public FaceEdgesIndexer faceEdges { get { return new FaceEdgesIndexer(this); } }
 	}
 
+	/// <summary>
+	/// Generic interface for accessing attribute values of topology edges.
+	/// </summary>
+	/// <typeparam name="T">The type of the attribute values.</typeparam>
+	/// <remarks>
+	/// <para>Instead of working with integer indices everywhere, this interface allows attributes to be
+	/// indexed by instances of one of the three edge structures directly.</para>
+	/// </remarks>
 	public interface IEdgeAttribute<T> : IList<T>
 	{
+		/// <summary>
+		/// Lookup the attribute value for the half-edge indicated.
+		/// </summary>
+		/// <param name="e">The half-edge whose attribute value is desired.</param>
+		/// <returns>The attribute value for the half-edge indicated.</returns>
 		T this[Topology.HalfEdge e] { get; set; }
+
+		/// <summary>
+		/// Lookup the attribute value for a half-edge relative to a neighboring vertex.
+		/// </summary>
+		/// <param name="e">The half-edge (represented as a vertex edge) whose attribute value is desired.</param>
+		/// <returns>The attribute value for the indicated half-edge, relative to its near vertex.</returns>
 		T this[Topology.VertexEdge e] { get; set; }
+
+		/// <summary>
+		/// Lookup the attribute value for a half-edge relative to a neighboring face.
+		/// </summary>
+		/// <param name="e">The half-edge (represented as a face edge) whose attribute value is desired.</param>
+		/// <returns>The attribute value for the indicated half-edge, relative to its near face.</returns>
 		T this[Topology.FaceEdge e] { get; set; }
 	}
 

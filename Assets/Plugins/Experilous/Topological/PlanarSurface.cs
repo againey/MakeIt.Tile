@@ -3,63 +3,6 @@ using System;
 
 namespace Experilous.Topological
 {
-	[Serializable] public struct PlanarAxis
-	{
-		public Vector3 vector;
-		public bool isWrapped;
-
-		public PlanarAxis(Vector3 vector, bool isWrapped = false)
-		{
-			this.vector = vector;
-			this.isWrapped = isWrapped;
-		}
-	}
-
-	public struct PlanarDescriptor
-	{
-		public PlanarAxis axis0;
-		public PlanarAxis axis1;
-		public Vector3 origin;
-		public Vector3 normal;
-		public bool isInverted;
-
-		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, bool isInverted = false)
-			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), Vector3.zero, isInverted) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 origin, bool isInverted = false)
-			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), origin, isInverted) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 origin, Vector3 normal)
-			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), origin, normal) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, bool isInverted = false)
-			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), Vector3.zero, isInverted) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 origin, bool isInverted = false)
-			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), origin, isInverted) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 origin, Vector3 normal)
-			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), origin, normal) { }
-
-		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, bool isInverted = false)
-		{
-			this.axis0 = axis0;
-			this.axis1 = axis1;
-			this.origin = origin;
-			normal = Vector3.Cross(axis1.vector, axis0.vector).normalized * (isInverted ? -1f : 1f);
-			this.isInverted = isInverted;
-		}
-
-		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, Vector3 normal)
-		{
-			this.axis0 = axis0;
-			this.axis1 = axis1;
-			this.origin = origin;
-			this.normal = normal.normalized;
-			isInverted = Vector3.Dot(normal, Vector3.Cross(axis1.vector, axis0.vector)) < 0f;
-		}
-	}
-
 	public class PlanarSurface : Surface
 	{
 		public PlanarAxis axis0;
@@ -321,6 +264,63 @@ namespace Experilous.Topological
 		public override Vector3 ReverseOffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap)
 		{
 			return ReverseOffsetAttribute(position, EdgeWrapUtility.FaceToFaceAsGeneric(edgeWrap));
+		}
+	}
+
+	[Serializable] public struct PlanarAxis
+	{
+		public Vector3 vector;
+		public bool isWrapped;
+
+		public PlanarAxis(Vector3 vector, bool isWrapped = false)
+		{
+			this.vector = vector;
+			this.isWrapped = isWrapped;
+		}
+	}
+
+	public struct PlanarDescriptor
+	{
+		public PlanarAxis axis0;
+		public PlanarAxis axis1;
+		public Vector3 origin;
+		public Vector3 normal;
+		public bool isInverted;
+
+		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, bool isInverted = false)
+			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), Vector3.zero, isInverted) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 origin, bool isInverted = false)
+			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), origin, isInverted) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 origin, Vector3 normal)
+			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), origin, normal) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, bool isInverted = false)
+			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), Vector3.zero, isInverted) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 origin, bool isInverted = false)
+			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), origin, isInverted) { }
+
+		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 origin, Vector3 normal)
+			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), origin, normal) { }
+
+		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, bool isInverted = false)
+		{
+			this.axis0 = axis0;
+			this.axis1 = axis1;
+			this.origin = origin;
+			normal = Vector3.Cross(axis1.vector, axis0.vector).normalized * (isInverted ? -1f : 1f);
+			this.isInverted = isInverted;
+		}
+
+		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, Vector3 normal)
+		{
+			this.axis0 = axis0;
+			this.axis1 = axis1;
+			this.origin = origin;
+			this.normal = normal.normalized;
+			isInverted = Vector3.Dot(normal, Vector3.Cross(axis1.vector, axis0.vector)) < 0f;
 		}
 	}
 }

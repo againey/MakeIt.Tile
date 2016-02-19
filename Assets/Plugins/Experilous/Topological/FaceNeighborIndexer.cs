@@ -2,6 +2,12 @@
 
 namespace Experilous.Topological
 {
+	/// <summary>
+	/// An interface for providing a fairly minimal and simple description of a topology
+	/// from which the full topology data structure can be generated.
+	/// </summary>
+	/// <seealso cref="TopologyBuilder"/>
+	/// <seealso cref="IVertexNeighborIndexer"/>
 	public interface IFaceNeighborIndexer
 	{
 		int vertexCount { get; }
@@ -99,7 +105,7 @@ namespace Experilous.Topological
 
 		public int AddFace(int vertex0Index, int vertex1Index, int vertex2Index, int vertex3Index)
 		{
-			_faceNeighborCounts[_faceIndex] = 6;
+			_faceNeighborCounts[_faceIndex] = 4;
 			_faceFirstNeighborIndices[_faceIndex] = _neighborDataIndex;
 			_neighborData[_neighborDataIndex++] = new NeighborData(vertex0Index);
 			_neighborData[_neighborDataIndex++] = new NeighborData(vertex1Index);
@@ -110,7 +116,7 @@ namespace Experilous.Topological
 
 		public int AddFace(int vertex0Index, int vertex1Index, int vertex2Index, int vertex3Index, int vertex4Index)
 		{
-			_faceNeighborCounts[_faceIndex] = 6;
+			_faceNeighborCounts[_faceIndex] = 5;
 			_faceFirstNeighborIndices[_faceIndex] = _neighborDataIndex;
 			_neighborData[_neighborDataIndex++] = new NeighborData(vertex0Index);
 			_neighborData[_neighborDataIndex++] = new NeighborData(vertex1Index);
@@ -157,7 +163,7 @@ namespace Experilous.Topological
 
 		public int AddFace(NeighborData neighbor0, NeighborData neighbor1, NeighborData neighbor2, NeighborData neighbor3)
 		{
-			_faceNeighborCounts[_faceIndex] = 6;
+			_faceNeighborCounts[_faceIndex] = 4;
 			_faceFirstNeighborIndices[_faceIndex] = _neighborDataIndex;
 			_neighborData[_neighborDataIndex++] = neighbor0;
 			_neighborData[_neighborDataIndex++] = neighbor1;
@@ -168,7 +174,7 @@ namespace Experilous.Topological
 
 		public int AddFace(NeighborData neighbor0, NeighborData neighbor1, NeighborData neighbor2, NeighborData neighbor3, NeighborData neighbor4)
 		{
-			_faceNeighborCounts[_faceIndex] = 6;
+			_faceNeighborCounts[_faceIndex] = 5;
 			_faceFirstNeighborIndices[_faceIndex] = _neighborDataIndex;
 			_neighborData[_neighborDataIndex++] = neighbor0;
 			_neighborData[_neighborDataIndex++] = neighbor1;

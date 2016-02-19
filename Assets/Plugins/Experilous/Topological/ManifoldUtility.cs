@@ -32,7 +32,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		private static void SubdivideTriangle(VertexVerticesBuilder builder, Topology.Face face, int degree, Func<Vector3, Vector3, float, Vector3> interpolator, List<Vector3> subdividedVertexPositions, int[] subdividedEdgeVertices)
+		private static void SubdivideTriangle(ManualFaceNeighborIndexer indexer, Topology.Face face, int degree, Func<Vector3, Vector3, float, Vector3> interpolator, List<Vector3> subdividedVertexPositions, int[] subdividedEdgeVertices, ref int currentVertexCount)
 		{
 			var rightEdge = face.firstEdge;
 			var bottomEdge = rightEdge.next;
@@ -42,32 +42,30 @@ namespace Experilous.Topological
 			var bottomRightVertex = rightEdge.nextVertex;
 			var bottomLeftVertex = bottomEdge.nextVertex;
 
-			int rightVertices = rightEdge.index * degree;
-			int bottomVertices = bottomEdge.twinIndex * degree;
-			int leftVertices = leftEdge.twinIndex * degree;
+			int rightVertices = rightEdge.index * degree; // Progresses from the top vertex down to the bottom right vertex.
+			int bottomVertices = bottomEdge.twinIndex * degree; // Progresses from the bottom left vertex over to the bottom right vertex.
+			int leftVertices = leftEdge.twinIndex * degree; // Progresses from the top vertex down to the bottom left vertex.
 
 			if (degree > 2)
 			{
-				int firstVertexIndex = builder.vertexCount;
-				int nextVertexIndex = firstVertexIndex;
+				// Top triangle
+				indexer.AddFace(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices]);
 
-				int yEnd = degree - 2;
+				// Next three triangles above the top inner subdivided vertex
+				indexer.AddFace(subdividedEdgeVertices[leftVertices + 1], subdividedEdgeVertices[leftVertices], currentVertexCount);
+				indexer.AddFace(currentVertexCount, subdividedEdgeVertices[leftVertices], subdividedEdgeVertices[rightVertices]);
+				indexer.AddFace(currentVertexCount, subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[rightVertices + 1]);
 
 				// Top inner subdivided vertex
-				builder.AddVertex(
-					subdividedEdgeVertices[leftVertices + 1],
-					subdividedEdgeVertices[leftVertices],
-					subdividedEdgeVertices[rightVertices],
-					subdividedEdgeVertices[rightVertices + 1],
-					nextVertexIndex + 2,
-					nextVertexIndex + 1);
 				subdividedVertexPositions.Add(interpolator(subdividedVertexPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedVertexPositions[subdividedEdgeVertices[rightVertices + 1]], 0.5f));
-				++nextVertexIndex;
+				++currentVertexCount;
 
 				float t;
 				float dt;
 				Vector3 p0;
 				Vector3 p1;
+
+				int yEnd = degree - 1;
 
 				// Middle rows of inner subdivided vertices
 				for (int y = 1; y < yEnd; ++y)
@@ -76,139 +74,74 @@ namespace Experilous.Topological
 					p0 = subdividedVertexPositions[subdividedEdgeVertices[leftVertices + y + 1]];
 					p1 = subdividedVertexPositions[subdividedEdgeVertices[rightVertices + y + 1]];
 
-					builder.AddVertex(
-						subdividedEdgeVertices[leftVertices + y + 1],
-						subdividedEdgeVertices[leftVertices + y],
-						nextVertexIndex - y,
-						nextVertexIndex + 1,
-						nextVertexIndex + y + 2,
-						nextVertexIndex + y + 1);
+					// First two triangles of the row of faces above this row of inner subdivided vertices
+					indexer.AddFace(subdividedEdgeVertices[leftVertices + y + 1], subdividedEdgeVertices[leftVertices + y], currentVertexCount);
+					indexer.AddFace(currentVertexCount, subdividedEdgeVertices[leftVertices + y], currentVertexCount - y);
+
 					subdividedVertexPositions.Add(interpolator(p0, p1, t));
-					++nextVertexIndex;
+					++currentVertexCount;
 					t += dt;
 
 					for (int x = 1; x < y; ++x)
 					{
-						builder.AddVertex(
-							nextVertexIndex - 1,
-							nextVertexIndex - y - 1,
-							nextVertexIndex - y,
-							nextVertexIndex + 1,
-							nextVertexIndex + y + 2,
-							nextVertexIndex + y + 1);
+						// Next two triangles above the vertex being added
+						indexer.AddFace(currentVertexCount - 1, currentVertexCount - y - 1, currentVertexCount);
+						indexer.AddFace(currentVertexCount, currentVertexCount - y - 1, currentVertexCount - y);
 						subdividedVertexPositions.Add(interpolator(p0, p1, t));
-						++nextVertexIndex;
+						++currentVertexCount;
 						t += dt;
 					}
 
-					builder.AddVertex(
-						nextVertexIndex - 1,
-						nextVertexIndex - y - 1,
-						subdividedEdgeVertices[rightVertices + y],
-						subdividedEdgeVertices[rightVertices + y + 1],
-						nextVertexIndex + y + 2,
-						nextVertexIndex + y + 1);
+					// Last three triangles of the row of faces above this row of inner subdivided vertices
+					indexer.AddFace(currentVertexCount - 1, currentVertexCount - y - 1, currentVertexCount);
+					indexer.AddFace(currentVertexCount, currentVertexCount - y - 1, subdividedEdgeVertices[rightVertices + y]);
+					indexer.AddFace(currentVertexCount, subdividedEdgeVertices[rightVertices + y], subdividedEdgeVertices[rightVertices + y + 1]);
+
 					subdividedVertexPositions.Add(interpolator(p0, p1, t));
-					++nextVertexIndex;
+					++currentVertexCount;
 				}
 
-				// Bottom row of inner subdivided vertices
-				t = dt = 1f / (yEnd + 2);
-				p0 = subdividedVertexPositions[subdividedEdgeVertices[leftVertices + yEnd + 1]];
-				p1 = subdividedVertexPositions[subdividedEdgeVertices[rightVertices + yEnd + 1]];
-
-				builder.AddVertex(
-					subdividedEdgeVertices[leftVertices + yEnd + 1],
-					subdividedEdgeVertices[leftVertices + yEnd],
-					nextVertexIndex - yEnd,
-					nextVertexIndex + 1,
-					subdividedEdgeVertices[bottomVertices + 1],
-					subdividedEdgeVertices[bottomVertices]);
-				subdividedVertexPositions.Add(interpolator(p0, p1, t));
-				++nextVertexIndex;
-				t += dt;
+				// First two triangles of the last row of faces
+				indexer.AddFace(bottomLeftVertex.index, subdividedEdgeVertices[leftVertices + yEnd], subdividedEdgeVertices[bottomVertices]);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices + yEnd], currentVertexCount - yEnd);
 
 				for (int x = 1; x < yEnd; ++x)
 				{
-					builder.AddVertex(
-						nextVertexIndex - 1,
-						nextVertexIndex - yEnd - 1,
-						nextVertexIndex - yEnd,
-						nextVertexIndex + 1,
-						subdividedEdgeVertices[bottomVertices + x + 1],
-						subdividedEdgeVertices[bottomVertices + x]);
-					subdividedVertexPositions.Add(interpolator(p0, p1, t));
-					++nextVertexIndex;
-					t += dt;
+					// Next two triangles of the last row of faces
+					indexer.AddFace(subdividedEdgeVertices[bottomVertices + x - 1], currentVertexCount - yEnd + x - 1, subdividedEdgeVertices[bottomVertices + x]);
+					indexer.AddFace(subdividedEdgeVertices[bottomVertices + x], currentVertexCount - yEnd + x - 1, currentVertexCount - yEnd + x);
 				}
 
-				builder.AddVertex(
-					nextVertexIndex - 1,
-					nextVertexIndex - yEnd - 1,
-					subdividedEdgeVertices[rightVertices + yEnd],
-					subdividedEdgeVertices[rightVertices + yEnd + 1],
-					subdividedEdgeVertices[bottomVertices + yEnd + 1],
-					subdividedEdgeVertices[bottomVertices + yEnd]);
-				subdividedVertexPositions.Add(interpolator(p0, p1, t));
-
-				var lastRowFirstVertexIndex = firstVertexIndex + (yEnd * yEnd + yEnd) / 2;
-
-				yEnd = degree - 1;
-				var xEnd = yEnd;
-
-				// Right outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[rightVertices + 1], firstVertexIndex, subdividedEdgeVertices[leftVertices]);
-				for (int y = 1; y < yEnd; ++y)
-				{
-					var rowFirstVertexIndex = firstVertexIndex + (y * y + y) / 2;
-					builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + y], subdividedEdgeVertices[rightVertices + y + 1], rowFirstVertexIndex + y, rowFirstVertexIndex - 1);
-				}
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + yEnd], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices + yEnd], lastRowFirstVertexIndex + yEnd - 1);
-
-				// Bottom outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, subdividedEdgeVertices[leftVertices + yEnd], lastRowFirstVertexIndex);
-				for (int x = 1; x < xEnd; ++x)
-				{
-					builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + x], subdividedEdgeVertices[bottomVertices + x - 1], lastRowFirstVertexIndex + x - 1, lastRowFirstVertexIndex + x);
-				}
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + xEnd], subdividedEdgeVertices[bottomVertices + xEnd - 1], lastRowFirstVertexIndex + yEnd - 1, subdividedEdgeVertices[rightVertices + yEnd]);
-
-				// Left outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices], firstVertexIndex);
-				for (int y = 1; y < yEnd; ++y)
-				{
-					var nextRowFirstVertexIndex = firstVertexIndex + (y * y + y) / 2;
-					builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices + y], subdividedEdgeVertices[leftVertices + y - 1], nextRowFirstVertexIndex - y, nextRowFirstVertexIndex);
-				}
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices + yEnd], subdividedEdgeVertices[leftVertices + yEnd - 1], lastRowFirstVertexIndex, subdividedEdgeVertices[bottomVertices]);
+				// Last three triangles of the last row of faces
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices + yEnd - 1], currentVertexCount - 1, subdividedEdgeVertices[bottomVertices + yEnd]);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices + yEnd], currentVertexCount - 1, subdividedEdgeVertices[rightVertices + yEnd]);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices + yEnd], subdividedEdgeVertices[rightVertices + yEnd], bottomRightVertex.index);
 			}
 			else if (degree == 2)
 			{
-				int innerVertexIndex = builder.AddVertex(
-					subdividedEdgeVertices[rightVertices],
-					subdividedEdgeVertices[rightVertices + 1],
-					subdividedEdgeVertices[bottomVertices + 1],
-					subdividedEdgeVertices[bottomVertices],
-					subdividedEdgeVertices[leftVertices + 1],
-					subdividedEdgeVertices[leftVertices]);
-				subdividedVertexPositions.Add(interpolator(subdividedVertexPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedVertexPositions[subdividedEdgeVertices[rightVertices + 1]], 0.5f));
+				indexer.AddFace(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices]);
+				indexer.AddFace(subdividedEdgeVertices[leftVertices + 1], subdividedEdgeVertices[leftVertices], currentVertexCount);
+				indexer.AddFace(currentVertexCount, subdividedEdgeVertices[leftVertices], subdividedEdgeVertices[rightVertices]);
+				indexer.AddFace(currentVertexCount, subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[rightVertices + 1]);
+				indexer.AddFace(bottomLeftVertex.index, subdividedEdgeVertices[leftVertices + 1], subdividedEdgeVertices[bottomVertices]);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices + 1], currentVertexCount);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices], currentVertexCount, subdividedEdgeVertices[bottomVertices + 1]);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices + 1], currentVertexCount, subdividedEdgeVertices[rightVertices + 1]);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices + 1], subdividedEdgeVertices[rightVertices + 1], bottomRightVertex.index);
 
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[rightVertices + 1], innerVertexIndex, subdividedEdgeVertices[leftVertices]);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + 1], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices + 1], innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, subdividedEdgeVertices[leftVertices + 1], innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + 1], subdividedEdgeVertices[bottomVertices], innerVertexIndex, subdividedEdgeVertices[rightVertices + 1]);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices], innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices + 1], subdividedEdgeVertices[leftVertices], innerVertexIndex, subdividedEdgeVertices[bottomVertices]);
+				subdividedVertexPositions.Add(interpolator(subdividedVertexPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedVertexPositions[subdividedEdgeVertices[rightVertices + 1]], 0.5f));
+				++currentVertexCount;
 			}
 			else if (degree == 1)
 			{
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices]);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, subdividedEdgeVertices[leftVertices], subdividedEdgeVertices[rightVertices]);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[bottomVertices]);
+				indexer.AddFace(subdividedEdgeVertices[leftVertices], topVertex.index, subdividedEdgeVertices[rightVertices]);
+				indexer.AddFace(bottomLeftVertex.index, subdividedEdgeVertices[leftVertices], subdividedEdgeVertices[bottomVertices]);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices], subdividedEdgeVertices[rightVertices]);
+				indexer.AddFace(subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[rightVertices], bottomRightVertex.index);
 			}
 		}
 
-		private static void SubdivideQuadrilateral(VertexVerticesBuilder builder, Topology.Face face, int degree, Func<Vector3, Vector3, float, Vector3> interpolator, List<Vector3> subdividedVertexPositions, int[] subdividedEdgeVertices)
+		private static void SubdivideQuadrilateral(ManualFaceNeighborIndexer indexer, Topology.Face face, int degree, Func<Vector3, Vector3, float, Vector3> interpolator, List<Vector3> subdividedVertexPositions, int[] subdividedEdgeVertices, ref int currentVertexCount)
 		{
 			var topEdge = face.firstEdge;
 			var rightEdge = topEdge.next;
@@ -220,18 +153,15 @@ namespace Experilous.Topological
 			var bottomRightVertex = rightEdge.nextVertex;
 			var bottomLeftVertex = bottomEdge.nextVertex;
 
-			int topVertices = topEdge.index * degree;
-			int bottomVertices = bottomEdge.twinIndex * degree;
-			int rightVertices = rightEdge.index * degree;
-			int leftVertices = leftEdge.twinIndex * degree;
+			int topVertices = topEdge.index * degree; // Progresses from top left vertex over to top right vertex.
+			int bottomVertices = bottomEdge.twinIndex * degree; // Progresses from bottom left vertex over to bottom right vertex.
+			int rightVertices = rightEdge.index * degree; // Progresses from top right vertex down to bottom right vertex.
+			int leftVertices = leftEdge.twinIndex * degree; // Progresses from top left vertex down to bottom left vertex.
 
 			var dt = 1f / (degree + 1);
 
 			if (degree > 2)
 			{
-				int firstVertexIndex = builder.vertexCount;
-				int nextVertexIndex = firstVertexIndex;
-
 				int yEnd = degree - 1;
 				int xEnd = degree - 1;
 
@@ -239,129 +169,79 @@ namespace Experilous.Topological
 				Vector3 p0;
 				Vector3 p1;
 
-				// Top row of inner subdivided vertices
-				t = dt;
-				p0 = subdividedVertexPositions[subdividedEdgeVertices[leftVertices]];
-				p1 = subdividedVertexPositions[subdividedEdgeVertices[rightVertices]];
-
-				builder.AddVertex(subdividedEdgeVertices[topVertices], nextVertexIndex + 1, nextVertexIndex + degree, subdividedEdgeVertices[leftVertices]);
-				subdividedVertexPositions.Add(interpolator(p0, p1, t));
-				++nextVertexIndex;
-				t += dt;
-				for (int x = 1; x < xEnd; ++x)
+				// Top row of subdivided faces
+				indexer.AddFace(topLeftVertex.index, subdividedEdgeVertices[topVertices], currentVertexCount, subdividedEdgeVertices[leftVertices]);
+				for (int x = 0; x < xEnd; ++x)
 				{
-					builder.AddVertex(subdividedEdgeVertices[topVertices + x], nextVertexIndex + 1, nextVertexIndex + degree, nextVertexIndex - 1);
-					subdividedVertexPositions.Add(interpolator(p0, p1, t));
-					++nextVertexIndex;
-					t += dt;
+					indexer.AddFace(subdividedEdgeVertices[topVertices + x], subdividedEdgeVertices[topVertices + x + 1], currentVertexCount + x + 1, currentVertexCount + x);
 				}
-				builder.AddVertex(subdividedEdgeVertices[topVertices + xEnd], subdividedEdgeVertices[rightVertices], nextVertexIndex + degree, nextVertexIndex - 1);
-				subdividedVertexPositions.Add(interpolator(p0, p1, t));
-				++nextVertexIndex;
+				indexer.AddFace(subdividedEdgeVertices[topVertices + xEnd], topRightVertex.index, subdividedEdgeVertices[rightVertices], currentVertexCount + xEnd);
 
-				// Middle rows of inner subdivided vertices
-				for (int y = 1; y < yEnd; ++y)
+				// Middle rows of subdivided faces
+				for (int y = 0; y < yEnd; ++y)
+				{
+					var rowFirstVertexIndex = currentVertexCount + y * degree;
+					indexer.AddFace(subdividedEdgeVertices[leftVertices + y], rowFirstVertexIndex, rowFirstVertexIndex + degree, subdividedEdgeVertices[leftVertices + y + 1]);
+					for (int x = 0; x < xEnd; ++x)
+					{
+						indexer.AddFace(rowFirstVertexIndex + x, rowFirstVertexIndex + x + 1, rowFirstVertexIndex + degree + x + 1, rowFirstVertexIndex + degree + x);
+					}
+					indexer.AddFace(rowFirstVertexIndex + xEnd, subdividedEdgeVertices[rightVertices + y], subdividedEdgeVertices[rightVertices + y + 1], rowFirstVertexIndex + degree + xEnd);
+				}
+
+				// Bottom row of subdivided faces
+				var lastRowFirstVertexIndex = currentVertexCount + yEnd * degree;
+				indexer.AddFace(subdividedEdgeVertices[leftVertices + yEnd], lastRowFirstVertexIndex, subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index);
+				for (int x = 0; x < xEnd; ++x)
+				{
+					indexer.AddFace(lastRowFirstVertexIndex + x, lastRowFirstVertexIndex + x + 1, subdividedEdgeVertices[bottomVertices + x + 1], subdividedEdgeVertices[bottomVertices + x]);
+				}
+				indexer.AddFace(lastRowFirstVertexIndex + xEnd, subdividedEdgeVertices[rightVertices + yEnd], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices + xEnd]);
+
+				// Subdivided vertices
+				for (int y = 0; y <= yEnd; ++y)
 				{
 					t = dt;
 					p0 = subdividedVertexPositions[subdividedEdgeVertices[leftVertices + y]];
 					p1 = subdividedVertexPositions[subdividedEdgeVertices[rightVertices + y]];
 
-					builder.AddVertex(nextVertexIndex - degree, nextVertexIndex + 1, nextVertexIndex + degree, subdividedEdgeVertices[leftVertices + y]);
-					subdividedVertexPositions.Add(interpolator(p0, p1, t));
-					++nextVertexIndex;
-					t += dt;
-					for (int x = 1; x < xEnd; ++x)
+					for (int x = 0; x <= xEnd; ++x)
 					{
-						builder.AddVertex(nextVertexIndex - degree, nextVertexIndex + 1, nextVertexIndex + degree, nextVertexIndex - 1);
 						subdividedVertexPositions.Add(interpolator(p0, p1, t));
-						++nextVertexIndex;
 						t += dt;
 					}
-					builder.AddVertex(nextVertexIndex - degree, subdividedEdgeVertices[rightVertices + y], nextVertexIndex + degree, nextVertexIndex - 1);
-					subdividedVertexPositions.Add(interpolator(p0, p1, t));
-					++nextVertexIndex;
 				}
-
-				// Bottom row of inner subdivided vertices
-				t = dt;
-				p0 = subdividedVertexPositions[subdividedEdgeVertices[leftVertices + yEnd]];
-				p1 = subdividedVertexPositions[subdividedEdgeVertices[rightVertices + yEnd]];
-
-				builder.AddVertex(nextVertexIndex - degree, nextVertexIndex + 1, subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices + yEnd]);
-				subdividedVertexPositions.Add(interpolator(p0, p1, t));
-				++nextVertexIndex;
-				t += dt;
-				for (int x = 1; x < xEnd; ++x)
-				{
-					builder.AddVertex(nextVertexIndex - degree, nextVertexIndex + 1, subdividedEdgeVertices[bottomVertices + x], nextVertexIndex - 1);
-					subdividedVertexPositions.Add(interpolator(p0, p1, t));
-					++nextVertexIndex;
-					t += dt;
-				}
-				builder.AddVertex(nextVertexIndex - degree, subdividedEdgeVertices[rightVertices + yEnd], subdividedEdgeVertices[bottomVertices + xEnd], nextVertexIndex - 1);
-				subdividedVertexPositions.Add(interpolator(p0, p1, t));
-
-				// Top outside edge vertices
-				for (int x = 0; x < xEnd; ++x)
-				{
-					builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices + x], subdividedEdgeVertices[topVertices + x + 1], firstVertexIndex + x);
-				}
-				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices + xEnd], topRightVertex.index, firstVertexIndex + xEnd);
-
-				// Bottom outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, firstVertexIndex + yEnd * degree);
-				for (int x = 1; x <= xEnd; ++x)
-				{
-					builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + x], subdividedEdgeVertices[bottomVertices + x - 1], firstVertexIndex + yEnd * degree + x);
-				}
-
-				// Right outside edge vertices
-				for (int y = 0; y < yEnd; ++y)
-				{
-					builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + y], subdividedEdgeVertices[rightVertices + y + 1], firstVertexIndex + y * degree + xEnd);
-				}
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + yEnd], bottomRightVertex.index, firstVertexIndex + yEnd * degree + xEnd);
-
-				// Left outside edge vertices
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topLeftVertex.index, firstVertexIndex);
-				for (int y = 1; y <= yEnd; ++y)
-				{
-					builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices + y], subdividedEdgeVertices[leftVertices + y - 1], firstVertexIndex + y * degree);
-				}
+				currentVertexCount += degree * degree;
 			}
 			else if (degree == 2)
 			{
-				int firstVertexIndex = builder.vertexCount;
+				indexer.AddFace(topLeftVertex.index, subdividedEdgeVertices[topVertices], currentVertexCount, subdividedEdgeVertices[leftVertices]);
+				indexer.AddFace(subdividedEdgeVertices[topVertices], subdividedEdgeVertices[topVertices + 1], currentVertexCount + 1, currentVertexCount);
+				indexer.AddFace(subdividedEdgeVertices[topVertices + 1], topRightVertex.index, subdividedEdgeVertices[rightVertices], currentVertexCount + 1);
 
-				builder.AddVertex(subdividedEdgeVertices[topVertices], firstVertexIndex + 1, firstVertexIndex + 2, subdividedEdgeVertices[leftVertices]);
-				builder.AddVertex(subdividedEdgeVertices[topVertices + 1], subdividedEdgeVertices[rightVertices], firstVertexIndex + 3, firstVertexIndex);
-				builder.AddVertex(firstVertexIndex, firstVertexIndex + 3, subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices + 1]);
-				builder.AddVertex(firstVertexIndex + 1, subdividedEdgeVertices[rightVertices + 1], subdividedEdgeVertices[bottomVertices + 1], firstVertexIndex + 2);
+				indexer.AddFace(subdividedEdgeVertices[leftVertices], currentVertexCount, currentVertexCount + 2, subdividedEdgeVertices[leftVertices + 1]);
+				indexer.AddFace(currentVertexCount, currentVertexCount + 1, currentVertexCount + 3, currentVertexCount + 2);
+				indexer.AddFace(currentVertexCount + 1, subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[rightVertices + 1], currentVertexCount + 3);
+
+				indexer.AddFace(subdividedEdgeVertices[leftVertices + 1], currentVertexCount + 2, subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index);
+				indexer.AddFace(currentVertexCount + 2, currentVertexCount + 3, subdividedEdgeVertices[bottomVertices + 1], subdividedEdgeVertices[bottomVertices]);
+				indexer.AddFace(currentVertexCount + 3, subdividedEdgeVertices[rightVertices + 1], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices + 1]);
 
 				subdividedVertexPositions.Add(interpolator(subdividedVertexPositions[subdividedEdgeVertices[leftVertices]], subdividedVertexPositions[subdividedEdgeVertices[rightVertices]], dt));
 				subdividedVertexPositions.Add(interpolator(subdividedVertexPositions[subdividedEdgeVertices[leftVertices]], subdividedVertexPositions[subdividedEdgeVertices[rightVertices]], dt + dt));
 				subdividedVertexPositions.Add(interpolator(subdividedVertexPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedVertexPositions[subdividedEdgeVertices[rightVertices + 1]], dt));
 				subdividedVertexPositions.Add(interpolator(subdividedVertexPositions[subdividedEdgeVertices[leftVertices + 1]], subdividedVertexPositions[subdividedEdgeVertices[rightVertices + 1]], dt + dt));
-
-				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices], subdividedEdgeVertices[topVertices + 1], firstVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices + 1], topRightVertex.index, firstVertexIndex + 1);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, firstVertexIndex + 2);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices + 1], subdividedEdgeVertices[bottomVertices], firstVertexIndex + 3);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[rightVertices + 1], firstVertexIndex + 1);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices + 1], bottomRightVertex.index, firstVertexIndex + 3);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topLeftVertex.index, firstVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices + 1], subdividedEdgeVertices[leftVertices], firstVertexIndex + 2);
+				currentVertexCount += 4;
 			}
 			else if (degree == 1)
 			{
-				int innerVertexIndex = builder.AddVertex(subdividedEdgeVertices[topVertices], subdividedEdgeVertices[rightVertices], subdividedEdgeVertices[bottomVertices], subdividedEdgeVertices[leftVertices]);
+				indexer.AddFace(topLeftVertex.index, subdividedEdgeVertices[topVertices], currentVertexCount, subdividedEdgeVertices[leftVertices]);
+				indexer.AddFace(subdividedEdgeVertices[topVertices], topRightVertex.index, subdividedEdgeVertices[rightVertices], currentVertexCount);
+				indexer.AddFace(subdividedEdgeVertices[leftVertices], currentVertexCount, subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index);
+				indexer.AddFace(currentVertexCount, subdividedEdgeVertices[rightVertices], bottomRightVertex.index, subdividedEdgeVertices[bottomVertices]);
 
 				subdividedVertexPositions.Add(interpolator(subdividedVertexPositions[subdividedEdgeVertices[leftVertices]], subdividedVertexPositions[subdividedEdgeVertices[rightVertices]], dt));
-
-				builder.ExtendVertexAfter(subdividedEdgeVertices[topVertices], topRightVertex.index, innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[bottomVertices], bottomLeftVertex.index, innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[rightVertices], bottomRightVertex.index, innerVertexIndex);
-				builder.ExtendVertexAfter(subdividedEdgeVertices[leftVertices], topLeftVertex.index, innerVertexIndex);
+				++currentVertexCount;
 			}
 		}
 
@@ -377,23 +257,54 @@ namespace Experilous.Topological
 				return;
 			}
 
-			var builder = new VertexVerticesBuilder();
+			int vertexCount = 0;
+			int edgeCount = 0;
+			int internalFaceCount = 0;
+
+			vertexCount += topology.vertices.Count + (topology.halfEdges.Count / 2) * degree;
+
+			foreach (var face in topology.internalFaces)
+			{
+				switch (face.neighborCount)
+				{
+					case 3:
+						vertexCount += (degree * (degree - 1)) / 2;
+						edgeCount += (degree + 1) * (degree + 1) * 3;
+						internalFaceCount += (degree + 1) * (degree + 1);
+						break;
+					case 4:
+						vertexCount += degree * degree;
+						edgeCount += (degree + 1) * (degree + 1) * 4;
+						internalFaceCount += (degree + 1) * (degree + 1);
+						break;
+					default:
+						throw new InvalidOperationException("Cannot subdivide a face with anything other than 3 or 4 sides.");
+				}
+			}
+
+			foreach (var face in topology.externalFaces)
+			{
+				edgeCount += face.neighborCount * (degree + 1);
+			}
+
+			var indexer = new ManualFaceNeighborIndexer(vertexCount, edgeCount, internalFaceCount, topology.externalFaces.Count);
 			var subdividedVertexPositionsList = new List<Vector3>();
 
 			foreach (var vertex in topology.vertices)
 			{
-				builder.AddVertex();
 				subdividedVertexPositionsList.Add(vertexPositions[vertex]);
 			}
+
+			var currentVertexCount = topology.vertices.Count;
 
 			var dt = 1f / (degree + 1);
 			var tEnd = 1f - dt * 0.5f;
 
-			var subdividedEdgeVertices = new int[topology.vertexEdges.Count * degree];
+			var subdividedEdgeVertices = new int[topology.halfEdges.Count * degree];
 
 			foreach (var edge in topology.vertexEdges)
 			{
-				if (edge.nearVertex < edge.farVertex)
+				if (edge.isFirstTwin)
 				{
 					var p0 = vertexPositions[edge.nearVertex];
 					var p1 = vertexPositions[edge.farVertex];
@@ -401,22 +312,10 @@ namespace Experilous.Topological
 					var subdividedEdgeVertexIndex = edge.index * degree;
 					while (t < tEnd)
 					{
-						subdividedEdgeVertices[subdividedEdgeVertexIndex++] = builder.AddVertex();
+						subdividedEdgeVertices[subdividedEdgeVertexIndex++] = currentVertexCount++;
 						subdividedVertexPositionsList.Add(interpolator(p0, p1, t));
 						t += dt;
 					}
-
-					subdividedEdgeVertexIndex = edge.index * degree;
-					var prevVertexIndex = edge.nearVertex.index;
-					var vertexIndex = subdividedEdgeVertices[subdividedEdgeVertexIndex];
-					for (int i = 1; i < degree; ++i)
-					{
-						var nextVertexIndex = subdividedEdgeVertices[subdividedEdgeVertexIndex + i];
-						builder.ExtendVertex(vertexIndex, prevVertexIndex, nextVertexIndex);
-						prevVertexIndex = vertexIndex;
-						vertexIndex = nextVertexIndex;
-					}
-					builder.ExtendVertex(vertexIndex, prevVertexIndex, edge.farVertex.index);
 				}
 				else
 				{
@@ -429,40 +328,22 @@ namespace Experilous.Topological
 				}
 			}
 
-			int maxNeighborCount = 0;
-			foreach (var vertex in topology.vertices)
-			{
-				maxNeighborCount = Mathf.Max(maxNeighborCount, vertex.neighborCount);
-			}
-
-			var neighbors = new int[maxNeighborCount];
-			foreach (var vertex in topology.vertices)
-			{
-				int i = 0;
-				foreach (var edge in vertex.edges)
-				{
-					neighbors[i++] = subdividedEdgeVertices[edge.index * degree];
-				}
-				builder.ExtendVertex(vertex.index, i, neighbors);
-			}
-
 			foreach (var face in topology.internalFaces)
 			{
-				if (face.neighborCount == 3)
+				switch (face.neighborCount)
 				{
-					SubdivideTriangle(builder, face, degree, interpolator, subdividedVertexPositionsList, subdividedEdgeVertices);
-				}
-				else if (face.neighborCount == 4)
-				{
-					SubdivideQuadrilateral(builder, face, degree, interpolator, subdividedVertexPositionsList, subdividedEdgeVertices);
-				}
-				else
-				{
-					throw new System.InvalidOperationException("Cannot subdivide a face with anything other than 3 or 4 sides.");
+					case 3:
+						SubdivideTriangle(indexer, face, degree, interpolator, subdividedVertexPositionsList, subdividedEdgeVertices, ref currentVertexCount);
+						break;
+					case 4:
+						SubdivideQuadrilateral(indexer, face, degree, interpolator, subdividedVertexPositionsList, subdividedEdgeVertices, ref currentVertexCount);
+						break;
+					default:
+						throw new InvalidOperationException("Cannot subdivide a face with anything other than 3 or 4 sides.");
 				}
 			}
 
-			subdividedTopology = builder.BuildTopology();
+			subdividedTopology = TopologyBuilder.BuildTopology(indexer);
 			subdividedVertexPositions = subdividedVertexPositionsList.ToArray();
 		}
 

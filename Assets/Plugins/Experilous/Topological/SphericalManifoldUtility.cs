@@ -9,8 +9,6 @@ namespace Experilous.Topological
 
 		public static void CreateTetrahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
-			var builder = new VertexVerticesBuilder(4, 12, 4);
-
 			var y = circumsphereRadius * -1f / 3f;
 			var z0 = circumsphereRadius * 2f / 3f * Mathf.Sqrt(2f);
 			var z1 = circumsphereRadius * -Mathf.Sqrt(2f / 9f);
@@ -22,18 +20,18 @@ namespace Experilous.Topological
 			vertexPositions[ 2] = new Vector3(+x,  y, z1);
 			vertexPositions[ 3] = new Vector3(-x,  y, z1);
 
-			builder.AddVertex(1, 2, 3);
-			builder.AddVertex(0, 3, 2);
-			builder.AddVertex(0, 1, 3);
-			builder.AddVertex(0, 2, 1);
+			var indexer = new ManualFaceNeighborIndexer(4, 12, 4);
 
-			topology = builder.BuildTopology();
+			indexer.AddFace(0, 1, 2);
+			indexer.AddFace(0, 2, 3);
+			indexer.AddFace(0, 3, 1);
+			indexer.AddFace(3, 2, 1);
+
+			topology = TopologyBuilder.BuildTopology(indexer);
 		}
 
 		public static void CreateCube(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
-			var builder = new VertexVerticesBuilder(8, 24, 6);
-
 			var a = circumsphereRadius / Mathf.Sqrt(3f);
 
 			vertexPositions = new Vector3[8];
@@ -46,22 +44,20 @@ namespace Experilous.Topological
 			vertexPositions[ 6] = new Vector3(-a, -a, -a);
 			vertexPositions[ 7] = new Vector3(-a, -a, +a);
 
-			builder.AddVertex(1, 3, 4);
-			builder.AddVertex(0, 5, 2);
-			builder.AddVertex(1, 6, 3);
-			builder.AddVertex(0, 2, 7);
-			builder.AddVertex(0, 7, 5);
-			builder.AddVertex(1, 4, 6);
-			builder.AddVertex(2, 5, 7);
-			builder.AddVertex(3, 6, 4);
+			var indexer = new ManualFaceNeighborIndexer(8, 24, 6);
 
-			topology = builder.BuildTopology();
+			indexer.AddFace(0, 1, 2, 3);
+			indexer.AddFace(0, 4, 5, 1);
+			indexer.AddFace(1, 5, 6, 2);
+			indexer.AddFace(2, 6, 7, 3);
+			indexer.AddFace(3, 7, 4, 0);
+			indexer.AddFace(7, 6, 5, 4);
+
+			topology = TopologyBuilder.BuildTopology(indexer);
 		}
 
 		public static void CreateOctahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
-			var builder = new VertexVerticesBuilder(6, 24, 8);
-
 			vertexPositions = new Vector3[6];
 			vertexPositions[ 0] = new Vector3( 0, +circumsphereRadius,  0);
 			vertexPositions[ 1] = new Vector3(+circumsphereRadius,  0,  0);
@@ -70,14 +66,18 @@ namespace Experilous.Topological
 			vertexPositions[ 4] = new Vector3( 0,  0, +circumsphereRadius);
 			vertexPositions[ 5] = new Vector3( 0, -circumsphereRadius,  0);
 
-			builder.AddVertex(1, 2, 3, 4);
-			builder.AddVertex(0, 4, 5, 2);
-			builder.AddVertex(0, 1, 5, 3);
-			builder.AddVertex(0, 2, 5, 4);
-			builder.AddVertex(0, 3, 5, 1);
-			builder.AddVertex(1, 4, 3, 2);
+			var indexer = new ManualFaceNeighborIndexer(6, 24, 8);
 
-			topology = builder.BuildTopology();
+			indexer.AddFace(0, 1, 2);
+			indexer.AddFace(0, 2, 3);
+			indexer.AddFace(0, 3, 4);
+			indexer.AddFace(0, 4, 1);
+			indexer.AddFace(2, 1, 5);
+			indexer.AddFace(3, 2, 5);
+			indexer.AddFace(4, 3, 5);
+			indexer.AddFace(1, 4, 5);
+
+			topology = TopologyBuilder.BuildTopology(indexer);
 		}
 
 		public static void CreateDodecahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
@@ -88,16 +88,14 @@ namespace Experilous.Topological
 
 		public static void CreateIcosahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
 		{
-			var builder = new VertexVerticesBuilder(12, 60, 20);
-
 			var latitude = Mathf.Atan2(1, 2);
 			var longitude = Mathf.PI * 0.2f;
 			var cosLat = Mathf.Cos(latitude);
 			var scaledCosLat = circumsphereRadius * cosLat;
 
-			var x0 = scaledCosLat * Mathf.Sin(longitude * 2.0f);
+			var x0 = 0.0f;
 			var x1 = scaledCosLat * Mathf.Sin(longitude);
-			var x2 = 0.0f;
+			var x2 = scaledCosLat * Mathf.Sin(longitude * 2.0f);
 			var y0 = +circumsphereRadius;
 			var y1 = circumsphereRadius * Mathf.Sin(latitude);
 			var y2 = -circumsphereRadius;
@@ -106,33 +104,43 @@ namespace Experilous.Topological
 			var z2 = scaledCosLat * Mathf.Cos(longitude * 2.0f);
 
 			vertexPositions = new Vector3[12];
-			vertexPositions[ 0] = new Vector3(+x2,  y0,  0f);
-			vertexPositions[ 1] = new Vector3(+x2, +y1, +z0);
-			vertexPositions[ 2] = new Vector3(+x2, -y1, -z0);
-			vertexPositions[ 3] = new Vector3(+x2,  y2,  0f);
-			vertexPositions[ 4] = new Vector3(+x1, +y1, -z1);
-			vertexPositions[ 5] = new Vector3(-x1, +y1, -z1);
-			vertexPositions[ 6] = new Vector3(+x1, -y1, +z1);
-			vertexPositions[ 7] = new Vector3(-x1, -y1, +z1);
-			vertexPositions[ 8] = new Vector3(+x0, +y1, +z2);
-			vertexPositions[ 9] = new Vector3(+x0, -y1, -z2);
-			vertexPositions[10] = new Vector3(-x0, +y1, +z2);
-			vertexPositions[11] = new Vector3(-x0, -y1, -z2);
+			vertexPositions[ 0] = new Vector3( x0,  y0,  0f);
+			vertexPositions[ 1] = new Vector3( x0, +y1, -z0);
+			vertexPositions[ 2] = new Vector3(-x2, +y1, -z2);
+			vertexPositions[ 3] = new Vector3(-x1, +y1, +z1);
+			vertexPositions[ 4] = new Vector3(+x1, +y1, +z1);
+			vertexPositions[ 5] = new Vector3(+x2, +y1, -z2);
+			vertexPositions[ 6] = new Vector3( x0, -y1, +z0);
+			vertexPositions[ 7] = new Vector3(-x2, -y1, +z2);
+			vertexPositions[ 8] = new Vector3(-x1, -y1, -z1);
+			vertexPositions[ 9] = new Vector3(+x1, -y1, -z1);
+			vertexPositions[10] = new Vector3(+x2, -y1, +z2);
+			vertexPositions[11] = new Vector3( x0,  y2,  0f);
 
-			builder.AddVertex( 1,  8,  4,  5, 10);
-			builder.AddVertex( 0, 10,  7,  6,  8);
-			builder.AddVertex( 3, 11,  5,  4,  9);
-			builder.AddVertex( 2,  9,  6,  7, 11);
-			builder.AddVertex( 0,  8,  9,  2,  5);
-			builder.AddVertex( 0,  4,  2, 11, 10);
-			builder.AddVertex( 1,  7,  3,  9,  8);
-			builder.AddVertex( 1, 10, 11,  3,  6);
-			builder.AddVertex( 0,  1,  6,  9,  4);
-			builder.AddVertex( 2,  4,  8,  6,  3);
-			builder.AddVertex( 0,  5, 11,  7,  1);
-			builder.AddVertex( 2,  3,  7, 10,  5);
+			var indexer = new ManualFaceNeighborIndexer(12, 60, 20);
 
-			topology = builder.BuildTopology();
+			indexer.AddFace( 0,  1,  2);
+			indexer.AddFace( 0,  2,  3);
+			indexer.AddFace( 0,  3,  4);
+			indexer.AddFace( 0,  4,  5);
+			indexer.AddFace( 0,  5,  1);
+			indexer.AddFace( 1,  8,  2);
+			indexer.AddFace( 2,  8,  7);
+			indexer.AddFace( 2,  7,  3);
+			indexer.AddFace( 3,  7,  6);
+			indexer.AddFace( 3,  6,  4);
+			indexer.AddFace( 4,  6, 10);
+			indexer.AddFace( 4, 10,  5);
+			indexer.AddFace( 5, 10,  9);
+			indexer.AddFace( 5,  9,  1);
+			indexer.AddFace( 1,  9,  8);
+			indexer.AddFace(11,  6,  7);
+			indexer.AddFace(11,  7,  8);
+			indexer.AddFace(11,  8,  9);
+			indexer.AddFace(11,  9, 10);
+			indexer.AddFace(11, 10,  6);
+
+			topology = TopologyBuilder.BuildTopology(indexer);
 		}
 
 		#endregion
