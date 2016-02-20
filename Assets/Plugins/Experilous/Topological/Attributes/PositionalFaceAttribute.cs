@@ -19,16 +19,6 @@ namespace Experilous.Topological
 			return Create(surface, new Vector3[vertexCount]);
 		}
 
-		public static PositionalFaceAttribute Create(Surface surface, Vector3[] array, string name)
-		{
-			return Create(surface, array).SetName(name);
-		}
-
-		public static PositionalFaceAttribute Create(Surface surface, int vertexCount, string name)
-		{
-			return Create(surface, vertexCount).SetName(name);
-		}
-
 		public override Vector3 this[Topology.HalfEdge e]
 		{
 			get { return surface.OffsetEdgeToFaceAttribute(array[e.farFace.index], e.wrap); }

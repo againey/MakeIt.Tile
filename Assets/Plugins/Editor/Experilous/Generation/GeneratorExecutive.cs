@@ -543,9 +543,8 @@ namespace Experilous.Generation
 
 		public void CreateAsset()
 		{
-			var generatorPath = AssetUtility.selectedFolderOrDefault;
-			AssetDatabase.CreateFolder(generatorPath, name);
-			generatorPath = Path.Combine(generatorPath, name);
+			var generatorPath = AssetUtility.GenerateAvailableAssetPath(AssetUtility.GetCanonicalPath(Path.Combine(AssetUtility.selectedFolderOrDefault, name)), "{0}/{1} ({2})");
+			AssetUtility.CreatePathFolders(generatorPath, false);
 			generatorPath = Path.Combine(generatorPath, "Generator.asset");
 			generatorPath = AssetUtility.GetCanonicalPath(generatorPath);
 			AssetDatabase.CreateAsset(this, generatorPath);

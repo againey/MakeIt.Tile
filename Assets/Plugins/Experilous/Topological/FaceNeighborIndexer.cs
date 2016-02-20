@@ -7,7 +7,7 @@ namespace Experilous.Topological
 	/// from which the full topology data structure can be generated.
 	/// </summary>
 	/// <seealso cref="TopologyBuilder"/>
-	/// <seealso cref="IVertexNeighborIndexer"/>
+	/// <seealso cref="ManualFaceNeighborIndexer"/>
 	public interface IFaceNeighborIndexer
 	{
 		int vertexCount { get; }
