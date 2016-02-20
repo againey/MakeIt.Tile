@@ -37,6 +37,14 @@ namespace Experilous.Topological
 			return this;
 		}
 
+		public override object Clone()
+		{
+			var clone = Create(new SphericalDescriptor(primaryPoleNormal, radius));
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
 		public override bool isFlat { get { return false; } }
 		public override bool isCurved { get { return true; } }
 

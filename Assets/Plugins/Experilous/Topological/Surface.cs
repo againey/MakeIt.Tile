@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 
 namespace Experilous.Topological
 {
@@ -29,8 +30,10 @@ namespace Experilous.Topological
 		Vector3 ReverseOffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
 	}
 
-	public abstract class Surface : ScriptableObject
+	public abstract class Surface : ScriptableObject, ICloneable
 	{
+		public abstract object Clone();
+
 		public abstract bool isFlat { get; }
 		public abstract bool isCurved { get; }
 

@@ -3,7 +3,7 @@ using System;
 
 namespace Experilous.Topological
 {
-	public class RectangularQuadGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
+	public class RectangularQuadGrid : PlanarSurface, IPositionallyWrappedFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{
 		public Index2D size;
 		public Topology topology;
@@ -36,6 +36,16 @@ namespace Experilous.Topological
 			topology = null;
 			Initialize();
 			return this;
+		}
+
+		public override object Clone()
+		{
+			var clone = Create(
+				new PlanarDescriptor(axis0, axis1, origin, surfaceNormal, isInverted),
+				size);
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
 		}
 
 		protected void Initialize()
@@ -71,7 +81,14 @@ namespace Experilous.Topological
 
 		public Topology CreateTopology()
 		{
-			return TopologyBuilder.BuildTopology(this);
+			if (axis0.isWrapped || axis1.isWrapped)
+			{
+				return TopologyBuilder.BuildTopology((IFaceNeighborIndexer)this);
+			}
+			else
+			{
+				return TopologyBuilder.BuildTopology((PlanarSurface)this, (IPositionallyWrappedFaceNeighborIndexer)this);
+			}
 		}
 
 		public Topology CreateManifold(out Vector3[] vertexPositions)

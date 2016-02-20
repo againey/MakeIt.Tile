@@ -122,6 +122,42 @@ namespace Experilous.Topological
 			return clone;
 		}
 
+		public virtual Vector3 TransformVertexPointFromVertex(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 TransformEdgePointFromVertex(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 TransformFacePointFromVertex(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 TransformVertexPointFromEdge(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 TransformFacePointFromEdge(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 TransformVertexPointFromFace(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 TransformEdgePointFromFace(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 TransformFacePointFromFace(int edgeIndex, Vector3 point) { return point; }
+
+		public virtual Vector3 InverseTransformVertexPointFromVertex(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 InverseTransformEdgePointFromVertex(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 InverseTransformFacePointFromVertex(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 InverseTransformVertexPointFromEdge(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 InverseTransformFacePointFromEdge(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 InverseTransformVertexPointFromFace(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 InverseTransformEdgePointFromFace(int edgeIndex, Vector3 point) { return point; }
+		public virtual Vector3 InverseTransformFacePointFromFace(int edgeIndex, Vector3 point) { return point; }
+
+		public virtual Vector3 TransformVertexDirectionFromVertex(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 TransformEdgeDirectionFromVertex(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 TransformFaceDirectionFromVertex(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 TransformVertexDirectionFromEdge(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 TransformFaceDirectionFromEdge(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 TransformVertexDirectionFromFace(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 TransformEdgeDirectionFromFace(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 TransformFaceDirectionFromFace(int edgeIndex, Vector3 direction) { return direction; }
+
+		public virtual Vector3 InverseTransformVertexDirectionFromVertex(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 InverseTransformEdgeDirectionFromVertex(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 InverseTransformFaceDirectionFromVertex(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 InverseTransformVertexDirectionFromEdge(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 InverseTransformFaceDirectionFromEdge(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 InverseTransformVertexDirectionFromFace(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 InverseTransformEdgeDirectionFromFace(int edgeIndex, Vector3 direction) { return direction; }
+		public virtual Vector3 InverseTransformFaceDirectionFromFace(int edgeIndex, Vector3 direction) { return direction; }
+
 		public virtual void MakeDual()
 		{
 			if (firstExternalFaceIndex < faceFirstEdgeIndices.Length) throw new InvalidOperationException("A dual topology cannot be derived from a topology with external faces.");
@@ -190,7 +226,7 @@ namespace Experilous.Topological
 		// 2:  outer edge 2 points away from A
 		// Note:  inner edges point downward, outer edges point upward
 
-		private void PivotVertexEdgeBackwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
+		protected virtual void PivotVertexEdgeBackwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
 		{
 			var innerEdgeIndex0 = edgeData[outerEdgeIndex1].vNext;
 			var outerEdgeIndex0 = edgeData[innerEdgeIndex0].twin;
@@ -230,12 +266,6 @@ namespace Experilous.Topological
 			vertexNeighborCounts[newVertexIndex] += 1;
 			faceNeighborCounts[prevFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
 			faceNeighborCounts[nextFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
-
-			// Adjust edge wrap information, coallescing multiple edges together as appropriate.
-			edgeData[edgeIndex].wrap = EdgeWrapUtility.ModifyTargetVertEdgeRelations(edgeData[edgeIndex].wrap, edgeData[innerEdgeIndex1].wrap); // Edge's target vertex changed, according to Inner Edge 1.
-			edgeData[twinEdgeIndex].wrap = EdgeWrapUtility.ModifySourceVertEdgeRelations(edgeData[twinEdgeIndex].wrap, edgeData[outerEdgeIndex1].wrap); // Twin Edge's source vertex changed, according to Outer Edge 1.
-			edgeData[innerEdgeIndex1].wrap = EdgeWrapUtility.ModifyTargetFaceEdgeRelations(edgeData[innerEdgeIndex1].wrap, edgeData[twinEdgeIndex].wrap); // Inner Edge 1's target face changed, according to Twin Edge.
-			edgeData[outerEdgeIndex1].wrap = EdgeWrapUtility.ModifySourceFaceEdgeRelations(edgeData[outerEdgeIndex1].wrap, edgeData[edgeIndex].wrap); // Outer Edge 1's source face changed, according to Edge.
 		}
 
 		// Pivot an edge clockwise around its implicit near vertex.
@@ -267,7 +297,7 @@ namespace Experilous.Topological
 		// 2:  outer edge 2 points away from B
 		// Note:  inner edges point downward, outer edges point upward
 
-		private void PivotVertexEdgeForwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
+		protected virtual void PivotVertexEdgeForwardUnchecked(int edgeIndex, int twinEdgeIndex, int outerEdgeIndex1, int innerEdgeIndex1)
 		{
 			var innerEdgeIndex0 = edgeData[twinEdgeIndex].vNext;
 			var outerEdgeIndex0 = edgeData[innerEdgeIndex0].twin;
@@ -307,12 +337,6 @@ namespace Experilous.Topological
 			vertexNeighborCounts[newVertexIndex] += 1;
 			faceNeighborCounts[nextFaceIndex] -= 1; // Dropping below 0 is undefined behavior; it better not ever happen.
 			faceNeighborCounts[prevFaceIndex] +=1; // Surpassing 32767 is undefined behavior; it better not ever happen.
-
-			// Adjust edge wrap information, coallescing multiple edges together as appropriate.
-			edgeData[edgeIndex].wrap = EdgeWrapUtility.ModifyTargetVertEdgeRelations(edgeData[edgeIndex].wrap, edgeData[outerEdgeIndex1].wrap); // Edge's target vertex changed, according to Inner Edge 1.
-			edgeData[twinEdgeIndex].wrap = EdgeWrapUtility.ModifySourceVertEdgeRelations(edgeData[twinEdgeIndex].wrap, edgeData[innerEdgeIndex1].wrap); // Twin Edge's source vertex changed, according to Outer Edge 1.
-			edgeData[innerEdgeIndex1].wrap = EdgeWrapUtility.ModifyTargetFaceEdgeRelations(edgeData[innerEdgeIndex1].wrap, edgeData[edgeIndex].wrap); // Inner Edge 1's target face changed, according to Twin Edge.
-			edgeData[outerEdgeIndex1].wrap = EdgeWrapUtility.ModifySourceFaceEdgeRelations(edgeData[outerEdgeIndex1].wrap, edgeData[twinEdgeIndex].wrap); // Outer Edge 1's source face changed, according to Edge.
 		}
 
 		private void PivotEdgeBackwardUnchecked(Topology.VertexEdge edge)

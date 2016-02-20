@@ -38,6 +38,14 @@ namespace Experilous.Topological
 			return this;
 		}
 
+		public override object Clone()
+		{
+			var clone = Create(new PlanarDescriptor(axis0, axis1, origin, surfaceNormal, isInverted));
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
+		}
+
 		public PlanarAxis GetAxis(int axisIndex)
 		{
 			switch (axisIndex)
@@ -321,6 +329,15 @@ namespace Experilous.Topological
 			this.origin = origin;
 			this.normal = normal.normalized;
 			isInverted = Vector3.Dot(normal, Vector3.Cross(axis1.vector, axis0.vector)) < 0f;
+		}
+
+		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, Vector3 normal, bool isInverted)
+		{
+			this.axis0 = axis0;
+			this.axis1 = axis1;
+			this.origin = origin;
+			this.normal = normal.normalized;
+			this.isInverted = isInverted;
 		}
 	}
 }

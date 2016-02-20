@@ -3,7 +3,7 @@ using System;
 
 namespace Experilous.Topological
 {
-	public class RectangularHexGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
+	public class RectangularHexGrid : PlanarSurface, IPositionallyWrappedFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{
 		public HexGridAxisStyles axis0Style;
 		public HexGridAxisStyles axis1Style;
@@ -76,14 +76,25 @@ namespace Experilous.Topological
 			Reset(planarDescriptor);
 			faceAxis0 = planarDescriptor.axis0.vector;
 			faceAxis1 = planarDescriptor.axis1.vector;
-			axis0Style = hexDescriptor.axisStyle0;
-			axis1Style = hexDescriptor.axisStyle1;
+			axis0Style = hexDescriptor.axis0Style;
+			axis1Style = hexDescriptor.axis1Style;
 			axisRelation = hexDescriptor.axisRelation;
 			variableRowLength = hexDescriptor.variableRowLength;
 			this.size = size;
 			topology = null;
 			Initialize();
 			return this;
+		}
+
+		public override object Clone()
+		{
+			var clone = Create(
+				new PlanarDescriptor(axis0, axis1, origin, surfaceNormal, isInverted),
+				new HexGridDescriptor(axis0Style, axis1Style, axisRelation, variableRowLength),
+				size);
+			clone.name = name;
+			clone.hideFlags = hideFlags;
+			return clone;
 		}
 
 		protected void Initialize()
@@ -351,7 +362,14 @@ namespace Experilous.Topological
 
 		public Topology CreateTopology()
 		{
-			return TopologyBuilder.BuildTopology(this);
+			if (axis0.isWrapped || axis1.isWrapped)
+			{
+				return TopologyBuilder.BuildTopology((IFaceNeighborIndexer)this);
+			}
+			else
+			{
+				return TopologyBuilder.BuildTopology((PlanarSurface)this, (IPositionallyWrappedFaceNeighborIndexer)this);
+			}
 		}
 
 		public Topology CreateManifold(out Vector3[] vertexPositions)
@@ -783,15 +801,15 @@ namespace Experilous.Topological
 
 	public struct HexGridDescriptor
 	{
-		public HexGridAxisStyles axisStyle0;
-		public HexGridAxisStyles axisStyle1;
+		public HexGridAxisStyles axis0Style;
+		public HexGridAxisStyles axis1Style;
 		public HexGridAxisRelations axisRelation;
 		public bool variableRowLength;
 
-		public HexGridDescriptor(HexGridAxisStyles axisStyle0, HexGridAxisStyles axisStyle1, HexGridAxisRelations axisRelation, bool variableRowLength = false)
+		public HexGridDescriptor(HexGridAxisStyles axis0Style, HexGridAxisStyles axis1Style, HexGridAxisRelations axisRelation, bool variableRowLength = false)
 		{
-			this.axisStyle0 = axisStyle0;
-			this.axisStyle1 = axisStyle1;
+			this.axis0Style = axis0Style;
+			this.axis1Style = axis1Style;
 			this.axisRelation = axisRelation;
 			this.variableRowLength = variableRowLength;
 		}

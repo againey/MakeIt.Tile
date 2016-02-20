@@ -7,7 +7,7 @@ namespace Experilous.Topological
 	/// from which the full topology data structure can be generated.
 	/// </summary>
 	/// <seealso cref="TopologyBuilder"/>
-	/// <seealso cref="IVertexNeighborIndexer"/>
+	/// <seealso cref="IPositionallyWrappedFaceNeighborIndexer"/>
 	public interface IFaceNeighborIndexer
 	{
 		int vertexCount { get; }
@@ -21,7 +21,16 @@ namespace Experilous.Topological
 
 		// For a given internal face, return the vertex index of the specified neighbor.
 		int GetNeighborVertexIndex(int faceIndex, int neighborIndex);
+	}
 
+	/// <summary>
+	/// An interface for providing a fairly minimal and simple description of a topology
+	/// from which the full topology data structure can be generated.
+	/// </summary>
+	/// <seealso cref="TopologyBuilder"/>
+	/// <seealso cref="IFaceNeighborIndexer"/>
+	public interface IPositionallyWrappedFaceNeighborIndexer : IFaceNeighborIndexer
+	{
 		// For a given internal face, return the edge wrap data of the specified neighbor.
 		// The specific details required depend on the consumer of the face neighbor indexer.
 		// Some consumers only require knowledge of specific relations, and can infer all
@@ -50,12 +59,128 @@ namespace Experilous.Topological
 
 		private ushort[] _faceNeighborCounts;
 		private int[] _faceFirstNeighborIndices;
+		private int[] _neighborVertexIndices;
+
+		private int _faceIndex;
+		private int _nextNeighborIndex;
+
+		public ManualFaceNeighborIndexer(int vertexCount, int edgeCount, int internalFaceCount, int externalFaceCount = 0)
+		{
+			_vertexCount = vertexCount;
+			_edgeCount = edgeCount;
+			_internalFaceCount = internalFaceCount;
+			_externalFaceCount = externalFaceCount;
+
+			_faceNeighborCounts = new ushort[_internalFaceCount];
+			_faceFirstNeighborIndices = new int[_internalFaceCount];
+			_neighborVertexIndices = new int[_edgeCount];
+		}
+
+		public int vertexCount { get { return _vertexCount; } }
+		public int edgeCount { get { return _edgeCount; } }
+		public int faceCount { get { return _internalFaceCount + _externalFaceCount; } }
+		public int internalFaceCount { get { return _internalFaceCount; } }
+		public int externalFaceCount { get { return _externalFaceCount; } }
+
+		public ushort GetNeighborCount(int faceIndex)
+		{
+			if (faceIndex < 0 || faceIndex >= _internalFaceCount) throw new ArgumentOutOfRangeException("faceIndex");
+			return _faceNeighborCounts[faceIndex];
+		}
+
+		public int GetNeighborVertexIndex(int faceIndex, int neighborIndex)
+		{
+			if (faceIndex < 0 || faceIndex >= _internalFaceCount) throw new ArgumentOutOfRangeException("faceIndex");
+			if (neighborIndex < 0 || neighborIndex >= _faceNeighborCounts[faceIndex]) throw new ArgumentOutOfRangeException("neighborIndex");
+			return _neighborVertexIndices[_faceFirstNeighborIndices[faceIndex] + neighborIndex];
+		}
+
+		public int AddFace(int vertex0Index, int vertex1Index, int vertex2Index)
+		{
+			_faceNeighborCounts[_faceIndex] = 3;
+			_faceFirstNeighborIndices[_faceIndex] = _nextNeighborIndex;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex0Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex1Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex2Index;
+			return _faceIndex++;
+		}
+
+		public int AddFace(int vertex0Index, int vertex1Index, int vertex2Index, int vertex3Index)
+		{
+			_faceNeighborCounts[_faceIndex] = 4;
+			_faceFirstNeighborIndices[_faceIndex] = _nextNeighborIndex;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex0Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex1Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex2Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex3Index;
+			return _faceIndex++;
+		}
+
+		public int AddFace(int vertex0Index, int vertex1Index, int vertex2Index, int vertex3Index, int vertex4Index)
+		{
+			_faceNeighborCounts[_faceIndex] = 5;
+			_faceFirstNeighborIndices[_faceIndex] = _nextNeighborIndex;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex0Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex1Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex2Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex3Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex4Index;
+			return _faceIndex++;
+		}
+
+		public int AddFace(int vertex0Index, int vertex1Index, int vertex2Index, int vertex3Index, int vertex4Index, int vertex5Index)
+		{
+			_faceNeighborCounts[_faceIndex] = 6;
+			_faceFirstNeighborIndices[_faceIndex] = _nextNeighborIndex;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex0Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex1Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex2Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex3Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex4Index;
+			_neighborVertexIndices[_nextNeighborIndex++] = vertex5Index;
+			return _faceIndex++;
+		}
+
+		public int AddFace(params int[] vertexIndices)
+		{
+			if (vertexIndices.Length < 3) throw new ArgumentException("A face must have at least 3 neighbors.", "vertexIndices");
+			_faceNeighborCounts[_faceIndex] = (ushort)vertexIndices.Length;
+			_faceFirstNeighborIndices[_faceIndex] = _nextNeighborIndex;
+			foreach (var vertexIndex in vertexIndices)
+			{
+				_neighborVertexIndices[_nextNeighborIndex++] = vertexIndex;
+			}
+			return _faceIndex++;
+		}
+	}
+
+	public class ManualPositionallyWrappedFaceNeighborIndexer : IFaceNeighborIndexer
+	{
+		private int _vertexCount;
+		private int _edgeCount;
+		private int _internalFaceCount;
+		private int _externalFaceCount;
+
+		public struct NeighborData
+		{
+			public int vertexIndex;
+			public EdgeWrap edgeWrap;
+
+			public NeighborData(int vertexIndex, EdgeWrap edgeWrap = EdgeWrap.None)
+			{
+				this.vertexIndex = vertexIndex;
+				this.edgeWrap = edgeWrap;
+			}
+		}
+
+		private ushort[] _faceNeighborCounts;
+		private int[] _faceFirstNeighborIndices;
 		private NeighborData[] _neighborData;
 
 		private int _faceIndex;
 		private int _neighborDataIndex;
 
-		public ManualFaceNeighborIndexer(int vertexCount, int edgeCount, int internalFaceCount, int externalFaceCount = 0)
+		public ManualPositionallyWrappedFaceNeighborIndexer(int vertexCount, int edgeCount, int internalFaceCount, int externalFaceCount = 0)
 		{
 			_vertexCount = vertexCount;
 			_edgeCount = edgeCount;

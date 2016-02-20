@@ -30,16 +30,14 @@ namespace Experilous.Topological
 			public int fNext; // The next edge this one when going clockwise around the implicit near face.
 			public int vertex; // The vertex at the far end of this edge that preceeds the below face when going clockwise around the implicit near vertex.
 			public int face; // The face on the far side of this edge that follows after the above vertex when going clockwise around the implicit near vertex.
-			public EdgeWrap wrap; // The wrap-around flags when transitioning among vertices, edges, and faces.
 
-			public EdgeData(int twin, int vNext, int fNext, int vertex, int face, EdgeWrap wrap = EdgeWrap.None)
+			public EdgeData(int twin, int vNext, int fNext, int vertex, int face)
 			{
 				this.twin = twin;
 				this.vNext = vNext;
 				this.fNext = fNext;
 				this.vertex = vertex;
 				this.face = face;
-				this.wrap = wrap;
 			}
 
 			public override string ToString()
@@ -107,8 +105,6 @@ namespace Experilous.Topological
 			public Vertex farVertex { get { return new Vertex(_topology, _topology.edgeData[_index].vertex); } }
 			public Face nearFace { get { return new Face(_topology, _topology.edgeData[_topology.edgeData[_index].twin].face); } }
 			public Face farFace { get { return new Face(_topology, _topology.edgeData[_index].face); } }
-
-			public EdgeWrap wrap { get { return _topology.edgeData[_index].wrap; } }
 
 			public bool isBoundary { get { return farFace.isExternal != nearFace.isExternal; } }
 			public bool isNonBoundary { get { return farFace.isExternal == nearFace.isExternal; } }
@@ -218,8 +214,6 @@ namespace Experilous.Topological
 			public Face prevFace { get { return _halfEdge.farFace; } }
 			public Face nextFace { get { return _halfEdge.nearFace; } }
 
-			public EdgeWrap wrap { get { return _halfEdge.wrap; } }
-
 			public bool isBoundary { get { return _halfEdge.isBoundary; } }
 			public bool isNonBoundary { get { return _halfEdge.isNonBoundary; } }
 			public bool isOuterBoundary { get { return _halfEdge.isOuterBoundary; } }
@@ -327,8 +321,6 @@ namespace Experilous.Topological
 			public Vertex nextVertex { get { return _halfEdge.farVertex; } }
 			public Face nearFace { get { return _halfEdge.nearFace; } }
 			public Face farFace { get { return _halfEdge.farFace; } }
-
-			public EdgeWrap wrap { get { return _halfEdge.wrap; } }
 
 			public bool isBoundary { get { return _halfEdge.isBoundary; } }
 			public bool isNonBoundary { get { return _halfEdge.isNonBoundary; } }

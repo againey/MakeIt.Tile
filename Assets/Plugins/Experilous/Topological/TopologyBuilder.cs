@@ -81,23 +81,19 @@ namespace Experilous.Topological
 			}
 		}
 
-		/// <summary>
-		/// Build a full topology data structure from the minimal data described by a face neighbor indexer.
-		/// </summary>
-		/// <param name="indexer">A minimal description of the faces and their neighbors constituting a topology.</param>
-		/// <returns>A fully constructed topology matching the description of the provided face neighbor indexer.</returns>
-		/// <remarks>
-		/// <para>For the edge wrap data returned by the face neighbor indexer, only the vertex-to-edge, edge-to-vertex,
-		/// and face-to-edge data needs to be supplied.  If there are no external faces, then the edge-to-vertex data is
-		/// also unnecessary.</para>
-		/// </remarks>
-		public static Topology BuildTopology(IFaceNeighborIndexer indexer)
+		private static void BuildTopology(
+			IFaceNeighborIndexer indexer,
+			out ushort[] vertexNeighborCounts,
+			out int[] vertexFirstEdgeIndices,
+			out Topology.EdgeData[] edgeData,
+			out ushort[] faceNeighborCounts,
+			out int[] faceFirstEdgeIndices)
 		{
-			var vertexNeighborCounts = new ushort[indexer.vertexCount];
-			var vertexFirstEdgeIndices = new int[indexer.vertexCount];
-			var edgeData = new Topology.EdgeData[indexer.edgeCount];
-			var faceNeighborCounts = new ushort[indexer.faceCount];
-			var faceFirstEdgeIndices = new int[indexer.faceCount];
+			vertexNeighborCounts = new ushort[indexer.vertexCount];
+			vertexFirstEdgeIndices = new int[indexer.vertexCount];
+			edgeData = new Topology.EdgeData[indexer.edgeCount];
+			faceNeighborCounts = new ushort[indexer.faceCount];
+			faceFirstEdgeIndices = new int[indexer.faceCount];
 
 			// Initialize the face roots and neighbor counts, and the next vertex, fNext, vNext, and wrap
 			// fields of the internal edges.  The vNext fields will result in linked lists that contain the
@@ -117,7 +113,6 @@ namespace Experilous.Topological
 					edgeData[edgeIndex].fNext = edgeIndex + 1;
 					edgeData[edgeIndex].face = -1;
 					edgeData[edgeIndex].twin = -1;
-					edgeData[edgeIndex].wrap = indexer.GetEdgeWrap(faceIndex, neighborIndex);
 
 					AddEdgeToVertexUnordered(edgeIndex, priorVertexIndex, vertexNeighborCounts, vertexFirstEdgeIndices, edgeData);
 					priorVertexIndex = vertexIndex;
@@ -158,7 +153,6 @@ namespace Experilous.Topological
 								edgeData[externalEdgeIndex].vertex = priorVertexIndex;
 								edgeData[externalEdgeIndex].fNext = -1; // Cannot be determined until the vNext linked lists are in the correct order.
 								edgeData[externalEdgeIndex].face = -1;
-								edgeData[externalEdgeIndex].wrap = EdgeWrapUtility.Invert(edgeData[edgeIndex].wrap);
 
 								AddEdgeToVertexUnordered(externalEdgeIndex, vertexIndex, vertexNeighborCounts, vertexFirstEdgeIndices, edgeData);
 
@@ -227,18 +221,81 @@ namespace Experilous.Topological
 					}
 				}
 			}
+		}
 
-			// Fill out the remainder of the edge wrap data, based on the possibly limited info supplied.
-			for (edgeIndex = 0; edgeIndex < indexer.edgeCount; ++edgeIndex)
+		/// <summary>
+		/// Build a full topology data structure from the minimal data described by a face neighbor indexer.
+		/// </summary>
+		/// <param name="indexer">A minimal description of the faces and their neighbors constituting a topology.</param>
+		/// <returns>A fully constructed topology matching the description of the provided face neighbor indexer.</returns>
+		/// <remarks>
+		/// <para>For the edge wrap data returned by the face neighbor indexer, only the vertex-to-edge, edge-to-vertex,
+		/// and face-to-edge data needs to be supplied.  If there are no external faces, then the edge-to-vertex data is
+		/// also unnecessary.</para>
+		/// </remarks>
+		public static Topology BuildTopology(IFaceNeighborIndexer indexer)
+		{
+			ushort[] vertexNeighborCounts;
+			int[] vertexFirstEdgeIndices;
+			Topology.EdgeData[] edgeData;
+			ushort[] faceNeighborCounts;
+			int[] faceFirstEdgeIndices;
+
+			BuildTopology(indexer, out vertexNeighborCounts, out vertexFirstEdgeIndices, out edgeData, out faceNeighborCounts, out faceFirstEdgeIndices);
+
+			return Topology.Create(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, indexer.internalFaceCount);
+		}
+
+		/// <summary>
+		/// Build a full topology data structure from the minimal data described by a face neighbor indexer.
+		/// </summary>
+		/// <param name="surface"></param>
+		/// <param name="indexer">A minimal description of the faces and their neighbors constituting a topology.</param>
+		/// <returns>A fully constructed topology matching the description of the provided face neighbor indexer.</returns>
+		/// <remarks>
+		/// <para>For the edge wrap data returned by the face neighbor indexer, only the vertex-to-edge, edge-to-vertex,
+		/// and face-to-edge data needs to be supplied.  If there are no external faces, then the edge-to-vertex data is
+		/// also unnecessary.</para>
+		/// </remarks>
+		public static Topology BuildTopology(PlanarSurface surface, IPositionallyWrappedFaceNeighborIndexer indexer)
+		{
+			ushort[] vertexNeighborCounts;
+			int[] vertexFirstEdgeIndices;
+			Topology.EdgeData[] edgeData;
+			ushort[] faceNeighborCounts;
+			int[] faceFirstEdgeIndices;
+
+			BuildTopology(indexer, out vertexNeighborCounts, out vertexFirstEdgeIndices, out edgeData, out faceNeighborCounts, out faceFirstEdgeIndices);
+
+			EdgeWrap[] edgeWrap = new EdgeWrap[indexer.edgeCount];
+
+			for (int edgeIndex = 0; edgeIndex < indexer.edgeCount; ++edgeIndex)
 			{
-				var twinIndex = edgeData[edgeIndex].twin;
-				if (edgeIndex < twinIndex)
+				var twinEdgeIndex = edgeData[edgeIndex].twin;
+				var nearFaceIndex = edgeData[twinEdgeIndex].face;
+				if (nearFaceIndex < indexer.internalFaceCount)
 				{
-					EdgeWrapUtility.CrossMergeTwins(ref edgeData[edgeIndex].wrap, ref edgeData[twinIndex].wrap);
+					var farVertex = edgeData[edgeIndex].vertex;
+					var neighborIndex = 0;
+					while (indexer.GetNeighborVertexIndex(nearFaceIndex, neighborIndex) != farVertex)
+					{
+						++neighborIndex;
+					}
+
+					edgeWrap[edgeIndex] = indexer.GetEdgeWrap(nearFaceIndex, neighborIndex);
+				}
+				else
+				{
+					edgeWrap[edgeIndex] = EdgeWrapUtility.Invert(edgeWrap[edgeIndex]);
+				}
+
+				if (edgeIndex < twinEdgeIndex)
+				{
+					EdgeWrapUtility.CrossMergeTwins(ref edgeWrap[edgeIndex], ref edgeWrap[twinEdgeIndex]);
 				}
 			}
 
-			return Topology.Create(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, indexer.internalFaceCount);
+			return PlanarPositionallyWrappedTopology.Create(surface, vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, edgeWrap, faceNeighborCounts, faceFirstEdgeIndices, indexer.internalFaceCount);
 		}
 	}
 }
