@@ -30,6 +30,7 @@ namespace Experilous.Topological
 
 		void Start()
 		{
+			this.DisableAndThrowOnMissingReference(camera, "The SpatialPartioningPicker component requires a reference to a Camera component.");
 			_collider = GetComponent<Collider>();
 		}
 
