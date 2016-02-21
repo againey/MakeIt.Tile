@@ -18,7 +18,7 @@ namespace Experilous.Topological
 				var p0 = vertexPositions[vertexEdge.next.farVertex];
 				var p1 = vertexPositions[vertexEdge.nearVertex];
 				var p2 = vertexPositions[vertexEdge.farVertex];
-				vertexAngles[vertexEdge] = MathUtility.AngleBetweenVectors(p1 - p0, p2 - p0);
+				vertexAngles[vertexEdge] = GeometryUtility.AngleBetweenVectors(p1 - p0, p2 - p0);
 			}
 
 			return vertexAngles;
@@ -70,7 +70,7 @@ namespace Experilous.Topological
 				var p0 = vertexPositions[faceEdge.prev.prevVertex];
 				var p1 = vertexPositions[faceEdge.prevVertex];
 				var p2 = vertexPositions[faceEdge.nextVertex];
-				faceAngles[faceEdge] = MathUtility.AngleBetweenVectors(p1 - p0, p2 - p0);
+				faceAngles[faceEdge] = GeometryUtility.AngleBetweenVectors(p1 - p0, p2 - p0);
 			}
 
 			return faceAngles;
@@ -88,7 +88,7 @@ namespace Experilous.Topological
 				var p0 = faceCentroids[faceEdge.prev.farFace];
 				var p1 = faceCentroids[faceEdge.nearFace];
 				var p2 = faceCentroids[faceEdge.farFace];
-				faceAngles[faceEdge] = MathUtility.AngleBetweenVectors(p0 - p1, p2 - p1);
+				faceAngles[faceEdge] = GeometryUtility.AngleBetweenVectors(p0 - p1, p2 - p1);
 			}
 
 			return faceAngles;
@@ -109,7 +109,7 @@ namespace Experilous.Topological
 				var v10 = Vector3.Cross(Vector3.Cross(p0 - p1, p1), p1);
 				var v12 = Vector3.Cross(Vector3.Cross(p2 - p1, p1), p1);
 
-				faceAngles[faceEdge] = MathUtility.AngleBetweenVectors(v10, v12);
+				faceAngles[faceEdge] = GeometryUtility.AngleBetweenVectors(v10, v12);
 			}
 
 			return faceAngles;

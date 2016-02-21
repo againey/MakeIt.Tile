@@ -58,7 +58,7 @@ namespace Experilous.Topological
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
-				return priorDistance + MathUtility.AngleBetweenUnitVectors(faceCentroids[edge.nearFace], faceCentroids[edge.farFace]);
+				return priorDistance + GeometryUtility.AngleBetweenUnitVectors(faceCentroids[edge.nearFace], faceCentroids[edge.farFace]);
 			};
 		}
 
@@ -66,7 +66,7 @@ namespace Experilous.Topological
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
-				return priorDistance + MathUtility.SphericalArcLength(faceCentroids[edge.nearFace], faceCentroids[edge.farFace], sphereRadius);
+				return priorDistance + GeometryUtility.SphericalArcLength(faceCentroids[edge.nearFace], faceCentroids[edge.farFace], sphereRadius);
 			};
 		}
 
@@ -74,7 +74,7 @@ namespace Experilous.Topological
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
-				return MathUtility.AngleBetweenUnitVectors(faceCentroids[root], faceCentroids[edge.farFace]);
+				return GeometryUtility.AngleBetweenUnitVectors(faceCentroids[root], faceCentroids[edge.farFace]);
 			};
 		}
 
@@ -82,7 +82,7 @@ namespace Experilous.Topological
 		{
 			return (Topology.FaceEdge edge, float priorDistance) =>
 			{
-				return MathUtility.SphericalArcLength(faceCentroids[root], faceCentroids[edge.farFace], sphereRadius);
+				return GeometryUtility.SphericalArcLength(faceCentroids[root], faceCentroids[edge.farFace], sphereRadius);
 			};
 		}
 

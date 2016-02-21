@@ -3,6 +3,9 @@ using System;
 
 namespace Experilous
 {
+	/// <summary>
+	/// A collection of meshes, together with their positions and rotations relative to each other.
+	/// </summary>
 	public class MeshCollection : ScriptableObject
 	{
 		[Serializable] public struct OrientedMesh

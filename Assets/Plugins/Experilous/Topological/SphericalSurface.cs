@@ -64,7 +64,7 @@ namespace Experilous.Topological
 
 		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
 		{
-			return MathUtility.IntersectForwardExternal(new Sphere(Vector3.zero, radius), ray, out intersection);
+			return GeometryUtility.IntersectForwardExternal(new Sphere(Vector3.zero, radius), ray, out intersection);
 		}
 
 		public override Vector3 Project(Vector3 position)
