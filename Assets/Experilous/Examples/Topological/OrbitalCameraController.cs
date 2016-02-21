@@ -115,7 +115,7 @@ namespace Experilous.Examples.Topological
 		{
 			var verticalInput = Input.GetAxis("Vertical");
 			var horizontalInput = Input.GetAxis("Horizontal");
-			var zoomInput = Input.GetAxis("Zoom");
+			var zoomInput = Input.GetAxis("Mouse ScrollWheel");
 
 			_zoomTarget = Mathf.Clamp(_zoomTarget + zoomInput, 0f, 1f);
 

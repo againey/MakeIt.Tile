@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Experilous.Examples.Topological
+namespace Experilous.Examples.Shared
 {
 	[ExecuteInEditMode]
 	[RequireComponent(typeof(Camera))]
@@ -23,7 +23,7 @@ namespace Experilous.Examples.Topological
 		protected void OnEnable()
 		{
 #if UNITY_EDITOR
-			if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			if (UnityEditor.EditorApplication.isPlaying)
 			{
 #endif
 				Cursor.lockState = CursorLockMode.Locked;
@@ -36,7 +36,7 @@ namespace Experilous.Examples.Topological
 		protected void OnDisable()
 		{
 #if UNITY_EDITOR
-			if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			if (UnityEditor.EditorApplication.isPlaying)
 			{
 #endif
 				Cursor.lockState = CursorLockMode.None;
@@ -59,7 +59,7 @@ namespace Experilous.Examples.Topological
 #endif
 				var moveHorizontal = Input.GetAxis("Horizontal");
 				var moveForward = Input.GetAxis("Vertical");
-				var moveUp = Input.GetAxis("Zoom");
+				var moveUp = Input.GetAxis("Mouse ScrollWheel");
 
 				var localRight = transform.localRotation * Vector3.right;
 				var localUp = transform.localRotation * Vector3.up;
