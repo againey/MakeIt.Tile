@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Tile-Based Worlds - Manual - by Experilous</title>
+		<style type="text/css">
+			<!--/*--><![CDATA[/*><!--*/
+			html
+			{
+				margin: 0;
+				padding: 0;
+			}
+			
+			body
+			{
+				margin: 0 auto;
+				padding: 36pt 72pt;
+				max-width: 540pt;
+			}
+			
+			section
+			{
+				margin: 0;
+				padding: 0;
+			}
+			
+			h1
+			{
+				margin: 0;
+				padding: 0;
+				font-size: 200%;
+			}
+			
+			h2
+			{
+				font-size: 175%;
+			}
+			
+			h3
+			{
+				font-size: 150%;
+			}
+			
+			h4
+			{
+				font-size: 125%;
+			}
+			
+			h1 div.title
+			{
+				font-size: 100%;
+			}
+			
+			h1 div.subtitle
+			{
+				font-size: 75%;
+				margin-left: 18pt;
+			}
+			
+			section.chapter:first-of-type
+			{
+				counter-reset: section;
+			}
+			
+			section.chapter
+			{
+				counter-increment: section;
+			}
+			
+			section.chapter section:first-of-type
+			{
+				counter-reset: section;
+			}
+
+			section.chapter section
+			{
+				counter-increment: section;
+			}
+			
+			*.section-head:before
+			{
+				content: counters(section, ".") ". ";
+			}
+			
+			dt
+			{
+				display: list-item;
+				list-style-type: disc;
+				margin-left: 1em;
+				font-weight: bold;
+				font-style: italic;
+			}
+			/*]]>*/-->
+		</style>
+	</head>
+	<body>
+		<section id="introduction">
+			<h1>
+				<div class="title">Tile-Based Worlds, by <a href="http://experilous.com" target="experilous">Experilous</a></div>
+				<div class="subtitle">User's Manual</div>
+			</h1>
+			<p>Tile-Based Worlds is a framework for Unity to aid in the creation and usage of game worlds which are divided up into discrete tiles.
+				It is designed to be maximally flexible, applying just as easily to the simple 8x8 game world of chess as to a large hex grid in a strategy game or even an irregular arrangement of tiles on the surface of a sphere.</p>
+			<p>Although the framework does contain some high-level tools such as for generating ready-to-use meshes and prefabs, and for detecting and handling tile-based mouse clicks,
+				it is not designed as a top-to-bottom solution, but is rather intended to be a foundation upon which many different game mechanics can be easily built.
+				Additional scripting will therefore be necessary in almost all cases.<p>
+		</section>
+		<section id="contents">
+			<h2>Contents</h2>
+			<ol>
+				<li><a href="#quick-start">Quick Start</a></li>
+					<ol>
+						<li><a href="#examples">Example Scenes &amp; Content</a></li>
+						<li><a href="#create-your-own">Creating Your Own Content</a></li>
+					</ol>
+				<li><a href="#topologies">Topologies, the Core Data Structure</a></li>
+				<li><a href="#attributes">Element Attributes</a></li>
+				<li><a href="#edge-wrapping">Edge Wrapping</a></li>
+				<li><a href="#surface-types">Surface &amp; Topology Types</a>
+					<ol>
+						<li><a href="#spherical-surfaces">Spherical Surfaces</a></li>
+						<li><a href="#planar-surfaces">Planar Surfaces</a>
+							<ol>
+								<li><a href="#quad-grid-tiles">Quad Grid Tiles</a></li>
+								<li><a href="#hex-grid-tiles">Hex Grid Tiles</a></li>
+							</ol>
+						</li>
+					</ol>
+				</li>
+				<li><a href="#generation">In-Editor Generation</a></li>
+			</ol>
+		</section>
+		<section class="chapter" id="quick-start">
+			<h2 class="section-head">Quick Start</h2>
+			<section id="examples">
+				<h2 class="section-head">Example Scenes &amp; Content</h2>
+				<p>Included in this package are example scenes and pre-generated content to demonstrate some of the worlds that the framework can create and manage.
+					These scenes can be found in the <a href="Experilous/Examples/Topological">&lt;project&gt;/Assets/Experilous/Examples/Topological</a> folder.
+					The planar scenes each contain one planar topology, and can be controlled with standard arrow/WASD controls with mouse look; mouse wheel will adjust elevation.
+					The spherical scene is similar, but without mouse look; instead, it uses a camera controller that locks the view onto the sphere.</p>
+				<dl>
+					<dt><a href="Experilous/Examples/Topological/Planar Square No Wrap.unity">Planar Square No Wrap</a></dt>
+					<dd>A planar surface with square tiles.  The world terminates along all edges.</dd>
+					<dt><a href="Experilous/Examples/Topological/Planar Square Vertical Wrap.unity">Planar Square Vertical Wrap</a></dt>
+					<dd>A planar surface with square tiles.  The world wraps around across the top and bottom edges.</dd>
+					<dt><a href="Experilous/Examples/Topological/Planar Square Full Wrap.unity">Planar Square Full Wrap</a></dt>
+					<dd>A large planar surface with square tiles.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Topological/Planar Hex No Wrap.unity">Planar Hex No Wrap</a></dt>
+					<dd>A planar surface with hexagonal tiles arranged in a staggered pattern to produce a roughly square world.  The world terminates along all edges.</dd>
+					<dt><a href="Experilous/Examples/Topological/Planar Hex Horizontal Wrap.unity">Planar Hex Horizontal Wrap</a></dt>
+					<dd>A planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Topological/Planar Hex Full Wrap.unity">Planar Hex Full Wrap</a></dt>
+					<dd>A wide planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Topological/Planar Random No Wrap.unity">Planar Random No Wrap</a></dt>
+					<dd>A planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world terminates along all edges.</dd>
+					<dt><a href="Experilous/Examples/Topological/Planar Random Full Wrap.unity">Planar Random Full Wrap</a></dt>
+					<dd>A planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Topological/Spherical Manifold.unity">Spherical Manifold</a></dt>
+					<dd>A spherical surface with randomly shaped tiles which mostly began as hexagonal tiles before being randomized.</dd>
+				</dl>
+			</section>
+			<section id="create-your-own">
+				<h2 class="section-head">Creating Your Own Content</h2>
+				<p>The content used in the above example scenes can be found in the <a href="Experilous/Examples/Topological/Data">&lt;project&gt;/Assets/Experilous/Examples/Topological/Data</a> folder.
+					Most of the data is not meant to be edited directly.  However, if you locate and select the asset within each subfolder named "Generator.asset", the inspector will show you the full details for generating the other assets in that subfolder.
+					You can freely modify the values within the inspector and click the Generate button, and the associated scene should automatically use the new assets generated, in particular the prefab with all of the generated meshes.</p>
+				<p>To create a generator from scratch, use the Create button in the Projects window, or right click in the Projects window content area where you would like to create the generator.
+					Navigate in the menu to Topology, and then choose the type of topology you would like to create.  A folder will be created and a generator asset placed within it with some basic settings already configured.
+					You should be able to immediately click the Generator button, or you can first adjust values.
+					You will likely also want to add additional content generators, which you can do using the Add Generator button at the bottom of the inspector.
+					The gear icon at the top right of every content generator provides a menu that will let you reorder or remove items.</p>
+				<p>Once you've generated content, you can begin to use it from within your scene.
+					Since most of the content is raw data wrapped in scriptable objects, you will be able to use very little of it unless you write your own components that can consume these objects.
+					However, the generator is capable of creating prefabs which can easily be dragged into your scene just like any other prefab.</p>
+				<p>Note that the prefab generator has a field where you can specify another prefab.
+					This configurable prefab will be used by the prefab generator as a base template for any mesh renderers that it creates.
+					You will want to assign a prefab that includes a mesh filter and mesh renderer component, with a material specified for the mesh renderer.
+					Otherwise, the prefab will be rendered without any material at all, and will obviously not look correct as a result.
+					There is a sample material included in the examples folder called "<a href="Experilous/Examples/Topological/Topology.mat">Topology.mat</a>",
+					and is used by "<a href="Experilous/Examples/Topological/Manifold Mesh.prefab">Manifold Mesh.prefab</a>"
+					and "<a href="Experilous/Examples/Topological/Wrapped Manifold Mesh.prefab">Wrapped Manifold Mesh.prefab</a>".
+					You can assign one of these prefabs to the prefab generator's mesh prefab field to get a quick idea of what the generated topology looks like.</p>
+			</section>
+		</section>
+		<section class="chapter" id="topologies">
+			<h2 class="section-head">Topologies, the Core Data Structure</h2>
+		</section>
+		<section class="chapter" id="attributes">
+			<h2 class="section-head">Element Attributes</h2>
+		</section>
+		<section class="chapter" id="edge-wrapping">
+			<h2 class="section-head">Edge Wrapping</h2>
+		</section>
+		<section class="chapter" id="surface-types">
+			<h2 class="section-head">Surface &amp; Topology Types</h2>
+			<section id="spherical-surfaces">
+				<h3 class="section-head">Spherical Surfaces</h3>
+			</section>
+			<section id="planar-surfaces">
+				<h3 class="section-head">Planar Surfaces</h3>
+				<section id="quad-grid-tiles">
+					<h4 class="section-head">Quad Grid Tiles</h4>
+				</section>
+				<section id="hex-grid-tiles">
+					<h4 class="section-head">Hex Grid Tiles</h4>
+				</section>
+			</section>
+		</section>
+		<section class="chapter" id="edge-wrapping">
+			<h2 class="section-head">Edge Wrapping</h2>
+		</section>
+		<section id="generation">
+			<h2 class="section-head">In-Editor Generation</h2>
+		</section>
+	</body>
+</html>

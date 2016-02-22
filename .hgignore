@@ -1,6 +1,8 @@
 syntax: regexp
 \.suo$
 ^Assets/UnityVS/
+^Assets/AssetStoreTools/
+^Assets/AssetStoreTools.meta$
 ^Assets/UnityVS\.meta$
 ^Miscellaneous/Screenshots/
 ^Miscellaneous/Videos/
