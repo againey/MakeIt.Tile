@@ -13,3 +13,6 @@ syntax: regexp
 ^Packages/
 ^Assets/Experilous/Packages/
 ^Assets/Experilous/Packages.meta
+^obj/
+^[^/]*\.sln$
+^[^/]*\.csproj$

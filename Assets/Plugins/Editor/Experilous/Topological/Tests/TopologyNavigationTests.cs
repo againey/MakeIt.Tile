@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_5_3
+using UnityEngine;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -100,3 +101,4 @@ public class TopologyNavigationTests
 		Assert.AreEqual(topology.faceEdges[2], topology.faceEdges[11].prev);
 	}*/
 }
+#endif

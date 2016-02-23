@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_5_3
+using UnityEngine;
 using NUnit.Framework;
 
 namespace Experilous.Topological.Tests
@@ -210,3 +211,4 @@ namespace Experilous.Topological.Tests
 		}
 	}
 }
+#endif

@@ -1,3 +1,4 @@
+#if UNITY_5_3
 using UnityEngine;
 using NUnit.Framework;
 using System;
@@ -453,3 +454,4 @@ public class SphericalPartitioningTests
 	}
 	*/
 }
+#endif

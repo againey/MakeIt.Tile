@@ -128,6 +128,7 @@
 					</ol>
 				</li>
 				<li><a href="#generation">In-Editor Generation</a></li>
+				<li><a href="#wrap-around">Integration with Wrap-Around Worlds</a></li>
 			</ol>
 		</section>
 		<section class="chapter" id="quick-start">
@@ -135,28 +136,33 @@
 			<section id="examples">
 				<h2 class="section-head">Example Scenes &amp; Content</h2>
 				<p>Included in this package are example scenes and pre-generated content to demonstrate some of the worlds that the framework can create and manage.
-					These scenes can be found in the <a href="Experilous/Examples/Topological">&lt;project&gt;/Assets/Experilous/Examples/Topological</a> folder.
+					These scenes can be found in the <a href="Experilous/Examples/Tile-Based Worlds/">&lt;project&gt;/Assets/Experilous/Examples/Tile-Based Worlds/</a> folder.
 					The planar scenes each contain one planar topology, and can be controlled with standard arrow/WASD controls with mouse look; mouse wheel will adjust elevation.
 					The spherical scene is similar, but without mouse look; instead, it uses a camera controller that locks the view onto the sphere.</p>
 				<dl>
-					<dt><a href="Experilous/Examples/Topological/Planar Square No Wrap.unity">Planar Square No Wrap</a></dt>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Square No Wrap.unity">Planar Square No Wrap</a></dt>
 					<dd>A planar surface with square tiles.  The world terminates along all edges.</dd>
-					<dt><a href="Experilous/Examples/Topological/Planar Square Vertical Wrap.unity">Planar Square Vertical Wrap</a></dt>
-					<dd>A planar surface with square tiles.  The world wraps around across the top and bottom edges.</dd>
-					<dt><a href="Experilous/Examples/Topological/Planar Square Full Wrap.unity">Planar Square Full Wrap</a></dt>
-					<dd>A large planar surface with square tiles.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
-					<dt><a href="Experilous/Examples/Topological/Planar Hex No Wrap.unity">Planar Hex No Wrap</a></dt>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Hex No Wrap.unity">Planar Hex No Wrap</a></dt>
 					<dd>A planar surface with hexagonal tiles arranged in a staggered pattern to produce a roughly square world.  The world terminates along all edges.</dd>
-					<dt><a href="Experilous/Examples/Topological/Planar Hex Horizontal Wrap.unity">Planar Hex Horizontal Wrap</a></dt>
-					<dd>A planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around across the left and right edges.</dd>
-					<dt><a href="Experilous/Examples/Topological/Planar Hex Full Wrap.unity">Planar Hex Full Wrap</a></dt>
-					<dd>A wide planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
-					<dt><a href="Experilous/Examples/Topological/Planar Random No Wrap.unity">Planar Random No Wrap</a></dt>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Random No Wrap.unity">Planar Random No Wrap</a></dt>
 					<dd>A planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world terminates along all edges.</dd>
-					<dt><a href="Experilous/Examples/Topological/Planar Random Full Wrap.unity">Planar Random Full Wrap</a></dt>
-					<dd>A planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
-					<dt><a href="Experilous/Examples/Topological/Spherical Manifold.unity">Spherical Manifold</a></dt>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Spherical Manifold.unity">Spherical Manifold</a></dt>
 					<dd>A spherical surface with randomly shaped tiles which mostly began as hexagonal tiles before being randomized.</dd>
+				</dl>
+				<p>If you also have access to the Wrap-Around Worlds framework and import
+					<a href="Experilous/Packages/Tile-Based Wrap-Around Integration - With Examples.unitypackage">Tile-Based Wrap-Around Integration - With Examples&#8203;.unitypackage</a>,
+					then you will gain access to a few more example scenes.</p>
+				<dl>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Square Vertical Wrap.unity">Planar Square Vertical Wrap</a></dt>
+					<dd>A planar surface with square tiles.  The world wraps around across the top and bottom edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Square Full Wrap.unity">Planar Square Full Wrap</a></dt>
+					<dd>A large planar surface with square tiles.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Hex Horizontal Wrap.unity">Planar Hex Horizontal Wrap</a></dt>
+					<dd>A planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Hex Full Wrap.unity">Planar Hex Full Wrap</a></dt>
+					<dd>A wide planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Random Full Wrap.unity">Planar Random Full Wrap</a></dt>
+					<dd>A planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
 				</dl>
 			</section>
 			<section id="create-your-own">
@@ -184,9 +190,45 @@
 		</section>
 		<section class="chapter" id="topologies">
 			<h2 class="section-head">Topologies, the Core Data Structure</h2>
+			<p>The core of the Tile-Based Worlds framework is a topology, a data structure for representing the relations between vertices, edges, and faces.
+				In terms of the primary use case for this framework, faces are typically synonymous with tiles, while vertices are the corners of each tile.
+				Edges are the boundaries between two adjacent faces/tiles, though they can simultaneously be treated as the connections between two adjacent vertices/corners.</p>
+			<p>Faces must have at least three neighbors, but have no practical upper bound.  (Technically, a cached neighbor count limits them to a maximum of 65,535 neighbors.)
+				Vertices are similar, except that most algorithms permit a vertex with only two neighbors, and some might even be okay with a vertex with only a single neighbor.
+				Each face and vertex can have a differing number of neighbors even within the same topology; a topology might consist of a mix of pentagons and hexagons, for example.
+				Each edge has exactly two neighbors, one on each side of the edge.  Although technically, each edge is stored as a pair of half-edges, and each half-edge is directed, pointing at only one of the two neighbors.</p>
+			<p>The class <code>Experilous.Topological.Topology</code> is responsible for storing all the raw data of the topology data structure.
+				It also provides access to the elements of the data structure through nested structs <code>Vertex</code>, <code>Face</code>, <code>HalfEdge</code>, <code>VertexEdge</code>, and <code>FaceEdge</code>.
+				The latter three structs all represent exactly the same underlying data, but also express the context within which edges are being used.
+				Instances of <code>HalfEdge</code> refer to half-edges directly, while <code>VertexEdge</code> and <code>FaceEdge</code> refer to half-edges within the context of the vertex or face that they point <em>away from</em>.</p>
+			<p>The <code>Vertex</code> and <code>Face</code> structs allow enumeration of their neighbors, in the form of <code>IEnumerator&lt;VertexEdge&gt;</code> and <code>IEnumerator&lt;FaceEdge&gt;</code>, respectively.
+				These enumerators will visit the half-edges that radiate from the source vertex or border the source face in clockwise order.
+				Given that <code>FaceEdge</code> provides <code>farFace</code> and <code>nextVertex</code> properties, and <code>VertexEdge</code> provides <code>farVertex</code> and <code>prevFace</code> properties,
+				it is easy to enumerate all the neighboring vertices or faces of any given vertex or face.
+				The <code>nearVertex</code> and <code>nearFace</code> properties can be used to get the implicit element whose neighors are being enumerated by a given <code>VertexEdge</code> or <code>FaceEdge</code>.</p>
+			<p>The majority of faces in a topology will be ordinary "internal" faces, but depending on the shape of the topology, some faces might be external.
+				This means that they're not part of the normal world, but are included in order to simplify the invariants of the data structure.
+				In particular, the requirement that every edge has exacty two neighboring faces, and the requirement that the neighboring vertex count, edge count, and face count are all equal for any given vertex or face.
+				An example topology would be a chess board, which has sixty-four internal faces, and then one external face which represents everything outside of the chess board.
+				Another example would be the world map of the Civilization series of games, in which the north pole region and the south pole region are two distinct external faces.</p>
 		</section>
 		<section class="chapter" id="attributes">
 			<h2 class="section-head">Element Attributes</h2>
+			<p>The elements of a topology are stored in such a way that they all have contiguous integer indices starting from zero.
+				This means that if you want to associate additional data with each element, all you need to do is create an array or list of the appropriate size and desired type,
+				and this data can then be easily accessed whenever you want to look up that attribute's value for a given vertex, half-edge, or face.
+				The most obvious attribute is probably vertex positions, which can be stored as a container of <code>Vector3</code>.
+				Other examples include face normals, face colors, and edge pathfinding costs.</p>
+			<p>Given that faces can be either internal or external, it can often be appropriate to store data only for internal faces.
+				Therefore, all internal faces come first, starting at index zero, while all external faces are stored at the very end of the contiguous indices.
+				For attributes that only make sense for internal faces, simply use the internal face count as the size when creating the container.
+				For attributes that apply to all faces whether internal or not, use the total face count as the size.
+				For attributes that only apply to external faces, you can create an appropriately sized container, but you'll need to index into it manually, since the indices of external faces don't start at zero.
+			<p>The various helper structs discussed above all have an <code>index</code> property that can be used to access an array or list directly.
+				Even better, however, is to create a wrapper around the container that implements the <code>IVertexAttribute</code>, <code>IEdgeAttribute</code>, or <code>IFaceAttribute</code> interface.
+				This will allow the attributes to be accessed directly by one of the helper structs, without needing to access the <code>index</code> property explicitly.
+				Additionally, this can provide further utility by allowing the access of an attribute to be modified based on the context of access.
+				This is particularly useful in the case of wrap-around edges discussed below, in which a vertex's effective position is dependent upon which neighbor (face or vertex) defines the current context.</p>
 		</section>
 		<section class="chapter" id="edge-wrapping">
 			<h2 class="section-head">Edge Wrapping</h2>
@@ -209,8 +251,11 @@
 		<section class="chapter" id="edge-wrapping">
 			<h2 class="section-head">Edge Wrapping</h2>
 		</section>
-		<section id="generation">
+		<section class="chapter" id="generation">
 			<h2 class="section-head">In-Editor Generation</h2>
+		</section>
+		<section class="chapter" id="wrap-around">
+			<h2 class="section-head">Integration with Wrap-Around Worlds</h2>
 		</section>
 	</body>
 </html>

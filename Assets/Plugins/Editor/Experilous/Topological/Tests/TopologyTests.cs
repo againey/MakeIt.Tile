@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_5_3
+using UnityEngine;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -1080,3 +1081,4 @@ public class TopologyTests
 	}
 #endif
 }
+#endif

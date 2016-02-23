@@ -101,7 +101,7 @@ namespace Experilous.Generation
 
 		private void FindAndMoveAnyConflictingObject(string fullAssetPath, Object asset = null)
 		{
-			var conflictingAsset = AssetDatabase.LoadAssetAtPath<Object>(fullAssetPath);
+			var conflictingAsset = AssetDatabase.LoadAssetAtPath(fullAssetPath, typeof(Object));
 			if (conflictingAsset != null && !ReferenceEquals(asset, conflictingAsset))
 			{
 				if (_assetCollection.discreteAssets.Contains(conflictingAsset))
