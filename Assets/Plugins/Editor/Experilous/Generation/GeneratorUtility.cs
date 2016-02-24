@@ -1,4 +1,12 @@
-﻿namespace Experilous.Generation
+﻿/******************************************************************************\
+ *  Copyright (C) 2016 Experilous <againey@experilous.com>
+ *  
+ *  This file is subject to the terms and conditions defined in the file
+ *  'Assets/Plugins/Experilous/License.txt', which is a part of this package.
+ *
+\******************************************************************************/
+
+namespace Experilous.Generation
 {
 	public static class GeneratorUtility
 	{

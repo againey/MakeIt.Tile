@@ -1,3 +1,11 @@
+/******************************************************************************\
+ *  Copyright (C) 2016 Experilous <againey@experilous.com>
+ *  
+ *  This file is subject to the terms and conditions defined in the file
+ *  'Assets/Plugins/Experilous/License.txt', which is a part of this package.
+ *
+\******************************************************************************/
+
 #if UNITY_5_3
 using UnityEngine;
 using NUnit.Framework;
