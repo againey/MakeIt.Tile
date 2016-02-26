@@ -102,7 +102,7 @@ namespace Experilous.Topological
 			for (int j = 0; j < neighborCount; ++j, edge = edge.next)
 			{
 				vertices.Add(vertexPositions[edge]);
-				colors.Add(new Color(0, 0, 0));
+				colors.Add(Color.Lerp(faceColors[face] - new Color(0.2f, 0.2f, 0.2f), new Color(0, 0, 0), 0.2f));
 				normals.Add(faceNormals[face]);
 				triangles.Add(firstVertexIndex);
 				triangles.Add(firstVertexIndex + 1 + j);

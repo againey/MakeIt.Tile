@@ -46,7 +46,7 @@ namespace Experilous.Examples.Topological
 
 		protected void Start()
 		{
-			this.DisableAndThrowOnMissingReference(origin, "The OrbitalCameraController component requires a reference to a Transform origin.");
+			this.DisableAndThrowOnUnassignedReference(origin, "The OrbitalCameraController component requires a reference to a Transform origin.");
 		}
 
 		protected void Update()
