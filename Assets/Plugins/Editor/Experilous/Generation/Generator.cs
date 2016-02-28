@@ -21,7 +21,7 @@ namespace Experilous.Generation
 
 		public static TGenerator CreateInstance<TGenerator>(GeneratorExecutive executive) where TGenerator : Generator
 		{
-			var assetGeneratorAttribute = Utility.GetAttribute<AssetGeneratorAttribute>(typeof(TGenerator));
+			var assetGeneratorAttribute = Utility.GetAttribute<GeneratorAttribute>(typeof(TGenerator));
 			if (assetGeneratorAttribute != null)
 			{
 				return CreateInstance<TGenerator>(executive, assetGeneratorAttribute.name);
@@ -192,62 +192,6 @@ namespace Experilous.Generation
 		public void EditScript()
 		{
 			AssetDatabase.OpenAsset(MonoScript.FromScriptableObject(this));
-		}
-
-		[MenuItem("CONTEXT/Generator/Reset", priority = 0)]
-		public static void ResetFromMenu(MenuCommand menuCommand)
-		{
-			var generator = (Generator)menuCommand.context;
-			generator.Reset();
-		}
-
-		[MenuItem("CONTEXT/Generator/Remove Generator", priority = 20)]
-		public static void RemoveGenerator(MenuCommand menuCommand)
-		{
-			var generator = (Generator)menuCommand.context;
-			generator.executive.Remove(generator);
-		}
-
-		[MenuItem("CONTEXT/Generator/Remove Generator", validate = true)]
-		public static bool CanRemoveGenerator(MenuCommand menuCommand)
-		{
-			var generator = (Generator)menuCommand.context;
-			return generator.executive.CanRemove(generator);
-		}
-
-		[MenuItem("CONTEXT/Generator/Move Up", priority = 21)]
-		public static void MoveUp(MenuCommand menuCommand)
-		{
-			var generator = (Generator)menuCommand.context;
-			generator.executive.MoveUp(generator);
-		}
-
-		[MenuItem("CONTEXT/Generator/Move Up", validate = true)]
-		public static bool CanMoveUp(MenuCommand menuCommand)
-		{
-			var generator = (Generator)menuCommand.context;
-			return generator.executive.CanMoveUp(generator);
-		}
-
-		[MenuItem("CONTEXT/Generator/Move Down", priority = 22)]
-		public static void MoveDown(MenuCommand menuCommand)
-		{
-			var generator = (Generator)menuCommand.context;
-			generator.executive.MoveDown(generator);
-		}
-
-		[MenuItem("CONTEXT/Generator/Move Down", validate = true)]
-		public static bool CanMoveDown(MenuCommand menuCommand)
-		{
-			var generator = (Generator)menuCommand.context;
-			return generator.executive.CanMoveDown(generator);
-		}
-
-		[MenuItem("CONTEXT/Generator/Edit Script", priority = 40)]
-		public static void EditScript(MenuCommand menuCommand)
-		{
-			var generator = (Generator)menuCommand.context;
-			generator.EditScript();
 		}
 	}
 }

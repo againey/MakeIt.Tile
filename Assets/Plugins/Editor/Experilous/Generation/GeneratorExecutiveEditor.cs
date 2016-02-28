@@ -18,13 +18,14 @@ namespace Experilous.Generation
 	[CustomEditor(typeof(GeneratorExecutive), true)]
 	public class GeneratorExecutiveEditor : Editor
 	{
-		[SerializeField] protected GeneratorExecutive _executor;
+		[SerializeField] protected GeneratorExecutive _executive;
 
 		[System.Serializable]
 		public class GeneratorEditorState
 		{
 			public Editor editor;
 			public bool foldout;
+			public Rect _menuButtonRect;
 			[System.NonSerialized] public AnimBool foldoutAnimation;
 		}
 
@@ -36,21 +37,24 @@ namespace Experilous.Generation
 
 		[SerializeField] private GeneratorEditorStateDictionary _editorStates = new GeneratorEditorStateDictionary();
 
-		[System.NonSerialized] private GUIStyle _generateButtonStyle;
-		[System.NonSerialized] private GUIStyle _boldFoldoutStyle;
-		[System.NonSerialized] private GUIStyle _popupSelectionLabelStyle;
-		private float _sectionEndSpaceHeight;
+		[System.NonSerialized] private static GUIStyle _generateButtonStyle;
+		[System.NonSerialized] private static GUIStyle _generatorHeaderStyle;
+		[System.NonSerialized] private static GUIStyle _generatorHeaderLabelStyle;
+		[System.NonSerialized] private static GUIStyle _generatorHeaderMenuButtonStyle;
+		[System.NonSerialized] private static GUIStyle _popupSelectionLabelStyle;
+		[System.NonSerialized] private static float _sectionEndSpaceHeight;
 
-		private Rect _addGeneratorButtonRect;
+		[System.NonSerialized] private Rect _addGeneratorButtonRect;
+		[System.NonSerialized] private Rect _generatorMenuButtonRect;
 
-		private static Dictionary<System.Type, List<AddGeneratorCategoryGUI>> _addGeneratorCategoryGUIs = new Dictionary<System.Type, List<AddGeneratorCategoryGUI>>();
+		[System.NonSerialized] private static Dictionary<System.Type, List<GeneratorTreeItem>> _generatoryTreeDictionary = new Dictionary<System.Type, List<GeneratorTreeItem>>();
 
 		protected void OnEnable()
 		{
-			if (_executor == null)
+			if (_executive == null)
 			{
 				if (!(target is GeneratorExecutive)) return;
-				_executor = (GeneratorExecutive)target;
+				_executive = (GeneratorExecutive)target;
 			}
 
 			foreach (var editorState in _editorStates)
@@ -71,10 +75,45 @@ namespace Experilous.Generation
 				_generateButtonStyle.padding.bottom += 4;
 			}
 
-			if (_boldFoldoutStyle == null)
+			if (_generatorHeaderStyle == null)
 			{
-				_boldFoldoutStyle = new GUIStyle(EditorStyles.foldout);
-				_boldFoldoutStyle.fontStyle = FontStyle.Bold;
+				_generatorHeaderStyle = new GUIStyle(EditorStyles.boldLabel);
+
+				var backgroundTexture = new Texture2D(1, 2, TextureFormat.ARGB32, false);
+				backgroundTexture.SetPixel(0, 0, new Color(0f, 0f, 0f, 0f));
+				backgroundTexture.SetPixel(0, 1, Color.gray);
+				backgroundTexture.filterMode = FilterMode.Point;
+				backgroundTexture.wrapMode = TextureWrapMode.Repeat;
+				backgroundTexture.Apply(false, true);
+				_generatorHeaderStyle.normal.background = backgroundTexture;
+				_generatorHeaderStyle.active.background = backgroundTexture;
+				_generatorHeaderStyle.border = new RectOffset(0, 0, 1, 0);
+				_generatorHeaderStyle.padding.left += EditorStyles.foldout.padding.left;
+				_generatorHeaderStyle.padding.top += 2;
+				_generatorHeaderStyle.padding.bottom = 0;
+				_generatorHeaderStyle.margin = new RectOffset(0, 0, 2, 0);
+			}
+
+			if (_generatorHeaderLabelStyle == null)
+			{
+				_generatorHeaderLabelStyle = new GUIStyle(EditorStyles.boldLabel);
+				_generatorHeaderLabelStyle.margin.left = 0;
+				_generatorHeaderLabelStyle.margin.top = 24;
+				_generatorHeaderLabelStyle.padding.top = 24;
+				_generatorHeaderLabelStyle.padding.bottom = 0;
+			}
+
+			if (_generatorHeaderMenuButtonStyle == null)
+			{
+				_generatorHeaderMenuButtonStyle = new GUIStyle(EditorStyles.label);
+				var popupTexture = EditorGUIUtility.FindTexture("_Popup");
+				_generatorHeaderMenuButtonStyle.normal.background = popupTexture;
+				_generatorHeaderMenuButtonStyle.active.background = popupTexture;
+				_generatorHeaderMenuButtonStyle.fixedWidth = popupTexture.width;
+				_generatorHeaderMenuButtonStyle.fixedHeight = popupTexture.height;
+				_generatorHeaderLabelStyle.margin = new RectOffset(0, 0, 0, 0);
+				_generatorHeaderLabelStyle.border = new RectOffset(0, 0, 0, 0);
+				_generatorHeaderLabelStyle.padding = new RectOffset(0, 0, 0, 0);
 			}
 
 			if (_popupSelectionLabelStyle == null)
@@ -90,7 +129,7 @@ namespace Experilous.Generation
 
 			if (_sectionEndSpaceHeight == 0f)
 			{
-				_sectionEndSpaceHeight = _boldFoldoutStyle.CalcHeight(new GUIContent("M"), 100f);
+				_sectionEndSpaceHeight = EditorStyles.label.CalcHeight(new GUIContent("M"), 1920f);
 			}
 		}
 
@@ -103,15 +142,21 @@ namespace Experilous.Generation
 		{
 			InitializeStyles();
 
+			if (AssetDatabase.Contains(_executive))
+			{
+				var path = System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(_executive)));
+				GUI.Label(new Rect(44f, 24f, Mathf.Max(0f, Screen.width - 64f), EditorStyles.label.CalcHeight(new GUIContent("M"), 1920f)), path, EditorStyles.boldLabel);
+			}
+
 			GUIExtensions.ResetEnable();
-			GUIExtensions.PushEnable(!_executor.isGenerating);
+			GUIExtensions.PushEnable(!_executive.isGenerating);
 
 			EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
 
-			GUIExtensions.PushEnable(_executor.canGenerate);
+			GUIExtensions.PushEnable(_executive.canGenerate);
 			if (GUILayout.Button("Generate", _generateButtonStyle))
 			{
-				_executor.Generate();
+				_executive.Generate();
 			}
 			GUIExtensions.PopEnable();
 
@@ -123,7 +168,7 @@ namespace Experilous.Generation
 				{
 					if (EditorUtility.DisplayDialog("Detach Assets", "This will disassociate all assets from this generator, which means that these assets will no longer be automatically destroyed or replaced by future executions of the generator.\n\nIt is recommended that you move these assets to another location before you execute the generator again, so that they do not conflict with newly generated assets.", "OK", "Cancel"))
 					{
-						_executor.DetachAssets();
+						_executive.DetachAssets();
 					}
 				}
 
@@ -131,7 +176,7 @@ namespace Experilous.Generation
 				{
 					if (EditorUtility.DisplayDialog("Delete Assets", "This will delete all assets generated by and still associated with this generator.\n\nAre you sure you want to proceed?", "OK", "Cancel"))
 					{
-						_executor.DeleteAssets();
+						_executive.DeleteAssets();
 					}
 				}
 			}
@@ -141,7 +186,7 @@ namespace Experilous.Generation
 
 			GUILayout.Space(_sectionEndSpaceHeight);
 
-			foreach (var generator in _executor.generators)
+			foreach (var generator in _executive.generators)
 			{
 				GeneratorEditorState editorState;
 				if (!_editorStates.TryGetValue(generator, out editorState))
@@ -153,17 +198,37 @@ namespace Experilous.Generation
 					editorState.foldoutAnimation.valueChanged.AddListener(Repaint);
 					_editorStates[generator] = editorState;
 				}
-				editorState.foldout = EditorGUILayout.InspectorTitlebar(editorState.foldout, generator);
+
+				GUILayout.BeginHorizontal(_generatorHeaderStyle);
+				GUILayout.BeginVertical();
+				GUILayout.Space(1f);
+				GUILayout.Label(generator.name, _generatorHeaderLabelStyle, GUILayout.ExpandWidth(true));
+				GUILayout.EndVertical();
+				if (GUILayout.Button(GUIContent.none, _generatorHeaderMenuButtonStyle))
+				{
+					ShowGeneratorMenu(generator, _editorStates[generator]._menuButtonRect);
+				}
+				if (Event.current.type == EventType.Repaint)
+				{
+					_editorStates[generator]._menuButtonRect = GUILayoutUtility.GetLastRect();
+				}
+
+				GUILayout.EndHorizontal();
+				var rect = GUILayoutUtility.GetLastRect();
+				rect.xMin += EditorStyles.foldout.padding.left;
+				rect.yMin += 3;
+				rect.yMax = rect.yMin + EditorStyles.foldout.CalcHeight(new GUIContent("M"), 1920f);
+				editorState.foldout = EditorGUI.Foldout(rect, editorState.foldout, GUIContent.none);
 
 				editorState.foldoutAnimation.target = editorState.foldout;
 				if (EditorGUILayout.BeginFadeGroup(editorState.foldoutAnimation.faded))
 				{
 					EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
 					editorState.editor.OnInspectorGUI();
+					EditorGUILayout.Space();
 					EditorGUILayout.EndVertical();
 				}
 				EditorGUILayout.EndFadeGroup();
-				EditorGUILayout.Space();
 			}
 
 			Separator();
@@ -174,27 +239,88 @@ namespace Experilous.Generation
 			GUIExtensions.PopEnable();
 		}
 
-		private static AddGeneratorCategoryGUI AddCategory(List<AddGeneratorCategoryGUI> categoryGUIs, System.Type categoryType)
+		private void BuildInsertNewGeneratorMenu(GenericMenu menu, string path, List<GeneratorTreeItem> items, int insertionIndex)
 		{
-			var category = (GeneratorCategoryAttribute)System.Attribute.GetCustomAttribute(categoryType, typeof(GeneratorCategoryAttribute));
-			var categoryGUI = new AddGeneratorCategoryGUI(categoryType, category.name);
-
-			if (category.after != null)
+			foreach (var item in items)
 			{
-				var preceedingCategoryGUI = categoryGUIs.Find((AddGeneratorCategoryGUI existingCategoryGUI) => { return existingCategoryGUI.categoryType == category.after; });
-				if (preceedingCategoryGUI == null)
+				if (item is GeneratorTreeCategory)
 				{
-					preceedingCategoryGUI = AddCategory(categoryGUIs, category.after);
+					var category = (GeneratorTreeCategory)item;
+					BuildInsertNewGeneratorMenu(menu, path + category.content.text + '/', category.items, insertionIndex);
 				}
-				var index = categoryGUIs.IndexOf(preceedingCategoryGUI);
-				categoryGUIs.Insert(index + 1, categoryGUI);
+				else if (item is GeneratorTreeGenerator)
+				{
+					var generator = (GeneratorTreeGenerator)item;
+					GUIExtensions.PushEnable(generator.onSelect != null);
+
+					GenericMenu.MenuFunction callback = null;
+					if (generator.onSelect != null)
+					{
+						callback = () =>
+						{
+							generator.onSelect(_executive, insertionIndex);
+						};
+					}
+					menu.AddItem(new GUIContent(path + generator.content.text, generator.content.image, generator.content.tooltip), false, callback);
+				}
+			}
+		}
+
+		private void ShowGeneratorMenu(Generator generator, Rect menuButtonRect)
+		{
+			var menu = new GenericMenu();
+
+			menu.AddItem(new GUIContent("Reset"), false, () => { generator.Reset(); });
+
+			menu.AddSeparator("");
+
+			if (_executive.CanRemove(generator))
+			{
+				menu.AddItem(new GUIContent("Remove Generator"), false, () => { _executive.Remove(generator); });
 			}
 			else
 			{
-				categoryGUIs.Add(categoryGUI);
+				menu.AddDisabledItem(new GUIContent("Remove Generator"));
 			}
 
-			return categoryGUI;
+			if (generatorTree.Count > 0)
+			{
+				BuildInsertNewGeneratorMenu(menu, "Insert New Generator/", generatorTree, _executive.generators.IndexOf(generator));
+			}
+			else
+			{
+				menu.AddDisabledItem(new GUIContent("Insert New Generator"));
+			}
+
+			menu.AddSeparator("");
+
+			if (_executive.CanMoveUp(generator))
+			{
+				menu.AddItem(new GUIContent("Move to Top"), false, () => { _executive.MoveUp(generator, true); });
+				menu.AddItem(new GUIContent("Move Up"), false, () => { _executive.MoveUp(generator); });
+			}
+			else
+			{
+				menu.AddDisabledItem(new GUIContent("Move to Top"));
+				menu.AddDisabledItem(new GUIContent("Move Up"));
+			}
+
+			if (_executive.CanMoveDown(generator))
+			{
+				menu.AddItem(new GUIContent("Move Down"), false, () => { _executive.MoveDown(generator); });
+				menu.AddItem(new GUIContent("Move to Bottom"), false, () => { _executive.MoveDown(generator, true); });
+			}
+			else
+			{
+				menu.AddDisabledItem(new GUIContent("Move Down"));
+				menu.AddDisabledItem(new GUIContent("Move to Bottom"));
+			}
+
+			menu.AddSeparator("");
+
+			menu.AddItem(new GUIContent("Edit Script"), false, () => { generator.EditScript(); });
+
+			menu.DropDown(menuButtonRect);
 		}
 
 		private static bool HasCreatorMethodSignature(MethodInfo methodInfo)
@@ -237,113 +363,231 @@ namespace Experilous.Generation
 			return null;
 		}
 
-		private static List<AddGeneratorCategoryGUI> BuildAddGeneratorCategoryGUIs(System.Type generatorCollectionType)
+		private static GeneratorTreeGenerator AddGeneratorToTree(List<GeneratorTreeItem> generatorTree, System.Type generatorType, GeneratorAttribute attribute)
 		{
-			var categoryGUIs = new List<AddGeneratorCategoryGUI>();
+			var path = attribute.path;
+
+			int depth = 0;
+			int categoryCount = path.Length - 1;
+			GeneratorTreeCategory parent = null;
+			var items = generatorTree;
+
+			while (depth < categoryCount)
+			{
+				var category = items.Find((GeneratorTreeItem item) =>
+				{
+					return item.content.text == path[depth] && item is GeneratorTreeCategory;
+				});
+
+				if (category == null) break;
+
+				parent = (GeneratorTreeCategory)category;
+				items = parent.items;
+				++depth;
+			}
+
+			while (depth < categoryCount)
+			{
+				var category = new GeneratorTreeCategory(path[depth], parent);
+				items.Add(category);
+				parent = category;
+				items = parent.items;
+				++depth;
+			}
+
+			var creatorMethod = FindCreatorMethod(generatorType);
+			if (creatorMethod != null)
+			{
+				var item = new GeneratorTreeGenerator(path[depth], parent, (GeneratorExecutive collection, int insertionIndex) =>
+				{
+					var generator = (Generator)creatorMethod.Invoke(null, new object[2] { collection, attribute.name });
+					collection.Insert(insertionIndex, generator);
+				});
+
+				items.Add(item);
+				return item;
+			}
+			else
+			{
+				var item = new GeneratorTreeGenerator(new GUIContent(path[depth], "A generator of this type cannot be created because no valid creation function was found."), parent, null);
+				items.Add(item);
+				return item;
+			}
+		}
+
+		private static void SortGeneratorTree(List<GeneratorTreeItem> items, System.Comparison<GeneratorTreeItem> comparison)
+		{
+			items.Sort(comparison);
+			foreach (var item in items)
+			{
+				if (item is GeneratorTreeCategory)
+				{
+					var category = (GeneratorTreeCategory)item;
+					SortGeneratorTree(category.items, comparison);
+				}
+			}
+		}
+
+		private static List<GeneratorTreeItem> BuildGeneratorTree(System.Type generatorExecutiveType)
+		{
+			var generatorTree = new List<GeneratorTreeItem>();
 
 			var assembly = Assembly.GetExecutingAssembly();
 			foreach (var generatorType in assembly.GetTypes())
 			{
 				if (generatorType.IsSubclassOf(typeof(Generator)))
 				{
-					var attributes = generatorType.GetCustomAttributes(typeof(AssetGeneratorAttribute), true);
-					foreach (AssetGeneratorAttribute attribute in attributes)
+					var attributes = generatorType.GetCustomAttributes(typeof(GeneratorAttribute), true);
+					foreach (GeneratorAttribute attribute in attributes)
 					{
-						if (attribute.assetGeneratorCollectionType.IsAssignableFrom(generatorCollectionType))
+						if (attribute.generatorExecutiveType.IsAssignableFrom(generatorExecutiveType))
 						{
-							var categoryGUI = categoryGUIs.Find((AddGeneratorCategoryGUI existingCategoryGUI) =>
-							{
-								return existingCategoryGUI.categoryType == attribute.categoryType;
-							});
-
-							if (categoryGUI == null)
-							{
-								categoryGUI = AddCategory(categoryGUIs, attribute.categoryType);
-							}
-
-							var creatorMethod = FindCreatorMethod(generatorType);
-							if (creatorMethod != null)
-							{
-								categoryGUI.items.Add(new AddGeneratorItemGUI(attribute.name, (GeneratorExecutive collection) =>
-								{
-									var generator = (Generator)creatorMethod.Invoke(null, new object[2] { collection, attribute.name });
-									collection.Add(generator);
-								}));
-								break;
-							}
+							AddGeneratorToTree(generatorTree, generatorType, attribute);
 						}
 					}
 				}
 			}
 
-			return categoryGUIs;
+			SortGeneratorTree(generatorTree, (GeneratorTreeItem lhs, GeneratorTreeItem rhs) =>
+			{
+				if (lhs.GetType() != rhs.GetType())
+				{
+					return (lhs is GeneratorTreeGenerator) ? +1 : -1;
+				}
+				else
+				{
+					return System.StringComparer.CurrentCultureIgnoreCase.Compare(lhs.content.text, rhs.content.text);
+				}
+			});
+
+			return generatorTree;
 		}
 
 		private void OnAddGeneratorButtonGUI()
 		{
 			if (EditorGUILayoutExtensions.CenteredButton("Add Generator", 0.6f, out _addGeneratorButtonRect))
 			{
-				List<AddGeneratorCategoryGUI> categoryGUIs;
-				var collectionType = _executor.GetType();
-				if (!_addGeneratorCategoryGUIs.TryGetValue(collectionType, out categoryGUIs))
-				{
-					categoryGUIs = BuildAddGeneratorCategoryGUIs(collectionType);
-					_addGeneratorCategoryGUIs.Add(collectionType, categoryGUIs);
-				}
-
-				PopupWindow.Show(_addGeneratorButtonRect, new AddGeneratorPopupContent(_executor, categoryGUIs, _addGeneratorButtonRect.width));
+				PopupWindow.Show(_addGeneratorButtonRect, new AddGeneratorPopupContent(_executive, generatorTree, _addGeneratorButtonRect.width));
 			}
 		}
 
-		private class AddGeneratorItemGUI
+		private List<GeneratorTreeItem> generatorTree
+		{
+			get
+			{
+				List<GeneratorTreeItem> categories;
+				var generatorExecutiveType = _executive.GetType();
+				if (!_generatoryTreeDictionary.TryGetValue(generatorExecutiveType, out categories))
+				{
+					categories = BuildGeneratorTree(generatorExecutiveType);
+					_generatoryTreeDictionary.Add(generatorExecutiveType, categories);
+				}
+				return categories;
+			}
+		}
+
+		private class GeneratorTreeItem
 		{
 			public readonly GUIContent content;
-			public System.Action<GeneratorExecutive> onSelect;
+			public GeneratorTreeCategory parent;
 
-			public AddGeneratorItemGUI(string content, System.Action<GeneratorExecutive> onSelect)
+			public GeneratorTreeItem(string name)
 			{
-				this.content = new GUIContent(content);
+				content = new GUIContent(name);
+			}
+
+			public GeneratorTreeItem(GUIContent content)
+			{
+				this.content = content;
+			}
+
+			public GeneratorTreeItem(string name, GeneratorTreeCategory parent)
+			{
+				content = new GUIContent(name);
+				this.parent = parent;
+			}
+
+			public GeneratorTreeItem(GUIContent content, GeneratorTreeCategory parent)
+			{
+				this.content = content;
+				this.parent = parent;
+			}
+		}
+
+		private class GeneratorTreeGenerator : GeneratorTreeItem
+		{
+			public System.Action<GeneratorExecutive, int> onSelect;
+
+			public GeneratorTreeGenerator(string name, System.Action<GeneratorExecutive, int> onSelect)
+				: base(name)
+			{
+				this.onSelect = onSelect;
+			}
+
+			public GeneratorTreeGenerator(GUIContent content, System.Action<GeneratorExecutive, int> onSelect)
+				: base(content)
+			{
+				this.onSelect = onSelect;
+			}
+
+			public GeneratorTreeGenerator(string name, GeneratorTreeCategory parent, System.Action<GeneratorExecutive, int> onSelect)
+				: base(name, parent)
+			{
+				this.onSelect = onSelect;
+			}
+
+			public GeneratorTreeGenerator(GUIContent content, GeneratorTreeCategory parent, System.Action<GeneratorExecutive, int> onSelect)
+				: base(content, parent)
+			{
 				this.onSelect = onSelect;
 			}
 		}
 
-		private class AddGeneratorCategoryGUI
+		private class GeneratorTreeCategory : GeneratorTreeItem
 		{
-			public readonly System.Type categoryType;
-			public readonly GUIContent content;
-			public readonly List<AddGeneratorItemGUI> items;
+			public readonly List<GeneratorTreeItem> items;
 
-			public AddGeneratorCategoryGUI(System.Type categoryType, string content)
+			public GeneratorTreeCategory(string name)
+				: base(name)
 			{
-				this.categoryType = categoryType;
-				this.content = new GUIContent(content);
-				items = new List<AddGeneratorItemGUI>();
+				items = new List<GeneratorTreeItem>();
 			}
 
-			public AddGeneratorCategoryGUI(System.Type categoryType, string content, List<AddGeneratorItemGUI> items)
+			public GeneratorTreeCategory(GUIContent content)
+				: base(content)
 			{
-				this.categoryType = categoryType;
-				this.content = new GUIContent(content);
-				this.items = items;
+				items = new List<GeneratorTreeItem>();
+			}
+
+			public GeneratorTreeCategory(string name, GeneratorTreeCategory parent)
+				: base(name, parent)
+			{
+				items = new List<GeneratorTreeItem>();
+			}
+
+			public GeneratorTreeCategory(GUIContent content, GeneratorTreeCategory parent)
+				: base(content, parent)
+			{
+				items = new List<GeneratorTreeItem>();
 			}
 		}
 
 		private class AddGeneratorPopupContent : PopupWindowContent
 		{
-			private readonly GeneratorExecutive _collection;
-			private readonly List<AddGeneratorCategoryGUI> _categories;
+			private readonly GeneratorExecutive _executive;
+			private readonly List<GeneratorTreeItem> _generatorTree;
 
 			private float _width;
 
 			private GUIStyle _categoryStyle;
-			private GUIStyle _itemStyle;
+			private GUIStyle _generatorStyle;
 
-			private AddGeneratorCategoryGUI _openCategory;
+			private GeneratorTreeCategory _openCategory;
 
-			public AddGeneratorPopupContent(GeneratorExecutive collection, List<AddGeneratorCategoryGUI> categories, float width)
+			public AddGeneratorPopupContent(GeneratorExecutive generatorExecutive, List<GeneratorTreeItem> generatorTree, float width)
 			{
-				_collection = collection;
-				_categories = categories;
+				_executive = generatorExecutive;
+				_generatorTree = generatorTree;
 				_width = width;
 
 				var hoverBackgroundTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
@@ -355,10 +599,10 @@ namespace Experilous.Generation
 				_categoryStyle.padding = new RectOffset(3, 3, 3, 3);
 				_categoryStyle.margin = new RectOffset(0, 0, 0, 0);
 
-				_itemStyle = new GUIStyle(EditorStyles.label);
-				_itemStyle.hover.background = hoverBackgroundTexture;
-				_itemStyle.padding = new RectOffset(3, 3, 3, 3);
-				_itemStyle.margin = new RectOffset(0, 0, 0, 0);
+				_generatorStyle = new GUIStyle(EditorStyles.label);
+				_generatorStyle.hover.background = hoverBackgroundTexture;
+				_generatorStyle.padding = new RectOffset(3, 3, 3, 3);
+				_generatorStyle.margin = new RectOffset(0, 0, 0, 0);
 			}
 
 			public override Vector2 GetWindowSize()
@@ -366,7 +610,7 @@ namespace Experilous.Generation
 				float height = 0f;
 				if (_openCategory == null)
 				{
-					foreach (var category in _categories)
+					foreach (var category in _generatorTree)
 					{
 						height += _categoryStyle.CalcHeight(category.content, _width);
 					}
@@ -375,7 +619,7 @@ namespace Experilous.Generation
 				{
 					foreach (var item in _openCategory.items)
 					{
-						height += _itemStyle.CalcHeight(item.content, _width);
+						height += _generatorStyle.CalcHeight(item.content, _width);
 					}
 				}
 
@@ -384,10 +628,13 @@ namespace Experilous.Generation
 
 			public override void OnGUI(Rect rect)
 			{
-				if (_openCategory == null)
+				var items = _openCategory == null ? _generatorTree : _openCategory.items;
+
+				foreach (var item in items)
 				{
-					foreach (var category in _categories)
+					if (item is GeneratorTreeCategory)
 					{
+						var category = (GeneratorTreeCategory)item;
 						GUIExtensions.PushEnable(category.items.Count > 0);
 						if (GUILayout.Button(category.content, _categoryStyle))
 						{
@@ -395,16 +642,16 @@ namespace Experilous.Generation
 						}
 						GUIExtensions.PopEnable();
 					}
-				}
-				else
-				{
-					foreach (var item in _openCategory.items)
+					else if (item is GeneratorTreeGenerator)
 					{
-						if (GUILayout.Button(item.content, _itemStyle))
+						var generator = (GeneratorTreeGenerator)item;
+						GUIExtensions.PushEnable(generator.onSelect != null);
+						if (GUILayout.Button(generator.content, _generatorStyle))
 						{
-							item.onSelect(_collection);
+							generator.onSelect(_executive, _executive.generators.Count);
 							editorWindow.Close();
 						}
+						GUIExtensions.PopEnable();
 					}
 				}
 

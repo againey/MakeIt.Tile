@@ -15,7 +15,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(TopologyCategory), "Topology Randomizer")]
+	[Generator(typeof(TopologyGeneratorCollection), "Topologies/Randomizer")]
 	public class TopologyRandomizerGenerator : Generator
 	{
 		[AutoSelect] public InputSlot surfaceInputSlot;

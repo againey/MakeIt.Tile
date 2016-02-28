@@ -13,7 +13,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(MeshCategory), "Prefab")]
+	[Generator(typeof(TopologyGeneratorCollection), "Unity Assets/Prefab")]
 	public class PrefabGenerator : Generator
 	{
 		public InputSlot meshCollectionInputSlot;

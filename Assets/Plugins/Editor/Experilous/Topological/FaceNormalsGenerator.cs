@@ -13,7 +13,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(FaceAttributesCategory), "Face Normals", after = typeof(FaceCentroidsGenerator))]
+	[Generator(typeof(TopologyGeneratorCollection), "Faces/Normals")]
 	public class FaceNormalsGenerator : Generator
 	{
 		public enum CalculationMethod

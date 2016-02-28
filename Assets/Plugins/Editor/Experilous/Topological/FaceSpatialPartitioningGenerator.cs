@@ -13,7 +13,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(UtilitiesCategory), "Face Spatial Partitioning")]
+	[Generator(typeof(TopologyGeneratorCollection), "Utilities/Face Spatial Partitioning")]
 	public class FaceSpatialPartitioningGenerator : Generator
 	{
 		[AutoSelect] public InputSlot topologyInputSlot;

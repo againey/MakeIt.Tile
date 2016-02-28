@@ -14,7 +14,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(TopologyCategory), "Planar Manifold")]
+	[Generator(typeof(TopologyGeneratorCollection), "Topologies/Planar Manifold")]
 	public class PlanarManifoldGenerator : Generator
 	{
 		public enum PlanarTileShapes

@@ -14,7 +14,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(FaceAttributesCategory), "Group Random Colors")]
+	[Generator(typeof(TopologyGeneratorCollection), "Face Groups/Random Colors")]
 	public class FaceGroupRandomColorGenerator : Generator
 	{
 		public InputSlot faceGroupCollectionInputSlot;

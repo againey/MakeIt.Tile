@@ -13,7 +13,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(MeshCategory), "Mesh")]
+	[Generator(typeof(TopologyGeneratorCollection), "Unity Assets/Mesh")]
 	public class MeshGenerator : Generator
 	{
 		public enum SourceType

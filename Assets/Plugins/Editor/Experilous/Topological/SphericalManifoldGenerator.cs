@@ -14,7 +14,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(TopologyCategory), "Spherical Manifold")]
+	[Generator(typeof(TopologyGeneratorCollection), "Topologies/Spherical Manifold")]
 	public class SphericalManifoldGenerator : Generator
 	{
 		public enum SphericalPolyhedrons

@@ -15,8 +15,6 @@ using System.Threading;
 
 namespace Experilous.Generation
 {
-	[GeneratorCategory(typeof(GeneratorExecutive), "Utilities")] public struct UtilitiesCategory { }
-
 	public abstract class GeneratorExecutive : ScriptableObject
 	{
 		[SerializeField] protected List<Generator> _generators = new List<Generator>();
@@ -454,7 +452,7 @@ namespace Experilous.Generation
 
 		public virtual TGenerator Add<TGenerator>(TGenerator generator) where TGenerator : Generator
 		{
-			if (!CanAdd(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be added to this collection.", generator.name, generator.GetType().Name));
+			if (!CanAdd(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be added to this generator executive.", generator.name, generator.GetType().Name));
 
 			_generators.Add(generator);
 			Save();
@@ -470,7 +468,7 @@ namespace Experilous.Generation
 
 		public virtual TGenerator Insert<TGenerator>(int index, TGenerator generator) where TGenerator : Generator
 		{
-			if (!CanInsert(index, generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be insert into this collection.", generator.name, generator.GetType().Name));
+			if (!CanInsert(index, generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be inserted into this generator executive.", generator.name, generator.GetType().Name));
 
 			_generators.Insert(index, generator);
 			Save();
@@ -487,7 +485,7 @@ namespace Experilous.Generation
 
 		public virtual void Remove(Generator generator)
 		{
-			if (!CanRemove(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be removed from this collection.", generator.name, generator.GetType().Name));
+			if (!CanRemove(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be removed from this generator executive.", generator.name, generator.GetType().Name));
 
 			_generators.Remove(generator);
 			foreach (var otherGenerator in _generators)
@@ -513,13 +511,13 @@ namespace Experilous.Generation
 			return !isGenerating && _generators.Contains(generator);
 		}
 
-		public virtual void MoveUp(Generator generator)
+		public virtual void MoveUp(Generator generator, bool toTop = false)
 		{
-			if (!CanMoveUp(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be moved up within this collection.", generator.name, generator.GetType().Name));
+			if (!CanMoveUp(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} is already at the top.", generator.name, generator.GetType().Name));
 
 			var index = _generators.IndexOf(generator);
 			_generators.RemoveAt(index);
-			_generators.Insert(index - 1, generator);
+			_generators.Insert(toTop ? 0 : index - 1, generator);
 
 			Save();
 		}
@@ -531,13 +529,13 @@ namespace Experilous.Generation
 			return (!isGenerating && index != -1 && index > 0);
 		}
 
-		public virtual void MoveDown(Generator generator)
+		public virtual void MoveDown(Generator generator, bool toBottom = false)
 		{
-			if (!CanMoveDown(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} cannot be moved down within this collection.", generator.name, generator.GetType().Name));
+			if (!CanMoveDown(generator)) throw new System.InvalidOperationException(string.Format("The asset generator \"{0}\" of type {1} is already at the bottom.", generator.name, generator.GetType().Name));
 
 			var index = _generators.IndexOf(generator);
 			_generators.RemoveAt(index);
-			_generators.Insert(index + 1, generator);
+			_generators.Insert(toBottom ? _generators.Count : index + 1, generator);
 
 			Save();
 		}

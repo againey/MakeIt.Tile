@@ -13,7 +13,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[AssetGenerator(typeof(TopologyGeneratorCollection), typeof(UtilitiesCategory), "Rectangular Face Groups")]
+	[Generator(typeof(TopologyGeneratorCollection), "Face Groups/Rectangular Face Groups")]
 	public class RectangularFaceGroupsGenerator : Generator
 	{
 		public Index2D axisDivisions;
