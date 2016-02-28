@@ -41,7 +41,7 @@ namespace Experilous.Generation
 		[System.NonSerialized] private static GUIStyle _generatorHeaderStyle;
 		[System.NonSerialized] private static GUIStyle _generatorHeaderLabelStyle;
 		[System.NonSerialized] private static GUIStyle _generatorHeaderMenuButtonStyle;
-		[System.NonSerialized] private static GUIStyle _popupSelectionLabelStyle;
+		[System.NonSerialized] private static GUIStyle _addGeneratorButtonStyle;
 		[System.NonSerialized] private static float _sectionEndSpaceHeight;
 
 		[System.NonSerialized] private Rect _addGeneratorButtonRect;
@@ -116,15 +116,9 @@ namespace Experilous.Generation
 				_generatorHeaderLabelStyle.padding = new RectOffset(0, 0, 0, 0);
 			}
 
-			if (_popupSelectionLabelStyle == null)
+			if (_addGeneratorButtonStyle == null)
 			{
-				_popupSelectionLabelStyle = new GUIStyle(EditorStyles.label);
-				var hoverBackgroundTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-				hoverBackgroundTexture.SetPixel(0, 0, GUI.skin.settings.selectionColor);
-				hoverBackgroundTexture.Apply(false);
-				_popupSelectionLabelStyle.hover.background = hoverBackgroundTexture;
-				_popupSelectionLabelStyle.padding = new RectOffset(3, 3, 3, 3);
-				_popupSelectionLabelStyle.margin = new RectOffset(0, 0, 0, 0);
+				_addGeneratorButtonStyle = new GUIStyle("LargeButton");
 			}
 
 			if (_sectionEndSpaceHeight == 0f)
@@ -465,7 +459,11 @@ namespace Experilous.Generation
 
 		private void OnAddGeneratorButtonGUI()
 		{
-			if (EditorGUILayoutExtensions.CenteredButton("Add Generator", 0.6f, out _addGeneratorButtonRect))
+			var content = new GUIContent("Add Generator");
+			_addGeneratorButtonRect = EditorGUILayout.GetControlRect(false, _addGeneratorButtonStyle.CalcHeight(content, 230f), _addGeneratorButtonStyle, GUILayout.ExpandWidth(true));
+			_addGeneratorButtonRect.x += Mathf.Max(0f, _addGeneratorButtonRect.width - 230f) / 2;
+			_addGeneratorButtonRect.width = 230f;
+			if (GUI.Button(_addGeneratorButtonRect, content, _addGeneratorButtonStyle))
 			{
 				PopupWindow.Show(_addGeneratorButtonRect, new AddGeneratorPopupContent(_executive, generatorTree, _addGeneratorButtonRect.width));
 			}
@@ -578,57 +576,165 @@ namespace Experilous.Generation
 			private readonly List<GeneratorTreeItem> _generatorTree;
 
 			private float _width;
+			private float _height;
 
-			private GUIStyle _categoryStyle;
-			private GUIStyle _generatorStyle;
+			private Vector2 _scrollPosition;
 
 			private GeneratorTreeCategory _openCategory;
+
+			[System.NonSerialized] private static GUIStyle _titleStyle;
+			[System.NonSerialized] private static GUIStyle _titleTextStyle;
+			[System.NonSerialized] private static GUIStyle _subtitleTextStyle;
+			[System.NonSerialized] private static GUIStyle _categoryStyle;
+			[System.NonSerialized] private static GUIStyle _generatorStyle;
+
+			[System.NonSerialized] private static Texture2D _leftArrowTexture;
+			[System.NonSerialized] private static Texture2D _rightArrowTexture;
 
 			public AddGeneratorPopupContent(GeneratorExecutive generatorExecutive, List<GeneratorTreeItem> generatorTree, float width)
 			{
 				_executive = generatorExecutive;
 				_generatorTree = generatorTree;
 				_width = width;
+				_height = 0f;
+			}
 
-				var hoverBackgroundTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-				hoverBackgroundTexture.SetPixel(0, 0, GUI.skin.settings.selectionColor);
-				hoverBackgroundTexture.Apply(false);
+			private void InitializeStyles()
+			{
+				if (_titleStyle == null)
+				{
+					_titleStyle = new GUIStyle("IN BigTitle");
+					_titleStyle.margin = new RectOffset(0, 0, 0, 0);
+					_titleStyle.padding.top += 3;
+				}
 
-				_categoryStyle = new GUIStyle(EditorStyles.label);
-				_categoryStyle.hover.background = hoverBackgroundTexture;
-				_categoryStyle.padding = new RectOffset(3, 3, 3, 3);
-				_categoryStyle.margin = new RectOffset(0, 0, 0, 0);
+				if (_titleTextStyle == null)
+				{
+					_titleTextStyle = new GUIStyle("IN TitleText");
+					_titleTextStyle.alignment = TextAnchor.MiddleCenter;
+				}
 
-				_generatorStyle = new GUIStyle(EditorStyles.label);
-				_generatorStyle.hover.background = hoverBackgroundTexture;
-				_generatorStyle.padding = new RectOffset(3, 3, 3, 3);
-				_generatorStyle.margin = new RectOffset(0, 0, 0, 0);
+				if (_subtitleTextStyle == null)
+				{
+					_subtitleTextStyle = new GUIStyle("IN TitleText");
+					_subtitleTextStyle.alignment = TextAnchor.MiddleCenter;
+					var leftArrowTexture = EditorGUIUtility.FindTexture("IN-AddComponentLeft");
+					_subtitleTextStyle.normal.background = leftArrowTexture;
+					_subtitleTextStyle.active.background = leftArrowTexture;
+					_subtitleTextStyle.border.left = leftArrowTexture.width;
+					_subtitleTextStyle.border.top = leftArrowTexture.height;
+				}
+
+				if (_categoryStyle == null)
+				{
+					_categoryStyle = new GUIStyle("MenuItem");
+					_categoryStyle.fixedHeight = 0;
+					_categoryStyle.padding = new RectOffset(19, 3, 4, 3);
+					_categoryStyle.margin = new RectOffset(0, 0, 0, 0);
+				}
+
+				if (_generatorStyle == null)
+				{
+					_generatorStyle = new GUIStyle("MenuItem");
+					_generatorStyle.fixedHeight = 0;
+					_generatorStyle.padding = new RectOffset(19, 3, 4, 3);
+					_generatorStyle.margin = new RectOffset(0, 0, 0, 0);
+				}
+
+				if (_leftArrowTexture == null)
+				{
+					_leftArrowTexture = EditorGUIUtility.FindTexture("IN-AddComponentLeft");
+				}
+
+				if (_rightArrowTexture == null)
+				{
+					_rightArrowTexture = EditorGUIUtility.FindTexture("IN-AddComponentRight");
+				}
 			}
 
 			public override Vector2 GetWindowSize()
 			{
-				float height = 0f;
-				if (_openCategory == null)
+				if (_height == 0f)
 				{
-					foreach (var category in _generatorTree)
+					InitializeStyles();
+
+					List<GeneratorTreeItem> items;
+
+					if (_openCategory == null)
 					{
-						height += _categoryStyle.CalcHeight(category.content, _width);
+						items = _generatorTree;
+
+						_height += _titleStyle.CalcHeight(GUIContent.none, _width);
 					}
-				}
-				else
-				{
-					foreach (var item in _openCategory.items)
+					else
 					{
-						height += _generatorStyle.CalcHeight(item.content, _width);
+						items = _openCategory.items;
+
+						_height += _titleStyle.CalcHeight(GUIContent.none, _width);
+					}
+
+					foreach (var item in items)
+					{
+						if (item is GeneratorTreeCategory)
+						{
+							var category = (GeneratorTreeCategory)item;
+							_height += _categoryStyle.CalcHeight(category.content, _width);
+						}
+						else if (item is GeneratorTreeGenerator)
+						{
+							var generator = (GeneratorTreeGenerator)item;
+							_height += _generatorStyle.CalcHeight(generator.content, _width);
+						}
 					}
 				}
 
-				return new Vector2(_width, height);
+				return new Vector2(_width, _height);
 			}
 
 			public override void OnGUI(Rect rect)
 			{
-				var items = _openCategory == null ? _generatorTree : _openCategory.items;
+				InitializeStyles();
+
+				List<GeneratorTreeItem> items;
+
+				var selectedCategory = _openCategory;
+
+				if (_openCategory == null)
+				{
+					items = _generatorTree;
+
+					GUILayout.Label(GUIContent.none, _titleStyle, GUILayout.ExpandWidth(true));
+					var titleRect = GUILayoutUtility.GetLastRect();
+					var titleTextRect = titleRect;
+					titleTextRect.yMin += 4;
+					GUI.Label(titleTextRect, "Generator", _titleTextStyle);
+				}
+				else
+				{
+					items = _openCategory.items;
+
+					GUILayout.Label(GUIContent.none, _titleStyle, GUILayout.ExpandWidth(true));
+					var titleRect = GUILayoutUtility.GetLastRect();
+					if (GUI.Button(titleRect, GUIContent.none, GUIStyle.none))
+					{
+						selectedCategory = selectedCategory.parent;
+					}
+					var titleTextRect = titleRect;
+					titleTextRect.yMin += 4;
+					GUI.Label(titleTextRect, _openCategory.content, _subtitleTextStyle);
+
+					GUI.DrawTexture(
+						new Rect(
+							5f,
+							titleRect.yMin + (titleRect.height - _leftArrowTexture.height) / 2f + 1f,
+							_leftArrowTexture.width,
+							_leftArrowTexture.height),
+						_leftArrowTexture,
+						ScaleMode.ScaleAndCrop,
+						true);
+				}
+
+				_scrollPosition = GUILayout.BeginScrollView(_scrollPosition, false, false);
 
 				foreach (var item in items)
 				{
@@ -638,9 +744,22 @@ namespace Experilous.Generation
 						GUIExtensions.PushEnable(category.items.Count > 0);
 						if (GUILayout.Button(category.content, _categoryStyle))
 						{
-							_openCategory = category;
+							selectedCategory = category;
+
 						}
 						GUIExtensions.PopEnable();
+
+						var categoryRect = GUILayoutUtility.GetLastRect();
+
+						GUI.DrawTexture(
+							new Rect(
+								categoryRect.xMax - _rightArrowTexture.width - 1f,
+								categoryRect.yMin + (categoryRect.height - _rightArrowTexture.height) / 2f,
+								_rightArrowTexture.width,
+								_rightArrowTexture.height),
+							_rightArrowTexture,
+							ScaleMode.ScaleAndCrop,
+							true);
 					}
 					else if (item is GeneratorTreeGenerator)
 					{
@@ -655,7 +774,11 @@ namespace Experilous.Generation
 					}
 				}
 
+				GUILayout.EndScrollView();
+
 				editorWindow.Repaint();
+
+				_openCategory = selectedCategory;
 			}
 		}
 
