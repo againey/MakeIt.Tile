@@ -81,7 +81,7 @@ namespace Experilous.Topological
 
 					public bool MoveNext()
 					{
-						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
+						if (_nextEdgeIndex != _firstEdgeIndex || _currentEdgeIndex == -1)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
 							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex].fNext;
@@ -107,6 +107,81 @@ namespace Experilous.Topological
 			}
 
 			public FaceEdgesIndexer edges { get { return new FaceEdgesIndexer(_topology, _index); } }
+
+			public struct ExtendedFaceEdgesIndexer
+			{
+				private Topology _topology;
+				private int _index;
+
+				public ExtendedFaceEdgesIndexer(Topology topology, int index)
+				{
+					_topology = topology;
+					_index = index;
+				}
+
+				public struct ExtendedFaceEdgeEnumerator
+				{
+					private Topology _topology;
+					private int _firstEdgeIndex;
+					private int _currentExtendedEdgeIndex;
+					private int _nextExtendedEdgeIndex;
+					private int _nextEdgeIndex;
+
+					public ExtendedFaceEdgeEnumerator(Topology topology, int firstEdgeIndex)
+					{
+						_topology = topology;
+						_firstEdgeIndex = firstEdgeIndex;
+						_currentExtendedEdgeIndex = -1;
+						_nextExtendedEdgeIndex = firstEdgeIndex;
+						_nextEdgeIndex = firstEdgeIndex;
+					}
+
+					public FaceEdge Current { get { return new FaceEdge(_topology, _currentExtendedEdgeIndex); } }
+
+					public bool MoveNext()
+					{
+						if (_nextExtendedEdgeIndex != _nextEdgeIndex)
+						{
+							_currentExtendedEdgeIndex = _nextExtendedEdgeIndex;
+							_nextExtendedEdgeIndex = _topology.edgeData[_currentExtendedEdgeIndex].vNext;
+							return true;
+						}
+						else if (_nextEdgeIndex != _firstEdgeIndex || _currentExtendedEdgeIndex == -1)
+						{
+							do
+							{
+								_currentExtendedEdgeIndex = _topology.edgeData[_topology.edgeData[_nextEdgeIndex].twin].vNext;
+								_nextEdgeIndex = _topology.edgeData[_nextEdgeIndex].fNext;
+								if (_currentExtendedEdgeIndex == _firstEdgeIndex)
+								{
+									_nextExtendedEdgeIndex = _nextEdgeIndex = _firstEdgeIndex;
+									return false;
+								}
+							} while (_currentExtendedEdgeIndex == _nextEdgeIndex);
+							_nextExtendedEdgeIndex = _topology.edgeData[_currentExtendedEdgeIndex].vNext;
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					}
+
+					public void Reset()
+					{
+						_currentExtendedEdgeIndex = -1;
+						_nextExtendedEdgeIndex = -1;
+						_nextEdgeIndex = _firstEdgeIndex;
+					}
+				}
+
+				public ExtendedFaceEdgeEnumerator GetEnumerator()
+				{
+					return new ExtendedFaceEdgeEnumerator(_topology, _topology.faceFirstEdgeIndices[_index]);
+				}
+			}
+
+			public ExtendedFaceEdgesIndexer extendedEdges { get { return new ExtendedFaceEdgesIndexer(_topology, _index); } }
 
 			public FaceEdge FindEdge(Vertex vertex)
 			{

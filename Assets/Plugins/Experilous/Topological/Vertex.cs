@@ -79,7 +79,7 @@ namespace Experilous.Topological
 
 					public bool MoveNext()
 					{
-						if (_currentEdgeIndex == -1 || _nextEdgeIndex != _firstEdgeIndex)
+						if (_nextEdgeIndex != _firstEdgeIndex || _currentEdgeIndex == -1)
 						{
 							_currentEdgeIndex = _nextEdgeIndex;
 							_nextEdgeIndex = _topology.edgeData[_currentEdgeIndex].vNext;
@@ -105,6 +105,83 @@ namespace Experilous.Topological
 			}
 
 			public VertexEdgesIndexer edges { get { return new VertexEdgesIndexer(_topology, _index); } }
+
+			public struct ExtendedVertexEdgesIndexer
+			{
+				private Topology _topology;
+				private int _index;
+
+				public ExtendedVertexEdgesIndexer(Topology topology, int index)
+				{
+					_topology = topology;
+					_index = index;
+				}
+
+				public struct ExtendedVertexEdgeEnumerator
+				{
+					private Topology _topology;
+					private int _firstEdgeTwinIndex;
+					private int _currentExtendedEdgeIndex;
+					private int _nextExtendedEdgeIndex;
+					private int _nextEdgeTwinIndex;
+
+					public ExtendedVertexEdgeEnumerator(Topology topology, int firstEdgeIndex)
+					{
+						_topology = topology;
+						_firstEdgeTwinIndex = topology.edgeData[firstEdgeIndex].twin;
+						_currentExtendedEdgeIndex = -1;
+						_nextExtendedEdgeIndex = _firstEdgeTwinIndex;
+						_nextEdgeTwinIndex = _firstEdgeTwinIndex;
+					}
+
+					public VertexEdge Current { get { return new VertexEdge(_topology, _currentExtendedEdgeIndex); } }
+
+					public bool MoveNext()
+					{
+						if (_nextExtendedEdgeIndex != _nextEdgeTwinIndex)
+						{
+							_currentExtendedEdgeIndex = _nextExtendedEdgeIndex;
+							_nextExtendedEdgeIndex = _topology.edgeData[_currentExtendedEdgeIndex].fNext;
+							return true;
+						}
+						else if (_nextEdgeTwinIndex != _firstEdgeTwinIndex || _currentExtendedEdgeIndex == -1)
+						{
+							do
+							{
+								var nextEdgeIndex = _topology.edgeData[_nextEdgeTwinIndex].twin;
+								_currentExtendedEdgeIndex = _topology.edgeData[nextEdgeIndex].fNext;
+								nextEdgeIndex = _topology.edgeData[nextEdgeIndex].vNext;
+								_nextEdgeTwinIndex = _topology.edgeData[nextEdgeIndex].twin;
+								if (_currentExtendedEdgeIndex == _firstEdgeTwinIndex)
+								{
+									_nextExtendedEdgeIndex = _nextEdgeTwinIndex = _firstEdgeTwinIndex;
+									return false;
+								}
+							} while (_currentExtendedEdgeIndex == _nextEdgeTwinIndex);
+							_nextExtendedEdgeIndex = _topology.edgeData[_currentExtendedEdgeIndex].fNext;
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					}
+
+					public void Reset()
+					{
+						_currentExtendedEdgeIndex = -1;
+						_nextExtendedEdgeIndex = -1;
+						_nextEdgeTwinIndex = _firstEdgeTwinIndex;
+					}
+				}
+
+				public ExtendedVertexEdgeEnumerator GetEnumerator()
+				{
+					return new ExtendedVertexEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
+				}
+			}
+
+			public ExtendedVertexEdgesIndexer extendedEdges { get { return new ExtendedVertexEdgesIndexer(_topology, _index); } }
 
 			public VertexEdge FindEdge(Vertex vertex)
 			{
