@@ -22,9 +22,9 @@ namespace Experilous.Topological
 			return instance;
 		}
 
-		public static PositionalEdgeAttribute Create(Surface surface, int vertexCount)
+		public static PositionalEdgeAttribute Create(Surface surface, int edgeCount)
 		{
-			return Create(surface, new Vector3[vertexCount]);
+			return Create(surface, new Vector3[edgeCount]);
 		}
 
 		public override Vector3 this[Topology.VertexEdge e]

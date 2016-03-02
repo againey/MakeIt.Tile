@@ -234,5 +234,64 @@ namespace Experilous.Topological
 		}
 
 		#endregion
+
+		public static IFaceAttribute<float> CalculateFaceCircumferencesFromVertexPositions(Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<float> faceCircumferences)
+		{
+			foreach (var face in faces)
+			{
+				float circumference = 0f;
+				var firstEdge = face.firstEdge;
+				var priorPosition = vertexPositions[firstEdge];
+				firstEdge = firstEdge.next;
+				var nextEdge = firstEdge;
+				do
+				{
+					var currentPosition = vertexPositions[nextEdge];
+					circumference += Vector3.Distance(priorPosition, currentPosition);
+					priorPosition = currentPosition;
+					nextEdge = nextEdge.next;
+				} while (nextEdge != firstEdge);
+
+				faceCircumferences[face] = circumference;
+			}
+
+			return faceCircumferences;
+		}
+
+		public static IFaceAttribute<float> CalculateFaceCircumferencesFromEdgeLengths(Topology.FacesIndexer faces, IEdgeAttribute<float> edgeLengths, IFaceAttribute<float> faceCircumferences)
+		{
+			foreach (var face in faces)
+			{
+				float circumference = 0f;
+				foreach (var edge in face.edges)
+				{
+					circumference += edgeLengths[edge];
+				}
+				faceCircumferences[face] = circumference;
+			}
+
+			return faceCircumferences;
+		}
+
+		public static IFaceAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis, IFaceAttribute<Vector2> uvs)
+		{
+			var normal = Vector3.Cross(vAxis, uAxis).normalized;
+			var uPlane = new Plane(origin, uAxis + origin, normal + origin);
+			var vPlane = new Plane(origin, normal + origin, vAxis + origin);
+
+			var uAxisNeg = -uAxis;
+			var vAxisNeg = -vAxis;
+
+			foreach (var face in faces)
+			{
+				var facePosition = facePositions[face];
+
+				uvs[face] = new Vector2(
+					GeometryUtility.GetIntersectionParameter(vPlane, new ScaledRay(facePosition, uAxisNeg)),
+					GeometryUtility.GetIntersectionParameter(uPlane, new ScaledRay(facePosition, vAxisNeg)));
+			}
+
+			return uvs;
+		}
 	}
 }

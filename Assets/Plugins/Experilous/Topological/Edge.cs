@@ -97,6 +97,8 @@ namespace Experilous.Topological
 				_index = faceEdge.index;
 			}
 
+			public static HalfEdge none { get { return new HalfEdge(); } }
+
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
@@ -209,6 +211,8 @@ namespace Experilous.Topological
 				_halfEdge = faceEdge.halfEdge;
 			}
 
+			public static VertexEdge none { get { return new VertexEdge(); } }
+
 			public Topology topology { get { return _halfEdge.topology; } }
 
 			public int index { get { return _halfEdge.index; } }
@@ -318,6 +322,8 @@ namespace Experilous.Topological
 			{
 				_halfEdge = faceEdge._halfEdge;
 			}
+
+			public static FaceEdge none { get { return new FaceEdge(); } }
 
 			public Topology topology { get { return _halfEdge.topology; } }
 

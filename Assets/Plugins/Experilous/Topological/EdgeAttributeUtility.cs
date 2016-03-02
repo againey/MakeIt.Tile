@@ -171,6 +171,172 @@ namespace Experilous.Topological
 			return faceEdgeMidpoints;
 		}
 
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, Vector3.zero, uAxis, vAxis, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			var normal = Vector3.Cross(vAxis, uAxis).normalized;
+			var uPlane = new Plane(origin, uAxis + origin, normal + origin);
+			var vPlane = new Plane(origin, normal + origin, vAxis + origin);
+
+			var uAxisNeg = -uAxis;
+			var vAxisNeg = -vAxis;
+
+			foreach (var edge in faceEdges)
+			{
+				var vertexPosition = vertexPositions[edge];
+
+				uvs[edge] = new Vector2(
+					GeometryUtility.GetIntersectionParameter(vPlane, new ScaledRay(vertexPosition, uAxisNeg)),
+					GeometryUtility.GetIntersectionParameter(uPlane, new ScaledRay(vertexPosition, vAxisNeg)));
+			}
+
+			return uvs;
+		}
+
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
+		{
+			return CalculateGlobalPlanarNormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
+
+			Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+			Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+			foreach (var edge in faceEdges)
+			{
+				uvMin = GeometryUtility.AxisAlignedMin(uvMin, uvs[edge]);
+				uvMax = GeometryUtility.AxisAlignedMax(uvMax, uvs[edge]);
+			}
+
+			var uvRange = uvMax - uvMin;
+			var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+
+			foreach (var edge in faceEdges)
+			{
+				uvs[edge] -= uvMin;
+				uvs[edge].Scale(uvRangeReciprocal);
+			}
+
+			return uvs;
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarEquallyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarEquallyNormalizedCeneteredUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
+
+			foreach (var face in faces)
+			{
+				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+				foreach (var edge in face.edges)
+				{
+					uvMin = GeometryUtility.AxisAlignedMin(uvMin, uvs[edge]);
+					uvMax = GeometryUtility.AxisAlignedMax(uvMax, uvs[edge]);
+				}
+
+				var uvRange = uvMax - uvMin;
+				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+
+				foreach (var edge in face.edges)
+				{
+					uvs[edge] -= uvMin;
+					uvs[edge].Scale(uvRangeReciprocal);
+				}
+			}
+
+			return uvs;
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedCenteredUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeIndices(Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<Vector2> uvs)
+		{
+			foreach (var face in faces)
+			{
+				float index = 0f;
+				float neighborCount = face.neighborCount;
+				foreach (var edge in face.edges)
+				{
+					uvs[edge] = new Vector2(index / neighborCount, vValues[edge]);
+					++index;
+				}
+			}
+
+			return uvs;
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeLengths(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeLengths, IEdgeAttribute<Vector2> uvs)
+		{
+			foreach (var face in faces)
+			{
+				float circumference = 0f;
+				foreach (var edge in face.edges)
+				{
+					circumference += edgeLengths[edge];
+				}
+				float partialCircumference = 0f;
+				foreach (var edge in face.edges)
+				{
+					partialCircumference += edgeLengths[edge];
+					uvs[edge] = new Vector2(partialCircumference / circumference, vValues[edge]);
+				}
+			}
+
+			return uvs;
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeLengths(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeLengths, IFaceAttribute<float> faceCircumferences, IEdgeAttribute<Vector2> uvs)
+		{
+			foreach (var face in faces)
+			{
+				float circumference = faceCircumferences[face];
+				float partialCircumference = 0f;
+				foreach (var edge in face.edges)
+				{
+					uvs[edge] = new Vector2(partialCircumference / circumference, vValues[edge]);
+					partialCircumference += edgeLengths[edge];
+				}
+			}
+
+			return uvs;
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeAngles(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeAngles, IEdgeAttribute<Vector2> uvs)
+		{
+			foreach (var face in faces)
+			{
+				float angleSum = 0f;
+				foreach (var edge in face.edges)
+				{
+					uvs[edge] = new Vector2(angleSum, vValues[edge]);
+					angleSum += edgeAngles[edge];
+				}
+			}
+
+			return uvs;
+		}
+
 		#endregion
 	}
 }

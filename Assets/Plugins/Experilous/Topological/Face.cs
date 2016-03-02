@@ -28,6 +28,8 @@ namespace Experilous.Topological
 				_index = index;
 			}
 
+			public static Face none { get { return new Face(); } }
+
 			public Topology topology { get { return _topology; } }
 
 			public int index { get { return _index; } }
