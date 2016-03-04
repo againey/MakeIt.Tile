@@ -55,7 +55,7 @@ namespace Experilous.Topological
 			{
 				var distance = _plane.GetDistanceToPoint(p);
 				if (distance > margin) return 1;
-				else if (distance < -distance) return -1;
+				else if (distance < -margin) return -1;
 				else return 0;
 			}
 
