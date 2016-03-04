@@ -19,7 +19,7 @@ namespace Experilous.Topological
 		public UniversalFaceSpatialPartitioning partitioning;
 
 		[Serializable]
-		public class PickStartEvent : UnityEvent<Topology.Face, PointerEventData.InputButton> { }
+		public class PickStartEvent : UnityEvent<Topology.Face, int> { }
 		public PickStartEvent OnPickStart;
 
 		[Serializable]
@@ -27,43 +27,15 @@ namespace Experilous.Topological
 		public PickChangeEvent OnPickChange;
 
 		[Serializable]
-		public class PickEndEvent : UnityEvent<Topology.Face, Topology.Face, PointerEventData.InputButton> { }
+		public class PickEndEvent : UnityEvent<Topology.Face, int> { }
 		public PickEndEvent OnPickEnd;
 
 		private Collider _collider = null;
 
-		private Topology.Face _leftMouseButtonStartFace;
-		private Topology.Face _rightMouseButtonStartFace;
-		private Topology.Face _middleMouseButtonStartFace;
-
+		private bool[] _picking = new bool[3];
+		private bool _pickingRight;
+		private bool _pickingMiddle;
 		private Topology.Face _currentFace;
-
-		public bool IsPickingActive(PointerEventData.InputButton inputButton)
-		{
-			switch (inputButton)
-			{
-				case PointerEventData.InputButton.Left: return _leftMouseButtonStartFace;
-				case PointerEventData.InputButton.Right: return _rightMouseButtonStartFace;
-				case PointerEventData.InputButton.Middle: return _middleMouseButtonStartFace;
-				default: throw new NotImplementedException();
-			}
-		}
-
-		public Topology.Face GetPickStartFace(PointerEventData.InputButton inputButton)
-		{
-			switch (inputButton)
-			{
-				case PointerEventData.InputButton.Left: return _leftMouseButtonStartFace;
-				case PointerEventData.InputButton.Right: return _rightMouseButtonStartFace;
-				case PointerEventData.InputButton.Middle: return _middleMouseButtonStartFace;
-				default: throw new NotImplementedException();
-			}
-		}
-
-		public Topology.Face? GetPickCurrentFace()
-		{
-			return _currentFace;
-		}
 
 		void Start()
 		{
@@ -75,7 +47,7 @@ namespace Experilous.Topological
 		{
 			if (partitioning != null)
 			{
-				if (_leftMouseButtonStartFace || _rightMouseButtonStartFace || _middleMouseButtonStartFace)
+				if (_picking[0] || _picking[1] || _picking[2])
 				{
 					PickChange(Input.mousePosition);
 				}
@@ -83,26 +55,16 @@ namespace Experilous.Topological
 
 			if (_collider == null)
 			{
-				CheckForPickStartOrEnd(0, PointerEventData.InputButton.Left, ref _leftMouseButtonStartFace);
-				CheckForPickStartOrEnd(1, PointerEventData.InputButton.Right, ref _rightMouseButtonStartFace);
-				CheckForPickStartOrEnd(2, PointerEventData.InputButton.Middle, ref _middleMouseButtonStartFace);
-			}
-		}
-
-		private void CheckForPickStartOrEnd(int mouseButtonIndex, PointerEventData.InputButton button, ref Topology.Face startFace)
-		{
-			if (!startFace)
-			{
-				if (Input.GetMouseButtonDown(mouseButtonIndex))
+				for (int i = 0; i < 3; ++i)
 				{
-					PickStart(Input.mousePosition, button, ref startFace);
-				}
-			}
-			else
-			{
-				if (Input.GetMouseButtonUp(mouseButtonIndex))
-				{
-					PickEnd(button, ref startFace);
+					if (_picking[i])
+					{
+						if (Input.GetMouseButtonUp(i)) PickEnd(i);
+					}
+					else
+					{
+						if (Input.GetMouseButtonDown(i)) PickStart(Input.mousePosition, i);
+					}
 				}
 			}
 		}
@@ -112,16 +74,13 @@ namespace Experilous.Topological
 			switch (eventData.button)
 			{
 				case PointerEventData.InputButton.Left:
-					if (!_leftMouseButtonStartFace)
-						PickStart(eventData.pressPosition, eventData.button, ref _leftMouseButtonStartFace);
+					PickStart(eventData.pressPosition, 0);
 					break;
 				case PointerEventData.InputButton.Right:
-					if (!_rightMouseButtonStartFace)
-						PickStart(eventData.pressPosition, eventData.button, ref _rightMouseButtonStartFace);
+					PickStart(eventData.pressPosition, 1);
 					break;
 				case PointerEventData.InputButton.Middle:
-					if (!_middleMouseButtonStartFace)
-						PickStart(eventData.pressPosition, eventData.button, ref _middleMouseButtonStartFace);
+					PickStart(eventData.pressPosition, 2);
 					break;
 			}
 		}
@@ -131,32 +90,31 @@ namespace Experilous.Topological
 			switch (eventData.button)
 			{
 				case PointerEventData.InputButton.Left:
-					if (_leftMouseButtonStartFace)
-						PickEnd(eventData.button, ref _leftMouseButtonStartFace);
+					PickEnd(0);
 					break;
 				case PointerEventData.InputButton.Right:
-					if (_rightMouseButtonStartFace)
-						PickEnd(eventData.button, ref _rightMouseButtonStartFace);
+					PickEnd(1);
 					break;
 				case PointerEventData.InputButton.Middle:
-					if (_middleMouseButtonStartFace)
-						PickEnd(eventData.button, ref _middleMouseButtonStartFace);
+					PickEnd(2);
 					break;
 			}
 		}
 
-		private void PickStart(Vector2 mousePosition, PointerEventData.InputButton button, ref Topology.Face startFace)
+		private void PickStart(Vector2 mousePosition, int button)
 		{
 			var ray = transform.InverseTransformRay(camera.ScreenPointToRay(mousePosition));
-			var face = partitioning.FindFace(ray);
-			if (face)
+			var startFace = partitioning.FindFace(ray);
+			if (startFace)
 			{
-				startFace = _currentFace = face;
-				OnPickStart.Invoke(face, button);
+				_currentFace = startFace;
+				_picking[button] = true;
+				OnPickStart.Invoke(startFace, button);
 			}
 			else
 			{
-				startFace = Topology.Face.none;
+				_picking[button] = false;
+				_currentFace = Topology.Face.none;
 			}
 		}
 
@@ -166,32 +124,33 @@ namespace Experilous.Topological
 			var face = partitioning.FindFace(ray);
 			if (face && _currentFace != face)
 			{
-				var prevFace = _currentFace;
+				var previousFace = _currentFace;
 				_currentFace = face;
-				OnPickChange.Invoke(prevFace, face);
+				OnPickChange.Invoke(previousFace, face);
 			}
 		}
 
-		private void PickEnd(PointerEventData.InputButton button, ref Topology.Face startFace)
+		private void PickEnd(int button)
 		{
-			var prevStartFace = startFace;
-			startFace = Topology.Face.none;
-			OnPickEnd.Invoke(prevStartFace, _currentFace, button);
+			var endFace = _currentFace;
+			_picking[button] = false;
+			_currentFace = Topology.Face.none;
+			OnPickEnd.Invoke(endFace, button);
 		}
 
-		public void LogPickStart(Topology.Face pickStart, PointerEventData.InputButton button)
+		public void LogPickStart(Topology.Face startFace, int button)
 		{
-			Debug.LogFormat("Pick Start ({1}):  {0}", pickStart, button);
+			Debug.LogFormat("Pick Start ({1}):  {0}", startFace, button);
 		}
 
-		public void LogPickChange(Topology.Face pickPrev, Topology.Face pickEnd)
+		public void LogPickChange(Topology.Face previousFace, Topology.Face currentFace)
 		{
-			Debug.LogFormat("Pick Change:  {1} <- {0}", pickPrev, pickEnd);
+			Debug.LogFormat("Pick Change:  {1} <- {0}", previousFace, currentFace);
 		}
 
-		public void LogPickEnd(Topology.Face pickStart, Topology.Face pickEnd, PointerEventData.InputButton button)
+		public void LogPickEnd(Topology.Face endFace, int button)
 		{
-			Debug.LogFormat("Pick End ({2}):  {1} <- {0}", pickStart, pickEnd, button);
+			Debug.LogFormat("Pick End ({1}):  {0}", endFace, button);
 		}
 	}
 }
