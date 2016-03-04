@@ -264,8 +264,6 @@ namespace Experilous.Topological
 
 		#region CalculatePerFaceUVs...(...)
 
-		#region CalculatePlanarUVs...(...)
-
 		#region CaclulateUniformlyNormalizedUVs...(...)
 
 		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
@@ -553,99 +551,6 @@ namespace Experilous.Topological
 				foreach (var edge in face.edges)
 				{
 					uvs[edge] = Vector2.Scale(uvs[edge] - uvMin, uvRangeReciprocal);
-				}
-			}
-
-			return uvs;
-		}
-
-		#endregion
-
-		#endregion
-
-		#region CalculateRadialUVs...(...)
-
-		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeIndices(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<float> vValues)
-		{
-			return CalculatePerFaceRadialUVsFromEdgeIndices(faces, vValues, new Vector2[faceEdges.Count].AsEdgeAttribute());
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeIndices(Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<Vector2> uvs)
-		{
-			foreach (var face in faces)
-			{
-				float index = 0f;
-				float neighborCount = face.neighborCount;
-				foreach (var edge in face.edges)
-				{
-					uvs[edge] = new Vector2(index / neighborCount, vValues[edge]);
-					++index;
-				}
-			}
-
-			return uvs;
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeLengths(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeLengths)
-		{
-			return CalculatePerFaceRadialUVsFromEdgeLengths(faces, vValues, edgeLengths, new Vector2[faceEdges.Count].AsEdgeAttribute());
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeLengths(Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeLengths, IEdgeAttribute<Vector2> uvs)
-		{
-			foreach (var face in faces)
-			{
-				float circumference = 0f;
-				foreach (var edge in face.edges)
-				{
-					circumference += edgeLengths[edge];
-				}
-				float partialCircumference = 0f;
-				foreach (var edge in face.edges)
-				{
-					partialCircumference += edgeLengths[edge];
-					uvs[edge] = new Vector2(partialCircumference / circumference, vValues[edge]);
-				}
-			}
-
-			return uvs;
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeLengths(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeLengths, IFaceAttribute<float> faceCircumferences)
-		{
-			return CalculatePerFaceRadialUVsFromEdgeLengths(faces, vValues, edgeLengths, faceCircumferences, new Vector2[faceEdges.Count].AsEdgeAttribute());
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeLengths(Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeLengths, IFaceAttribute<float> faceCircumferences, IEdgeAttribute<Vector2> uvs)
-		{
-			foreach (var face in faces)
-			{
-				float circumference = faceCircumferences[face];
-				float partialCircumference = 0f;
-				foreach (var edge in face.edges)
-				{
-					uvs[edge] = new Vector2(partialCircumference / circumference, vValues[edge]);
-					partialCircumference += edgeLengths[edge];
-				}
-			}
-
-			return uvs;
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeAngles(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeAngles)
-		{
-			return CalculatePerFaceRadialUVsFromEdgeAngles(faces, vValues, edgeAngles, new Vector2[faceEdges.Count].AsEdgeAttribute());
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFaceRadialUVsFromEdgeAngles(Topology.FacesIndexer faces, IEdgeAttribute<float> vValues, IEdgeAttribute<float> edgeAngles, IEdgeAttribute<Vector2> uvs)
-		{
-			foreach (var face in faces)
-			{
-				float angleSum = 0f;
-				foreach (var edge in face.edges)
-				{
-					uvs[edge] = new Vector2(angleSum, vValues[edge]);
-					angleSum += edgeAngles[edge];
 				}
 			}
 

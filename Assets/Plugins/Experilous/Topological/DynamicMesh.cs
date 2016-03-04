@@ -482,18 +482,18 @@ namespace Experilous.Topological
 			}
 		}
 
-		public class SeparatedFacesEdgeFanTriangulation : ITriangulation
+		public class SeparatedFacesFanTriangulation : ITriangulation
 		{
 			private int _ringDepth;
 			private Action<Topology.FaceEdge, IIndexedVertexAttributes> _addRingVertices;
 
-			public SeparatedFacesEdgeFanTriangulation(Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices)
+			public SeparatedFacesFanTriangulation(Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices)
 			{
 				_ringDepth = 1;
 				_addRingVertices = addRingVertices;
 			}
 
-			public SeparatedFacesEdgeFanTriangulation(int ringDepth, Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices)
+			public SeparatedFacesFanTriangulation(int ringDepth, Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices)
 			{
 				if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
 				_ringDepth = ringDepth;
@@ -568,93 +568,6 @@ namespace Experilous.Topological
 				{
 					_addRingVertices(edge, vertexAttributes);
 				}
-			}
-
-			public void FinalizeSubmesh(int index)
-			{
-			}
-		}
-
-		public class SeparatedFacesCenterFanTriangulation : ITriangulation
-		{
-			private int _ringDepth;
-
-			private Action<Topology.FaceEdge, IIndexedVertexAttributes> _addRingVertices;
-			private Action<Topology.FaceEdge, IIndexedVertexAttributes> _addCenterVertex;
-			private Action<Topology.Face, IIndexedVertexAttributes> _addDuplicateRingVertices;
-
-			public SeparatedFacesCenterFanTriangulation(
-				Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices,
-				Action<Topology.FaceEdge, IIndexedVertexAttributes> addCenterVertex,
-				Action<Topology.Face, IIndexedVertexAttributes> addDuplicateRingVertices)
-			{
-				_ringDepth = 1;
-				_addRingVertices = addRingVertices;
-				_addCenterVertex = addCenterVertex;
-				_addDuplicateRingVertices = addDuplicateRingVertices;
-			}
-
-			public SeparatedFacesCenterFanTriangulation(
-				int ringDepth,
-				Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices,
-				Action<Topology.FaceEdge, IIndexedVertexAttributes> addCenterVertex,
-				Action<Topology.Face, IIndexedVertexAttributes> addDuplicateRingVertices)
-			{
-				if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
-				_ringDepth = ringDepth;
-				_addRingVertices = addRingVertices;
-				_addCenterVertex = addCenterVertex;
-				_addDuplicateRingVertices = addDuplicateRingVertices;
-			}
-
-			public int GetVertexCount(Topology.Face face)
-			{
-				return face.neighborCount * (_ringDepth + 1) + _ringDepth;
-			}
-
-			public void BuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
-			{
-				int neighborCount = face.neighborCount;
-				int currentOuterVertexIndex = vertexAttributes.index;
-				int nextOuterVertexIndex = currentOuterVertexIndex + _ringDepth + 1;
-
-				for (int neighborIndex = 0; neighborIndex < neighborCount; ++neighborIndex)
-				{
-					int outerDepthIndex = 0;
-					for (int innerDepthIndex = 1; innerDepthIndex < _ringDepth; ++innerDepthIndex)
-					{
-						triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
-						triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
-						triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
-						triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
-						triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
-						triangleIndices.Add(nextOuterVertexIndex + innerDepthIndex);
-						outerDepthIndex = innerDepthIndex;
-					}
-
-					triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
-					triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
-					triangleIndices.Add(currentOuterVertexIndex + _ringDepth);
-
-					currentOuterVertexIndex = nextOuterVertexIndex;
-					nextOuterVertexIndex += _ringDepth + 1;
-				}
-
-				RebuildFace(face, vertexAttributes);
-			}
-
-			public void RebuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes)
-			{
-				var firstEdge = face.firstEdge;
-				var edge = firstEdge;
-				do
-				{
-					_addRingVertices(edge, vertexAttributes);
-					edge = edge.next;
-					_addCenterVertex(edge, vertexAttributes);
-				} while (edge != firstEdge);
-
-				_addDuplicateRingVertices(face, vertexAttributes);
 			}
 
 			public void FinalizeSubmesh(int index)

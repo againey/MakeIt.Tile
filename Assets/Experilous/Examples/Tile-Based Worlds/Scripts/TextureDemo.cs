@@ -27,7 +27,6 @@ namespace Experilous.Examples.Topological
 
 		public MeshFilter largeTextureMeshPrefab;
 		public MeshFilter smallTextureMeshPrefab;
-		public MeshFilter radialTextureMeshPrefab;
 
 		public Material wireframeMaterial;
 
@@ -235,7 +234,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(topology.faceEdges, vertexPositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y);
 
-			var triangulation = new DynamicMesh.SeparatedFacesEdgeFanTriangulation(
+			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -258,7 +257,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculateGlobalPlanarNormalizedUVsFromVertexPositions(topology.faceEdges, vertexPositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y);
 
-			var triangulation = new DynamicMesh.SeparatedFacesEdgeFanTriangulation(
+			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -271,7 +270,7 @@ namespace Experilous.Examples.Topological
 			CenterCamera(vertexPositions);
 		}
 
-		public void OnPlanarLocalEqualScale()
+		public void OnPlanarLocalUniformScale()
 		{
 			Topology topology;
 			IVertexAttribute<Vector3> vertexPositions;
@@ -281,7 +280,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y, GetAspectRatioPreservation());
 
-			var triangulation = new DynamicMesh.SeparatedFacesEdgeFanTriangulation(
+			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -294,7 +293,7 @@ namespace Experilous.Examples.Topological
 			CenterCamera(vertexPositions);
 		}
 
-		public void OnPlanarLocalEqualScaleCentered()
+		public void OnPlanarLocalUniformScaleCentered()
 		{
 			Topology topology;
 			IVertexAttribute<Vector3> vertexPositions;
@@ -304,7 +303,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, facePositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y, GetAspectRatioPreservation());
 
-			var triangulation = new DynamicMesh.SeparatedFacesEdgeFanTriangulation(
+			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -327,7 +326,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y, GetAspectRatioPreservation());
 
-			var triangulation = new DynamicMesh.SeparatedFacesEdgeFanTriangulation(
+			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -350,7 +349,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, facePositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y, GetAspectRatioPreservation());
 
-			var triangulation = new DynamicMesh.SeparatedFacesEdgeFanTriangulation(
+			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -361,84 +360,6 @@ namespace Experilous.Examples.Topological
 
 			CreateMesh(topology.internalFaces, triangulation, smallTextureMeshPrefab);
 			CenterCamera(vertexPositions);
-		}
-
-		public void OnRadialLocalByIndex()
-		{
-			Topology topology;
-			IVertexAttribute<Vector3> vertexPositions;
-			IFaceAttribute<Vector3> facePositions;
-
-			CreateGrid(out topology, out vertexPositions, out facePositions);
-
-			var vValues = new EdgeAttributeConstantWrapper<float>(1.0f);
-			var edgeUVs = EdgeAttributeUtility.CalculatePerFaceRadialUVsFromEdgeIndices(topology.faceEdges, topology.internalFaces, vValues);
-
-			var triangulation = new DynamicMesh.SeparatedFacesCenterFanTriangulation(4,
-				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
-				{
-					vertexAttributes.position = vertexPositions[edge];
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = edgeUVs[edge];
-					vertexAttributes.Advance();
-
-					vertexAttributes.position = GeometryUtility.LerpUnclamped(vertexPositions[edge], facePositions[edge.nearFace], 0.25f);
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = new Vector2(edgeUVs[edge].x, 0.75f);
-					vertexAttributes.Advance();
-
-					vertexAttributes.position = GeometryUtility.LerpUnclamped(vertexPositions[edge], facePositions[edge.nearFace], 0.5f);
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = new Vector2(edgeUVs[edge].x, 0.5f);
-					vertexAttributes.Advance();
-
-					vertexAttributes.position = GeometryUtility.LerpUnclamped(vertexPositions[edge], facePositions[edge.nearFace], 0.75f);
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = new Vector2(edgeUVs[edge].x, 0.25f);
-					vertexAttributes.Advance();
-				},
-				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
-				{
-					vertexAttributes.position = facePositions[edge.nearFace];
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = new Vector2((edgeUVs[edge.prev].x + edgeUVs[edge].x) * 0.5f, 0f);
-					vertexAttributes.Advance();
-				},
-				(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
-				{
-					var edge = face.firstEdge;
-
-					vertexAttributes.position = vertexPositions[edge];
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = new Vector2(1f, 1f);
-					vertexAttributes.Advance();
-
-					vertexAttributes.position = GeometryUtility.LerpUnclamped(vertexPositions[edge], facePositions[edge.nearFace], 0.25f);
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = new Vector2(1f, 0.75f);
-					vertexAttributes.Advance();
-
-					vertexAttributes.position = GeometryUtility.LerpUnclamped(vertexPositions[edge], facePositions[edge.nearFace], 0.5f);
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = new Vector2(1f, 0.5f);
-					vertexAttributes.Advance();
-
-					vertexAttributes.position = GeometryUtility.LerpUnclamped(vertexPositions[edge], facePositions[edge.nearFace], 0.75f);
-					vertexAttributes.normal = Vector3.back;
-					vertexAttributes.uv = new Vector2(1f, 0.25f);
-					vertexAttributes.Advance();
-				});
-
-			CreateMesh(topology.internalFaces, triangulation, radialTextureMeshPrefab);
-			CenterCamera(vertexPositions);
-		}
-
-		public void OnRadialLocalByAngle()
-		{
-		}
-
-		public void OnRadialLocalByCircumference()
-		{
 		}
 	}
 }
