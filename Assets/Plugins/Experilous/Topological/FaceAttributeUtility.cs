@@ -273,6 +273,301 @@ namespace Experilous.Topological
 			return faceCircumferences;
 		}
 
+		#region CalculateMinAndRangeValues...(...)
+
+		public static void CalculateFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IVertexAttribute<float> vertexValues, IFaceAttribute<float> minValues, IFaceAttribute<float> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = float.MaxValue;
+				var max = float.MinValue;
+				foreach (var edge in face.edges)
+				{
+					min = Mathf.Min(min, vertexValues[edge]);
+					max = Mathf.Max(max, vertexValues[edge]);
+				}
+				minValues[face] = min;
+				ranges[face] = max - min;
+			}
+		}
+
+		public static void CalculateFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IVertexAttribute<Vector2> vertexValues, IFaceAttribute<Vector2> minValues, IFaceAttribute<Vector2> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector2(float.MaxValue, float.MaxValue);
+				var max = new Vector2(float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+				}
+				minValues[face] = min;
+				ranges[face] = max - min;
+			}
+		}
+
+		public static void CalculateFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexValues, IFaceAttribute<Vector3> minValues, IFaceAttribute<Vector3> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+				}
+				minValues[face] = min;
+				ranges[face] = max - min;
+			}
+		}
+
+		public static void CalculateFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IVertexAttribute<Vector4> vertexValues, IFaceAttribute<Vector4> minValues, IFaceAttribute<Vector4> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector4(float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue);
+				var max = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+				}
+				minValues[face] = min;
+				ranges[face] = max - min;
+			}
+		}
+
+		public static void CalculateFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IEdgeAttribute<float> edgeValues, IFaceAttribute<float> minValues, IFaceAttribute<float> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = float.MaxValue;
+				var max = float.MinValue;
+				foreach (var edge in face.edges)
+				{
+					min = Mathf.Min(min, edgeValues[edge]);
+					max = Mathf.Max(max, edgeValues[edge]);
+				}
+				minValues[face] = min;
+				ranges[face] = max - min;
+			}
+		}
+
+		public static void CalculateFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> edgeValues, IFaceAttribute<Vector2> minValues, IFaceAttribute<Vector2> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector2(float.MaxValue, float.MaxValue);
+				var max = new Vector2(float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+				}
+				minValues[face] = min;
+				ranges[face] = max - min;
+			}
+		}
+
+		public static void CalculateFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IEdgeAttribute<Vector3> edgeValues, IFaceAttribute<Vector3> minValues, IFaceAttribute<Vector3> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+				}
+				minValues[face] = min;
+				ranges[face] = max - min;
+			}
+		}
+
+		public static void CalculateFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IEdgeAttribute<Vector4> edgeValues, IFaceAttribute<Vector4> minValues, IFaceAttribute<Vector4> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector4(float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue);
+				var max = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+				}
+				minValues[face] = min;
+				ranges[face] = max - min;
+			}
+		}
+
+		#endregion
+
+		#region CalculateCenteredMinAndRangeValues...(...)
+
+		public static void CalculateCenteredFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IVertexAttribute<float> vertexValues, IFaceAttribute<float> centerValues, IFaceAttribute<float> minValues, IFaceAttribute<float> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = float.MaxValue;
+				var max = float.MinValue;
+				foreach (var edge in face.edges)
+				{
+					min = Mathf.Min(min, vertexValues[edge]);
+					max = Mathf.Max(max, vertexValues[edge]);
+				}
+				var center = centerValues[face];
+				var extent = Mathf.Max(max - center, center - min);
+				minValues[face] = center - extent;
+				ranges[face] = extent * 2f;
+			}
+		}
+
+		public static void CalculateCenteredFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IVertexAttribute<Vector2> vertexValues, IFaceAttribute<Vector2> centerValues, IFaceAttribute<Vector2> minValues, IFaceAttribute<Vector2> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector2(float.MaxValue, float.MaxValue);
+				var max = new Vector2(float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+				}
+				var center = centerValues[face];
+				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				minValues[face] = center - extent;
+				ranges[face] = extent * 2f;
+			}
+		}
+
+		public static void CalculateCenteredFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexValues, IFaceAttribute<Vector3> centerValues, IFaceAttribute<Vector3> minValues, IFaceAttribute<Vector3> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+				}
+				var center = centerValues[face];
+				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				minValues[face] = center - extent;
+				ranges[face] = extent * 2f;
+			}
+		}
+
+		public static void CalculateCenteredFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IVertexAttribute<Vector4> vertexValues, IFaceAttribute<Vector4> centerValues, IFaceAttribute<Vector4> minValues, IFaceAttribute<Vector4> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector4(float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue);
+				var max = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+				}
+				var center = centerValues[face];
+				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				minValues[face] = center - extent;
+				ranges[face] = extent * 2f;
+			}
+		}
+
+		public static void CalculateCenteredFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IEdgeAttribute<float> edgeValues, IFaceAttribute<float> centerValues, IFaceAttribute<float> minValues, IFaceAttribute<float> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = float.MaxValue;
+				var max = float.MinValue;
+				foreach (var edge in face.edges)
+				{
+					min = Mathf.Min(min, edgeValues[edge]);
+					max = Mathf.Max(max, edgeValues[edge]);
+				}
+				var center = centerValues[face];
+				var extent = Mathf.Max(max - center, center - min);
+				minValues[face] = center - extent;
+				ranges[face] = extent * 2f;
+			}
+		}
+
+		public static void CalculateCenteredFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> edgeValues, IFaceAttribute<Vector2> centerValues, IFaceAttribute<Vector2> minValues, IFaceAttribute<Vector2> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector2(float.MaxValue, float.MaxValue);
+				var max = new Vector2(float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+				}
+				var center = centerValues[face];
+				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				minValues[face] = center - extent;
+				ranges[face] = extent * 2f;
+			}
+		}
+
+		public static void CalculateCenteredFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IEdgeAttribute<Vector3> edgeValues, IFaceAttribute<Vector3> centerValues, IFaceAttribute<Vector3> minValues, IFaceAttribute<Vector3> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+				}
+				var center = centerValues[face];
+				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				minValues[face] = center - extent;
+				ranges[face] = extent * 2f;
+			}
+		}
+
+		public static void CalculateCenteredFaceEdgeMinAndRangeValues(Topology.FacesIndexer faces, IEdgeAttribute<Vector4> edgeValues, IFaceAttribute<Vector4> centerValues, IFaceAttribute<Vector4> minValues, IFaceAttribute<Vector4> ranges)
+		{
+			foreach (var face in faces)
+			{
+				var min = new Vector4(float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue);
+				var max = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
+				foreach (var edge in face.edges)
+				{
+					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+				}
+				var center = centerValues[face];
+				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				minValues[face] = center - extent;
+				ranges[face] = extent * 2f;
+			}
+		}
+
+		#endregion
+
+		public static IFaceAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis)
+		{
+			return CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, Vector3.zero, uAxis, vAxis, new Vector2[faces.Count].AsFaceAttribute());
+		}
+
+		public static IFaceAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis)
+		{
+			return CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, origin, uAxis, vAxis, new Vector2[faces.Count].AsFaceAttribute());
+		}
+
+		public static IFaceAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, IFaceAttribute<Vector2> uvs)
+		{
+			return CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, Vector3.zero, uAxis, vAxis, uvs);
+		}
+
 		public static IFaceAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis, IFaceAttribute<Vector2> uvs)
 		{
 			var normal = Vector3.Cross(vAxis, uAxis).normalized;

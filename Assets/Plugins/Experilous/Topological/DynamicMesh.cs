@@ -16,69 +16,71 @@ namespace Experilous.Topological
 	public class DynamicMesh : ScriptableObject
 	{
 		[SerializeField] private VertexAttributes _vertexAttributes;
-		[SerializeField] private Triangulation _triangulation;
 		[SerializeField] private int _maxVerticesPerSubmesh;
 
 		[SerializeField] private Submesh[] _submeshes;
 		[SerializeField] private IntFaceAttribute _faceSubmeshIndices;
 		[SerializeField] private IntFaceAttribute _faceFirstVertexIndices;
 
-		public static DynamicMesh Create(Topology.FacesIndexer faces, IVertexBuilder vertexBuilder, VertexAttributes vertexAttributes, Triangulation triangulation, int maxVerticesPerSubmesh = 65534)
+		private IndexedVertexAttributeArrays _cachedIndexedVertexAttributeArrays;
+
+		public static DynamicMesh Create(Topology.FacesIndexer faces, VertexAttributes vertexAttributes, ITriangulation triangulation, int maxVerticesPerSubmesh = 65534)
 		{
 			var dynamicMesh = CreateInstance<DynamicMesh>();
 			dynamicMesh._vertexAttributes = vertexAttributes;
-			dynamicMesh._triangulation = triangulation;
 			dynamicMesh._maxVerticesPerSubmesh = maxVerticesPerSubmesh;
-			dynamicMesh.Initialize(faces, vertexBuilder);
+			dynamicMesh.Initialize(faces, triangulation);
 			return dynamicMesh;
 		}
 
-		private void Initialize(Topology.FacesIndexer faces, IVertexBuilder vertexBuilder)
+		private void Initialize(Topology.FacesIndexer faces, ITriangulation triangulation)
 		{
 			_faceSubmeshIndices = IntFaceAttribute.Create(faces.Count);
 			_faceFirstVertexIndices = IntFaceAttribute.Create(faces.Count);
 
-			switch (_triangulation)
+			_cachedIndexedVertexAttributeArrays = new IndexedVertexAttributeArrays();
+
+			var submeshList = new List<Submesh>();
+
+			var initialVertexCount = Mathf.Min(_maxVerticesPerSubmesh, faces.Count * 3); // Very conservative estimate.
+			var vertexAttributeArrays = new DynamicVertexAttributeArrays(_vertexAttributes, initialVertexCount);
+			var triangleIndices = new List<int>();
+
+			foreach (var face in faces)
 			{
-				case Triangulation.Strip:
-					BuildFaceStrips(faces, vertexBuilder);
-					break;
-				case Triangulation.EdgeFan:
-					BuildFaceEdgeFans(faces, vertexBuilder);
-					break;
-				case Triangulation.CenterFan:
-					BuildFaceCenterFans(faces, vertexBuilder);
-					break;
-				case Triangulation.Umbrella:
-					BuildFaceUmbrellas(faces, vertexBuilder);
-					break;
-				default:
-					throw new NotImplementedException();
+				var vertexCount = triangulation.GetVertexCount(face);
+
+				if (vertexAttributeArrays.index + vertexCount > _maxVerticesPerSubmesh)
+				{
+					triangulation.FinalizeSubmesh(submeshList.Count);
+					submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
+					vertexAttributeArrays.Reset();
+					triangleIndices.Clear();
+				}
+
+				_faceSubmeshIndices[face] = submeshList.Count;
+				_faceFirstVertexIndices[face] = vertexAttributeArrays.index;
+
+				vertexAttributeArrays.Grow(vertexCount);
+
+				triangulation.BuildFace(face, vertexAttributeArrays, triangleIndices);
 			}
+
+			if (vertexAttributeArrays.index > 0)
+			{
+				triangulation.FinalizeSubmesh(submeshList.Count);
+				submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
+			}
+
+			_submeshes = submeshList.ToArray();
 		}
 
-		public void RebuildFace(Topology.Face face, IVertexBuilder vertexBuilder)
+		public void RebuildFace(Topology.Face face, ITriangulation triangulation)
 		{
 			var submesh = _submeshes[_faceSubmeshIndices[face]];
-			var vertexAttributeArrays = new IndexedVertexAttributeArrays(_faceFirstVertexIndices[face], submesh);
+			var vertexAttributeArrays = GetIndexedVertexAttributeArrays(submesh, _faceFirstVertexIndices[face]);
 
-			switch (_triangulation)
-			{
-				case Triangulation.Strip:
-					RebuildFaceStrip(face, vertexBuilder, vertexAttributeArrays);
-					break;
-				case Triangulation.EdgeFan:
-					RebuildFaceEdgeFan(face, vertexBuilder, vertexAttributeArrays);
-					break;
-				case Triangulation.CenterFan:
-					RebuildFaceCenterFan(face, vertexBuilder, vertexAttributeArrays);
-					break;
-				case Triangulation.Umbrella:
-					RebuildFaceUmbrella(face, vertexBuilder, vertexAttributeArrays);
-					break;
-				default:
-					throw new NotImplementedException();
-			}
+			triangulation.RebuildFace(face, vertexAttributeArrays);
 
 			submesh.isDirty = true;
 		}
@@ -92,6 +94,23 @@ namespace Experilous.Topological
 		}
 
 		public int submeshCount { get { return _submeshes.Length; } }
+
+		private IndexedVertexAttributeArrays GetIndexedVertexAttributeArrays(Submesh submesh, int index)
+		{
+			if (ThreadUtility.isMainThread)
+			{
+				return _cachedIndexedVertexAttributeArrays.MoveTo(submesh, index);
+			}
+			else
+			{
+				return new IndexedVertexAttributeArrays(submesh, index);
+			}
+		}
+
+		public Mesh GetSubmesh(int index)
+		{
+			return _submeshes[index].mesh;
+		}
 
 		public IEnumerable<Mesh> submeshes
 		{
@@ -124,95 +143,30 @@ namespace Experilous.Topological
 
 		public interface IVertexAttributes
 		{
-			Vector3 position { set; }
-			Vector3 normal { set; }
-			Color color { set; }
-			Color32 color32 { set; }
-			Vector2 uv { set; }
-			Vector2 uv1 { set; }
-			Vector2 uv2 { set; }
-			Vector2 uv3 { set; }
-			Vector2 uv4 { set; }
-			Vector4 tangent { set; }
+			Vector3 position { get; set; }
+			Vector3 normal { get; set; }
+			Color color { get; set; }
+			Color32 color32 { get; set; }
+			Vector2 uv { get; set; }
+			Vector2 uv1 { get; set; }
+			Vector2 uv2 { get; set; }
+			Vector2 uv3 { get; set; }
+			Vector2 uv4 { get; set; }
+			Vector4 tangent { get; set; }
 		}
 
-		public interface IVertexBuilder
+		public interface IIndexedVertexAttributes : IVertexAttributes
 		{
-			void AddEdgeVertex(Topology.FaceEdge edge, IVertexAttributes vertexAttributes);
-			void AddCenterVertex(Topology.Face face, IVertexAttributes vertexAttributes);
-			void AddDuplicateFirstEdgeVertex(Topology.Face face, IVertexAttributes vertexAttributes);
+			int index { get; }
+			void Advance();
 		}
 
-		public enum Triangulation
+		public interface ITriangulation
 		{
-			Strip,
-			EdgeFan,
-			CenterFan,
-			Umbrella,
-		}
-
-		public class CallbackVertexBuilder : IVertexBuilder
-		{
-			private Action<Topology.FaceEdge, IVertexAttributes> _addEdgeVertexCallback;
-			private Action<Topology.Face, IVertexAttributes> _addCenterVertexCallback;
-			private Action<Topology.Face, IVertexAttributes> _addDuplicateFirstEdgeVertexCallback;
-
-			public CallbackVertexBuilder(
-				Action<Topology.FaceEdge, IVertexAttributes> addEdgeVertexCallback,
-				Action<Topology.Face, IVertexAttributes> addCenterVertexCallback = null,
-				Action<Topology.Face, IVertexAttributes> addDuplicateFirstEdgeVertexCallback = null)
-			{
-				if (addEdgeVertexCallback != null)
-				{
-					_addEdgeVertexCallback = addEdgeVertexCallback;
-				}
-				else
-				{
-					_addEdgeVertexCallback = (Topology.FaceEdge edge, IVertexAttributes vertexAttributes) =>
-					{
-						throw new NotSupportedException("A triangulation strategy needs to add an edge vertex, but no action for building such a vertex was provided.");
-					};
-				}
-
-				if (addCenterVertexCallback != null)
-				{
-					_addCenterVertexCallback = addCenterVertexCallback;
-				}
-				else
-				{
-					_addCenterVertexCallback = (Topology.Face face, IVertexAttributes vertexAttributes) =>
-					{
-						throw new NotSupportedException("A triangulation strategy needs to add a center vertex, but no action for building such a vertex was provided.");
-					};
-				}
-
-				if (addDuplicateFirstEdgeVertexCallback != null)
-				{
-					_addDuplicateFirstEdgeVertexCallback = addDuplicateFirstEdgeVertexCallback;
-				}
-				else
-				{
-					_addDuplicateFirstEdgeVertexCallback = (Topology.Face face, IVertexAttributes vertexAttributes) =>
-					{
-						throw new NotSupportedException("A triangulation strategy needs to add a duplicated first edge vertex, but no action for building such a vertex was provided.");
-					};
-				}
-			}
-
-			public void AddEdgeVertex(Topology.FaceEdge edge, IVertexAttributes vertexAttributes)
-			{
-				_addEdgeVertexCallback(edge, vertexAttributes);
-			}
-
-			public void AddCenterVertex(Topology.Face face, IVertexAttributes vertexAttributes)
-			{
-				_addCenterVertexCallback(face, vertexAttributes);
-			}
-
-			public void AddDuplicateFirstEdgeVertex(Topology.Face face, IVertexAttributes vertexAttributes)
-			{
-				_addDuplicateFirstEdgeVertexCallback(face, vertexAttributes);
-			}
+			int GetVertexCount(Topology.Face face);
+			void BuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices);
+			void RebuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes);
+			void FinalizeSubmesh(int index);
 		}
 
 		#endregion
@@ -288,15 +242,10 @@ namespace Experilous.Topological
 			}
 		}
 
-		private interface IIndexedVertexAttributes : IVertexAttributes
-		{
-			void Advance();
-		}
-
 		private class DynamicVertexAttributeArrays : IIndexedVertexAttributes
 		{
-			public int index = 0;
-			public int capacity = 0;
+			private int _index = 0;
+			private int _capacity = 0;
 
 			public Vector3[] positions;
 			public Vector3[] normals;
@@ -310,7 +259,7 @@ namespace Experilous.Topological
 
 			public DynamicVertexAttributeArrays(VertexAttributes attributes, int capacity)
 			{
-				this.capacity = capacity;
+				_capacity = capacity;
 
 				if ((attributes & VertexAttributes.Position) != 0) positions = new Vector3[capacity];
 				if ((attributes & VertexAttributes.Normal) != 0) normals = new Vector3[capacity];
@@ -323,22 +272,24 @@ namespace Experilous.Topological
 				if ((attributes & VertexAttributes.Tangent) != 0) tangents = new Vector4[capacity];
 			}
 
-			public Vector3 position { set { positions[index] = value; } }
-			public Vector3 normal { set { normals[index] = value; } }
-			public Color color { set { colors[index] = value; } }
-			public Color32 color32 { set { colors32[index] = value; } }
-			public Vector2 uv { set { uvs[index] = value; } }
-			public Vector2 uv1 { set { uvs[index] = value; } }
-			public Vector2 uv2 { set { uvs2[index] = value; } }
-			public Vector2 uv3 { set { uvs3[index] = value; } }
-			public Vector2 uv4 { set { uvs4[index] = value; } }
-			public Vector4 tangent { set { tangents[index] = value; } }
+			public int index { get { return _index; } }
+
+			public Vector3 position { get { return positions[_index]; } set { positions[_index] = value; } }
+			public Vector3 normal { get { return normals[_index]; } set { normals[_index] = value; } }
+			public Color color { get { return colors[_index]; } set { colors[_index] = value; } }
+			public Color32 color32 { get { return colors32[_index]; } set { colors32[_index] = value; } }
+			public Vector2 uv { get { return uvs[_index]; } set { uvs[_index] = value; } }
+			public Vector2 uv1 { get { return uvs[_index]; } set { uvs[_index] = value; } }
+			public Vector2 uv2 { get { return uvs2[_index]; } set { uvs2[_index] = value; } }
+			public Vector2 uv3 { get { return uvs3[_index]; } set { uvs3[_index] = value; } }
+			public Vector2 uv4 { get { return uvs4[_index]; } set { uvs4[_index] = value; } }
+			public Vector4 tangent { get { return tangents[_index]; } set { tangents[_index] = value; } }
 
 			public DynamicVertexAttributeArrays Grow(int vertexCount)
 			{
-				while (index + vertexCount > capacity)
+				while (_index + vertexCount > _capacity)
 				{
-					capacity = capacity * 3 / 2;
+					_capacity = _capacity * 3 / 2;
 					GrowArray(ref positions);
 					GrowArray(ref normals);
 					GrowArray(ref colors);
@@ -356,55 +307,69 @@ namespace Experilous.Topological
 			{
 				if (array != null)
 				{
-					var newArray = new T[capacity];
-					Array.Copy(array, newArray, index);
+					var newArray = new T[_capacity];
+					Array.Copy(array, newArray, _index);
 					array = newArray;
 				}
 			}
 
 			public void Advance()
 			{
-				++index;
+				++_index;
 			}
 
 			public void Reset()
 			{
-				index = 0;
+				_index = 0;
 			}
 		}
 
 		private class IndexedVertexAttributeArrays : IIndexedVertexAttributes
 		{
-			public int index;
-
 			private Submesh _submesh;
+			private int _index;
+
+			public IndexedVertexAttributeArrays()
+			{
+				_submesh = null;
+				_index = 0;
+			}
 
 			public IndexedVertexAttributeArrays(Submesh submesh)
 			{
-				index = 0;
 				_submesh = submesh;
+				_index = 0;
 			}
 
-			public IndexedVertexAttributeArrays(int index, Submesh submesh)
+			public IndexedVertexAttributeArrays(Submesh submesh, int index)
 			{
-				this.index = index;
 				_submesh = submesh;
+				_index = index;
 			}
 
-			public Vector3 position { set { _submesh.positions[index] = value; } }
-			public Vector3 normal { set { _submesh.normals[index] = value; } }
-			public Color color { set { _submesh.colors[index] = value; } }
-			public Color32 color32 { set { _submesh.colors32[index] = value; } }
-			public Vector2 uv { set { _submesh.uvs[index] = value; } }
-			public Vector2 uv1 { set { _submesh.uvs[index] = value; } }
-			public Vector2 uv2 { set { _submesh.uvs2[index] = value; } }
-			public Vector2 uv3 { set { _submesh.uvs3[index] = value; } }
-			public Vector2 uv4 { set { _submesh.uvs4[index] = value; } }
-			public Vector4 tangent { set { _submesh.tangents[index] = value; } }
+			public int index { get { return _index; } }
+
+			public Vector3 position { get { return _submesh.positions[_index]; } set { _submesh.positions[_index] = value; } }
+			public Vector3 normal { get { return _submesh.normals[_index]; } set { _submesh.normals[_index] = value; } }
+			public Color color { get { return _submesh.colors[_index]; } set { _submesh.colors[_index] = value; } }
+			public Color32 color32 { get { return _submesh.colors32[_index]; } set { _submesh.colors32[_index] = value; } }
+			public Vector2 uv { get { return _submesh.uvs[_index]; } set { _submesh.uvs[_index] = value; } }
+			public Vector2 uv1 { get { return _submesh.uvs[_index]; } set { _submesh.uvs[_index] = value; } }
+			public Vector2 uv2 { get { return _submesh.uvs2[_index]; } set { _submesh.uvs2[_index] = value; } }
+			public Vector2 uv3 { get { return _submesh.uvs3[_index]; } set { _submesh.uvs3[_index] = value; } }
+			public Vector2 uv4 { get { return _submesh.uvs4[_index]; } set { _submesh.uvs4[_index] = value; } }
+			public Vector4 tangent { get { return _submesh.tangents[_index]; } set { _submesh.tangents[_index] = value; } }
 
 			public void Advance()
 			{
-				++index;
+				++_index;
+			}
+
+			public IndexedVertexAttributeArrays MoveTo(Submesh submesh, int index)
+			{
+				_submesh = submesh;
+				_index = index;
+				return this;
 			}
 		}
 
@@ -412,268 +377,387 @@ namespace Experilous.Topological
 
 		#region Triangulation
 
-		private void BuildFaceStrips(Topology.FacesIndexer faces, IVertexBuilder vertexBuilder)
+		public class SeparatedFacesStripTriangulation : ITriangulation
 		{
-			var submeshList = new List<Submesh>();
+			private int _ringDepth;
 
-			var vertexAttributeArrays = new DynamicVertexAttributeArrays(_vertexAttributes, Mathf.Min(_maxVerticesPerSubmesh, faces.Count * 6));
-			var triangleIndices = new List<int>();
+			private Action<Topology.FaceEdge, IIndexedVertexAttributes> _addRingVertices;
 
-			foreach (var face in faces)
+			public SeparatedFacesStripTriangulation(Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices)
 			{
-				var vertexCount = face.neighborCount;
+				_ringDepth = 1;
+				_addRingVertices = addRingVertices;
+			}
 
-				if (vertexAttributeArrays.index + vertexCount > _maxVerticesPerSubmesh)
+			public SeparatedFacesStripTriangulation(int ringDepth, Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices)
+			{
+				if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
+				_ringDepth = ringDepth;
+				_addRingVertices = addRingVertices;
+			}
+
+			public int GetVertexCount(Topology.Face face)
+			{
+				return face.neighborCount * _ringDepth;
+			}
+
+			public void BuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
+			{
+				int neighborCount = face.neighborCount;
+				int currentOuterVertexIndex = vertexAttributes.index;
+
+				if (_ringDepth > 1)
 				{
-					submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
-					vertexAttributeArrays.Reset();
-					triangleIndices.Clear();
+					int nextOuterVertexIndex = currentOuterVertexIndex + _ringDepth;
+
+					for (int neighborIndex = 1; neighborIndex < neighborCount; ++neighborIndex)
+					{
+						int outerDepthIndex = 0;
+						for (int innerDepthIndex = 1; innerDepthIndex < _ringDepth; ++innerDepthIndex)
+						{
+							triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+							triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + innerDepthIndex);
+							outerDepthIndex = innerDepthIndex;
+						}
+
+						currentOuterVertexIndex = nextOuterVertexIndex;
+						nextOuterVertexIndex += _ringDepth;
+					}
+
+					// Triangles that wrap-around and reuse the first column of vertices.
+					{
+						nextOuterVertexIndex = vertexAttributes.index;
+						int outerDepthIndex = 0;
+						for (int innerDepthIndex = 1; innerDepthIndex < _ringDepth; ++innerDepthIndex)
+						{
+							triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+							triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + innerDepthIndex);
+							outerDepthIndex = innerDepthIndex;
+						}
+					}
 				}
 
-				_faceSubmeshIndices[face] = submeshList.Count;
-				_faceFirstVertexIndices[face] = vertexAttributeArrays.index;
+				int forwardVertexIndex = vertexAttributes.index + _ringDepth - 1;
+				int backwardVertexIndex = vertexAttributes.index + neighborCount * _ringDepth - 1;
 
-				vertexAttributeArrays.Grow(vertexCount);
-
-				int firstVertexIndex = vertexAttributeArrays.index;
-				int forwardVertexIndex = firstVertexIndex + 1;
-				int backwardVertexIndex = firstVertexIndex + 2;
-
-				triangleIndices.Add(firstVertexIndex);
-				triangleIndices.Add(forwardVertexIndex);
-				triangleIndices.Add(backwardVertexIndex);
-
-				int triangleCount = face.neighborCount - 2;
-				int triangleIndex = 1;
-				while (triangleIndex < triangleCount)
+				int triangleIndex = 2;
+				while (triangleIndex < neighborCount)
 				{
 					triangleIndices.Add(backwardVertexIndex);
 					triangleIndices.Add(forwardVertexIndex);
-					triangleIndices.Add(forwardVertexIndex += 2);
+					backwardVertexIndex -= _ringDepth;
+					triangleIndices.Add(backwardVertexIndex);
 
-					if (++triangleIndex == triangleCount) break;
+					if (++triangleIndex == neighborCount) break;
 
 					triangleIndices.Add(backwardVertexIndex);
 					triangleIndices.Add(forwardVertexIndex);
-					triangleIndices.Add(backwardVertexIndex += 2);
+					forwardVertexIndex += _ringDepth;
+					triangleIndices.Add(forwardVertexIndex);
 
 					++triangleIndex;
 				}
 
-				RebuildFaceStrip(face, vertexBuilder, vertexAttributeArrays);
+				RebuildFace(face, vertexAttributes);
 			}
 
-			if (vertexAttributeArrays.index > 0)
+			public void RebuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes)
 			{
-				submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
-			}
-
-			_submeshes = submeshList.ToArray();
-		}
-
-		private void RebuildFaceStrip(Topology.Face face, IVertexBuilder vertexBuilder, IIndexedVertexAttributes vertexAttributes)
-		{
-			var firstEdge = face.firstEdge;
-
-			vertexBuilder.AddEdgeVertex(firstEdge, vertexAttributes);
-			vertexAttributes.Advance();
-
-			var forwardEdge = firstEdge.next;
-			vertexBuilder.AddEdgeVertex(forwardEdge, vertexAttributes);
-			vertexAttributes.Advance();
-
-			var backwardEdge = firstEdge.prev;
-			vertexBuilder.AddEdgeVertex(backwardEdge, vertexAttributes);
-			vertexAttributes.Advance();
-
-			forwardEdge = forwardEdge.next;
-			while (forwardEdge != backwardEdge)
-			{
-				vertexBuilder.AddEdgeVertex(forwardEdge, vertexAttributes);
-				vertexAttributes.Advance();
-
-				backwardEdge = backwardEdge.prev;
-				if (forwardEdge == backwardEdge) break;
-
-				vertexBuilder.AddEdgeVertex(backwardEdge, vertexAttributes);
-				vertexAttributes.Advance();
-
-				forwardEdge = forwardEdge.next;
-			}
-		}
-
-		private void BuildFaceEdgeFans(Topology.FacesIndexer faces, IVertexBuilder vertexBuilder)
-		{
-			var submeshList = new List<Submesh>();
-
-			var vertexAttributeArrays = new DynamicVertexAttributeArrays(_vertexAttributes, Mathf.Min(_maxVerticesPerSubmesh, faces.Count * 6));
-			var triangleIndices = new List<int>();
-
-			foreach (var face in faces)
-			{
-				var vertexCount = face.neighborCount;
-
-				if (vertexAttributeArrays.index + vertexCount > _maxVerticesPerSubmesh)
+				foreach (var edge in face.edges)
 				{
-					submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
-					vertexAttributeArrays.Reset();
-					triangleIndices.Clear();
+					_addRingVertices(edge, vertexAttributes);
+				}
+			}
+
+			public void FinalizeSubmesh(int index)
+			{
+			}
+		}
+
+		public class SeparatedFacesEdgeFanTriangulation : ITriangulation
+		{
+			private int _ringDepth;
+			private Action<Topology.FaceEdge, IIndexedVertexAttributes> _addRingVertices;
+
+			public SeparatedFacesEdgeFanTriangulation(Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices)
+			{
+				_ringDepth = 1;
+				_addRingVertices = addRingVertices;
+			}
+
+			public SeparatedFacesEdgeFanTriangulation(int ringDepth, Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices)
+			{
+				if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
+				_ringDepth = ringDepth;
+				_addRingVertices = addRingVertices;
+			}
+
+			public int GetVertexCount(Topology.Face face)
+			{
+				return face.neighborCount * _ringDepth;
+			}
+
+			public void BuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
+			{
+				int neighborCount = face.neighborCount;
+				int currentOuterVertexIndex = vertexAttributes.index;
+
+				if (_ringDepth > 1)
+				{
+					int nextOuterVertexIndex = currentOuterVertexIndex + _ringDepth;
+
+					for (int neighborIndex = 1; neighborIndex < neighborCount; ++neighborIndex)
+					{
+						int outerDepthIndex = 0;
+						for (int innerDepthIndex = 1; innerDepthIndex < _ringDepth; ++innerDepthIndex)
+						{
+							triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+							triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + innerDepthIndex);
+							outerDepthIndex = innerDepthIndex;
+						}
+
+						currentOuterVertexIndex = nextOuterVertexIndex;
+						nextOuterVertexIndex += _ringDepth;
+					}
+
+					// Triangles that wrap-around and reuse the first column of vertices.
+					{
+						nextOuterVertexIndex = vertexAttributes.index;
+						int outerDepthIndex = 0;
+						for (int innerDepthIndex = 1; innerDepthIndex < _ringDepth; ++innerDepthIndex)
+						{
+							triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+							triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+							triangleIndices.Add(nextOuterVertexIndex + innerDepthIndex);
+							outerDepthIndex = innerDepthIndex;
+						}
+					}
 				}
 
-				_faceSubmeshIndices[face] = submeshList.Count;
-				_faceFirstVertexIndices[face] = vertexAttributeArrays.index;
-
-				vertexAttributeArrays.Grow(vertexCount);
-
-				int firstVertexIndex = vertexAttributeArrays.index;
-				int nextVertexIndex = firstVertexIndex + 1;
-
-				int triangleCount = face.neighborCount - 2;
-				for (int triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
+				int innerRingFirstVertexIndex = vertexAttributes.index + _ringDepth - 1;
+				int innerRingNextVertexIndex = innerRingFirstVertexIndex + _ringDepth;
+				for (int triangleIndex = 2; triangleIndex < neighborCount; ++triangleIndex)
 				{
-					triangleIndices.Add(firstVertexIndex);
-					triangleIndices.Add(nextVertexIndex);
-					triangleIndices.Add(++nextVertexIndex);
+					triangleIndices.Add(innerRingFirstVertexIndex);
+					triangleIndices.Add(innerRingNextVertexIndex);
+					innerRingNextVertexIndex += _ringDepth;
+					triangleIndices.Add(innerRingNextVertexIndex);
 				}
 
-				RebuildFaceEdgeFan(face, vertexBuilder, vertexAttributeArrays);
+				RebuildFace(face, vertexAttributes);
 			}
 
-			if (vertexAttributeArrays.index > 0)
+			public void RebuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes)
 			{
-				submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
+				foreach (var edge in face.edges)
+				{
+					_addRingVertices(edge, vertexAttributes);
+				}
 			}
 
-			_submeshes = submeshList.ToArray();
-		}
-
-		private void RebuildFaceEdgeFan(Topology.Face face, IVertexBuilder vertexBuilder, IIndexedVertexAttributes vertexAttributes)
-		{
-			foreach (var edge in face.edges)
+			public void FinalizeSubmesh(int index)
 			{
-				vertexBuilder.AddEdgeVertex(edge, vertexAttributes);
-				vertexAttributes.Advance();
 			}
 		}
 
-		private void BuildFaceCenterFans(Topology.FacesIndexer faces, IVertexBuilder vertexBuilder)
+		public class SeparatedFacesCenterFanTriangulation : ITriangulation
 		{
-			var submeshList = new List<Submesh>();
+			private int _ringDepth;
 
-			var vertexAttributeArrays = new DynamicVertexAttributeArrays(_vertexAttributes, Mathf.Min(_maxVerticesPerSubmesh, faces.Count * 8));
-			var triangleIndices = new List<int>();
+			private Action<Topology.FaceEdge, IIndexedVertexAttributes> _addRingVertices;
+			private Action<Topology.FaceEdge, IIndexedVertexAttributes> _addCenterVertex;
+			private Action<Topology.Face, IIndexedVertexAttributes> _addDuplicateRingVertices;
 
-			foreach (var face in faces)
+			public SeparatedFacesCenterFanTriangulation(
+				Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices,
+				Action<Topology.FaceEdge, IIndexedVertexAttributes> addCenterVertex,
+				Action<Topology.Face, IIndexedVertexAttributes> addDuplicateRingVertices)
 			{
-				var vertexCount = face.neighborCount + 2;
+				_ringDepth = 1;
+				_addRingVertices = addRingVertices;
+				_addCenterVertex = addCenterVertex;
+				_addDuplicateRingVertices = addDuplicateRingVertices;
+			}
 
-				if (vertexAttributeArrays.index + vertexCount > _maxVerticesPerSubmesh)
+			public SeparatedFacesCenterFanTriangulation(
+				int ringDepth,
+				Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices,
+				Action<Topology.FaceEdge, IIndexedVertexAttributes> addCenterVertex,
+				Action<Topology.Face, IIndexedVertexAttributes> addDuplicateRingVertices)
+			{
+				if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
+				_ringDepth = ringDepth;
+				_addRingVertices = addRingVertices;
+				_addCenterVertex = addCenterVertex;
+				_addDuplicateRingVertices = addDuplicateRingVertices;
+			}
+
+			public int GetVertexCount(Topology.Face face)
+			{
+				return face.neighborCount * (_ringDepth + 1) + _ringDepth;
+			}
+
+			public void BuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
+			{
+				int neighborCount = face.neighborCount;
+				int currentOuterVertexIndex = vertexAttributes.index;
+				int nextOuterVertexIndex = currentOuterVertexIndex + _ringDepth + 1;
+
+				for (int neighborIndex = 0; neighborIndex < neighborCount; ++neighborIndex)
 				{
-					submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
-					vertexAttributeArrays.Reset();
-					triangleIndices.Clear();
+					int outerDepthIndex = 0;
+					for (int innerDepthIndex = 1; innerDepthIndex < _ringDepth; ++innerDepthIndex)
+					{
+						triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+						triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + innerDepthIndex);
+						outerDepthIndex = innerDepthIndex;
+					}
+
+					triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+					triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+					triangleIndices.Add(currentOuterVertexIndex + _ringDepth);
+
+					currentOuterVertexIndex = nextOuterVertexIndex;
+					nextOuterVertexIndex += _ringDepth + 1;
 				}
 
-				_faceSubmeshIndices[face] = submeshList.Count;
-				_faceFirstVertexIndices[face] = vertexAttributeArrays.index;
+				RebuildFace(face, vertexAttributes);
+			}
 
-				vertexAttributeArrays.Grow(vertexCount);
-
-				int centerVertexIndex = vertexAttributeArrays.index;
-
-				int nextVertexIndex = centerVertexIndex + 1;
-
-				int triangleCount = face.neighborCount;
-				for (int triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
+			public void RebuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes)
+			{
+				var firstEdge = face.firstEdge;
+				var edge = firstEdge;
+				do
 				{
+					_addRingVertices(edge, vertexAttributes);
+					edge = edge.next;
+					_addCenterVertex(edge, vertexAttributes);
+				} while (edge != firstEdge);
+
+				_addDuplicateRingVertices(face, vertexAttributes);
+			}
+
+			public void FinalizeSubmesh(int index)
+			{
+			}
+		}
+
+		public class SeparatedFacesUmbrellaTriangulation : ITriangulation
+		{
+			private int _ringDepth;
+
+			private Action<Topology.FaceEdge, IIndexedVertexAttributes> _addRingVertices;
+			private Action<Topology.Face, IIndexedVertexAttributes> _addCenterVertex;
+
+			public SeparatedFacesUmbrellaTriangulation(
+				Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices,
+				Action<Topology.Face, IIndexedVertexAttributes> addCenterVertex)
+			{
+				_ringDepth = 1;
+				_addRingVertices = addRingVertices;
+				_addCenterVertex = addCenterVertex;
+			}
+
+			public SeparatedFacesUmbrellaTriangulation(
+				int ringDepth,
+				Action<Topology.FaceEdge, IIndexedVertexAttributes> addRingVertices,
+				Action<Topology.Face, IIndexedVertexAttributes> addCenterVertex)
+			{
+				if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
+				_ringDepth = ringDepth;
+				_addRingVertices = addRingVertices;
+				_addCenterVertex = addCenterVertex;
+			}
+
+			public int GetVertexCount(Topology.Face face)
+			{
+				return face.neighborCount * _ringDepth + 1;
+			}
+
+			public void BuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
+			{
+				int neighborCount = face.neighborCount;
+				int currentOuterVertexIndex = vertexAttributes.index;
+				int nextOuterVertexIndex = currentOuterVertexIndex + _ringDepth;
+				int centerVertexIndex = currentOuterVertexIndex + neighborCount * _ringDepth;
+
+				for (int neighborIndex = 1; neighborIndex < neighborCount; ++neighborIndex)
+				{
+					int outerDepthIndex = 0;
+					for (int innerDepthIndex = 1; innerDepthIndex < _ringDepth; ++innerDepthIndex)
+					{
+						triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+						triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + innerDepthIndex);
+						outerDepthIndex = innerDepthIndex;
+					}
+
+					triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+					triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
 					triangleIndices.Add(centerVertexIndex);
-					triangleIndices.Add(nextVertexIndex);
-					triangleIndices.Add(++nextVertexIndex);
+
+					currentOuterVertexIndex = nextOuterVertexIndex;
+					nextOuterVertexIndex += _ringDepth;
 				}
 
-				RebuildFaceCenterFan(face, vertexBuilder, vertexAttributeArrays);
-			}
-
-			if (vertexAttributeArrays.index > 0)
-			{
-				submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
-			}
-
-			_submeshes = submeshList.ToArray();
-		}
-
-		private void RebuildFaceCenterFan(Topology.Face face, IVertexBuilder vertexBuilder, IIndexedVertexAttributes vertexAttributes)
-		{
-			vertexBuilder.AddCenterVertex(face, vertexAttributes);
-			vertexAttributes.Advance();
-
-			foreach (var edge in face.edges)
-			{
-				vertexBuilder.AddEdgeVertex(edge, vertexAttributes);
-				vertexAttributes.Advance();
-			}
-
-			vertexBuilder.AddDuplicateFirstEdgeVertex(face, vertexAttributes);
-			vertexAttributes.Advance();
-		}
-
-		private void BuildFaceUmbrellas(Topology.FacesIndexer faces, IVertexBuilder vertexBuilder)
-		{
-			var submeshList = new List<Submesh>();
-
-			var vertexAttributeArrays = new DynamicVertexAttributeArrays(_vertexAttributes, Mathf.Min(_maxVerticesPerSubmesh, faces.Count * 7));
-			var triangleIndices = new List<int>();
-
-			foreach (var face in faces)
-			{
-				var vertexCount = face.neighborCount + 1;
-
-				if (vertexAttributeArrays.index + vertexCount > _maxVerticesPerSubmesh)
+				// Triangles that wrap-around and reuse the first column of vertices.
 				{
-					submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
-					vertexAttributeArrays.Reset();
-					triangleIndices.Clear();
-				}
+					nextOuterVertexIndex = vertexAttributes.index;
+					int outerDepthIndex = 0;
+					for (int innerDepthIndex = 1; innerDepthIndex < _ringDepth; ++innerDepthIndex)
+					{
+						triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+						triangleIndices.Add(currentOuterVertexIndex + innerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
+						triangleIndices.Add(nextOuterVertexIndex + innerDepthIndex);
+						outerDepthIndex = innerDepthIndex;
+					}
 
-				_faceSubmeshIndices[face] = submeshList.Count;
-				_faceFirstVertexIndices[face] = vertexAttributeArrays.index;
-
-				vertexAttributeArrays.Grow(vertexCount);
-
-				int centerVertexIndex = vertexAttributeArrays.index;
-
-				int nextVertexIndex = centerVertexIndex + 1;
-
-				int triangleCount = face.neighborCount;
-				for (int triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
-				{
+					triangleIndices.Add(currentOuterVertexIndex + outerDepthIndex);
+					triangleIndices.Add(nextOuterVertexIndex + outerDepthIndex);
 					triangleIndices.Add(centerVertexIndex);
-					triangleIndices.Add(nextVertexIndex);
-					triangleIndices.Add(++nextVertexIndex);
 				}
 
-				triangleIndices[triangleIndices.Count - 1] = centerVertexIndex + 1;
-
-				RebuildFaceUmbrella(face, vertexBuilder, vertexAttributeArrays);
+				RebuildFace(face, vertexAttributes);
 			}
 
-			if (vertexAttributeArrays.index > 0)
+			public void RebuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes)
 			{
-				submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
+				foreach (var edge in face.edges)
+				{
+					_addRingVertices(edge, vertexAttributes);
+				}
+
+				_addCenterVertex(face, vertexAttributes);
 			}
 
-			_submeshes = submeshList.ToArray();
-		}
-
-		private void RebuildFaceUmbrella(Topology.Face face, IVertexBuilder vertexBuilder, IIndexedVertexAttributes vertexAttributes)
-		{
-			vertexBuilder.AddCenterVertex(face, vertexAttributes);
-			vertexAttributes.Advance();
-
-			foreach (var edge in face.edges)
+			public void FinalizeSubmesh(int index)
 			{
-				vertexBuilder.AddEdgeVertex(edge, vertexAttributes);
-				vertexAttributes.Advance();
 			}
 		}
 

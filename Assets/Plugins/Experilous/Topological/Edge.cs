@@ -501,6 +501,53 @@ namespace Experilous.Topological
 		T this[Topology.FaceEdge e] { get; set; }
 	}
 
+	public struct EdgeAttributeConstantWrapper<T> : IEdgeAttribute<T>
+	{
+		public T constant;
+
+		public EdgeAttributeConstantWrapper(T constant)
+		{
+			this.constant = constant;
+		}
+
+		public T this[int i]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant edge attribute cannot be changed."); }
+		}
+
+		public T this[Topology.HalfEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant edge attribute cannot be changed."); }
+		}
+
+		public T this[Topology.VertexEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant edge attribute cannot be changed."); }
+		}
+
+		public T this[Topology.FaceEdge e]
+		{
+			get { return constant; }
+			set { throw new NotSupportedException("Values of a constant edge attribute cannot be changed."); }
+		}
+
+		public int Count { get { throw new NotSupportedException(); } }
+		public bool IsReadOnly { get { return true; } }
+		public void Add(T item) { throw new NotSupportedException(); }
+		public void Clear() { throw new NotSupportedException(); }
+		public bool Contains(T item) { throw new NotSupportedException(); }
+		public void CopyTo(T[] array, int arrayIndex) { throw new NotSupportedException(); }
+		public IEnumerator<T> GetEnumerator() { throw new NotSupportedException(); }
+		public int IndexOf(T item) { throw new NotSupportedException(); }
+		public void Insert(int index, T item) { throw new NotSupportedException(); }
+		public bool Remove(T item) { throw new NotSupportedException(); }
+		public void RemoveAt(int index) { throw new NotSupportedException(); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+	}
+
 	public struct EdgeAttributeArrayWrapper<T> : IEdgeAttribute<T>
 	{
 		public T[] array;
