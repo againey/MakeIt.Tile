@@ -79,7 +79,7 @@ namespace Experilous.Topological
 
 		public Topology CreateTopology()
 		{
-			return TopologyBuilder.BuildTopology(this);
+			return TopologyUtility.BuildTopology(this);
 		}
 
 		public Topology CreateManifold(out Vector3[] vertexPositions)

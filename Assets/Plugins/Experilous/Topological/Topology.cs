@@ -86,7 +86,6 @@ namespace Experilous.Topological
 	/// <seealso cref="IFaceAttribute`1{T}"/>
 	/// <seealso cref="EdgeWrap"/>
 	/// <seealso cref="TopologyUtility"/>
-	/// <seealso cref="TopologyBuilder"/>
 	public partial class Topology : ScriptableObject, ICloneable
 	{
 		public ushort[] vertexNeighborCounts;
@@ -323,7 +322,7 @@ namespace Experilous.Topological
 			edgeData[outerEdgeIndex1].wrap = EdgeWrapUtility.ModifySourceFaceEdgeRelations(edgeData[outerEdgeIndex1].wrap, edgeData[twinEdgeIndex].wrap); // Outer Edge 1's source face changed, according to Edge.
 		}
 
-		private void PivotEdgeBackwardUnchecked(Topology.VertexEdge edge)
+		private void PivotEdgeBackwardUnchecked(VertexEdge edge)
 		{
 			int edgeIndex = edge.index;
 			var twinEdgeIndex = edgeData[edgeIndex].twin;
@@ -332,7 +331,7 @@ namespace Experilous.Topological
 			PivotVertexEdgeBackwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
 		}
 
-		private void PivotEdgeForwardUnchecked(Topology.VertexEdge edge)
+		private void PivotEdgeForwardUnchecked(VertexEdge edge)
 		{
 			int edgeIndex = edge.index;
 			int twinEdgeIndex = edgeData[edgeIndex].twin;
@@ -346,7 +345,7 @@ namespace Experilous.Topological
 		// around a different vertex.  The original face edge becomes the edge
 		// along which the vertex edge slides its far vertex.
 
-		private void PivotEdgeBackwardUnchecked(Topology.FaceEdge edge)
+		private void PivotEdgeBackwardUnchecked(FaceEdge edge)
 		{
 			var innerEdgeIndex1 = edge.index;
 			var outerEdgeIndex1 = edgeData[innerEdgeIndex1].twin;
@@ -355,7 +354,7 @@ namespace Experilous.Topological
 			PivotVertexEdgeBackwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
 		}
 
-		private void PivotEdgeForwardUnchecked(Topology.FaceEdge edge)
+		private void PivotEdgeForwardUnchecked(FaceEdge edge)
 		{
 			var innerEdgeIndex1 = edge.index;
 			var outerEdgeIndex1 = edgeData[innerEdgeIndex1].twin;
@@ -364,33 +363,33 @@ namespace Experilous.Topological
 			PivotVertexEdgeForwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
 		}
 
-		public bool CanPivotEdgeBackward(Topology.VertexEdge edge)
+		public bool CanPivotEdgeBackward(VertexEdge edge)
 		{
 			// After pivoting, the edge's old far vertex and previous face will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
 			return edge.farVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2;
 		}
 
-		public bool CanPivotEdgeForward(Topology.VertexEdge edge)
+		public bool CanPivotEdgeForward(VertexEdge edge)
 		{
 			// After pivoting, the edge's old far vertex and next face will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
 			return edge.farVertex.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
-		public void PivotEdgeBackward(Topology.VertexEdge edge)
+		public void PivotEdgeBackward(VertexEdge edge)
 		{
 			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge backward when either its far vertex or previous face has only two neighbors.");
 			PivotEdgeBackwardUnchecked(edge);
 		}
 
-		public void PivotEdgeForward(Topology.VertexEdge edge)
+		public void PivotEdgeForward(VertexEdge edge)
 		{
 			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge forward when either its far vertex or next face has only two neighbors.");
 			PivotEdgeForwardUnchecked(edge);
 		}
 
-		public bool CanSpinEdgeBackward(Topology.VertexEdge edge)
+		public bool CanSpinEdgeBackward(VertexEdge edge)
 		{
 			// After spinning, the edge's old near and far vertices will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
@@ -400,7 +399,7 @@ namespace Experilous.Topological
 			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
-		public bool CanSpinEdgeForward(Topology.VertexEdge edge)
+		public bool CanSpinEdgeForward(VertexEdge edge)
 		{
 			// After spinning, the edge's old near and far vertices will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
@@ -410,47 +409,47 @@ namespace Experilous.Topological
 			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
-		public void SpinEdgeBackward(Topology.VertexEdge edge)
+		public void SpinEdgeBackward(VertexEdge edge)
 		{
 			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge backward when either its far vertex or near vertex has only two neighbors.");
 			PivotEdgeBackwardUnchecked(edge);
 			PivotEdgeBackwardUnchecked(edge.twin);
 		}
 
-		public void SpinEdgeForward(Topology.VertexEdge edge)
+		public void SpinEdgeForward(VertexEdge edge)
 		{
 			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when either its far vertex or near vertex has only two neighbors.");
 			PivotEdgeForwardUnchecked(edge);
 			PivotEdgeForwardUnchecked(edge.twin);
 		}
 
-		public bool CanPivotEdgeBackward(Topology.FaceEdge edge)
+		public bool CanPivotEdgeBackward(FaceEdge edge)
 		{
 			// After pivoting, the edge's old far face and prev vertex will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
 			return edge.farFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2;
 		}
 
-		public bool CanPivotEdgeForward(Topology.FaceEdge edge)
+		public bool CanPivotEdgeForward(FaceEdge edge)
 		{
 			// After pivoting, the edge's old far face and next vertex will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
 			return edge.farFace.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
-		public void PivotEdgeBackward(Topology.FaceEdge edge)
+		public void PivotEdgeBackward(FaceEdge edge)
 		{
 			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a face edge backward when either its far face or previous vertex has only two neighbors.");
 			PivotEdgeBackwardUnchecked(edge);
 		}
 
-		public void PivotEdgeForward(Topology.FaceEdge edge)
+		public void PivotEdgeForward(FaceEdge edge)
 		{
 			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a face edge backward when either its far face or next vertex has only two neighbors.");
 			PivotEdgeForwardUnchecked(edge);
 		}
 
-		public bool CanSpinEdgeBackward(Topology.FaceEdge edge)
+		public bool CanSpinEdgeBackward(FaceEdge edge)
 		{
 			// After spinning, the edge's old near and far faces will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
@@ -460,7 +459,7 @@ namespace Experilous.Topological
 			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
-		public bool CanSpinEdgeForward(Topology.FaceEdge edge)
+		public bool CanSpinEdgeForward(FaceEdge edge)
 		{
 			// After spinning, the edge's old near and far faces will both have their
 			// neighbor counts reduced by one.  Neither of these counts can fall below 2.
@@ -470,14 +469,14 @@ namespace Experilous.Topological
 			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
-		public void SpinEdgeBackward(Topology.FaceEdge edge)
+		public void SpinEdgeBackward(FaceEdge edge)
 		{
 			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a face edge backward when either its far face or near face has only two neighbors.");
 			PivotEdgeBackwardUnchecked(edge);
 			PivotEdgeBackwardUnchecked(edge.twin);
 		}
 
-		public void SpinEdgeForward(Topology.FaceEdge edge)
+		public void SpinEdgeForward(FaceEdge edge)
 		{
 			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a face edge forward when either its far face or near face has only two neighbors.");
 			PivotEdgeForwardUnchecked(edge);

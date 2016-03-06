@@ -351,7 +351,7 @@ namespace Experilous.Topological
 				}
 			}
 
-			subdividedTopology = TopologyBuilder.BuildTopology(indexer);
+			subdividedTopology = TopologyUtility.BuildTopology(indexer);
 			subdividedVertexPositions = subdividedVertexPositionsList.ToArray();
 		}
 

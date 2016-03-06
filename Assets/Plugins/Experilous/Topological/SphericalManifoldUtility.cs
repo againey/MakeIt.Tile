@@ -35,7 +35,7 @@ namespace Experilous.Topological
 			indexer.AddFace(0, 3, 1);
 			indexer.AddFace(3, 2, 1);
 
-			topology = TopologyBuilder.BuildTopology(indexer);
+			topology = TopologyUtility.BuildTopology(indexer);
 		}
 
 		public static void CreateCube(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
@@ -61,7 +61,7 @@ namespace Experilous.Topological
 			indexer.AddFace(3, 7, 4, 0);
 			indexer.AddFace(7, 6, 5, 4);
 
-			topology = TopologyBuilder.BuildTopology(indexer);
+			topology = TopologyUtility.BuildTopology(indexer);
 		}
 
 		public static void CreateOctahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
@@ -85,7 +85,7 @@ namespace Experilous.Topological
 			indexer.AddFace(4, 3, 5);
 			indexer.AddFace(1, 4, 5);
 
-			topology = TopologyBuilder.BuildTopology(indexer);
+			topology = TopologyUtility.BuildTopology(indexer);
 		}
 
 		public static void CreateDodecahedron(float circumsphereRadius, out Topology topology, out Vector3[] vertexPositions)
@@ -148,7 +148,7 @@ namespace Experilous.Topological
 			indexer.AddFace(11,  9, 10);
 			indexer.AddFace(11, 10,  6);
 
-			topology = TopologyBuilder.BuildTopology(indexer);
+			topology = TopologyUtility.BuildTopology(indexer);
 		}
 
 		#endregion

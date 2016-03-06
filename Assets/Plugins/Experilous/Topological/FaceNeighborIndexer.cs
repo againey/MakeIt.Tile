@@ -14,7 +14,7 @@ namespace Experilous.Topological
 	/// An interface for providing a fairly minimal and simple description of a topology
 	/// from which the full topology data structure can be generated.
 	/// </summary>
-	/// <seealso cref="TopologyBuilder"/>
+	/// <seealso cref="TopologyUtility"/>
 	/// <seealso cref="ManualFaceNeighborIndexer"/>
 	public interface IFaceNeighborIndexer
 	{
