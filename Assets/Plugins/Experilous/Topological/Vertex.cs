@@ -286,7 +286,7 @@ namespace Experilous.Topological
 	/// lookup dependent upon the context of how the vertex is being accessed.  For most implementations, these three
 	/// indexers are expected to simply defer to the primary indexer using the far/next vertex of the edge.</para>
 	/// </remarks>
-	public interface IVertexAttribute<T> : IList<T>
+	public interface IVertexAttribute<T> : IEdgeAttribute<T>
 	{
 		/// <summary>
 		/// Lookup the attribute value for the vertex indicated.
@@ -300,21 +300,21 @@ namespace Experilous.Topological
 		/// </summary>
 		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
 		/// <returns>The attribute value for the far vertex of the indicated edge, relative to that edge.</returns>
-		T this[Topology.HalfEdge e] { get; set; }
+		//T this[Topology.HalfEdge e] { get; set; }
 
 		/// <summary>
 		/// Lookup the attribute value for a vertex relative to a neighboring vertex.
 		/// </summary>
 		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
 		/// <returns>The attribute value for the far vertex of the indicated edge, relative to that edge's near vertex.</returns>
-		T this[Topology.VertexEdge e] { get; set; }
+		//T this[Topology.VertexEdge e] { get; set; }
 
 		/// <summary>
 		/// Lookup the attribute value for a vertex relative to a neighboring face.
 		/// </summary>
 		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
 		/// <returns>The attribute value for the next vertex of the indicated edge, relative to that edge's near face.</returns>
-		T this[Topology.FaceEdge e] { get; set; }
+		//T this[Topology.FaceEdge e] { get; set; }
 	}
 
 	public struct VertexAttributeArrayWrapper<T> : IVertexAttribute<T>

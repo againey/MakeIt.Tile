@@ -213,5 +213,36 @@ namespace Experilous.Topological
 		}
 
 		#endregion
+
+		#region CalculateUVs...(...)
+
+		#region CalculateGlobalUVs...(...)
+
+		#region CalculateGlobalSphericalUVs...(...)
+
+		public static IVertexAttribute<Vector2> CalculateGlobalSphericalUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Quaternion orientation)
+		{
+			return CalculateGlobalSphericalUVsFromVertexPositions(vertices, vertexPositions, orientation, new Vector2[vertices.Count].AsVertexAttribute());
+		}
+
+		public static IVertexAttribute<Vector2> CalculateGlobalSphericalUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Quaternion orientation, IVertexAttribute<Vector2> uvs)
+		{
+			var twoPi = Mathf.PI * 2f;
+			foreach (var vertex in vertices)
+			{
+				var normal = (orientation * vertexPositions[vertex]).normalized;
+				uvs[vertex] = new Vector2(
+					Mathf.Atan2(normal.z, normal.x) / twoPi,
+					Mathf.Acos(normal.y) / twoPi);
+			}
+
+			return uvs;
+		}
+
+		#endregion
+
+		#endregion
+
+		#endregion
 	}
 }

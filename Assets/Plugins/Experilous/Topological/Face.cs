@@ -310,7 +310,7 @@ namespace Experilous.Topological
 	/// lookup dependent upon the context of how the face is being accessed.  For most implementations, these three
 	/// indexers are expected to simply defer to the primary indexer using the far/prev face of the edge.</para>
 	/// </remarks>
-	public interface IFaceAttribute<T> : IList<T>
+	public interface IFaceAttribute<T> : IEdgeAttribute<T>
 	{
 		/// <summary>
 		/// Lookup the attribute value for the face indicated.
@@ -324,21 +324,21 @@ namespace Experilous.Topological
 		/// </summary>
 		/// <param name="e">The edge that points at the face whose attribute value is desired.</param>
 		/// <returns>The attribute value for the far face of the indicated edge, relative to that edge.</returns>
-		T this[Topology.HalfEdge e] { get; set; }
+		//T this[Topology.HalfEdge e] { get; set; }
 
 		/// <summary>
 		/// Lookup the attribute value for a face relative to a neighboring vertex.
 		/// </summary>
 		/// <param name="e">The edge that points at the face whose attribute value is desired.</param>
 		/// <returns>The attribute value for the prev face of the indicated edge, relative to that edge's near vertex.</returns>
-		T this[Topology.VertexEdge e] { get; set; }
+		//T this[Topology.VertexEdge e] { get; set; }
 
 		/// <summary>
 		/// Lookup the attribute value for a face relative to a neighboring face.
 		/// </summary>
 		/// <param name="e">The edge that points at the face whose attribute value is desired.</param>
 		/// <returns>The attribute value for the far face of the indicated edge, relative to that edge's near face.</returns>
-		T this[Topology.FaceEdge e] { get; set; }
+		//T this[Topology.FaceEdge e] { get; set; }
 	}
 
 	public struct FaceAttributeArrayWrapper<T> : IFaceAttribute<T>

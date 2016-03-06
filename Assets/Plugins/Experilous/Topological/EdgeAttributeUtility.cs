@@ -193,24 +193,26 @@ namespace Experilous.Topological
 
 		#region CalculateUVs...(...)
 
-		#region CalculateGlobalUVs...(..)
+		#region CalculateGlobalUVs...(...)
 
-		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
+		#region CalculateGlobalPanarUVs...(...)
+
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, Vector3.zero, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis)
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, origin, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, Vector3.zero, uAxis, vAxis, uvs);
 		}
 
-		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
 		{
 			var normal = Vector3.Cross(vAxis, uAxis).normalized;
 			var uPlane = new Plane(origin, uAxis + origin, normal + origin);
@@ -231,12 +233,12 @@ namespace Experilous.Topological
 			return uvs;
 		}
 
-		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarNormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
 		{
 			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
 
@@ -262,44 +264,57 @@ namespace Experilous.Topological
 
 		#endregion
 
+		#endregion
+
 		#region CalculatePerFaceUVs...(...)
 
-		#region CaclulateUniformlyNormalizedUVs...(...)
+		#region CalculatePerFaceUnnormalizedUVs...(...)
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames)
 		{
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
+			return CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, new Vector2[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames, IEdgeAttribute<Vector2> uvs)
 		{
-			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
+			foreach (var face in faces)
+			{
+				var uvFrame = faceUVFrames[face];
+				foreach (var edge in face.edges)
+				{
+					var vertexPosition = vertexPositions[edge];
+					uvs[edge] = new Vector2(
+						GeometryUtility.GetIntersectionParameter(uvFrame.vPlane, new ScaledRay(vertexPosition, uvFrame.uNegAxis)),
+						GeometryUtility.GetIntersectionParameter(uvFrame.uPlane, new ScaledRay(vertexPosition, uvFrame.vNegAxis)));
+				}
+			}
+
+			return uvs;
+		}
+
+		#endregion
+
+		#region CalculatePerFace...UVsFromUnnormalizedUVs(...)
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> unnormalizedUVs, IEdgeAttribute<Vector2> uvs)
+		{
+			var faceMinUVs = new Vector2[faces.Count].AsFaceAttribute();
+			var faceRangeUVs = new Vector2[faces.Count].AsFaceAttribute();
+
+			FaceAttributeUtility.CalculateFaceEdgeMinAndRangeValues(faces, unnormalizedUVs, faceMinUVs, faceRangeUVs);
+
+			return CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> unnormalizedUVs, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		{
+			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedUVs, uvs);
 
 			var faceMinUVs = new Vector2[faces.Count].AsFaceAttribute();
 			var faceRangeUVs = new Vector2[faces.Count].AsFaceAttribute();
 
-			FaceAttributeUtility.CalculateFaceEdgeMinAndRangeValues(faces, uvs, faceMinUVs, faceRangeUVs);
+			FaceAttributeUtility.CalculateFaceEdgeMinAndRangeValues(faces, unnormalizedUVs, faceMinUVs, faceRangeUVs);
 
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, uvs);
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation)
-		{
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, uAxis, vAxis, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
-		{
-			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, uAxis, vAxis, uvs);
-
-			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
-
-			var faceMinUVs = new Vector2[faces.Count].AsFaceAttribute();
-			var faceRangeUVs = new Vector2[faces.Count].AsFaceAttribute();
-
-			FaceAttributeUtility.CalculateFaceEdgeMinAndRangeValues(faces, uvs, faceMinUVs, faceRangeUVs);
-
-			var targetAspectRatio = Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude);
 			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
@@ -311,51 +326,28 @@ namespace Experilous.Topological
 				faceRangeUVs[face] = uvRange;
 			}
 
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, uvs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, uvs);
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis)
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> unnormalizedEdgeUVs, IFaceAttribute<Vector2> unnormalizedFaceUVs, IEdgeAttribute<Vector2> edgeUVs)
 		{
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
+			var faceMinUVs = new Vector2[faces.Count].AsFaceAttribute();
+			var faceRangeUVs = new Vector2[faces.Count].AsFaceAttribute();
+
+			FaceAttributeUtility.CalculateCenteredFaceEdgeMinAndRangeValues(faces, unnormalizedEdgeUVs, unnormalizedFaceUVs, faceMinUVs, faceRangeUVs);
+
+			return CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, edgeUVs);
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> unnormalizedEdgeUVs, IFaceAttribute<Vector2> unnormalizedFaceUVs, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> edgeUVs)
 		{
-			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
-
-			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
-
-			FaceAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, uAxis, vAxis, faceUVs);
+			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedEdgeUVs, unnormalizedFaceUVs, edgeUVs);
 
 			var faceMinUVs = new Vector2[faces.Count].AsFaceAttribute();
 			var faceRangeUVs = new Vector2[faces.Count].AsFaceAttribute();
 
-			FaceAttributeUtility.CalculateCenteredFaceEdgeMinAndRangeValues(faces, uvs, faceUVs, faceMinUVs, faceRangeUVs);
+			FaceAttributeUtility.CalculateCenteredFaceEdgeMinAndRangeValues(faces, unnormalizedEdgeUVs, unnormalizedFaceUVs, faceMinUVs, faceRangeUVs);
 
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, uvs);
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation)
-		{
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, uAxis, vAxis, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
-		}
-
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
-		{
-			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, uAxis, vAxis, uvs);
-
-			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
-
-			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
-
-			FaceAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, uAxis, vAxis, faceUVs);
-
-			var faceMinUVs = new Vector2[faces.Count].AsFaceAttribute();
-			var faceRangeUVs = new Vector2[faces.Count].AsFaceAttribute();
-
-			FaceAttributeUtility.CalculateCenteredFaceEdgeMinAndRangeValues(faces, uvs, faceUVs, faceMinUVs, faceRangeUVs);
-
-			var targetAspectRatio = Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude);
 			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
@@ -367,15 +359,130 @@ namespace Experilous.Topological
 				faceRangeUVs[face] = uvRange;
 			}
 
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, uvs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, edgeUVs);
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromFaceUVMinAndRange(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IFaceAttribute<Vector2> faceMinUVs, IFaceAttribute<Vector2> faceRangeUVs)
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> unnormalizedUVs, IEdgeAttribute<Vector2> uvs)
 		{
-			return CalculatePerFacePlanarUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, new Vector2[faceEdges.Count].AsEdgeAttribute());
+			foreach (var face in faces)
+			{
+				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+				foreach (var edge in face.edges)
+				{
+					uvMin = GeometryUtility.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
+					uvMax = GeometryUtility.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
+				}
+
+				var uvRange = uvMax - uvMin;
+				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+
+				foreach (var edge in face.edges)
+				{
+					uvs[edge] = Vector2.Scale(unnormalizedUVs[edge] - uvMin, uvRangeReciprocal);
+				}
+			}
+
+			return uvs;
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromFaceUVMinAndRange(Topology.FacesIndexer faces, IFaceAttribute<Vector2> faceMinUVs, IFaceAttribute<Vector2> faceRangeUVs, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> unnormalizedUVs, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		{
+			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedUVs, uvs);
+
+			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+
+			foreach (var face in faces)
+			{
+				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+				foreach (var edge in face.edges)
+				{
+					uvMin = GeometryUtility.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
+					uvMax = GeometryUtility.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
+				}
+
+				var uvRange = uvMax - uvMin;
+				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
+				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+
+				foreach (var edge in face.edges)
+				{
+					uvs[edge] = Vector2.Scale(unnormalizedUVs[edge] - uvMin, uvRangeReciprocal);
+				}
+			}
+
+			return uvs;
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> unnormalizedEdgeUVs, IFaceAttribute<Vector2> unnormalizedFaceUVs, IEdgeAttribute<Vector2> edgeUVs)
+		{
+			foreach (var face in faces)
+			{
+				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+				foreach (var edge in face.edges)
+				{
+					uvMin = GeometryUtility.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
+					uvMax = GeometryUtility.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
+				}
+
+				var center = unnormalizedFaceUVs[face];
+				var extent = GeometryUtility.AxisAlignedMax(uvMax - center, center - uvMin);
+				uvMin = center - extent;
+				var uvRange = extent * 2f;
+				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+
+				foreach (var edge in face.edges)
+				{
+					edgeUVs[edge] = Vector2.Scale(unnormalizedEdgeUVs[edge] - uvMin, uvRangeReciprocal);
+				}
+			}
+
+			return edgeUVs;
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(Topology.FacesIndexer faces, IEdgeAttribute<Vector2> unnormalizedEdgeUVs, IFaceAttribute<Vector2> unnormalizedFaceUVs, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> edgeUVs)
+		{
+			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedEdgeUVs, edgeUVs);
+
+			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+
+			foreach (var face in faces)
+			{
+				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+				foreach (var edge in face.edges)
+				{
+					uvMin = GeometryUtility.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
+					uvMax = GeometryUtility.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
+				}
+
+				var center = unnormalizedFaceUVs[face];
+				var extent = GeometryUtility.AxisAlignedMax(uvMax - center, center - uvMin);
+				uvMin = center - extent;
+				var uvRange = extent * 2f;
+				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
+				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+
+				foreach (var edge in face.edges)
+				{
+					edgeUVs[edge] = Vector2.Scale(unnormalizedEdgeUVs[edge] - uvMin, uvRangeReciprocal);
+				}
+			}
+
+			return edgeUVs;
+		}
+
+		#endregion
+
+		#region CalculatePerFace...UVsFromFaceUVMinAndRange(...)
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(Topology.FacesIndexer faces, IFaceAttribute<Vector2> faceMinUVs, IFaceAttribute<Vector2> faceRangeUVs, IEdgeAttribute<Vector2> uvs)
 		{
 			var faceMaxUVRange = Vector2.zero;
 
@@ -401,160 +508,214 @@ namespace Experilous.Topological
 
 		#endregion
 
-		#region CalculateVariablyNormalizedUVs...(...)
+		#region CalculatePerFacePlanarUVs...(...)
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
+		#region CaclulatePerFacePlanarUniformlyNormalizedUVs...(...)
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
+		{
+			return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation)
+		{
+			return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, uAxis, vAxis, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude), aspectRatioPreservation, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis)
+		{
+			return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
+			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
+			FaceAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, uAxis, vAxis, faceUVs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation)
+		{
+			return CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, uAxis, vAxis, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
+			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
+			FaceAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, uAxis, vAxis, faceUVs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude), aspectRatioPreservation, uvs);
+		}
+
+		#endregion
+
+		#region CalculatePerFacePlanarVariablyNormalizedUVs...(...)
+
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
 		{
 			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
-
-			foreach (var face in faces)
-			{
-				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
-				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
-
-				foreach (var edge in face.edges)
-				{
-					uvMin = GeometryUtility.AxisAlignedMin(uvMin, uvs[edge]);
-					uvMax = GeometryUtility.AxisAlignedMax(uvMax, uvs[edge]);
-				}
-
-				var uvRange = uvMax - uvMin;
-				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
-
-				foreach (var edge in face.edges)
-				{
-					uvs[edge] = Vector2.Scale(uvs[edge] - uvMin, uvRangeReciprocal);
-				}
-			}
-
-			return uvs;
+			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, uvs);
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation)
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation)
 		{
 			return CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, uAxis, vAxis, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
 		{
-			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, uAxis, vAxis, uvs);
-
 			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
-
-			var targetAspectRatio = Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude);
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
-
-			foreach (var face in faces)
-			{
-				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
-				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
-
-				foreach (var edge in face.edges)
-				{
-					uvMin = GeometryUtility.AxisAlignedMin(uvMin, uvs[edge]);
-					uvMax = GeometryUtility.AxisAlignedMax(uvMax, uvs[edge]);
-				}
-
-				var uvRange = uvMax - uvMin;
-				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
-				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
-
-				foreach (var edge in face.edges)
-				{
-					uvs[edge] = Vector2.Scale(uvs[edge] - uvMin, uvRangeReciprocal);
-				}
-			}
-
-			return uvs;
+			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude), aspectRatioPreservation, uvs);
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis)
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
 		{
 			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
-
 			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
-
 			FaceAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, uAxis, vAxis, faceUVs);
-
-			foreach (var face in faces)
-			{
-				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
-				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
-
-				foreach (var edge in face.edges)
-				{
-					uvMin = GeometryUtility.AxisAlignedMin(uvMin, uvs[edge]);
-					uvMax = GeometryUtility.AxisAlignedMax(uvMax, uvs[edge]);
-				}
-
-				var center = faceUVs[face];
-				var extent = GeometryUtility.AxisAlignedMax(uvMax - center, center - uvMin);
-				uvMin = center - extent;
-				var uvRange = extent * 2f;
-				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
-
-				foreach (var edge in face.edges)
-				{
-					uvs[edge] = Vector2.Scale(uvs[edge] - uvMin, uvRangeReciprocal);
-				}
-			}
-
-			return uvs;
+			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, uvs);
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation)
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation)
 		{
 			return CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, uAxis, vAxis, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		public static IEdgeAttribute<Vector2> CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
 		{
-			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, uAxis, vAxis, uvs);
-
 			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);
-
 			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
-
 			FaceAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, uAxis, vAxis, faceUVs);
+			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude), aspectRatioPreservation, uvs);
+		}
 
-			var targetAspectRatio = Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude);
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+		#endregion
 
-			foreach (var face in faces)
-			{
-				Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
-				Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+		#endregion
 
-				foreach (var edge in face.edges)
-				{
-					uvMin = GeometryUtility.AxisAlignedMin(uvMin, uvs[edge]);
-					uvMax = GeometryUtility.AxisAlignedMax(uvMax, uvs[edge]);
-				}
+		#region CalculatePerFaceUniformlyNormalizedUVs...(...)
 
-				var center = faceUVs[face];
-				var extent = GeometryUtility.AxisAlignedMax(uvMax - center, center - uvMin);
-				uvMin = center - extent;
-				var uvRange = extent * 2f;
-				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
-				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames)
+		{
+			return CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
 
-				foreach (var edge in face.edges)
-				{
-					uvs[edge] = Vector2.Scale(uvs[edge] - uvMin, uvRangeReciprocal);
-				}
-			}
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, uvs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, uvs);
+		}
 
-			return uvs;
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> faceUVFrames)
+		{
+			return CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, faceUVFrames, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> faceUVFrames, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, uvs);
+			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
+			FaceAttributeUtility.CalculateUnnormalizedUVsFromFacePositions(faces, facePositions, faceUVFrames, faceUVs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation)
+		{
+			return CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, targetAspectRatio, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, uvs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, targetAspectRatio, aspectRatioPreservation, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> faceUVFrames, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation)
+		{
+			return CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, faceUVFrames, targetAspectRatio, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceUniformlyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> faceUVFrames, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, uvs);
+			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
+			FaceAttributeUtility.CalculateUnnormalizedUVsFromFacePositions(faces, facePositions, faceUVFrames, faceUVs);
+			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, targetAspectRatio, aspectRatioPreservation, uvs);
+		}
+
+		#endregion
+
+		#region CalculatePerFaceVariablyNormalizedUVs...(...)
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames)
+		{
+			return CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, uvs);
+			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> faceUVFrames)
+		{
+			return CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, faceUVFrames, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> faceUVFrames, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, uvs);
+			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
+			FaceAttributeUtility.CalculateUnnormalizedUVsFromFacePositions(faces, facePositions, faceUVFrames, faceUVs);
+			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation)
+		{
+			return CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, targetAspectRatio, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<UVFrame3> faceUVFrames, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, uvs);
+			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, targetAspectRatio, aspectRatioPreservation, uvs);
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> faceUVFrames, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation)
+		{
+			return CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, faceUVFrames, targetAspectRatio, aspectRatioPreservation, new Vector2[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector2> CalculatePerFaceVariablyNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> faceUVFrames, float targetAspectRatio, AspectRatioPreservation aspectRatioPreservation, IEdgeAttribute<Vector2> uvs)
+		{
+			CalculatePerFaceUnnormalizedUVsFromVertexPositions(faceEdges, faces, vertexPositions, faceUVFrames, uvs);
+			var faceUVs = new Vector2[faces.Count].AsFaceAttribute();
+			FaceAttributeUtility.CalculateUnnormalizedUVsFromFacePositions(faces, facePositions, faceUVFrames, faceUVs);
+			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, targetAspectRatio, aspectRatioPreservation, uvs);
 		}
 
 		#endregion
