@@ -873,9 +873,7 @@ namespace Experilous.Topological
 				var uvFrame = uvFrames[face];
 				var position = facePositions[face];
 
-				uvs[face] = new Vector2(
-					GeometryUtility.GetIntersectionParameter(uvFrame.vPlane, new ScaledRay(position, uvFrame.uNegAxis)),
-					GeometryUtility.GetIntersectionParameter(uvFrame.uPlane, new ScaledRay(position, uvFrame.vNegAxis)));
+				uvs[face] = uvFrame.GetUV(position);
 			}
 
 			return uvs;

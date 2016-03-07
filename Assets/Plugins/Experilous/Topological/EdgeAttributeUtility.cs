@@ -283,9 +283,7 @@ namespace Experilous.Topological
 				foreach (var edge in face.edges)
 				{
 					var vertexPosition = vertexPositions[edge];
-					uvs[edge] = new Vector2(
-						GeometryUtility.GetIntersectionParameter(uvFrame.vPlane, new ScaledRay(vertexPosition, uvFrame.uNegAxis)),
-						GeometryUtility.GetIntersectionParameter(uvFrame.uPlane, new ScaledRay(vertexPosition, uvFrame.vNegAxis)));
+					uvs[edge] = uvFrame.GetUV(vertexPosition);
 				}
 			}
 
