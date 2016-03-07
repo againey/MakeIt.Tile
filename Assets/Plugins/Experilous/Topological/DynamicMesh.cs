@@ -12,6 +12,39 @@ using System;
 
 namespace Experilous.Topological
 {
+	/// <summary>
+	/// Manages the creation and modification of a topology-based mesh which may need to be split into several smaller submeshes.
+	/// </summary>
+	/// <remarks>
+	/// <para>Meshes generated from topologies are likely to come in many different formats,
+	/// highly dependent upon the particular rendering needs of each use.  This class is aimed
+	/// at simplifying much of this complexity, making it easier to plug in the unique needs
+	/// of each use, while maintaining a common interface for working with the mesh.</para>
+	/// 
+	/// <para>One of the main common behaviors for dynamic meshes is the need to split any
+	/// mesh that goes beyond Unity's maximum vertex count limit per mesh.  This class will
+	/// automatically create and manage multiple submeshes to remain under that limit, or any
+	/// other lower limit specified during creation.</para>
+	/// 
+	/// <para>Another common behavior is the process of modifying and updating some aspects of
+	/// a mesh, whether that be a subset of vertices, or a subset of the vertex attributes in
+	/// use.  Any attribute and any submesh can be touched, and then a single call can be made
+	/// to apply the changes only for the vertex attributes and submeshes affected.</para>
+	/// 
+	/// <para>One major behavior that needs to be adaptable for each unique situation is the
+	/// way in which topology faces are converted to triangles, and how vertices are generated
+	/// and indexed by these triangles.  The ITriangulation interface offers a flexible
+	/// customization point in this regard, and some common triangulation schemes are also
+	/// provided.</para>
+	/// 
+	/// <para>Another aspect of a dynamic mesh that needs to be adaptable to each situation is
+	/// the set of vertex attributes that are used to describe the mesh.  Unity's mesh class
+	/// exposes nine different attributes:  position, normal, color/color32, uv 1/2/3/4, and
+	/// tangents.  Not every mesh will need all attributes defined; this depends on the
+	/// shader(s) that will be used to render the mesh.  These are thus fully specifiable, and
+	/// the triangulation classes make it easy to customize how these attributes are assigned
+	/// values from external sources.</para>
+	/// </remarks>
 	[Serializable]
 	public class DynamicMesh : ScriptableObject
 	{
@@ -19,8 +52,8 @@ namespace Experilous.Topological
 		[SerializeField] private int _maxVerticesPerSubmesh;
 
 		[SerializeField] private Submesh[] _submeshes;
-		[SerializeField] private IntFaceAttribute _faceSubmeshIndices;
-		[SerializeField] private IntFaceAttribute _faceFirstVertexIndices;
+		[SerializeField] private int[] _faceSubmeshIndices;
+		[SerializeField] private int[] _faceFirstVertexIndices;
 
 		private IndexedVertexAttributeArrays _cachedIndexedVertexAttributeArrays;
 
@@ -35,8 +68,8 @@ namespace Experilous.Topological
 
 		private void Initialize(Topology.FacesIndexer faces, ITriangulation triangulation)
 		{
-			_faceSubmeshIndices = IntFaceAttribute.Create(faces.Count);
-			_faceFirstVertexIndices = IntFaceAttribute.Create(faces.Count);
+			_faceSubmeshIndices = new int[faces.Count];
+			_faceFirstVertexIndices = new int[faces.Count];
 
 			_cachedIndexedVertexAttributeArrays = new IndexedVertexAttributeArrays();
 
@@ -58,8 +91,8 @@ namespace Experilous.Topological
 					triangleIndices.Clear();
 				}
 
-				_faceSubmeshIndices[face] = submeshList.Count;
-				_faceFirstVertexIndices[face] = vertexAttributeArrays.index;
+				_faceSubmeshIndices[face.index] = submeshList.Count;
+				_faceFirstVertexIndices[face.index] = vertexAttributeArrays.index;
 
 				vertexAttributeArrays.Grow(vertexCount);
 
@@ -75,16 +108,39 @@ namespace Experilous.Topological
 			_submeshes = submeshList.ToArray();
 		}
 
+		/// <summary>
+		/// Provide new values for the vertices that constitute the triangles of the specified face.
+		/// </summary>
+		/// <param name="face">The face whose triangle vertices should be udpated.</param>
+		/// <param name="triangulation">The triangulation method used for converting faces to triangles.</param>
+		/// <remarks>
+		/// <para>This method will update the vertex attribute values for this face, but will not
+		/// immediately push these changes to the mesh itself.  Instead, it will simply mark the
+		/// relevant submesh as dirty.  Call <see cref="RebuildMesh"/>() in order to commit all
+		/// changes and apply them to the mesh.</para>
+		/// 
+		/// <para>The <paramref name="triangulation"/> parameter is expected to match the kind of
+		/// triangulation used when first creating the dynamic mesh, but is permitted to set the
+		/// vertex attributes however it likes.  That is, the number of triangles generated for
+		/// each face and the vertex indices used by each of these triangles cannot change, only
+		/// vertex attributes.  Not all vertex attributes need or are always expected to be
+		/// changed either.  In many cases, simply changing normals or uvs, for example, is
+		/// all that is needed, and all other vertex attribute values can remain the same.</para>
+		/// </remarks>
 		public void RebuildFace(Topology.Face face, ITriangulation triangulation)
 		{
-			var submesh = _submeshes[_faceSubmeshIndices[face]];
-			var vertexAttributeArrays = GetIndexedVertexAttributeArrays(submesh, _faceFirstVertexIndices[face]);
+			var submesh = _submeshes[_faceSubmeshIndices[face.index]];
+			var vertexAttributeArrays = GetIndexedVertexAttributeArrays(submesh, _faceFirstVertexIndices[face.index]);
 
 			triangulation.RebuildFace(face, vertexAttributeArrays);
 
 			submesh.isDirty = true;
 		}
 
+		/// <summary>
+		/// Applies and uploads the specified vertex attribute arrays of all dirty submeshes to the Unity meshes themselves.
+		/// </summary>
+		/// <param name="dirtyVertexAttributes">The vertex attributes that should be uploaded.</param>
 		public void RebuildMesh(VertexAttributes dirtyVertexAttributes)
 		{
 			foreach (var submesh in _submeshes)
