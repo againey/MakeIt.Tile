@@ -54,7 +54,6 @@
 			h1 div.subtitle
 			{
 				font-size: 75%;
-				margin-left: 18pt;
 			}
 			
 			section.chapter:first-of-type
@@ -105,6 +104,7 @@
 				it is not designed as a top-to-bottom solution, but is rather intended to be a foundation upon which many different game mechanics can be easily built.
 				Additional scripting will therefore be necessary in almost all cases.<p>
 		</section>
+		
 		<section id="contents">
 			<h2>Contents</h2>
 			<ol>
@@ -127,10 +127,25 @@
 						</li>
 					</ol>
 				</li>
+				<li><a href="#additional">Additional Utilities</a></li>
+					<ol>
+						<li><a href="#dynamic-mesh">Dynamic Mesh</a></li>
+						<li><a href="#randomization">Topology Randomization</a></li>
+						<li><a href="#spatial-partitioning">Spatial Partitioning</a></li>
+						<li><a href="#topology-traversal">Topology Traversal</a>
+							<ol>
+								<li><a href="#path-finding">Path Finding</a></li>
+								<li><a href="#distance-ordered-visitation">Distance Ordered Visitation</a></li>
+								<li><a href="#random-visitation">Random Visitation</a></li>
+							</ol>
+						</li>
+					</ol>
+				</li>
 				<li><a href="#generation">In-Editor Generation</a></li>
 				<li><a href="#wrap-around">Integration with Wrap-Around Worlds</a></li>
 			</ol>
 		</section>
+		
 		<section class="chapter" id="quick-start">
 			<h2 class="section-head">Quick Start</h2>
 			<section id="examples">
@@ -140,34 +155,43 @@
 					The planar scenes each contain one planar topology, and can be controlled with standard arrow/WASD controls with mouse look; mouse wheel will adjust elevation.
 					The spherical scene is similar, but without mouse look; instead, it uses a camera controller that locks the view onto the sphere.</p>
 				<dl>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Square No Wrap.unity">Planar Square No Wrap</a></dt>
-					<dd>A planar surface with square tiles.  The world terminates along all edges.</dd>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Hex No Wrap.unity">Planar Hex No Wrap</a></dt>
-					<dd>A planar surface with hexagonal tiles arranged in a staggered pattern to produce a roughly square world.  The world terminates along all edges.</dd>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Random No Wrap.unity">Planar Random No Wrap</a></dt>
-					<dd>A planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world terminates along all edges.</dd>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Spherical Manifold.unity">Spherical Manifold</a></dt>
-					<dd>A spherical surface with randomly shaped tiles which mostly began as hexagonal tiles before being randomized.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Buried Bomb Hunter.unity">Buried Bomb Hunter</a></dt>
+					<dd>A clone of Minesweeper, supporting square, hexagonal, and jumbled cells.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Spherical Path Finding Demo.unity">Spherical Path Finding Demo</a></dt>
+					<dd>A generated tile-based planet with four different terrain types, unit path finding, and fog-of-war.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Texture Demo.unity">Texture Demo</a></dt>
+					<dd>A demonstration of different techniques for generating UV mappings to apply textures to topology-based meshes.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Square Grid.unity">Planar Square Grid</a></dt>
+					<dd>A pre-generated planar surface with square tiles.  The world terminates along all edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Square Grid.unity">Planar Square Grid</a></dt>
+					<dd>A pre-generated planar surface with square tiles.  The world terminates along all edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Hex Grid.unity">Planar Hex Grid</a></dt>
+					<dd>A pre-generated planar surface with hexagonal tiles arranged in a staggered pattern to produce a roughly square world.  The world terminates along all edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Random Tiles.unity">Planar Random Tiles</a></dt>
+					<dd>A pre-generated planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world terminates along all edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Spherical Random Tiles.unity">Spherical Random Tiles</a></dt>
+					<dd>A pre-generated spherical surface with randomly shaped tiles which mostly began as hexagonal tiles before being randomized.</dd>
 				</dl>
 				<p>If you also have access to the Wrap-Around Worlds framework and import
 					<a href="Experilous/Packages/Tile-Based Wrap-Around Integration - With Examples.unitypackage">Tile-Based Wrap-Around Integration - With Examples&#8203;.unitypackage</a>,
 					then you will gain access to a few more example scenes.</p>
 				<dl>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Square Vertical Wrap.unity">Planar Square Vertical Wrap</a></dt>
-					<dd>A planar surface with square tiles.  The world wraps around across the top and bottom edges.</dd>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Square Full Wrap.unity">Planar Square Full Wrap</a></dt>
-					<dd>A large planar surface with square tiles.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Hex Horizontal Wrap.unity">Planar Hex Horizontal Wrap</a></dt>
-					<dd>A planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around across the left and right edges.</dd>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Hex Full Wrap.unity">Planar Hex Full Wrap</a></dt>
-					<dd>A wide planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Planar Random Full Wrap.unity">Planar Random Full Wrap</a></dt>
-					<dd>A planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Wrap-Around Worlds/Planar Square Grid Vertical Wrap.unity">Planar Square Grid Vertical Wrap</a></dt>
+					<dd>A pre-generated planar surface with square tiles.  The world wraps around across the top and bottom edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Wrap-Around Worlds/Planar Square Grid Full Wrap.unity">Planar Square Grid Full Wrap</a></dt>
+					<dd>A pre-generated large planar surface with square tiles.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Wrap-Around Worlds/Planar Hex Grid Horizontal Wrap.unity">Planar Hex Grid Horizontal Wrap</a></dt>
+					<dd>A pre-generated planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Wrap-Around Worlds/Planar Hex Grid Full Wrap.unity">Planar Hex Grid Full Wrap</a></dt>
+					<dd>A pre-generated wide planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Wrap-Around Worlds/Planar Random Tiles Full Wrap.unity">Planar Random Tiles Full Wrap</a></dt>
+					<dd>A pre-generated planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
 				</dl>
 			</section>
+			
 			<section id="create-your-own">
 				<h2 class="section-head">Creating Your Own Content</h2>
-				<p>The content used in the above example scenes can be found in the <a href="Experilous/Examples/Topological/Data">&lt;project&gt;/Assets/Experilous/Examples/Topological/Data</a> folder.
+				<p>The content used in the above example scenes can be found in the <a href="Experilous/Examples/Tile-Based Worlds/Data">&lt;project&gt;/Assets/Experilous/Examples/Tile-Based Worlds/Data</a> folder.
 					Most of the data is not meant to be edited directly.  However, if you locate and select the asset within each subfolder named "Generator.asset", the inspector will show you the full details for generating the other assets in that subfolder.
 					You can freely modify the values within the inspector and click the Generate button, and the associated scene should automatically use the new assets generated, in particular the prefab with all of the generated meshes.</p>
 				<p>To create a generator from scratch, use the Create button in the Projects window, or right click in the Projects window content area where you would like to create the generator.
@@ -182,12 +206,12 @@
 					This configurable prefab will be used by the prefab generator as a base template for any mesh renderers that it creates.
 					You will want to assign a prefab that includes a mesh filter and mesh renderer component, with a material specified for the mesh renderer.
 					Otherwise, the prefab will be rendered without any material at all, and will obviously not look correct as a result.
-					There is a sample material included in the examples folder called "<a href="Experilous/Examples/Topological/Topology.mat">Topology.mat</a>",
-					and is used by "<a href="Experilous/Examples/Topological/Manifold Mesh.prefab">Manifold Mesh.prefab</a>"
-					and "<a href="Experilous/Examples/Topological/Wrapped Manifold Mesh.prefab">Wrapped Manifold Mesh.prefab</a>".
-					You can assign one of these prefabs to the prefab generator's mesh prefab field to get a quick idea of what the generated topology looks like.</p>
+					There is a sample material included in the examples folder called "<a href="Experilous/Examples/Shared Resources/Manifold.mat">Manifold.mat</a>",
+					and is used by "<a href="Experilous/Examples/Tile-Based Worlds/Resources/Manifold Mesh.prefab">Manifold Mesh.prefab</a>".
+					You can assign this prefab to the prefab generator's mesh prefab field to get a quick idea of what the generated topology looks like.</p>
 			</section>
 		</section>
+		
 		<section class="chapter" id="topologies">
 			<h2 class="section-head">Topologies, the Core Data Structure</h2>
 			<p>The core of the Tile-Based Worlds framework is a topology, a data structure for representing the relations between vertices, edges, and faces.
@@ -212,6 +236,7 @@
 				An example topology would be a chess board, which has sixty-four internal faces, and then one external face which represents everything outside of the chess board.
 				Another example would be the world map of the Civilization series of games, in which the north pole region and the south pole region are two distinct external faces.</p>
 		</section>
+		
 		<section class="chapter" id="attributes">
 			<h2 class="section-head">Element Attributes</h2>
 			<p>The elements of a topology are stored in such a way that they all have contiguous integer indices starting from zero.
@@ -230,32 +255,185 @@
 				Additionally, this can provide further utility by allowing the access of an attribute to be modified based on the context of access.
 				This is particularly useful in the case of wrap-around edges discussed below, in which a vertex's effective position is dependent upon which neighbor (face or vertex) defines the current context.</p>
 		</section>
+		
 		<section class="chapter" id="edge-wrapping">
 			<h2 class="section-head">Edge Wrapping</h2>
+			<p>For a topological world that allows wrapping around along some or all world boundaries, complications can arise when the topology is embedded within standard Euclidean space.
+				Consider a flat rectangular world that wraps around along the right and left sides (such as a map from the Civilization series).
+				The vertices along the left edge are in fact the same vertices along the right edge, and so each one will only have a single position in space, which I will dub the "canonical" position.
+				But when drawing the tiles on the left side of the map versus those on the right, the vertex positions need to be treated differently.
+				If the canonical positions are the ones that apply to the left side of the map, then when using those vertex positions along the right side of the map,
+				the full width of the world needs to be added to the canonical positions to get the effective positions for rendering the tiles.</p>
+			<p>To enable this kind of transformation, one needs to know the context of how an attribute such as position is being accessed.
+				This context is defined in terms of which other topology object the attribute is relative to.
+				In the above example, vertex positions are being accessed relative to the face that is being rendered, so it is a vertex-to-face relation.
+				If we know the wrapping relation between any particular face and a neighboring vertex, then we can decide how to transform the canonical position to get the final position to be used.</p>
+			<p>Within the Tile-Based Worlds framework, this relational information is stored within the edge data,
+				encoding details about the near vertex and face and far vertex and face all relate to each other and to the edge itself.
+				Edges can be used to access vertex and face attributes, and so such attributes can use the relational information to transform the vertex or face attribute value based on wrapping behavior.
+				For example, accessing a vertex position using a face edge will enable the attribute container to return the vertex position relative to the near face of the edge used for access.</p>
+			<p>Most attributes are oblivious to wrapping, and most attributes would not be able to meaningfully utilize wrapping information anway.
+				To take advantage of wrapping behavior, either use the <code>PositionalVertexAttribute</code>, <code>PositionalEdgeAttribute</code>, and <code>PositionalFaceAttribute</code> classes to store your data,
+				or create similar classes of your own that make use of an edge's relational information when accessing the attribute using an edge.</p>
 		</section>
+		
 		<section class="chapter" id="surface-types">
 			<h2 class="section-head">Surface &amp; Topology Types</h2>
+			<p>Surfaces are useful abstractions for describing the overall shape that a topology will represent, without directly storing the all the vertex/edge/face data explicitly.
+				They provide a convenient description from which the full topology data can be generated.
+				They can also provide additional details beyond the raw topology data that aids other areas of code in performing their functions.</p>
+			
 			<section id="spherical-surfaces">
 				<h3 class="section-head">Spherical Surfaces</h3>
+				<p>Spherical surfaces are useful for creating tile-based planets.
+					Because of the nature of the sphere, there are very few perfectly regular tilings, so you'll almost inevitably require a mix of vertices and/or faces with differing numbers of neighbors.</p>
+				<p>The current methods for generating topologies from spherical surfaces come from the <code>SphericalManifoldUtility</code>,
+					and begin with one of the five Platonic solids which can then be further subdivided as desired.
+					If you wish to predictability of the occasional vertex or face with a different number of neighbors than most that result from subdividing a Platonic solid,
+					see the section on <a href="#randomization">topology randomization</a>.</p>
 			</section>
+			
 			<section id="planar-surfaces">
 				<h3 class="section-head">Planar Surfaces</h3>
+				<p>Planar surfaces are the most prevalent form of tile-based surfaces.
+					While they can be extended to support elevations and therefore do not need to be strictly flat, they still must remain completely mappable to a two-dimensional plane.
+					Because of their planar nature, perfectly regular tilings are far more flexible than with spherical surfaces,
+					but <a href="#randomization">topology randomization</a> can be applied to either surface type equally.
+				
 				<section id="quad-grid-tiles">
 					<h4 class="section-head">Quad Grid Tiles</h4>
+					<p>To aid in creating and using standard grids of squares (or parallelograms in general), you may use the <code>RectangularQuadGrid</code> class.
+						It is rectangular in that the overall world it describes has a specified width and height (measured in face counts in each dimension).
+						It is a quad grid in that each face has exactly four neighbors (or eight, if you also count the four diagonal faces that only touch at a vertex).
+						The faces do not need to be squares, but can be any sort of parallelogram.</p>
+					<p>Because <code>RectangularQuadGrid</code> implements the <code>IFaceNeighborIndexer</code> interface,
+						it can be used by the <code>TopologyUtility.BuildTopology()</code> function to automatically create the full topology data.
+						Alternatively, you can use <code>RectangularQuadGrid.CreateManifold()</code> to not only create the topology data,
+						but also provide vertex positions according to the specifications of the surface.</p>
+					<p>Also, by implementing the <code>IFaceIndexer2D</code> and <code>IVertexIndexer2D</code> interfaces,
+						<code>RectangularQuadGrid</code> can be used to get the two-dimensional integer coordinate of each vertex and face,
+						or to perform the inverse operation, find the vertex or face givne a two-dimensional integer coordinate.
+						This makes it easy to implement any algorithms that are most naturally expressed using such a two-dimensional coordinate system.</p>
 				</section>
+				
 				<section id="hex-grid-tiles">
 					<h4 class="section-head">Hex Grid Tiles</h4>
+					<p>To aid in creating and using standard grids of hexagons, you may use the <code>RectangularHexGrid</code> class.
+						Like the <code>RectangularQuadGrid</code> class, it is rectangular in that the overall world it describes has a specified width and height (measured in face counts in each dimension).
+						It is a quad grid in that each face has exactly four neighbors (or eight, if you also count the four diagonal faces that only touch at a vertex).
+						Its faces, however, are all hexagons, as its name implies.</p>
+					<p>Constructing a hex grid requires a bit more information than constructing a quad grid.
+						There are a few options regarding how to arrange the rows and columns of the grid.
+						The primary option is which, if either, of the two axes will have its hexagons staggered back and forth every other row/column.
+						If staggered, then you can acquire a roughly rectangular world while still maintaining regular hexagonal faces.
+						Otherwise, the hexagonal faces will either need to be distorted, or your overall world shape will instead be a parallelogram, with default interior angles of 60&deg; and 120&deg;.
+					<p>Secondary options are whether the angle produced by the three hexagons at the origin is acute or obtuse,
+						and whether staggered rows/columns have one fewer face in order to maintain symmetry.</p>
+					<p>Because <code>RectangularHexGrid</code> implements the <code>IFaceNeighborIndexer</code> interface,
+						it can be used by the <code>TopologyUtility.BuildTopology()</code> function to automatically create the full topology data.
+						Alternatively, you can use <code>RectangularHexGrid.CreateManifold()</code> to not only create the topology data,
+						but also provide vertex positions according to the specifications of the surface.</p>
+					<p>Also, by implementing the <code>IFaceIndexer2D</code> and <code>IVertexIndexer2D</code> interfaces,
+						<code>RectangularHexGrid</code> can be used to get the two-dimensional integer coordinate of each vertex and face,
+						or to perform the inverse operation, find the vertex or face givne a two-dimensional integer coordinate.
+						This makes it easy to implement any algorithms that are most naturally expressed using such a two-dimensional coordinate system.
+						Note that because hex grids are more complex than square grids, the exact behavior of the two-dimensional coordinates depends on how the grid was constructed.
+						Alternative implementations of <code>IFaceIndexer2D</code> and <code>IVertexIndexer2D</code> can be written to provide alternate indexing schemes if desired.</p>
 				</section>
 			</section>
 		</section>
-		<section class="chapter" id="edge-wrapping">
-			<h2 class="section-head">Edge Wrapping</h2>
+		
+		<section class="chapter" id="additional">
+			<h2 class="section-head">Additional Utilities</h2>
+			<section id="dynamic-mesh">
+				<h3 class="section-head">Dynamic Mesh</h3>
+			</section>
+			
+			<section id="randomization">
+				<h3 class="section-head">Topology Randomization</h3>
+				<p>The <code>TopologyRandomizer</code> class can be used to jumble a topology to be less regular.
+					It achieves this by altering a random subset of edges, shifting the edges to different pairs of nearby vertices or faces than they had been relating originally.</p>
+				<p>It performs this process in one or more passes.  After each pass through all edges, some relaxation and repair passes are performed to fix up any positional anomalies produced in the main pass.
+					These anomalies are due to the fact that the main pass alters the topological relations only, and does not adjust vertex positions or any other attributes at all.
+					Faces are likely to become concave or even inside out during the main pass.</p>
+				<p>The relaxation passes attempt to gently nudge vertex positions around in order to conform to certain constraints.
+					The two constraints currently implemented aim for regularity and equal per-face area, respectively.
+					Regularity refers to polygon regularity.  This constraint prefers that all edge lengths be equal,
+					but it strongly biases faces with more neighbors to be significantly larger than faces with fewer neighbors.
+					The equal area constraint on the other hand prefers all faces to have roughly equal area,
+					but it tends to produce irregular polygon faces and edges of varying lengths.
+					There are examples of blending these two contraints together using any proportion desired.</p>
+				<p>The repair pass is more of a blunt process to correct for any egregious errors produced in the main pass and not fixed by relaxation,
+					as well as such errors that are actually produced by the relaxation pass.
+					These are errors of concavity or more serious flaw in the shape of a face.</p>
+			</section>
+			
+			<section id="spatial-partitioning">
+				<h3 class="section-head">Spatial Partitioning</h3>
+				<p>Spatial partitioning is a means of dividing up space in such a way that certain types of spatial lookups can be performed efficiently.
+					For topologies, a common operation is to determine which face a particular ray intersects, if any.
+					Implementations of the <code>IFaceSpatialPartitioning</code> interface provide this functionality.</p>
+				<p>This framework comes with the <code>UniversalFaceSpatialPartioning</code> class, a universal implementation that works with any topology.
+					Whether you are working with a sphere or a plane, with square grids, hexagonal grids, or randomized tiles,
+					this class will be able to tell you which face any specified ray intersects.
+					It will even work with wrap-around worlds, when the ray is aimed at a region outside of the canonical world bounds.</p>
+				<p>If you have a highly regular grid and need to perform a large number of ray intersections,
+					it may be preferable to implement a more intelligent and efficient intersection test using knowledge of the grids irregularity.</p>
+			</section>
+			
+			<section id="topology-traversal">
+				<h3 class="section-head">Topology Traversal</h3>
+				<section id="path-finding">
+					<h4 class="section-head">Path Finding</h4>
+					<p>Depending on your usage of topologies generated by this framework,
+						it is likely that at some point you'll need to find paths from one face to another.
+						The <code>PathFinder</code> class enables you to find such paths flexibly and efficiently, using the A* algorithm.</p>
+					<p>The heuristic cost function and actual cost can both be defined according to your particular pathfinding needs,
+						and defaults are provided for using standard Euclidean distance or spherical distance derived from face positions.</p>
+					<p>Instances of <code>PathFinder</code> as well as instances of the path classes it returns are fully reusable,
+						which can cut down on the amount of memory management that the runtime needs to perform.
+						Nonetheless, multiple independent instances of <code>PathFinder</code> can also be created,
+						allowing fully concurrent processing on multiple threads without conflict.</p>
+				</section>
+				
+				<section id="distance-ordered-visitation">
+					<h4 class="section-head">Distance Ordered Visitation</h4>
+					<p>If you wish to enumerate nearby faces starting from a single initial face, and proceeding through the faces according to their distance from the initial face,
+						you can make use of the depth and distance based functions in the <code>FaceVisitationUtility</code> class.
+						Both breadth-first and depth-first traversals are supported, and distance can be measured by whatever means you need for your particular use case.</p>
+					<p>Default distance measurements are provided for simple depth (number of faces traversed from the initial face),
+						as well as spatial distances based on either Euclidean or spherical metrics.
+						Alternatively, an edge attribute can be provided which specifies the accumulable distance of each edge.
+						Maximum depth/distance can also be specified to cap the traversal to a local region around the initial face.</p>
+					<p>Vertices can be visited in the same way using the <code>VertexVisitationUtility</code> class.</p>
+				</section>
+				
+				<section id="random-visitation">
+					<h4 class="section-head">Random Visitation</h4>
+					<p>Random visitation is also provided within the <code>VertexVisitationUtility</code> and <code>FaceVisitationUtility</code> classes.
+						You specify the root vertices or faces, and the enumerator returned will randomly select unvisited vertices/faces
+						that are adjacent to one of the roots or any previously visited vertex/face, until no more adjacent vertices/faces remain.</p>
+					</p>This can be particularly convenient for dividing a topology into a fixed number of randomly shaped clusters.</p>
+				</section>
+			</section>
 		</section>
+
 		<section class="chapter" id="generation">
 			<h2 class="section-head">In-Editor Generation</h2>
 		</section>
+		
 		<section class="chapter" id="wrap-around">
 			<h2 class="section-head">Integration with Wrap-Around Worlds</h2>
+			<p>If you also have access to the Wrap-Around Worlds framework and import
+				<a href="Experilous/Packages/Tile-Based Wrap-Around Integration - With Examples.unitypackage">Tile-Based Wrap-Around Integration&#8203;.unitypackage</a>,
+				then you will obtain some tools that can improve the integration of the functionalities of these two frameworks.</p>
+			<p>At present, the only addition is a different world type that frees you from having to manually configure its shape or wrap-around properties.
+				Instead, you only need to supply a <code>Surface</code> asset reference, and it will work out the world shape automatically.</p>
+			<p>Beyond that, if you are generating meshes and prefabs for your tile-based worlds,
+				you will probably want to ensure that the mesh generator uses subdivided chunks of the world to create multiple meshs,
+				and that the prefab assigned to the prefab generator includes the relevant element components described above (most likely just the <code>RenderableElement</code> component).
+				This will allow the wrapping information contained with the world topology to apply not just when enumerating topology element neighbors,
+				but also when rendering the world and applying physics, which is naturally ideal.</p>
 		</section>
 	</body>
 </html>

@@ -24,8 +24,8 @@ namespace Experilous.Topological
 
 	public class PathFinder
 	{
-		public delegate float CostHeuristicDelegate(Topology.Face source, Topology.Face target, int pathLength);
-		public delegate float CostDelegate(Topology.FaceEdge edge, int pathLength);
+		public delegate float FaceCostHeuristicDelegate(Topology.Face source, Topology.Face target, int pathLength);
+		public delegate float FaceCostDelegate(Topology.FaceEdge edge, int pathLength);
 
 		private PriorityQueue<Node> _queue;
 		private Dictionary<int, Node> _openSet;
@@ -36,7 +36,7 @@ namespace Experilous.Topological
 			public float _f;
 			public float _g;
 			public float _h;
-			public int _faceIndex;
+			public int _elementIndex;
 			public int _edgeIndex;
 			public int _fromIndex;
 			public int _length;
@@ -46,7 +46,7 @@ namespace Experilous.Topological
 				_f = 0f;
 				_g = 0f;
 				_h = 0f;
-				_faceIndex = faceIndex;
+				_elementIndex = faceIndex;
 				_edgeIndex = edgeIndex;
 				_fromIndex = fromIndex;
 				_length = 0;
@@ -57,7 +57,7 @@ namespace Experilous.Topological
 				_f = f;
 				_g = g;
 				_h = h;
-				_faceIndex = faceIndex;
+				_elementIndex = faceIndex;
 				_edgeIndex = edgeIndex;
 				_fromIndex = fromIndex;
 				_length = length;
@@ -68,14 +68,14 @@ namespace Experilous.Topological
 				return lhs._f <= rhs._f;
 			}
 
-			public bool Equals(Node other) { return _faceIndex == other._faceIndex; }
-			public override bool Equals(object other) { return other is Node && _faceIndex == ((Node)other)._faceIndex; }
-			public static bool operator ==(Node lhs, Node rhs) { return lhs._faceIndex == rhs._faceIndex; }
-			public static bool operator !=(Node lhs, Node rhs) { return lhs._faceIndex != rhs._faceIndex; }
+			public bool Equals(Node other) { return _elementIndex == other._elementIndex; }
+			public override bool Equals(object other) { return other is Node && _elementIndex == ((Node)other)._elementIndex; }
+			public static bool operator ==(Node lhs, Node rhs) { return lhs._elementIndex == rhs._elementIndex; }
+			public static bool operator !=(Node lhs, Node rhs) { return lhs._elementIndex != rhs._elementIndex; }
 
 			public override int GetHashCode()
 			{
-				return _faceIndex.GetHashCode();
+				return _elementIndex.GetHashCode();
 			}
 		}
 
@@ -272,7 +272,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		public IFaceEdgePath FindPath(Topology.Face source, Topology.Face target, CostHeuristicDelegate costHeuristic, CostDelegate cost, IFaceEdgePath path = null)
+		public IFaceEdgePath FindPath(Topology.Face source, Topology.Face target, FaceCostHeuristicDelegate costHeuristic, FaceCostDelegate cost, IFaceEdgePath path = null)
 		{
 			if (!source) throw new ArgumentException("The source face must be a valid face.", "source");
 			if (!target) throw new ArgumentException("The target face must be a valid face.", "target");
@@ -308,13 +308,13 @@ namespace Experilous.Topological
 				var node = _queue.front;
 				_queue.Pop();
 
-				if (node._faceIndex == target.index)
+				if (node._elementIndex == target.index)
 				{
 					return concretePath.Rebuild(_closedSet, node);
 				}
 
-				_closedSet.Add(node._faceIndex, node);
-				var face = topology.internalFaces[node._faceIndex];
+				_closedSet.Add(node._elementIndex, node);
+				var face = topology.internalFaces[node._elementIndex];
 
 				foreach (var edge in face.edges)
 				{
@@ -328,14 +328,14 @@ namespace Experilous.Topological
 						if (!_openSet.TryGetValue(edge.farFace.index, out neighborNode))
 						{
 							var h = costHeuristic(edge.farFace, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farFace.index, edge.index, node._faceIndex, node._length + 1);
+							neighborNode = new Node(g + h, g, h, edge.farFace.index, edge.index, node._elementIndex, node._length + 1);
 							_queue.Push(neighborNode);
 							_openSet.Add(edge.farFace.index, neighborNode);
 						}
 						else if (g < neighborNode._g)
 						{
 							var h = costHeuristic(edge.farFace, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farFace.index, edge.index, node._faceIndex, node._length + 1);
+							neighborNode = new Node(g + h, g, h, edge.farFace.index, edge.index, node._elementIndex, node._length + 1);
 							_openSet[edge.farFace.index] = neighborNode;
 							_queue.Reprioritize(neighborNode);
 						}
