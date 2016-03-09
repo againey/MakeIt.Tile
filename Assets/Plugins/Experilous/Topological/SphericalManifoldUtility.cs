@@ -205,7 +205,7 @@ namespace Experilous.Topological
 						edge = edge.next;
 					}
 					
-					relaxedVertexPositions[vertex] = relaxedVertexPosition.Scaled(circumsphereRadius);
+					relaxedVertexPositions[vertex] = relaxedVertexPosition.WithMagnitude(circumsphereRadius);
 				}
 				else
 				{
@@ -254,7 +254,7 @@ namespace Experilous.Topological
 			{
 				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
 				{
-					relaxedVertexPositions[vertex] = relaxedVertexPositions[vertex].Scaled(circumsphereRadius);
+					relaxedVertexPositions[vertex] = relaxedVertexPositions[vertex].WithMagnitude(circumsphereRadius);
 				}
 				else
 				{
@@ -314,7 +314,7 @@ namespace Experilous.Topological
 						edge = edge.next;
 					} while (edge != firstEdge);
 					average /= vertex.neighborCount;
-					vertexPositions[vertex] = (center * originalWeight + average * adjustmentWeight).Scaled(circumsphereRadius);
+					vertexPositions[vertex] = (center * originalWeight + average * adjustmentWeight).WithMagnitude(circumsphereRadius);
 				}
 			}
 

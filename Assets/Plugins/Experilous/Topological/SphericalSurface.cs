@@ -79,11 +79,11 @@ namespace Experilous.Topological
 		{
 			if (position != Vector3.zero)
 			{
-				return position.Scaled(radius);
+				return position.WithMagnitude(radius);
 			}
 			else
 			{
-				return primaryPoleNormal.Scaled(radius);
+				return primaryPoleNormal.WithMagnitude(radius);
 			}
 		}
 
