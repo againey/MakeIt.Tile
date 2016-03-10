@@ -144,6 +144,7 @@ namespace Experilous.Topological
 			var topology = rootFace.topology;
 			var queue = new PriorityQueue<DepthQueueElement>(areOrdered, 256);
 			BitArray visitedFaces = new BitArray(topology.faces.Count);
+			visitedFaces[rootFace.index] = true;
 
 			foreach (var edge in rootFace.edges)
 			{
@@ -165,6 +166,7 @@ namespace Experilous.Topological
 					var visit = new DepthVisit(new Topology.FaceEdge(topology, front.edgeIndex), front.depth);
 					if (shouldVisit(visit))
 					{
+						visitedFaces[farFaceIndex] = true;
 						yield return visit;
 
 						foreach (var edge in new Topology.Face(topology, farFaceIndex).edges)
@@ -440,6 +442,7 @@ namespace Experilous.Topological
 		{
 			var topology = rootFace.topology;
 			BitArray visitedFaces = new BitArray(topology.faces.Count);
+			visitedFaces[rootFace.index] = true;
 
 			foreach (var edge in rootFace.edges)
 			{
@@ -461,6 +464,7 @@ namespace Experilous.Topological
 					var visit = new DistanceVisit<T>(new Topology.FaceEdge(topology, front.edgeIndex), front.depth, front.distance);
 					if (shouldVisit(visit))
 					{
+						visitedFaces[farFaceIndex] = true;
 						yield return visit;
 
 						foreach (var edge in new Topology.Face(topology, farFaceIndex).edges)
@@ -610,6 +614,7 @@ namespace Experilous.Topological
 		{
 			var topology = rootFace.topology;
 			BitArray visitedFaces = new BitArray(topology.faces.Count);
+			visitedFaces[rootFace.index] = true;
 
 			foreach (var edge in rootFace.edges)
 			{
@@ -631,6 +636,7 @@ namespace Experilous.Topological
 					var visit = new DistanceVisit<float>(new Topology.FaceEdge(topology, front.edgeIndex), front.depth, front.distance);
 					if (shouldVisit(visit))
 					{
+						visitedFaces[farFaceIndex] = true;
 						yield return visit;
 
 						foreach (var edge in new Topology.Face(topology, farFaceIndex).edges)
@@ -672,6 +678,7 @@ namespace Experilous.Topological
 
 			foreach (var rootFace in rootFaces)
 			{
+				visitedFaces[rootFace.index] = true;
 				foreach (var edge in rootFace.edges)
 				{
 					if (!edge.isOuterBoundary)
@@ -696,6 +703,7 @@ namespace Experilous.Topological
 					var visit = new DepthVisit(new Topology.FaceEdge(topology, queueElement.edgeIndex), queueElement.depth);
 					if (shouldVisit(visit))
 					{
+						visitedFaces[farFaceIndex] = true;
 						yield return visit;
 
 						foreach (var edge in new Topology.Face(topology, farFaceIndex).edges)

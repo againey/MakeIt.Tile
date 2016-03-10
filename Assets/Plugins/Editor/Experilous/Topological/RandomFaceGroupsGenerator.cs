@@ -20,7 +20,6 @@ namespace Experilous.Topological
 		[AutoSelect] public InputSlot topologyInputSlot;
 
 		public int groupCount;
-		public bool clustered;
 
 		public RandomnessDescriptor randomness;
 
@@ -35,7 +34,6 @@ namespace Experilous.Topological
 
 			// Fields
 			groupCount = 1;
-			clustered = true;
 			randomness.Initialize(this);
 
 			// Outputs
@@ -89,43 +87,41 @@ namespace Experilous.Topological
 			var faceGroupIndices = new int[topology.internalFaces.Count].AsFaceAttribute();
 			List<int>[] faceGroupFaceIndices;
 
-			//if (clustered || true) //TODO create an unclustered version
+			var randomEngine = randomness.GetRandomEngine();
+
+			var clampedRootCount = Mathf.Clamp(groupCount, 1, topology.internalFaces.Count);
+
+			faceGroupFaceIndices = new List<int>[clampedRootCount];
+
+			var waitHandle = executive.GenerateConcurrently(() =>
 			{
-				var random = new RandomUtility(randomness.GetRandomEngine());
+				var rootFaces = new List<Topology.Face>();
 
-				var visitor = new RandomAdjacentFaceVisitor(topology, random.engine);
-
-				var clampedRootCount = Mathf.Clamp(groupCount, 1, topology.internalFaces.Count);
-
-				faceGroupFaceIndices = new List<int>[clampedRootCount];
-
-				var waitHandle = executive.GenerateConcurrently(() =>
+				for (int faceGroupIndex = 0; faceGroupIndex < clampedRootCount; ++faceGroupIndex)
 				{
-					for (int faceGroupIndex = 0; faceGroupIndex < clampedRootCount; ++faceGroupIndex)
-					{
-						faceGroupFaceIndices[faceGroupIndex] = new List<int>();
+					faceGroupFaceIndices[faceGroupIndex] = new List<int>();
 
-						Topology.Face face;
-						do
-						{
-							face = topology.faces[random.HalfOpenRange(0, topology.internalFaces.Count)];
-						} while (visitor.IsRoot(face));
-						visitor.AddRoot(face);
-						faceGroupIndices[face] = faceGroupIndex;
-						faceGroupFaceIndices[faceGroupIndex].Add(face.index);
-					}
-
-					foreach (var edge in (IEnumerable<Topology.FaceEdge>)visitor)
+					Topology.Face face;
+					do
 					{
-						var faceGroupIndex = faceGroupIndices[edge.nearFace];
-						faceGroupIndices[edge.farFace] = faceGroupIndex;
-						faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace.index);
-					}
-				});
-				while (waitHandle.WaitOne(10) == false)
-				{
-					yield return null;
+						face = topology.faces[RandomUtility.HalfOpenRange(0, topology.internalFaces.Count, randomEngine)];
+					} while (rootFaces.Contains(face));
+					rootFaces.Add(face);
+					faceGroupIndices[face] = faceGroupIndex;
+					faceGroupFaceIndices[faceGroupIndex].Add(face.index);
 				}
+
+				foreach (var visit in FaceVisitationUtility.GetFaceEdgesByRandomAdjacency(rootFaces, randomEngine))
+				{
+					var edge = visit.edge;
+					var faceGroupIndex = faceGroupIndices[edge.nearFace];
+					faceGroupIndices[edge.farFace] = faceGroupIndex;
+					faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace.index);
+				}
+			});
+			while (waitHandle.WaitOne(10) == false)
+			{
+				yield return null;
 			}
 
 			faceGroupOutputSlots = GeneratorUtility.ResizeArray(faceGroupOutputSlots, faceGroupFaceIndices.Length,

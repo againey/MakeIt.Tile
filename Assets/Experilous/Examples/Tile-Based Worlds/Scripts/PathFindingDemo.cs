@@ -212,25 +212,26 @@ namespace Experilous.Examples.Topological
 			_picker.enabled = true;
 
 			var regionCount = 500;
-			var visitor = new RandomAdjacentFaceVisitor(_topology, _random.engine);
 			_faceTerrainIndices = new int[_topology.faces.Count].AsFaceAttribute();
 			var terrainWeights = new int[] { 5, 8, 2, 1 };
 			int terrainWeightSum = 0;
 			foreach (var weight in terrainWeights) terrainWeightSum += weight;
 
+			var rootFaces = new List<Topology.Face>();
 			for (int regionIndex = 0; regionIndex < regionCount; ++regionIndex)
 			{
 				Topology.Face face;
 				do
 				{
 					face = _topology.faces[_random.HalfOpenRange(0, _topology.internalFaces.Count)];
-				} while (visitor.IsRoot(face));
-				visitor.AddRoot(face);
+				} while (rootFaces.Contains(face));
+				rootFaces.Add(face);
 				_faceTerrainIndices[face] = _random.WeightedIndex(terrainWeights, terrainWeightSum);
 			}
 
-			foreach (var edge in (IEnumerable<Topology.FaceEdge>)visitor)
+			foreach (var visit in FaceVisitationUtility.GetFaceEdgesByRandomAdjacency(rootFaces, _random.engine))
 			{
+				var edge = visit.edge;
 				_faceTerrainIndices[edge.farFace] = _faceTerrainIndices[edge.nearFace];
 			}
 

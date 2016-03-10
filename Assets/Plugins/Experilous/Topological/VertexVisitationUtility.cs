@@ -144,6 +144,7 @@ namespace Experilous.Topological
 			var topology = rootVertex.topology;
 			var queue = new PriorityQueue<DepthQueueElement>(areOrdered, 256);
 			BitArray visitedVertices = new BitArray(topology.vertices.Count);
+			visitedVertices[rootVertex.index] = true;
 
 			foreach (var edge in rootVertex.edges)
 			{
@@ -162,6 +163,7 @@ namespace Experilous.Topological
 					var visit = new DepthVisit(new Topology.VertexEdge(topology, front.edgeIndex), front.depth);
 					if (shouldVisit(visit))
 					{
+						visitedVertices[farVertexIndex] = true;
 						yield return visit;
 
 						foreach (var edge in new Topology.Vertex(topology, farVertexIndex).edges)
@@ -437,6 +439,7 @@ namespace Experilous.Topological
 		{
 			var topology = rootVertex.topology;
 			BitArray visitedVertices = new BitArray(topology.vertices.Count);
+			visitedVertices[rootVertex.index] = true;
 
 			foreach (var edge in rootVertex.edges)
 			{
@@ -455,6 +458,7 @@ namespace Experilous.Topological
 					var visit = new DistanceVisit<T>(new Topology.VertexEdge(topology, front.edgeIndex), front.depth, front.distance);
 					if (shouldVisit(visit))
 					{
+						visitedVertices[farVertexIndex] = true;
 						yield return visit;
 
 						foreach (var edge in new Topology.Vertex(topology, farVertexIndex).edges)
@@ -604,6 +608,7 @@ namespace Experilous.Topological
 		{
 			var topology = rootVertex.topology;
 			BitArray visitedVertices = new BitArray(topology.vertices.Count);
+			visitedVertices[rootVertex.index] = true;
 
 			foreach (var edge in rootVertex.edges)
 			{
@@ -622,6 +627,7 @@ namespace Experilous.Topological
 					var visit = new DistanceVisit<float>(new Topology.VertexEdge(topology, front.edgeIndex), front.depth, front.distance);
 					if (shouldVisit(visit))
 					{
+						visitedVertices[farVertexIndex] = true;
 						yield return visit;
 
 						foreach (var edge in new Topology.Vertex(topology, farVertexIndex).edges)
@@ -663,6 +669,7 @@ namespace Experilous.Topological
 
 			foreach (var rootVertex in rootVertices)
 			{
+				visitedVertices[rootVertex.index] = true;
 				foreach (var edge in rootVertex.edges)
 				{
 					queue.Add(new DepthQueueElement(edge.index, 1));
@@ -684,6 +691,7 @@ namespace Experilous.Topological
 					var visit = new DepthVisit(new Topology.VertexEdge(topology, queueElement.edgeIndex), queueElement.depth);
 					if (shouldVisit(visit))
 					{
+						visitedVertices[farVertexIndex] = true;
 						yield return visit;
 
 						foreach (var edge in new Topology.Vertex(topology, farVertexIndex).edges)
