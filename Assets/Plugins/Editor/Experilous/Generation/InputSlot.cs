@@ -24,7 +24,7 @@ namespace Experilous.Generation
 
 		[SerializeField] public bool isActive;
 
-		public static InputSlot CreateOrResetRequired<TAsset>(Generator generator)
+		public static InputSlot CreateRequired<TAsset>(Generator generator)
 		{
 			return new InputSlot(generator, typeof(TAsset), false, false);
 		}
@@ -36,7 +36,7 @@ namespace Experilous.Generation
 			return input;
 		}
 
-		public static InputSlot CreateOrResetOptional<TAsset>(Generator generator)
+		public static InputSlot CreateOptional<TAsset>(Generator generator)
 		{
 			return new InputSlot(generator, typeof(TAsset), true, false);
 		}
@@ -48,7 +48,7 @@ namespace Experilous.Generation
 			return input;
 		}
 
-		public static InputSlot CreateOrResetRequiredMutating<TAsset>(Generator generator)
+		public static InputSlot CreateRequiredMutating<TAsset>(Generator generator)
 		{
 			return new InputSlot(generator, typeof(TAsset), false, true);
 		}
@@ -60,7 +60,7 @@ namespace Experilous.Generation
 			return input;
 		}
 
-		public static InputSlot CreateOrResetOptionalMutating<TAsset>(Generator generator)
+		public static InputSlot CreateOptionalMutating<TAsset>(Generator generator)
 		{
 			return new InputSlot(generator, typeof(TAsset), true, true);
 		}

@@ -135,7 +135,7 @@ namespace Experilous.Generation
 		protected virtual void OnOutputsGUI()
 		{
 			bool hasOutputs = false;
-			foreach (var output in _generator.activeOutputs)
+			foreach (var output in _generator.visibleOutputs)
 			{
 				if (!hasOutputs)
 				{

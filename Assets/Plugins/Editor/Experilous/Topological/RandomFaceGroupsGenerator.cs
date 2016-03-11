@@ -14,7 +14,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[Generator(typeof(TopologyGeneratorCollection), "Face Groups/Random Face Groups")]
+	[Generator(typeof(TopologyGeneratorCollection), "Face Group/Random")]
 	public class RandomFaceGroupsGenerator : Generator
 	{
 		[AutoSelect] public InputSlot topologyInputSlot;

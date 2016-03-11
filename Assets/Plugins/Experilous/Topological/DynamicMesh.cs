@@ -57,55 +57,92 @@ namespace Experilous.Topological
 
 		private IndexedVertexAttributeArrays _cachedIndexedVertexAttributeArrays;
 
-		public static DynamicMesh Create(Topology.FacesIndexer faces, VertexAttributes vertexAttributes, ITriangulation triangulation, int maxVerticesPerSubmesh = 65534)
+		public static DynamicMesh Create(IEnumerable<IEnumerable<Topology.Face>> faceGroups, VertexAttributes vertexAttributes, ITriangulation triangulation, int maxVerticesPerSubmesh = 65534)
 		{
 			var dynamicMesh = CreateInstance<DynamicMesh>();
 			dynamicMesh._vertexAttributes = vertexAttributes;
 			dynamicMesh._maxVerticesPerSubmesh = maxVerticesPerSubmesh;
-			dynamicMesh.Initialize(faces, triangulation);
+			dynamicMesh.Initialize(faceGroups, triangulation);
 			return dynamicMesh;
 		}
 
-		private void Initialize(Topology.FacesIndexer faces, ITriangulation triangulation)
+		public static DynamicMesh Create(IEnumerable<Topology.Face> faces, VertexAttributes vertexAttributes, ITriangulation triangulation, int maxVerticesPerSubmesh = 65534)
 		{
-			_faceSubmeshIndices = new int[faces.Count];
-			_faceFirstVertexIndices = new int[faces.Count];
+			var dynamicMesh = CreateInstance<DynamicMesh>();
+			dynamicMesh._vertexAttributes = vertexAttributes;
+			dynamicMesh._maxVerticesPerSubmesh = maxVerticesPerSubmesh;
+			dynamicMesh.Initialize(new IEnumerable<Topology.Face>[] { faces }, triangulation);
+			return dynamicMesh;
+		}
+
+		private void Initialize(IEnumerable<IEnumerable<Topology.Face>> faceGroups, ITriangulation triangulation)
+		{
+			int maxFaceIndex = -1;
+			var dynamicFaceSubmeshIndicesArray = new int[65536];
+			var dynamicFaceFirstVertexIndicesArray = new int[65536];
 
 			_cachedIndexedVertexAttributeArrays = new IndexedVertexAttributeArrays();
 
 			var submeshList = new List<Submesh>();
 
-			var initialVertexCount = Mathf.Min(_maxVerticesPerSubmesh, faces.Count * 3); // Very conservative estimate.
-			var vertexAttributeArrays = new DynamicVertexAttributeArrays(_vertexAttributes, initialVertexCount);
+			var vertexAttributeArrays = new DynamicVertexAttributeArrays(_vertexAttributes, _maxVerticesPerSubmesh);
 			var triangleIndices = new List<int>();
 
-			foreach (var face in faces)
+			foreach (var faceGroup in faceGroups)
 			{
-				var vertexCount = triangulation.GetVertexCount(face);
+				foreach (var face in faceGroup)
+				{
+					var vertexCount = triangulation.GetVertexCount(face);
 
-				if (vertexAttributeArrays.index + vertexCount > _maxVerticesPerSubmesh)
+					if (vertexAttributeArrays.index + vertexCount > _maxVerticesPerSubmesh)
+					{
+						triangulation.FinalizeSubmesh(submeshList.Count);
+						submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
+						vertexAttributeArrays.Reset();
+						triangleIndices.Clear();
+					}
+
+					maxFaceIndex = Mathf.Max(maxFaceIndex, face.index);
+					SetGrowableArrayElement(ref dynamicFaceSubmeshIndicesArray, face.index, submeshList.Count);
+					SetGrowableArrayElement(ref dynamicFaceFirstVertexIndicesArray, face.index, vertexAttributeArrays.index);
+
+					vertexAttributeArrays.Grow(vertexCount);
+
+					triangulation.BuildFace(face, vertexAttributeArrays, triangleIndices);
+				}
+
+				if (vertexAttributeArrays.index > 0)
 				{
 					triangulation.FinalizeSubmesh(submeshList.Count);
 					submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
 					vertexAttributeArrays.Reset();
 					triangleIndices.Clear();
 				}
-
-				_faceSubmeshIndices[face.index] = submeshList.Count;
-				_faceFirstVertexIndices[face.index] = vertexAttributeArrays.index;
-
-				vertexAttributeArrays.Grow(vertexCount);
-
-				triangulation.BuildFace(face, vertexAttributeArrays, triangleIndices);
-			}
-
-			if (vertexAttributeArrays.index > 0)
-			{
-				triangulation.FinalizeSubmesh(submeshList.Count);
-				submeshList.Add(new Submesh(vertexAttributeArrays, triangleIndices));
 			}
 
 			_submeshes = submeshList.ToArray();
+
+			var faceCount = maxFaceIndex + 1;
+			_faceSubmeshIndices = new int[faceCount];
+			_faceFirstVertexIndices = new int[faceCount];
+			Array.Copy(dynamicFaceSubmeshIndicesArray, _faceSubmeshIndices, faceCount);
+			Array.Copy(dynamicFaceFirstVertexIndicesArray, _faceFirstVertexIndices, faceCount);
+		}
+
+		private void SetGrowableArrayElement<T>(ref T[] array, int index, T value)
+		{
+			if (array.Length <= index)
+			{
+				var capacity = array.Length;
+				do
+				{
+					capacity += capacity * 3 / 2;
+				} while (capacity <= index);
+				var newArray = new T[capacity];
+				Array.Copy(array, newArray, array.Length);
+				array = newArray;
+			}
+			array[index] = value;
 		}
 
 		/// <summary>
@@ -165,7 +202,16 @@ namespace Experilous.Topological
 
 		public Mesh GetSubmesh(int index)
 		{
+			if (index < 0 || index >= _submeshes.Length) throw new ArgumentOutOfRangeException("index");
 			return _submeshes[index].mesh;
+		}
+
+		public void ReplaceSubmesh(int index, Mesh replacementSubmesh)
+		{
+			if (index < 0 || index >= _submeshes.Length) throw new ArgumentOutOfRangeException("index");
+			if (replacementSubmesh == null) throw new ArgumentNullException("index");
+			if (ReferenceEquals(_submeshes[index].mesh, replacementSubmesh)) return;
+			_submeshes[index].mesh = replacementSubmesh;
 		}
 
 		public IEnumerable<Mesh> submeshes
@@ -291,7 +337,20 @@ namespace Experilous.Topological
 					if (uvs2 != null && (dirtyVertexAttributes & VertexAttributes.UV2) != 0) { mesh.uv2 = uvs2; }
 					if (uvs3 != null && (dirtyVertexAttributes & VertexAttributes.UV3) != 0) { mesh.uv3 = uvs3; }
 					if (uvs4 != null && (dirtyVertexAttributes & VertexAttributes.UV4) != 0) { mesh.uv4 = uvs4; }
-					if (tangents != null && (dirtyVertexAttributes & VertexAttributes.Tangent) != 0) { mesh.tangents = tangents; }
+
+					if (tangents != null)
+					{
+						// Since setting the tangents is necessary for updating binormals, then
+						// we need to set the tangents if either the tangents themselves are
+						// dirty or the normals which are used to compute the binormals are dirty.
+						if ((dirtyVertexAttributes & VertexAttributes.Tangent) != 0 || normals != null && (dirtyVertexAttributes & VertexAttributes.Normal) != 0)
+						{
+							mesh.tangents = tangents;
+						}
+					}
+
+					// If the positions have changed, recalculate the bounds.
+					if (positions != null && (dirtyVertexAttributes & VertexAttributes.Position) != 0) { mesh.RecalculateBounds(); }
 
 					isDirty = false;
 				}

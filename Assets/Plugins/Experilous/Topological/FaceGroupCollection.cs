@@ -7,10 +7,13 @@
 \******************************************************************************/
 
 using UnityEngine;
+using System.Collections.Generic;
+using System;
+using System.Collections;
 
 namespace Experilous.Topological
 {
-	public class FaceGroupCollection : ScriptableObject
+	public class FaceGroupCollection : ScriptableObject, IEnumerable<IEnumerable<Topology.Face>>
 	{
 		public FaceGroup[] faceGroups;
 
@@ -26,6 +29,19 @@ namespace Experilous.Topological
 			var instance = Create(faceGroupCount);
 			instance.name = name;
 			return instance;
+		}
+
+		public IEnumerator<IEnumerable<Topology.Face>> GetEnumerator()
+		{
+			foreach (var faceGroup in faceGroups)
+			{
+				yield return faceGroup;
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

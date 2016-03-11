@@ -13,7 +13,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[Generator(typeof(TopologyGeneratorCollection), "Vertices/Normals")]
+	[Generator(typeof(TopologyGeneratorCollection), "Vertex/Normals")]
 	public class VertexNormalsGenerator : Generator
 	{
 		public enum CalculationMethod

@@ -14,7 +14,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[Generator(typeof(TopologyGeneratorCollection), "Topologies/Planar Manifold")]
+	[Generator(typeof(TopologyGeneratorCollection), "Topology/Planar Manifold")]
 	public class PlanarManifoldGenerator : Generator
 	{
 		public enum PlanarTileShapes
@@ -105,10 +105,11 @@ namespace Experilous.Topological
 		{
 			var collection = TopologyGeneratorCollection.Create("New Planar Manifold");
 
-			var manifoldGenerator = collection.Add(CreateInstance<PlanarManifoldGenerator>(collection, "Manifold"));
+			var manifoldGenerator = collection.Add(CreateInstance<PlanarManifoldGenerator>(collection));
 			collection.Add(CreateInstance<RandomEngineGenerator>(collection));
 			var faceCentroidsGenerator = collection.Add(CreateInstance<FaceCentroidsGenerator>(collection));
 			var faceNormalsGenerator = collection.Add(CreateInstance<FaceNormalsGenerator>(collection));
+			var vertexNormalsGenerator = collection.Add(CreateInstance<VertexNormalsGenerator>(collection));
 			var rectangularFaceGroupsGenerator = collection.Add(CreateInstance<RectangularFaceGroupsGenerator>(collection));
 			var meshGenerator = collection.Add(CreateInstance<MeshGenerator>(collection));
 			var prefabGenerator = collection.Add(CreateInstance<PrefabGenerator>(collection));
@@ -123,6 +124,11 @@ namespace Experilous.Topological
 			faceNormalsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
 			faceNormalsGenerator.facePositionsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
 
+			vertexNormalsGenerator.calculationMethod = VertexNormalsGenerator.CalculationMethod.FromSurfaceNormal;
+			vertexNormalsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			vertexNormalsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			vertexNormalsGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
+
 			rectangularFaceGroupsGenerator.axisDivisions = new Index2D(4, 4);
 			rectangularFaceGroupsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
 			rectangularFaceGroupsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
@@ -130,12 +136,16 @@ namespace Experilous.Topological
 
 			meshGenerator.sourceType = MeshGenerator.SourceType.FaceGroupCollection;
 			meshGenerator.faceGroupCollectionInputSlot.source = rectangularFaceGroupsGenerator.faceGroupCollectionOutputSlot;
-			meshGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
-			meshGenerator.faceCentroidsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
-			meshGenerator.faceNormalsInputSlot.source = faceNormalsGenerator.faceNormalsOutputSlot;
-			meshGenerator.centerOnGroupAverage = true;
+			meshGenerator.triangulation = MeshGenerator.Triangulation.Umbrella;
+			meshGenerator.vertexAttributes = DynamicMesh.VertexAttributes.Position | DynamicMesh.VertexAttributes.Normal;
+			meshGenerator.ringDepth = 1;
+			meshGenerator.UpdateVertexAttributeInputSlots();
+			meshGenerator.ringVertexPositionsInputSlots[0].source = manifoldGenerator.vertexPositionsOutputSlot;
+			meshGenerator.centerVertexPositionsInputSlots[0].source = faceCentroidsGenerator.faceCentroidsOutputSlot;
+			meshGenerator.ringVertexNormalsInputSlots[0].source = vertexNormalsGenerator.vertexNormalsOutputSlot;
+			meshGenerator.centerVertexNormalsInputSlots[0].source = faceNormalsGenerator.faceNormalsOutputSlot;
 
-			prefabGenerator.meshCollectionInputSlot.source = meshGenerator.meshCollectionOutputSlot;
+			prefabGenerator.dynamicMeshInputSlot.source = meshGenerator.dynamicMeshOutputSlot;
 
 			faceSpatialPartitioningGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
 			faceSpatialPartitioningGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;

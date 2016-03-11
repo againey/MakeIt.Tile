@@ -131,6 +131,14 @@ namespace Experilous.Generation
 			}
 		}
 
+		public virtual IEnumerable<OutputSlot> visibleOutputs
+		{
+			get
+			{
+				return activeOutputs;
+			}
+		}
+
 		public virtual IEnumerable<InternalSlotConnection> internalConnections
 		{
 			get

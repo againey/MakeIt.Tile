@@ -600,6 +600,55 @@ namespace Experilous.Topological
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 	}
 
+	public struct TwinEdgeAttributeWrapper<T> : IEdgeAttribute<T>
+	{
+		public Topology topology;
+		public IEdgeAttribute<T> underlyingAttribute;
+
+		public TwinEdgeAttributeWrapper(Topology topology, IEdgeAttribute<T> underlyingAttribute)
+		{
+			this.topology = topology;
+			this.underlyingAttribute = underlyingAttribute;
+		}
+
+		public T this[int i]
+		{
+			get { return underlyingAttribute[topology.halfEdges[i].twinIndex]; }
+			set { underlyingAttribute[topology.halfEdges[i].twinIndex] = value; }
+		}
+
+		public T this[Topology.HalfEdge e]
+		{
+			get { return underlyingAttribute[e.twin]; }
+			set { underlyingAttribute[e.twin] = value; }
+		}
+
+		public T this[Topology.VertexEdge e]
+		{
+			get { return underlyingAttribute[e.twin]; }
+			set { underlyingAttribute[e.twin] = value; }
+		}
+
+		public T this[Topology.FaceEdge e]
+		{
+			get { return underlyingAttribute[e.twin]; }
+			set { underlyingAttribute[e.twin] = value; }
+		}
+
+		public int Count { get { return underlyingAttribute.Count; } }
+		public bool IsReadOnly { get { return underlyingAttribute.IsReadOnly; } }
+		public void Add(T item) { underlyingAttribute.Add(item); }
+		public void Clear() { underlyingAttribute.Clear(); }
+		public bool Contains(T item) { return underlyingAttribute.Contains(item); }
+		public void CopyTo(T[] array, int arrayIndex) { underlyingAttribute.CopyTo(array, arrayIndex); }
+		public IEnumerator<T> GetEnumerator() { return underlyingAttribute.GetEnumerator(); }
+		public int IndexOf(T item) { return underlyingAttribute.IndexOf(item); }
+		public void Insert(int index, T item) { underlyingAttribute.Insert(index, item); }
+		public bool Remove(T item) { return underlyingAttribute.Remove(item); }
+		public void RemoveAt(int index) { underlyingAttribute.RemoveAt(index); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+	}
+
 	public abstract class EdgeAttribute<T> : ScriptableObject, IEdgeAttribute<T>
 	{
 		public abstract T this[int i] { get; set; }

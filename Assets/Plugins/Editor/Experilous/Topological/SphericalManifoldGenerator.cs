@@ -14,7 +14,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[Generator(typeof(TopologyGeneratorCollection), "Topologies/Spherical Manifold")]
+	[Generator(typeof(TopologyGeneratorCollection), "Topology/Spherical Manifold")]
 	public class SphericalManifoldGenerator : Generator
 	{
 		public enum SphericalPolyhedrons
@@ -40,10 +40,11 @@ namespace Experilous.Topological
 		{
 			var collection = TopologyGeneratorCollection.Create("New Spherical Manifold");
 
-			var manifoldGenerator = collection.Add(CreateInstance<SphericalManifoldGenerator>(collection, "Manifold"));
+			var manifoldGenerator = collection.Add(CreateInstance<SphericalManifoldGenerator>(collection));
 			collection.Add(CreateInstance<RandomEngineGenerator>(collection));
 			var faceCentroidsGenerator = collection.Add(CreateInstance<FaceCentroidsGenerator>(collection));
 			var faceNormalsGenerator = collection.Add(CreateInstance<FaceNormalsGenerator>(collection));
+			var vertexNormalsGenerator = collection.Add(CreateInstance<VertexNormalsGenerator>(collection));
 			var meshGenerator = collection.Add(CreateInstance<MeshGenerator>(collection));
 			var prefabGenerator = collection.Add(CreateInstance<PrefabGenerator>(collection));
 			var faceSpatialPartitioningGenerator = collection.Add(CreateInstance<FaceSpatialPartitioningGenerator>(collection));
@@ -57,14 +58,23 @@ namespace Experilous.Topological
 			faceNormalsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
 			faceNormalsGenerator.facePositionsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
 
+			vertexNormalsGenerator.calculationMethod = VertexNormalsGenerator.CalculationMethod.FromSurfaceNormal;
+			vertexNormalsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
+			vertexNormalsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
+			vertexNormalsGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
+
 			meshGenerator.sourceType = MeshGenerator.SourceType.InternalFaces;
 			meshGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
-			meshGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
-			meshGenerator.faceCentroidsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
-			meshGenerator.faceNormalsInputSlot.source = faceNormalsGenerator.faceNormalsOutputSlot;
-			meshGenerator.centerOnGroupAverage = true;
+			meshGenerator.triangulation = MeshGenerator.Triangulation.Umbrella;
+			meshGenerator.vertexAttributes = DynamicMesh.VertexAttributes.Position | DynamicMesh.VertexAttributes.Normal;
+			meshGenerator.ringDepth = 1;
+			meshGenerator.UpdateVertexAttributeInputSlots();
+			meshGenerator.ringVertexPositionsInputSlots[0].source = manifoldGenerator.vertexPositionsOutputSlot;
+			meshGenerator.centerVertexPositionsInputSlots[0].source = faceCentroidsGenerator.faceCentroidsOutputSlot;
+			meshGenerator.ringVertexNormalsInputSlots[0].source = vertexNormalsGenerator.vertexNormalsOutputSlot;
+			meshGenerator.centerVertexNormalsInputSlots[0].source = faceNormalsGenerator.faceNormalsOutputSlot;
 
-			prefabGenerator.meshCollectionInputSlot.source = meshGenerator.meshCollectionOutputSlot;
+			prefabGenerator.dynamicMeshInputSlot.source = meshGenerator.dynamicMeshOutputSlot;
 
 			faceSpatialPartitioningGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
 			faceSpatialPartitioningGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;

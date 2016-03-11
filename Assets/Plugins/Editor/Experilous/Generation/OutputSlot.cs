@@ -29,7 +29,7 @@ namespace Experilous.Generation
 		[SerializeField] private Availability _availability;
 		[SerializeField] private bool _persistable;
 
-		[SerializeField] private List<InputSlotKey> _connectionSources = new List<InputSlotKey>();
+		[SerializeField] private List<InputSlotKey> _connectionTargets = new List<InputSlotKey>();
 
 		[SerializeField] private OutputSlotKey _key;
 
@@ -129,9 +129,9 @@ namespace Experilous.Generation
 			set
 			{
 				if (mustBeAvailableAfterGeneration && (value & Availability.AfterGeneration) == 0)
-					throw new System.ArgumentException("Assets must always be available after generation.", "value");
+					throw new System.ArgumentException("This asset must always be available after generation.", "value");
 				if (!canBeAvailableAfterGeneration && (value & Availability.AfterGeneration) != 0)
-					throw new System.ArgumentException("Assets cannot be available after generation.", "value");
+					throw new System.ArgumentException("This asset cannot be available after generation.", "value");
 
 				_availability = value;
 			}
@@ -142,7 +142,7 @@ namespace Experilous.Generation
 		public bool isAvailableDuringGeneration { get { return isEnabled && (availability & Availability.DuringGeneration) != 0; } }
 		public bool isAvailableAfterGeneration { get { return isEnabled && (availability & Availability.AfterGeneration) != 0; } }
 
-		public IEnumerable<InputSlot> connections { get { foreach (var source in _connectionSources) yield return source.slot; } }
+		public IEnumerable<InputSlot> connections { get { foreach (var target in _connectionTargets) yield return target.slot; } }
 
 		public OutputSlotKey key
 		{
@@ -153,25 +153,25 @@ namespace Experilous.Generation
 			}
 		}
 
-		public void Connect(InputSlot source)
+		public void Connect(InputSlot target)
 		{
-			if (!_connectionSources.Contains(source.key))
+			if (!_connectionTargets.Contains(target.key))
 			{
-				_connectionSources.Add(source.key);
-				source.source = this;
+				_connectionTargets.Add(target.key);
+				target.source = this;
 			}
 		}
 
-		public void Disconnect(InputSlot source)
+		public void Disconnect(InputSlot target)
 		{
-			_connectionSources.Remove(source.key);
-			source.source = null;
+			_connectionTargets.Remove(target.key);
+			target.source = null;
 		}
 
 		public void DisconnectAll()
 		{
-			var priorConnectionSources = _connectionSources;
-			_connectionSources = new List<InputSlotKey>();
+			var priorConnectionSources = _connectionTargets;
+			_connectionTargets = new List<InputSlotKey>();
 			foreach (var connection in priorConnectionSources)
 			{
 				connection.slot.source = null;

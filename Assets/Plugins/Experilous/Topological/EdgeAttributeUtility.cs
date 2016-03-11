@@ -102,12 +102,12 @@ namespace Experilous.Topological
 			return faceAngles;
 		}
 
-		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions)
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions)
 		{
 			return CalculateFaceEdgeBisectorsFromVertexPositions(faceEdges, vertexPositions, new Vector3[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IVertexAttribute<Vector3> vertexPositions, IEdgeAttribute<Vector3> bisectionVectors)
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, IEdgeAttribute<Vector3> bisectors)
 		{
 			foreach (var edge in faceEdges)
 			{
@@ -116,10 +116,10 @@ namespace Experilous.Topological
 				var p2 = vertexPositions[edge.next];
 				var v1to0 = (p0 - p1).normalized;
 				var v1to2 = (p2 - p1).normalized;
-				bisectionVectors[edge] = (v1to0 + v1to2).normalized;
+				bisectors[edge] = (v1to0 + v1to2).normalized;
 			}
 
-			return bisectionVectors;
+			return bisectors;
 		}
 
 		public static IEdgeAttribute<float> CalculateSphericalFaceCentroidAnglesFromFaceCentroids(Topology.FaceEdgesIndexer faceEdges, IFaceAttribute<Vector3> faceCentroids)

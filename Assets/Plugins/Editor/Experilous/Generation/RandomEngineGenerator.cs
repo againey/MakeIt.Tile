@@ -12,7 +12,7 @@ using Experilous.Randomization;
 
 namespace Experilous.Generation
 {
-	[Generator(typeof(GeneratorExecutive), "Utilities/Random Engine")]
+	[Generator(typeof(GeneratorExecutive), "Utility/Random Engine")]
 	public class RandomEngineGenerator : Generator
 	{
 		[Label(null)] public RandomnessDescriptor randomness;

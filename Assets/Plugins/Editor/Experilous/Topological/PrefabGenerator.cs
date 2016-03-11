@@ -13,10 +13,10 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[Generator(typeof(TopologyGeneratorCollection), "Unity Assets/Prefab")]
+	[Generator(typeof(TopologyGeneratorCollection), "Unity Asset/Prefab")]
 	public class PrefabGenerator : Generator
 	{
-		public InputSlot meshCollectionInputSlot;
+		public InputSlot dynamicMeshInputSlot;
 
 		public MeshFilter meshPrefab;
 
@@ -25,7 +25,7 @@ namespace Experilous.Topological
 		protected override void Initialize()
 		{
 			// Inputs
-			InputSlot.CreateOrResetRequired<MeshCollection>(ref meshCollectionInputSlot, this);
+			InputSlot.CreateOrResetRequired<DynamicMesh>(ref dynamicMeshInputSlot, this);
 
 			// Fields
 			meshPrefab = null;
@@ -38,7 +38,7 @@ namespace Experilous.Topological
 		{
 			get
 			{
-				yield return meshCollectionInputSlot;
+				yield return dynamicMeshInputSlot;
 			}
 		}
 
@@ -54,9 +54,9 @@ namespace Experilous.Topological
 		{
 			GameObject prefab;
 
-			var meshes = meshCollectionInputSlot.GetAsset<MeshCollection>().meshes;
+			var dynamicMesh = dynamicMeshInputSlot.GetAsset<DynamicMesh>();
 
-			if (meshes.Length == 0)
+			if (dynamicMesh.submeshCount == 0)
 			{
 				if (meshPrefab == null)
 				{
@@ -69,49 +69,43 @@ namespace Experilous.Topological
 					prefab = Instantiate(meshPrefab).gameObject;
 				}
 			}
-			else if (meshes.Length == 1)
+			else if (dynamicMesh.submeshCount == 1)
 			{
 				if (meshPrefab == null)
 				{
 					prefab = new GameObject();
-					prefab.AddComponent<MeshFilter>().mesh = meshes[0].mesh;
+					prefab.AddComponent<MeshFilter>().mesh = dynamicMesh.GetSubmesh(0);
 					prefab.AddComponent<MeshRenderer>();
 				}
 				else
 				{
 					var meshFilter = Instantiate(meshPrefab);
-					meshFilter.mesh = meshes[0].mesh;
+					meshFilter.mesh = dynamicMesh.GetSubmesh(0);
 					prefab = meshFilter.gameObject;
 				}
-				prefab.transform.position = meshes[0].position;
-				prefab.transform.rotation = meshes[0].rotation;
 			}
 			else
 			{
 				prefab = new GameObject();
 				if (meshPrefab == null)
 				{
-					for (int i = 0; i < meshes.Length; ++i)
+					for (int i = 0; i < dynamicMesh.submeshCount; ++i)
 					{
 						var submeshInstance = new GameObject();
 						submeshInstance.name = string.Format("Mesh {0}", i);
-						submeshInstance.AddComponent<MeshFilter>().mesh = meshes[i].mesh;
+						submeshInstance.AddComponent<MeshFilter>().mesh = dynamicMesh.GetSubmesh(i);
 						submeshInstance.AddComponent<MeshRenderer>();
 						submeshInstance.transform.SetParent(prefab.transform, false);
-						submeshInstance.transform.position = meshes[i].position;
-						submeshInstance.transform.rotation = meshes[i].rotation;
 					}
 				}
 				else
 				{
-					for (int i = 0; i < meshes.Length; ++i)
+					for (int i = 0; i < dynamicMesh.submeshCount; ++i)
 					{
 						var meshFilter = Instantiate(meshPrefab);
 						meshFilter.name = string.Format("Mesh {0}", i);
-						meshFilter.mesh = meshes[i].mesh;
+						meshFilter.mesh = dynamicMesh.GetSubmesh(i);
 						meshFilter.transform.SetParent(prefab.transform, false);
-						meshFilter.transform.position = meshes[i].position;
-						meshFilter.transform.rotation = meshes[i].rotation;
 					}
 				}
 			}

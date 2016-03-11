@@ -13,7 +13,7 @@ using Experilous.Generation;
 
 namespace Experilous.Topological
 {
-	[Generator(typeof(TopologyGeneratorCollection), "Faces/Centroids")]
+	[Generator(typeof(TopologyGeneratorCollection), "Face/Centroids")]
 	public class FaceCentroidsGenerator : Generator
 	{
 		public bool flatten;
