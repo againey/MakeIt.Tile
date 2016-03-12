@@ -326,6 +326,7 @@ namespace Experilous.Examples.Topological
 		{
 			_faceSeenStates[face] = true;
 			_faceSightCounts[face] += 1;
+			_dynamicMesh.RebuildFace(face, _faceTriangulation);
 			foreach (var visit in FaceVisitationUtility.GetFaceEdgesBreadthFirstByDepth(face, 5))
 			{
 				var visitFace = visit.edge.farFace;
@@ -341,6 +342,7 @@ namespace Experilous.Examples.Topological
 		private void ObscureUnitVicinity(Topology.Face face)
 		{
 			_faceSightCounts[face] -= 1;
+			_dynamicMesh.RebuildFace(face, _faceTriangulation);
 			foreach (var visit in FaceVisitationUtility.GetFaceEdgesBreadthFirstByDepth(face, 3))
 			{
 				var visitFace = visit.edge.farFace;
