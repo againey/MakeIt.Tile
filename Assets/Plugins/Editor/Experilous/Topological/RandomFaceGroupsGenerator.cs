@@ -111,13 +111,13 @@ namespace Experilous.Topological
 					faceGroupFaceIndices[faceGroupIndex].Add(face.index);
 				}
 
-				foreach (var visit in FaceVisitationUtility.GetFaceEdgesByRandomAdjacency(rootFaces, randomEngine))
-				{
-					var edge = visit.edge;
-					var faceGroupIndex = faceGroupIndices[edge.nearFace];
-					faceGroupIndices[edge.farFace] = faceGroupIndex;
-					faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace.index);
-				}
+				FaceVisitationUtility.VisitAdjacentInRandomOrder(rootFaces, randomEngine,
+					(Topology.FaceEdge edge) =>
+					{
+						var faceGroupIndex = faceGroupIndices[edge.nearFace];
+						faceGroupIndices[edge.farFace] = faceGroupIndex;
+						faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace.index);
+					});
 			});
 			while (waitHandle.WaitOne(10) == false)
 			{

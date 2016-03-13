@@ -482,6 +482,13 @@ namespace Experilous.Topological
 		/// <summary>
 		/// Lookup the attribute value for the half-edge indicated.
 		/// </summary>
+		/// <param name="i">The index of the half-edge whose attribute value is desired.</param>
+		/// <returns>The attribute value for the half-edge indicated.</returns>
+		new T this[int i] { get; set; }
+
+		/// <summary>
+		/// Lookup the attribute value for the half-edge indicated.
+		/// </summary>
 		/// <param name="e">The half-edge whose attribute value is desired.</param>
 		/// <returns>The attribute value for the half-edge indicated.</returns>
 		T this[Topology.HalfEdge e] { get; set; }

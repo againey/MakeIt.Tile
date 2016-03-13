@@ -102,21 +102,41 @@ namespace Experilous.Topological
 			return faceAngles;
 		}
 
-		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions)
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions)
 		{
-			return CalculateFaceEdgeBisectorsFromVertexPositions(faceEdges, vertexPositions, new Vector3[faceEdges.Count].AsEdgeAttribute());
+			return CalculateFaceEdgeBisectorsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, new Vector3[faceEdges.Count].AsEdgeAttribute());
 		}
 
-		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, IEdgeAttribute<Vector3> bisectors)
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IEdgeAttribute<Vector3> bisectors)
 		{
-			foreach (var edge in faceEdges)
+			foreach (var face in faces)
 			{
-				var p0 = vertexPositions[edge.prev];
-				var p1 = vertexPositions[edge];
-				var p2 = vertexPositions[edge.next];
-				var v1to0 = (p0 - p1).normalized;
-				var v1to2 = (p2 - p1).normalized;
-				bisectors[edge] = (v1to0 + v1to2).normalized;
+				var center = facePositions[face];
+				foreach (var edge in face.edges)
+				{
+					var p0 = vertexPositions[edge.prev];
+					var p1 = vertexPositions[edge];
+					var p2 = vertexPositions[edge.next];
+					var v1to0 = (p0 - p1).normalized;
+					var v1to2 = (p2 - p1).normalized;
+					var v1toCenter = center - p1;
+					var sum = v1to0 + v1to2;
+					if (sum != Vector3.zero)
+					{
+						if (Vector3.Dot(sum, v1toCenter) >= 0f)
+						{
+							bisectors[edge] = sum.normalized;
+						}
+						else
+						{
+							bisectors[edge] = -sum.normalized;
+						}
+					}
+					else
+					{
+						bisectors[edge] = v1toCenter.normalized;
+					}
+				}
 			}
 
 			return bisectors;

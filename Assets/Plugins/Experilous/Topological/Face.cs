@@ -315,6 +315,13 @@ namespace Experilous.Topological
 		/// <summary>
 		/// Lookup the attribute value for the face indicated.
 		/// </summary>
+		/// <param name="i">The index of the face whose attribute value is desired.</param>
+		/// <returns>The attribute value for the face indicated.</returns>
+		new T this[int i] { get; set; }
+
+		/// <summary>
+		/// Lookup the attribute value for the face indicated.
+		/// </summary>
 		/// <param name="f">The face whose attribute value is desired.</param>
 		/// <returns>The attribute value for the face indicated.</returns>
 		T this[Topology.Face f] { get; set; }
@@ -397,6 +404,32 @@ namespace Experilous.Topological
 		public bool Remove(T item) { throw new NotSupportedException(); }
 		public void RemoveAt(int index) { throw new NotSupportedException(); }
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+
+		/// <summary>
+		/// Lookup the attribute value for the face indicated.
+		/// </summary>
+		/// <param name="i">The index of the face whose attribute value is desired.</param>
+		/// <returns>The attribute value for the face indicated.</returns>
+		T IFaceAttribute<T>.this[int i]
+		{
+			get { return this[i]; }
+			set { this[i] = value; }
+		}
+
+		/// <summary>
+		/// Lookup the attribute value for the edge indicated.
+		/// </summary>
+		/// <param name="i">The index of the edge whose attribute value is desired.</param>
+		/// <returns>The attribute value for the edge indicated.</returns>
+		/// <remarks><para>Any code utilizing this indexer through the <c>IEdgeAttribute&lt;T&gt;</c> interface is likely to
+		/// be treating the index as an edge index, but without access to the full edge data, nothing useful can be done with
+		/// just an edge index.  Therefore, this indexer throws in order to identify any code that attempts to misuse a
+		/// face attribute in this way.</para></remarks>
+		T IEdgeAttribute<T>.this[int i]
+		{
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
 	}
 
 	public abstract class FaceAttribute<T> : ScriptableObject, IFaceAttribute<T>
@@ -419,6 +452,32 @@ namespace Experilous.Topological
 		public virtual bool Remove(T item) { throw new NotSupportedException(); }
 		public virtual void RemoveAt(int index) { throw new NotSupportedException(); }
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+
+		/// <summary>
+		/// Lookup the attribute value for the face indicated.
+		/// </summary>
+		/// <param name="i">The index of the face whose attribute value is desired.</param>
+		/// <returns>The attribute value for the face indicated.</returns>
+		T IFaceAttribute<T>.this[int i]
+		{
+			get { return this[i]; }
+			set { this[i] = value; }
+		}
+
+		/// <summary>
+		/// Lookup the attribute value for the edge indicated.
+		/// </summary>
+		/// <param name="i">The index of the edge whose attribute value is desired.</param>
+		/// <returns>The attribute value for the edge indicated.</returns>
+		/// <remarks><para>Any code utilizing this indexer through the <c>IEdgeAttribute&lt;T&gt;</c> interface is likely to
+		/// be treating the index as an edge index, but without access to the full edge data, nothing useful can be done with
+		/// just an edge index.  Therefore, this indexer throws in order to identify any code that attempts to misuse a
+		/// face attribute in this way.</para></remarks>
+		T IEdgeAttribute<T>.this[int i]
+		{
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
 	}
 
 	public class FaceConstantAttribute<T> : FaceAttribute<T> where T : new()

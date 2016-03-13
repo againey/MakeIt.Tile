@@ -175,7 +175,7 @@ namespace Experilous.Examples.Topological
 				_maximumFaceDistance = Mathf.Max(_maximumFaceDistance, distance);
 			}
 
-			_innerAngleBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.faceEdges, _vertexPositions);
+			_innerAngleBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.faceEdges, _topology.internalFaces, _vertexPositions, _facePositions);
 
 			_innerVertexPositions = new Vector3[_topology.faceEdges.Count].AsEdgeAttribute();
 			foreach (var edge in _topology.faceEdges)
@@ -229,11 +229,11 @@ namespace Experilous.Examples.Topological
 				_faceTerrainIndices[face] = _random.WeightedIndex(terrainWeights, terrainWeightSum);
 			}
 
-			foreach (var visit in FaceVisitationUtility.GetFaceEdgesByRandomAdjacency(rootFaces, _random.engine))
-			{
-				var edge = visit.edge;
-				_faceTerrainIndices[edge.farFace] = _faceTerrainIndices[edge.nearFace];
-			}
+			FaceVisitationUtility.VisitAdjacentInRandomOrder(rootFaces, _random.engine,
+				(Topology.FaceEdge edge) =>
+				{
+					_faceTerrainIndices[edge.farFace] = _faceTerrainIndices[edge.nearFace];
+				});
 
 			_faceSeenStates = new bool[_topology.faces.Count].AsFaceAttribute();
 			_faceSightCounts = new int[_topology.faces.Count].AsFaceAttribute();
@@ -327,28 +327,32 @@ namespace Experilous.Examples.Topological
 			_faceSeenStates[face] = true;
 			_faceSightCounts[face] += 1;
 			_dynamicMesh.RebuildFace(face, _faceTriangulation);
-			foreach (var visit in FaceVisitationUtility.GetFaceEdgesBreadthFirstByDepth(face, 5))
-			{
-				var visitFace = visit.edge.farFace;
-				_faceSeenStates[visitFace] = true;
-				if (visit.depth < 4)
+
+			FaceVisitationUtility.VisitBreadthFirstByDepth(face,
+				(Topology.Face visitFace, int depth, ref FaceVisitationUtility.VisitationState state) =>
 				{
-					_faceSightCounts[visitFace] += 1;
-				}
-				_dynamicMesh.RebuildFace(visitFace, _faceTriangulation);
-			}
+					_faceSeenStates[visitFace] = true;
+					if (depth < 4)
+					{
+						_faceSightCounts[visitFace] += 1;
+					}
+					_dynamicMesh.RebuildFace(visitFace, _faceTriangulation);
+					if (depth == 5) state = FaceVisitationUtility.VisitationState.Discontinue;
+				});
 		}
 
 		private void ObscureUnitVicinity(Topology.Face face)
 		{
 			_faceSightCounts[face] -= 1;
 			_dynamicMesh.RebuildFace(face, _faceTriangulation);
-			foreach (var visit in FaceVisitationUtility.GetFaceEdgesBreadthFirstByDepth(face, 3))
-			{
-				var visitFace = visit.edge.farFace;
-				_faceSightCounts[visitFace] -= 1;
-				_dynamicMesh.RebuildFace(visitFace, _faceTriangulation);
-			}
+
+			FaceVisitationUtility.VisitBreadthFirstByDepth(face,
+				(Topology.Face visitFace, int depth, ref FaceVisitationUtility.VisitationState state) =>
+				{
+					_faceSightCounts[visitFace] -= 1;
+					_dynamicMesh.RebuildFace(visitFace, _faceTriangulation);
+					if (depth == 3) state = FaceVisitationUtility.VisitationState.Discontinue;
+				});
 		}
 
 		protected void Update()

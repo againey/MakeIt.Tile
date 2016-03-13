@@ -291,6 +291,13 @@ namespace Experilous.Topological
 		/// <summary>
 		/// Lookup the attribute value for the vertex indicated.
 		/// </summary>
+		/// <param name="i">The index of the vertex whose attribute value is desired.</param>
+		/// <returns>The attribute value for the vertex indicated.</returns>
+		new T this[int i] { get; set; }
+
+		/// <summary>
+		/// Lookup the attribute value for the vertex indicated.
+		/// </summary>
 		/// <param name="v">The vertex whose attribute value is desired.</param>
 		/// <returns>The attribute value for the vertex indicated.</returns>
 		T this[Topology.Vertex v] { get; set; }
@@ -373,6 +380,32 @@ namespace Experilous.Topological
 		public bool Remove(T item) { throw new NotSupportedException(); }
 		public void RemoveAt(int index) { throw new NotSupportedException(); }
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+
+		/// <summary>
+		/// Lookup the attribute value for the vertex indicated.
+		/// </summary>
+		/// <param name="i">The index of the vertex whose attribute value is desired.</param>
+		/// <returns>The attribute value for the vertex indicated.</returns>
+		T IVertexAttribute<T>.this[int i]
+		{
+			get { return this[i]; }
+			set { this[i] = value; }
+		}
+
+		/// <summary>
+		/// Lookup the attribute value for the edge indicated.
+		/// </summary>
+		/// <param name="i">The index of the edge whose attribute value is desired.</param>
+		/// <returns>The attribute value for the edge indicated.</returns>
+		/// <remarks><para>Any code utilizing this indexer through the <c>IEdgeAttribute&lt;T&gt;</c> interface is likely to
+		/// be treating the index as an edge index, but without access to the full edge data, nothing useful can be done with
+		/// just an edge index.  Therefore, this indexer throws in order to identify any code that attempts to misuse a
+		/// vertex attribute in this way.</para></remarks>
+		T IEdgeAttribute<T>.this[int i]
+		{
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
 	}
 
 	public abstract class VertexAttribute<T> : ScriptableObject, IVertexAttribute<T>
@@ -395,6 +428,32 @@ namespace Experilous.Topological
 		public virtual bool Remove(T item) { throw new NotSupportedException(); }
 		public virtual void RemoveAt(int index) { throw new NotSupportedException(); }
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+
+		/// <summary>
+		/// Lookup the attribute value for the vertex indicated.
+		/// </summary>
+		/// <param name="i">The index of the vertex whose attribute value is desired.</param>
+		/// <returns>The attribute value for the vertex indicated.</returns>
+		T IVertexAttribute<T>.this[int i]
+		{
+			get { return this[i]; }
+			set { this[i] = value; }
+		}
+
+		/// <summary>
+		/// Lookup the attribute value for the edge indicated.
+		/// </summary>
+		/// <param name="i">The index of the edge whose attribute value is desired.</param>
+		/// <returns>The attribute value for the edge indicated.</returns>
+		/// <remarks><para>Any code utilizing this indexer through the <c>IEdgeAttribute&lt;T&gt;</c> interface is likely to
+		/// be treating the index as an edge index, but without access to the full edge data, nothing useful can be done with
+		/// just an edge index.  Therefore, this indexer throws in order to identify any code that attempts to misuse a
+		/// vertex attribute in this way.</para></remarks>
+		T IEdgeAttribute<T>.this[int i]
+		{
+			get { throw new NotSupportedException(); }
+			set { throw new NotSupportedException(); }
+		}
 	}
 
 	public class VertexConstantAttribute<T> : VertexAttribute<T> where T : new()

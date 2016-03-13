@@ -16,37 +16,256 @@ namespace Experilous.Topological
 {
 	public static class FaceVisitationUtility
 	{
-		#region Helper Types
+		#region Core
 
-		public struct DepthVisit
+		public enum VisitationState
 		{
-			public delegate bool ShouldVisitDelegate(DepthVisit tentativeVisit);
+			Continue,
+			Discontinue,
+			Ignore,
+			Stop,
+		}
 
-			public Topology.FaceEdge edge;
-			public int depth;
+		private delegate void VisitorDelegate(int edgeIndex, ref VisitationState state);
 
-			public DepthVisit(Topology.FaceEdge edge, int depth)
+		private abstract class Queue
+		{
+			public Topology topology;
+			private BitArray _visitedFaces;
+
+			public abstract void Push(int edgeIndex);
+			public abstract bool Pop(out int edgeIndex);
+			public abstract int edgeIndex { get; }
+
+			public Topology PushRoots(Topology.Face rootFace)
 			{
-				this.edge = edge;
-				this.depth = depth;
+				topology = rootFace.topology;
+				_visitedFaces = new BitArray(topology.faces.Count);
+				_visitedFaces[rootFace.index] = true;
+
+				foreach (var edge in rootFace.edges)
+				{
+					if (!edge.isOuterBoundary)
+					{
+						Push(edge.index);
+					}
+				}
+
+				return topology;
+			}
+
+			public Topology PushRoots(IEnumerable<Topology.Face> rootFaces)
+			{
+				PushRoots(PrepareToPushRoots(rootFaces));
+				return topology;
+			}
+
+			public IEnumerator<Topology.Face> PrepareToPushRoots(IEnumerable<Topology.Face> rootFaces)
+			{
+				var enumerator = rootFaces.GetEnumerator();
+
+				if (!enumerator.MoveNext()) return null;
+
+				topology = enumerator.Current.topology;
+				_visitedFaces = new BitArray(topology.faces.Count);
+
+				return enumerator;
+			}
+
+			public void PushRoots(IEnumerator<Topology.Face> rootFaces)
+			{
+				do
+				{
+					_visitedFaces[rootFaces.Current.index] = true;
+
+					foreach (var edge in rootFaces.Current.edges)
+					{
+						if (!edge.isOuterBoundary)
+						{
+							Push(edge.index);
+						}
+					}
+				} while (rootFaces.MoveNext());
+			}
+
+			public void Visit(VisitorDelegate visitor)
+			{
+				int edgeIndex;
+				while (Pop(out edgeIndex))
+				{
+					int farFaceIndex = topology.edgeData[edgeIndex].face;
+					if (_visitedFaces[farFaceIndex] == false)
+					{
+						VisitationState state = VisitationState.Continue;
+						visitor(edgeIndex, ref state);
+						switch (state)
+						{
+							case VisitationState.Continue:
+								_visitedFaces[farFaceIndex] = true;
+								foreach (var nextEdge in new Topology.Face(topology, farFaceIndex).edges)
+								{
+									if (nextEdge.twinIndex != edgeIndex && !nextEdge.isOuterBoundary && _visitedFaces[nextEdge.farFace.index] == false)
+									{
+										Push(nextEdge.index);
+									}
+								}
+								break;
+							case VisitationState.Discontinue:
+								_visitedFaces[farFaceIndex] = true;
+								break;
+							case VisitationState.Stop:
+								return;
+						}
+					}
+				}
 			}
 		}
 
-		public struct DistanceVisit<T>
+		#endregion
+
+		#region Any Order Adjacency Visitation
+
+		public delegate void VisitFaceEdgeDelegate(Topology.FaceEdge faceEdge);
+		public delegate void VisitFaceDelegate(Topology.Face face);
+
+		public delegate void VisitFaceEdgeWithStateDelegate(Topology.FaceEdge faceEdge, ref VisitationState state);
+		public delegate void VisitFaceWithStateDelegate(Topology.Face face, ref VisitationState state);
+
+		#region Queue
+
+		private class AdjacencyQueue : Queue
 		{
-			public delegate bool ShouldVisitDelegate(DistanceVisit<T> tentativeVisit);
+			private List<int> _queue;
+			public int frontEdgeIndex;
 
-			public Topology.FaceEdge edge;
-			public int depth;
-			public T distance;
-
-			public DistanceVisit(Topology.FaceEdge edge, int depth, T distance)
+			public AdjacencyQueue()
 			{
-				this.edge = edge;
-				this.depth = depth;
-				this.distance = distance;
+				_queue = new List<int>();
+			}
+
+			public override int edgeIndex { get { return frontEdgeIndex; } }
+
+			public override void Push(int edgeIndex)
+			{
+				_queue.Add(edgeIndex);
+			}
+
+			public override bool Pop(out int edgeIndex)
+			{
+				if (_queue.Count == 0)
+				{
+					edgeIndex = -1;
+					return false;
+				}
+
+				var queueIndex = _queue.Count - 1;
+				edgeIndex = frontEdgeIndex = _queue[queueIndex];
+				_queue.RemoveAt(queueIndex);
+				return true;
 			}
 		}
+
+		private static void VisitAdjacentInAnyOrder(AdjacencyQueue queue, Topology topology, VisitFaceEdgeDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex));
+			});
+		}
+
+		private static void VisitAdjacentInAnyOrder(AdjacencyQueue queue, Topology topology, VisitFaceDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace);
+			});
+		}
+
+		private static void VisitAdjacentInAnyOrder(AdjacencyQueue queue, Topology topology, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), ref state);
+			});
+		}
+
+		private static void VisitAdjacentInAnyOrder(AdjacencyQueue queue, Topology topology, VisitFaceWithStateDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, ref state);
+			});
+		}
+
+		#endregion
+
+		#region Visit From Single Root
+
+		public static void VisitAdjacentInAnyOrder(Topology.Face rootFace, VisitFaceEdgeDelegate visitor)
+		{
+			var queue = new AdjacencyQueue();
+			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitAdjacentInAnyOrder(Topology.Face rootFace, VisitFaceDelegate visitor)
+		{
+			var queue = new AdjacencyQueue();
+			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitAdjacentInAnyOrder(Topology.Face rootFace, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			var queue = new AdjacencyQueue();
+			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitAdjacentInAnyOrder(Topology.Face rootFace, VisitFaceWithStateDelegate visitor)
+		{
+			var queue = new AdjacencyQueue();
+			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		#endregion
+
+		#region Visit From Multiple Roots
+
+		public static void VisitAdjacentInAnyOrder(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeDelegate visitor)
+		{
+			var queue = new AdjacencyQueue();
+			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitAdjacentInAnyOrder(IEnumerable<Topology.Face> rootFaces, VisitFaceDelegate visitor)
+		{
+			var queue = new AdjacencyQueue();
+			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitAdjacentInAnyOrder(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			var queue = new AdjacencyQueue();
+			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitAdjacentInAnyOrder(IEnumerable<Topology.Face> rootFaces, VisitFaceWithStateDelegate visitor)
+		{
+			var queue = new AdjacencyQueue();
+			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		#endregion
+
+		#endregion
+
+		#region Depth Ordered Visitation
+
+		public delegate void VisitFaceEdgeWithDepthDelegate(Topology.FaceEdge faceEdge, int depth);
+		public delegate void VisitFaceWithDepthDelegate(Topology.Face face, int depth);
+
+		public delegate void VisitFaceEdgeWithDepthStateDelegate(Topology.FaceEdge faceEdge, int depth, ref VisitationState state);
+		public delegate void VisitFaceWithDepthStateDelegate(Topology.Face face, int depth, ref VisitationState state);
+
+		#region Queue
 
 		private struct DepthQueueElement : IEquatable<DepthQueueElement>
 		{
@@ -64,6 +283,338 @@ namespace Experilous.Topological
 				return edgeIndex == other.edgeIndex;
 			}
 		}
+
+		private class DepthQueue : Queue
+		{
+			private PriorityQueue<DepthQueueElement> _queue;
+			public DepthQueueElement front;
+
+			public DepthQueue(PriorityQueue<DepthQueueElement>.AreOrderedDelegate areOrdered)
+			{
+				_queue = new PriorityQueue<DepthQueueElement>(areOrdered, 256);
+			}
+
+			public override int edgeIndex { get { return front.edgeIndex; } }
+
+			public override void Push(int edgeIndex)
+			{
+				_queue.Push(new DepthQueueElement(edgeIndex, front.depth + 1));
+			}
+
+			public override bool Pop(out int edgeIndex)
+			{
+				if (_queue.Count == 0)
+				{
+					edgeIndex = -1;
+					return false;
+				}
+
+				front = _queue.front;
+				edgeIndex = front.edgeIndex;
+				_queue.Pop();
+				return true;
+			}
+		}
+
+		private static void VisitByDepth(DepthQueue queue, Topology topology, VisitFaceEdgeDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex));
+			});
+		}
+
+		private static void VisitByDepth(DepthQueue queue, Topology topology, VisitFaceDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace);
+			});
+		}
+
+		private static void VisitByDepth(DepthQueue queue, Topology topology, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), ref state);
+			});
+		}
+
+		private static void VisitByDepth(DepthQueue queue, Topology topology, VisitFaceWithStateDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, ref state);
+			});
+		}
+
+		private static void VisitByDepth(DepthQueue queue, Topology topology, VisitFaceEdgeWithDepthDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), queue.front.depth);
+			});
+		}
+
+		private static void VisitByDepth(DepthQueue queue, Topology topology, VisitFaceWithDepthDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, queue.front.depth);
+			});
+		}
+
+		private static void VisitByDepth(DepthQueue queue, Topology topology, VisitFaceEdgeWithDepthStateDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), queue.front.depth, ref state);
+			});
+		}
+
+		private static void VisitByDepth(DepthQueue queue, Topology topology, VisitFaceWithDepthStateDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, queue.front.depth, ref state);
+			});
+		}
+
+		#endregion
+
+		#region Breadth First
+
+		#region Visit From Single Root
+
+		public static void VisitBreadthFirstByDepth(Topology.Face rootFace, VisitFaceEdgeDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(Topology.Face rootFace, VisitFaceDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(Topology.Face rootFace, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(Topology.Face rootFace, VisitFaceWithStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(Topology.Face rootFace, VisitFaceEdgeWithDepthDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(Topology.Face rootFace, VisitFaceWithDepthDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(Topology.Face rootFace, VisitFaceEdgeWithDepthStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(Topology.Face rootFace, VisitFaceWithDepthStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		#endregion
+
+		#region Visit From Multiple Roots
+
+		public static void VisitBreadthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceWithStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeWithDepthDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceWithDepthDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeWithDepthStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitBreadthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceWithDepthStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		#endregion
+
+		#endregion
+
+		#region Depth First
+
+		#region Visit From Single Root
+
+		public static void VisitDepthFirstByDepth(Topology.Face rootFace, VisitFaceEdgeDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(Topology.Face rootFace, VisitFaceDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(Topology.Face rootFace, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(Topology.Face rootFace, VisitFaceWithStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(Topology.Face rootFace, VisitFaceEdgeWithDepthDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(Topology.Face rootFace, VisitFaceWithDepthDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(Topology.Face rootFace, VisitFaceEdgeWithDepthStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(Topology.Face rootFace, VisitFaceWithDepthStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFace), visitor);
+		}
+
+		#endregion
+
+		#region Visit From Multiple Roots
+
+		public static void VisitDepthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceWithStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeWithDepthDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceWithDepthDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceEdgeWithDepthStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		public static void VisitDepthFirstByDepth(IEnumerable<Topology.Face> rootFaces, VisitFaceWithDepthStateDelegate visitor)
+		{
+			var queue = new DepthQueue((DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; });
+			VisitByDepth(queue, queue.PushRoots(rootFaces), visitor);
+		}
+
+		#endregion
+
+		#endregion
+
+		#endregion
+
+		#region Distance Ordered Visitation
+
+		public delegate void VisitFaceEdgeWithDistanceDelegate<T>(Topology.FaceEdge faceEdge, T distance);
+		public delegate void VisitFaceWithDistanceDelegate<T>(Topology.Face face, T distance);
+
+		public delegate void VisitFaceEdgeWithDistanceStateDelegate<T>(Topology.FaceEdge faceEdge, T distance, ref VisitationState state);
+		public delegate void VisitFaceWithDistanceStateDelegate<T>(Topology.Face face, T distance, ref VisitationState state);
+
+		public delegate void VisitFaceEdgeWithDepthDistanceDelegate<T>(Topology.FaceEdge faceEdge, int depth, T distance);
+		public delegate void VisitFaceWithDepthDistanceDelegate<T>(Topology.Face face, int depth, T distance);
+
+		public delegate void VisitFaceEdgeWithDepthDistanceStateDelegate<T>(Topology.FaceEdge faceEdge, int depth, T distance, ref VisitationState state);
+		public delegate void VisitFaceWithDepthDistanceStateDelegate<T>(Topology.Face face, int depth, T distance, ref VisitationState state);
+
+		#region Queue
 
 		private struct DistanceQueueElement<T> : IEquatable<DistanceQueueElement<T>>
 		{
@@ -84,639 +635,839 @@ namespace Experilous.Topological
 			}
 		}
 
-		#endregion
-
-		#region GetFaceEdgesByDepth()
-
-		public static IEnumerable<DepthVisit> GetFaceEdgesBreadthFirstByDepth(Topology.Face rootFace)
+		private abstract class DistanceQueue<T> : Queue
 		{
-			return GetFaceEdgesByDepth(
-				rootFace,
-				(DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; },
-				(DepthVisit tentativeVisit) => { return true; });
-		}
+			protected PriorityQueue<DistanceQueueElement<T>> _queue;
+			public Func<int, T> edgeDistance;
+			public DistanceQueueElement<T> front;
 
-		public static IEnumerable<DepthVisit> GetFaceEdgesBreadthFirstByDepth(Topology.Face rootFace, int maxDepth)
-		{
-			return GetFaceEdgesByDepth(
-				rootFace,
-				(DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; },
-				(DepthVisit tentativeVisit) => { return tentativeVisit.depth <= maxDepth; });
-		}
-
-		public static IEnumerable<DepthVisit> GetFaceEdgesBreadthFirstByDepth(Topology.Face rootFace, DepthVisit.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByDepth(
-				rootFace,
-				(DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth <= rhs.depth; },
-				shouldVisit);
-		}
-
-		public static IEnumerable<DepthVisit> GetFaceEdgesDepthFirstByDepth(Topology.Face rootFace)
-		{
-			return GetFaceEdgesByDepth(
-				rootFace,
-				(DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; },
-				(DepthVisit tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DepthVisit> GetFaceEdgesDepthFirstByDepth(Topology.Face rootFace, int maxDepth)
-		{
-			return GetFaceEdgesByDepth(
-				rootFace,
-				(DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; },
-				(DepthVisit tentativeVisit) => { return tentativeVisit.depth <= maxDepth; });
-		}
-
-		public static IEnumerable<DepthVisit> GetFaceEdgesDepthFirstByDepth(Topology.Face rootFace, DepthVisit.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByDepth(
-				rootFace,
-				(DepthQueueElement lhs, DepthQueueElement rhs) => { return lhs.depth >= rhs.depth; },
-				shouldVisit);
-		}
-
-		private static IEnumerable<DepthVisit> GetFaceEdgesByDepth(
-			Topology.Face rootFace,
-			PriorityQueue<DepthQueueElement>.AreOrderedDelegate areOrdered,
-			DepthVisit.ShouldVisitDelegate shouldVisit)
-		{
-			var topology = rootFace.topology;
-			var queue = new PriorityQueue<DepthQueueElement>(areOrdered, 256);
-			BitArray visitedFaces = new BitArray(topology.faces.Count);
-			visitedFaces[rootFace.index] = true;
-
-			foreach (var edge in rootFace.edges)
+			protected DistanceQueue<T> Initialize(PriorityQueue<DistanceQueueElement<T>>.AreOrderedDelegate areOrdered)
 			{
-				if (!edge.isOuterBoundary)
-				{
-					queue.Push(new DepthQueueElement(edge.index, 1));
-				}
+				_queue = new PriorityQueue<DistanceQueueElement<T>>(areOrdered, 256);
+				return this;
 			}
 
-			while (queue.Count > 0)
+			public override int edgeIndex { get { return front.edgeIndex; } }
+
+			public abstract T AccumulateDistance(T lhs, T rhs);
+
+			public override void Push(int edgeIndex)
 			{
-				var front = queue.front;
-				queue.Pop();
+				_queue.Push(new DistanceQueueElement<T>(edgeIndex, front.depth + 1, AccumulateDistance(front.distance, edgeDistance(edgeIndex))));
+			}
 
-				var farFaceIndex = topology.edgeData[front.edgeIndex].face;
-
-				if (visitedFaces[farFaceIndex] == false)
+			public override bool Pop(out int edgeIndex)
+			{
+				if (_queue.Count == 0)
 				{
-					var visit = new DepthVisit(new Topology.FaceEdge(topology, front.edgeIndex), front.depth);
-					if (shouldVisit(visit))
-					{
-						visitedFaces[farFaceIndex] = true;
-						yield return visit;
-
-						foreach (var edge in new Topology.Face(topology, farFaceIndex).edges)
-						{
-							if (edge.twinIndex != front.edgeIndex && !edge.isOuterBoundary && visitedFaces[edge.farFace.index] == false)
-							{
-								queue.Push(new DepthQueueElement(edge.index, front.depth + 1));
-							}
-						}
-					}
+					edgeIndex = -1;
+					return false;
 				}
+
+				front = _queue.front;
+				edgeIndex = front.edgeIndex;
+				_queue.Pop();
+				return true;
 			}
 		}
 
-		#endregion
-
-		#region GetFaceEdgesByEdgeDistance()
-
-		#region int
-
-		public static IEnumerable<DistanceVisit<int>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances)
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceEdgeDelegate visitor)
 		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<int> lhs, DistanceQueueElement<int> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<int> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<int>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, int maxDistance)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<int> lhs, DistanceQueueElement<int> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<int> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<int>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, DistanceVisit<int>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<int> lhs, DistanceQueueElement<int> rhs) => { return lhs.distance <= rhs.distance; },
-				shouldVisit);
-		}
-
-		public static IEnumerable<DistanceVisit<int>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<int> lhs, DistanceQueueElement<int> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<int> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<int>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, int maxDistance)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<int> lhs, DistanceQueueElement<int> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<int> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<int>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, DistanceVisit<int>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<int> lhs, DistanceQueueElement<int> rhs) => { return lhs.distance >= rhs.distance; },
-				shouldVisit);
-		}
-
-		private static IEnumerable<DistanceVisit<int>> GetFaceEdgesByEdgeDistance(
-			Topology.Face rootFace, IEdgeAttribute<int> edgeDistances,
-			PriorityQueue<DistanceQueueElement<int>>.AreOrderedDelegate areOrdered,
-			DistanceVisit<int>.ShouldVisitDelegate shouldVisit)
-		{
-			var queue = new PriorityQueue<DistanceQueueElement<int>>(areOrdered, 256);
-			Func<int, int, int> addDistances = (int lhs, int rhs) => { return lhs + rhs; };
-			return GetFaceEdgesByEdgeDistance(rootFace, edgeDistances, queue, shouldVisit, 0, addDistances);
-		}
-
-		#endregion
-
-		#region uint
-
-		public static IEnumerable<DistanceVisit<uint>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<uint> lhs, DistanceQueueElement<uint> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<uint> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<uint>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, uint maxDistance)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<uint> lhs, DistanceQueueElement<uint> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<uint> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<uint>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, DistanceVisit<uint>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<uint> lhs, DistanceQueueElement<uint> rhs) => { return lhs.distance <= rhs.distance; },
-				shouldVisit);
-		}
-
-		public static IEnumerable<DistanceVisit<uint>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<uint> lhs, DistanceQueueElement<uint> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<uint> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<uint>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, uint maxDistance)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<uint> lhs, DistanceQueueElement<uint> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<uint> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<uint>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, DistanceVisit<uint>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<uint> lhs, DistanceQueueElement<uint> rhs) => { return lhs.distance >= rhs.distance; },
-				shouldVisit);
-		}
-
-		private static IEnumerable<DistanceVisit<uint>> GetFaceEdgesByEdgeDistance(
-			Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances,
-			PriorityQueue<DistanceQueueElement<uint>>.AreOrderedDelegate areOrdered,
-			DistanceVisit<uint>.ShouldVisitDelegate shouldVisit)
-		{
-			var queue = new PriorityQueue<DistanceQueueElement<uint>>(areOrdered, 256);
-			Func<uint, uint, uint> addDistances = (uint lhs, uint rhs) => { return lhs + rhs; };
-			return GetFaceEdgesByEdgeDistance(rootFace, edgeDistances, queue, shouldVisit, 0U, addDistances);
-		}
-
-		#endregion
-
-		#region float
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, float maxDistance)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				shouldVisit);
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, float maxDistance)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				shouldVisit);
-		}
-
-		private static IEnumerable<DistanceVisit<float>> GetFaceEdgesByEdgeDistance(
-			Topology.Face rootFace, IEdgeAttribute<float> edgeDistances,
-			PriorityQueue<DistanceQueueElement<float>>.AreOrderedDelegate areOrdered,
-			DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
-		{
-			var queue = new PriorityQueue<DistanceQueueElement<float>>(areOrdered, 256);
-			Func<float, float, float> addDistances = (float lhs, float rhs) => { return lhs + rhs; };
-			return GetFaceEdgesByEdgeDistance(rootFace, edgeDistances, queue, shouldVisit, 0f, addDistances);
-		}
-
-		#endregion
-
-		#region double
-
-		public static IEnumerable<DistanceVisit<double>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<double> lhs, DistanceQueueElement<double> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<double> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<double>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, double maxDistance)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<double> lhs, DistanceQueueElement<double> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<double> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<double>> GetFaceEdgesBreadthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, DistanceVisit<double>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<double> lhs, DistanceQueueElement<double> rhs) => { return lhs.distance <= rhs.distance; },
-				shouldVisit);
-		}
-
-		public static IEnumerable<DistanceVisit<double>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<double> lhs, DistanceQueueElement<double> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<double> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<double>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, double maxDistance)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<double> lhs, DistanceQueueElement<double> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<double> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<double>> GetFaceEdgesDepthFirstByEdgeDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, DistanceVisit<double>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEdgeDistance(
-				rootFace, edgeDistances,
-				(DistanceQueueElement<double> lhs, DistanceQueueElement<double> rhs) => { return lhs.distance >= rhs.distance; },
-				shouldVisit);
-		}
-
-		private static IEnumerable<DistanceVisit<double>> GetFaceEdgesByEdgeDistance(
-			Topology.Face rootFace, IEdgeAttribute<double> edgeDistances,
-			PriorityQueue<DistanceQueueElement<double>>.AreOrderedDelegate areOrdered,
-			DistanceVisit<double>.ShouldVisitDelegate shouldVisit)
-		{
-			var queue = new PriorityQueue<DistanceQueueElement<double>>(areOrdered, 256);
-			Func<double, double, double> addDistances = (double lhs, double rhs) => { return lhs + rhs; };
-			return GetFaceEdgesByEdgeDistance(rootFace, edgeDistances, queue, shouldVisit, 0.0, addDistances);
-		}
-
-		#endregion
-
-		private static IEnumerable<DistanceVisit<T>> GetFaceEdgesByEdgeDistance<T>(
-			Topology.Face rootFace, IEdgeAttribute<T> edgeDistances,
-			PriorityQueue<DistanceQueueElement<T>> queue,
-			DistanceVisit<T>.ShouldVisitDelegate shouldVisit,
-			T initialDistance,
-			Func<T, T, T> addDistances)
-		{
-			var topology = rootFace.topology;
-			BitArray visitedFaces = new BitArray(topology.faces.Count);
-			visitedFaces[rootFace.index] = true;
-
-			foreach (var edge in rootFace.edges)
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
-				if (!edge.isOuterBoundary)
-				{
-					queue.Push(new DistanceQueueElement<T>(edge.index, 1, initialDistance));
-				}
+				visitor(new Topology.FaceEdge(topology, edgeIndex));
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceDelegate visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), ref state);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceWithStateDelegate visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, ref state);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceEdgeWithDistanceDelegate<T> visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), queue.front.distance);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceWithDistanceDelegate<T> visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, queue.front.distance);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceEdgeWithDistanceStateDelegate<T> visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), queue.front.distance, ref state);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceWithDistanceStateDelegate<T> visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, queue.front.distance, ref state);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceEdgeWithDepthDistanceDelegate<T> visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), queue.front.depth, queue.front.distance);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceWithDepthDistanceDelegate<T> visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, queue.front.depth, queue.front.distance);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceEdgeWithDepthDistanceStateDelegate<T> visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), queue.front.depth, queue.front.distance, ref state);
+			});
+		}
+
+		private static void VisitByDistance<T>(DistanceQueue<T> queue, VisitFaceWithDepthDistanceStateDelegate<T> visitor)
+		{
+			var topology = queue.topology;
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, queue.front.depth, queue.front.distance, ref state);
+			});
+		}
+
+		#endregion
+
+		#region By Int Edge Attribute
+
+		private class IntDistanceQueue : DistanceQueue<int>
+		{
+			public IntDistanceQueue(bool breadthFirst)
+			{
+				if (breadthFirst)
+					Initialize(BreadthFirstComparison);
+				else
+					Initialize(DepthFirstComparison);
 			}
 
-			while (queue.Count > 0)
+			private static bool BreadthFirstComparison(DistanceQueueElement<int> lhs, DistanceQueueElement<int> rhs) { return lhs.distance <= rhs.distance; }
+			private static bool DepthFirstComparison(DistanceQueueElement<int> lhs, DistanceQueueElement<int> rhs) { return lhs.distance >= rhs.distance; }
+			public override int AccumulateDistance(int lhs, int rhs) { return lhs + rhs; }
+		}
+
+		private static DistanceQueue<int> CreateDistanceQueue(bool breadthFirst, Topology.Face rootFace, IEdgeAttribute<int> edgeDistances)
+		{
+			var queue = new IntDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFace);
+			queue.edgeDistance = (int edgeIndex) => edgeDistances[new Topology.FaceEdge(topology, edgeIndex)];
+			return queue;
+		}
+
+		private static DistanceQueue<int> CreateDistanceQueue(bool breadthFirst, IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances)
+		{
+			var queue = new IntDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFaces);
+			queue.edgeDistance = (int edgeIndex) => edgeDistances[new Topology.FaceEdge(topology, edgeIndex)];
+			return queue;
+		}
+
+		#region Breadth First
+
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithDepthDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithDepthDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+
+		#endregion
+
+		#region Depth First
+
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithDepthDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<int> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithDepthDistanceDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<int> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<int> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+
+		#endregion
+
+		#endregion
+
+		#region By UInt Edge Attribute
+
+		private class UIntDistanceQueue : DistanceQueue<uint>
+		{
+			public UIntDistanceQueue(bool breadthFirst)
 			{
-				var front = queue.front;
-				queue.Pop();
-
-				var farFaceIndex = topology.edgeData[front.edgeIndex].face;
-
-				if (visitedFaces[farFaceIndex] == false)
-				{
-					var visit = new DistanceVisit<T>(new Topology.FaceEdge(topology, front.edgeIndex), front.depth, front.distance);
-					if (shouldVisit(visit))
-					{
-						visitedFaces[farFaceIndex] = true;
-						yield return visit;
-
-						foreach (var edge in new Topology.Face(topology, farFaceIndex).edges)
-						{
-							if (edge.twinIndex != front.edgeIndex && !edge.isOuterBoundary && visitedFaces[edge.farFace.index] == false)
-							{
-								queue.Push(new DistanceQueueElement<T>(edge.index, front.depth + 1, addDistances(front.distance, edgeDistances[edge])));
-							}
-						}
-					}
-				}
+				if (breadthFirst)
+					Initialize(BreadthFirstComparison);
+				else
+					Initialize(DepthFirstComparison);
 			}
+
+			private static bool BreadthFirstComparison(DistanceQueueElement<uint> lhs, DistanceQueueElement<uint> rhs) { return lhs.distance <= rhs.distance; }
+			private static bool DepthFirstComparison(DistanceQueueElement<uint> lhs, DistanceQueueElement<uint> rhs) { return lhs.distance >= rhs.distance; }
+			public override uint AccumulateDistance(uint lhs, uint rhs) { return lhs + rhs; }
+		}
+
+		private static DistanceQueue<uint> CreateDistanceQueue(bool breadthFirst, Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances)
+		{
+			var queue = new UIntDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFace);
+			queue.edgeDistance = (int edgeIndex) => edgeDistances[new Topology.FaceEdge(topology, edgeIndex)];
+			return queue;
+		}
+
+		private static DistanceQueue<uint> CreateDistanceQueue(bool breadthFirst, IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances)
+		{
+			var queue = new UIntDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFaces);
+			queue.edgeDistance = (int edgeIndex) => edgeDistances[new Topology.FaceEdge(topology, edgeIndex)];
+			return queue;
+		}
+
+		#region Breadth First
+
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDepthDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDepthDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+
+		#endregion
+
+		#region Depth First
+
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDepthDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDepthDistanceDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<uint> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<uint> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+
+		#endregion
+
+		#endregion
+
+		#region By Float Edge Attribute
+
+		private class FloatDistanceQueue : DistanceQueue<float>
+		{
+			public FloatDistanceQueue(bool breadthFirst)
+			{
+				if (breadthFirst)
+					Initialize(BreadthFirstComparison);
+				else
+					Initialize(DepthFirstComparison);
+			}
+
+			private static bool BreadthFirstComparison(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) { return lhs.distance <= rhs.distance; }
+			private static bool DepthFirstComparison(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) { return lhs.distance >= rhs.distance; }
+			public override float AccumulateDistance(float lhs, float rhs) { return lhs + rhs; }
+		}
+
+		private static DistanceQueue<float> CreateDistanceQueue(bool breadthFirst, Topology.Face rootFace, IEdgeAttribute<float> edgeDistances)
+		{
+			var queue = new FloatDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFace);
+			queue.edgeDistance = (int edgeIndex) => edgeDistances[new Topology.FaceEdge(topology, edgeIndex)];
+			return queue;
+		}
+
+		private static DistanceQueue<float> CreateDistanceQueue(bool breadthFirst, IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances)
+		{
+			var queue = new FloatDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFaces);
+			queue.edgeDistance = (int edgeIndex) => edgeDistances[new Topology.FaceEdge(topology, edgeIndex)];
+			return queue;
+		}
+
+		#region Breadth First
+
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+
+		#endregion
+
+		#region Depth First
+
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<float> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<float> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+
+		#endregion
+
+		#endregion
+
+		#region By Double Edge Attribute
+
+		private class DoubleDistanceQueue : DistanceQueue<double>
+		{
+			public DoubleDistanceQueue(bool breadthFirst)
+			{
+				if (breadthFirst)
+					Initialize(BreadthFirstComparison);
+				else
+					Initialize(DepthFirstComparison);
+			}
+
+			private static bool BreadthFirstComparison(DistanceQueueElement<double> lhs, DistanceQueueElement<double> rhs) { return lhs.distance <= rhs.distance; }
+			private static bool DepthFirstComparison(DistanceQueueElement<double> lhs, DistanceQueueElement<double> rhs) { return lhs.distance >= rhs.distance; }
+			public override double AccumulateDistance(double lhs, double rhs) { return lhs + rhs; }
+		}
+
+		private static DistanceQueue<double> CreateDistanceQueue(bool breadthFirst, Topology.Face rootFace, IEdgeAttribute<double> edgeDistances)
+		{
+			var queue = new DoubleDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFace);
+			queue.edgeDistance = (int edgeIndex) => edgeDistances[new Topology.FaceEdge(topology, edgeIndex)];
+			return queue;
+		}
+
+		private static DistanceQueue<double> CreateDistanceQueue(bool breadthFirst, IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances)
+		{
+			var queue = new DoubleDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFaces);
+			queue.edgeDistance = (int edgeIndex) => edgeDistances[new Topology.FaceEdge(topology, edgeIndex)];
+			return queue;
+		}
+
+		#region Breadth First
+
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithDepthDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFace, edgeDistances), visitor); }
+
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithDepthDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+		public static void VisitBreadthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(true, rootFaces, edgeDistances), visitor); }
+
+		#endregion
+
+		#region Depth First
+
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithDepthDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(Topology.Face rootFace, IEdgeAttribute<double> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFace, edgeDistances), visitor); }
+
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDepthDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithDepthDistanceDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceEdgeWithDepthDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+		public static void VisitDepthFirstByDistance(IEnumerable<Topology.Face> rootFaces, IEdgeAttribute<double> edgeDistances, VisitFaceWithDepthDistanceStateDelegate<double> visitor) { VisitByDistance(CreateDistanceQueue(false, rootFaces, edgeDistances), visitor); }
+
+		#endregion
+
+		#endregion
+
+		#region By Euclidean Distance
+
+		private static DistanceQueue<float> CreateEuclideanDistanceQueue(bool breadthFirst, Topology.Face rootFace, IFaceAttribute<Vector3> facePositions)
+		{
+			var queue = new FloatDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFace);
+			queue.edgeDistance = (int edgeIndex) =>
+			{
+				var edge = new Topology.FaceEdge(topology, edgeIndex);
+				return Vector3.Distance(facePositions[edge.nearFace], facePositions[edge]);
+			};
+			return queue;
+		}
+
+		private static DistanceQueue<float> CreateEuclideanDistanceQueue(bool breadthFirst, IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions)
+		{
+			var queue = new FloatDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFaces);
+			queue.edgeDistance = (int edgeIndex) =>
+			{
+				var edge = new Topology.FaceEdge(topology, edgeIndex);
+				return Vector3.Distance(facePositions[edge.nearFace], facePositions[edge]);
+			};
+			return queue;
+		}
+
+		#region Breadth First
+
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFace, facePositions), visitor); }
+
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+		public static void VisitBreadthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(true, rootFaces, facePositions), visitor); }
+
+		#endregion
+
+		#region Depth First
+
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFace, facePositions), visitor); }
+
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+		public static void VisitDepthFirstByEuclideanDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateEuclideanDistanceQueue(false, rootFaces, facePositions), visitor); }
+
+		#endregion
+
+		#endregion
+
+		#region By Spherical Distance
+
+		private static DistanceQueue<float> CreateSphericalDistanceQueue(bool breadthFirst, Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius)
+		{
+			var queue = new FloatDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFace);
+			queue.edgeDistance = (int edgeIndex) =>
+			{
+				var edge = new Topology.FaceEdge(topology, edgeIndex);
+				return GeometryUtility.AngleBetweenVectors(facePositions[edge.nearFace], facePositions[edge]) * sphereRadius;
+			};
+			return queue;
+		}
+
+		private static DistanceQueue<float> CreateSphericalDistanceQueue(bool breadthFirst, IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius)
+		{
+			var queue = new FloatDistanceQueue(breadthFirst);
+			var topology = queue.PushRoots(rootFaces);
+			queue.edgeDistance = (int edgeIndex) =>
+			{
+				var edge = new Topology.FaceEdge(topology, edgeIndex);
+				return GeometryUtility.AngleBetweenVectors(facePositions[edge.nearFace], facePositions[edge]) * sphereRadius;
+			};
+			return queue;
+		}
+
+		#region Breadth First
+
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFace, facePositions, sphereRadius), visitor); }
+
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitBreadthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(true, rootFaces, facePositions, sphereRadius), visitor); }
+
+		#endregion
+
+		#region Depth First
+
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFace, facePositions, sphereRadius), visitor); }
+
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithStateDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithStateDelegate visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDepthDistanceDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceEdgeWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+		public static void VisitDepthFirstBySphericalDistance(IEnumerable<Topology.Face> rootFaces, IFaceAttribute<Vector3> facePositions, float sphereRadius, VisitFaceWithDepthDistanceStateDelegate<float> visitor) { VisitByDistance(CreateSphericalDistanceQueue(false, rootFaces, facePositions, sphereRadius), visitor); }
+
+		#endregion
+
+		#endregion
+
+		#endregion
+
+		#region Random Order Adjacency Visitation
+
+		#region Queue
+
+		private class RandomAdjacencyQueue : Queue
+		{
+			private List<int> _queue;
+			private IRandomEngine _randomEngine;
+			public int frontEdgeIndex;
+
+			public RandomAdjacencyQueue(IRandomEngine randomEngine)
+			{
+				_queue = new List<int>();
+				_randomEngine = randomEngine;
+			}
+
+			public override int edgeIndex { get { return frontEdgeIndex; } }
+
+			public override void Push(int edgeIndex)
+			{
+				_queue.Add(edgeIndex);
+			}
+
+			public override bool Pop(out int edgeIndex)
+			{
+				if (_queue.Count == 0)
+				{
+					edgeIndex = -1;
+					return false;
+				}
+
+				var queueIndex = RandomUtility.HalfOpenRange(_queue.Count, _randomEngine);
+				edgeIndex = frontEdgeIndex = _queue[queueIndex];
+				var backIndex = _queue.Count - 1;
+				_queue[queueIndex] = _queue[backIndex];
+				_queue.RemoveAt(backIndex);
+				return true;
+			}
+		}
+
+		private static void VisitAdjacentInRandomOrder(RandomAdjacencyQueue queue, Topology topology, VisitFaceEdgeDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex));
+			});
+		}
+
+		private static void VisitAdjacentInRandomOrder(RandomAdjacencyQueue queue, Topology topology, VisitFaceDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace);
+			});
+		}
+
+		private static void VisitAdjacentInRandomOrder(RandomAdjacencyQueue queue, Topology topology, VisitFaceEdgeWithStateDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex), ref state);
+			});
+		}
+
+		private static void VisitAdjacentInRandomOrder(RandomAdjacencyQueue queue, Topology topology, VisitFaceWithStateDelegate visitor)
+		{
+			queue.Visit((int edgeIndex, ref VisitationState state) =>
+			{
+				visitor(new Topology.FaceEdge(topology, edgeIndex).farFace, ref state);
+			});
 		}
 
 		#endregion
 
-		#region GetFaceEdgesBySpatialDistance()
+		#region Visit From Single Root
 
-		#region GetFaceEdgesByEuclideanDistance
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions)
+		public static void VisitAdjacentInRandomOrder(Topology.Face rootFace, IRandomEngine randomEngine, VisitFaceEdgeDelegate visitor)
 		{
-			return GetFaceEdgesByEuclideanDistance(
-				rootFace, facePositions,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return true; });
+			var queue = new RandomAdjacencyQueue(randomEngine);
+			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootFace), visitor);
 		}
 
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float maxDistance)
+		public static void VisitAdjacentInRandomOrder(Topology.Face rootFace, IRandomEngine randomEngine, VisitFaceDelegate visitor)
 		{
-			return GetFaceEdgesByEuclideanDistance(
-				rootFace, facePositions,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
+			var queue = new RandomAdjacencyQueue(randomEngine);
+			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootFace), visitor);
 		}
 
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
+		public static void VisitAdjacentInRandomOrder(Topology.Face rootFace, IRandomEngine randomEngine, VisitFaceEdgeWithStateDelegate visitor)
 		{
-			return GetFaceEdgesByEuclideanDistance(
-				rootFace, facePositions,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				shouldVisit);
+			var queue = new RandomAdjacencyQueue(randomEngine);
+			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootFace), visitor);
 		}
 
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions)
+		public static void VisitAdjacentInRandomOrder(Topology.Face rootFace, IRandomEngine randomEngine, VisitFaceWithStateDelegate visitor)
 		{
-			return GetFaceEdgesByEuclideanDistance(
-				rootFace, facePositions,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float maxDistance)
-		{
-			return GetFaceEdgesByEuclideanDistance(
-				rootFace, facePositions,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstByEuclideanDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesByEuclideanDistance(
-				rootFace, facePositions,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				shouldVisit);
-		}
-
-		private static IEnumerable<DistanceVisit<float>> GetFaceEdgesByEuclideanDistance(
-			Topology.Face rootFace, IFaceAttribute<Vector3> facePositions,
-			PriorityQueue<DistanceQueueElement<float>>.AreOrderedDelegate areOrdered,
-			DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
-		{
-			var queue = new PriorityQueue<DistanceQueueElement<float>>(areOrdered, 256);
-			return GetFaceEdgesBySpatialDistance(rootFace, facePositions, queue, shouldVisit, Vector3.Distance);
+			var queue = new RandomAdjacencyQueue(randomEngine);
+			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootFace), visitor);
 		}
 
 		#endregion
 
-		#region GetFaceEdgesBySphericalDistance
+		#region Visit From Multiple Roots
 
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius)
+		public static void VisitAdjacentInRandomOrder(IEnumerable<Topology.Face> rootFaces, IRandomEngine randomEngine, VisitFaceEdgeDelegate visitor)
 		{
-			return GetFaceEdgesBySphericalDistance(
-				rootFace, facePositions,  sphereRadius,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return true; });
+			var queue = new RandomAdjacencyQueue(randomEngine);
+			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootFaces), visitor);
 		}
 
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, float maxDistance)
+		public static void VisitAdjacentInRandomOrder(IEnumerable<Topology.Face> rootFaces, IRandomEngine randomEngine, VisitFaceDelegate visitor)
 		{
-			return GetFaceEdgesBySphericalDistance(
-				rootFace, facePositions, sphereRadius,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
+			var queue = new RandomAdjacencyQueue(randomEngine);
+			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootFaces), visitor);
 		}
 
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesBreadthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
+		public static void VisitAdjacentInRandomOrder(IEnumerable<Topology.Face> rootFaces, IRandomEngine randomEngine, VisitFaceEdgeWithStateDelegate visitor)
 		{
-			return GetFaceEdgesBySphericalDistance(
-				rootFace, facePositions, sphereRadius,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance <= rhs.distance; },
-				shouldVisit);
+			var queue = new RandomAdjacencyQueue(randomEngine);
+			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootFaces), visitor);
 		}
 
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius)
+		public static void VisitAdjacentInRandomOrder(IEnumerable<Topology.Face> rootFaces, IRandomEngine randomEngine, VisitFaceWithStateDelegate visitor)
 		{
-			return GetFaceEdgesBySphericalDistance(
-				rootFace, facePositions, sphereRadius,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, float maxDistance)
-		{
-			return GetFaceEdgesBySphericalDistance(
-				rootFace, facePositions, sphereRadius,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				(DistanceVisit<float> tentativeVisit) => { return tentativeVisit.distance <= maxDistance; });
-		}
-
-		public static IEnumerable<DistanceVisit<float>> GetFaceEdgesDepthFirstBySphericalDistance(Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius, DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
-		{
-			return GetFaceEdgesBySphericalDistance(
-				rootFace, facePositions, sphereRadius,
-				(DistanceQueueElement<float> lhs, DistanceQueueElement<float> rhs) => { return lhs.distance >= rhs.distance; },
-				shouldVisit);
-		}
-
-		private static IEnumerable<DistanceVisit<float>> GetFaceEdgesBySphericalDistance(
-			Topology.Face rootFace, IFaceAttribute<Vector3> facePositions, float sphereRadius,
-			PriorityQueue<DistanceQueueElement<float>>.AreOrderedDelegate areOrdered,
-			DistanceVisit<float>.ShouldVisitDelegate shouldVisit)
-		{
-			var queue = new PriorityQueue<DistanceQueueElement<float>>(areOrdered, 256);
-			Func<Vector3, Vector3, float> computeDistance = (Vector3 lhs, Vector3 rhs) => { return GeometryUtility.AngleBetweenVectors(lhs, rhs) * sphereRadius; };
-			return GetFaceEdgesBySpatialDistance(rootFace, facePositions, queue, shouldVisit, computeDistance);
+			var queue = new RandomAdjacencyQueue(randomEngine);
+			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootFaces), visitor);
 		}
 
 		#endregion
-
-		private static IEnumerable<DistanceVisit<float>> GetFaceEdgesBySpatialDistance(
-			Topology.Face rootFace, IFaceAttribute<Vector3> facePositions,
-			PriorityQueue<DistanceQueueElement<float>> queue,
-			DistanceVisit<float>.ShouldVisitDelegate shouldVisit,
-			Func<Vector3, Vector3, float> computeDistance)
-		{
-			var topology = rootFace.topology;
-			BitArray visitedFaces = new BitArray(topology.faces.Count);
-			visitedFaces[rootFace.index] = true;
-
-			foreach (var edge in rootFace.edges)
-			{
-				if (!edge.isOuterBoundary)
-				{
-					queue.Push(new DistanceQueueElement<float>(edge.index, 1, 0f));
-				}
-			}
-
-			while (queue.Count > 0)
-			{
-				var front = queue.front;
-				queue.Pop();
-
-				var farFaceIndex = topology.edgeData[front.edgeIndex].face;
-
-				if (visitedFaces[farFaceIndex] == false)
-				{
-					var visit = new DistanceVisit<float>(new Topology.FaceEdge(topology, front.edgeIndex), front.depth, front.distance);
-					if (shouldVisit(visit))
-					{
-						visitedFaces[farFaceIndex] = true;
-						yield return visit;
-
-						foreach (var edge in new Topology.Face(topology, farFaceIndex).edges)
-						{
-							if (edge.twinIndex != front.edgeIndex && !edge.isOuterBoundary && visitedFaces[edge.farFace.index] == false)
-							{
-								var distance = front.distance + computeDistance(facePositions[edge.nearFace], facePositions[edge]);
-								queue.Push(new DistanceQueueElement<float>(edge.index, front.depth + 1, distance));
-							}
-						}
-					}
-				}
-			}
-		}
-
-		#endregion
-
-		#region GetFaceEdgesByRandomAdjacency()
-
-		public static IEnumerable<DepthVisit> GetFaceEdgesByRandomAdjacency(IList<Topology.Face> rootFaces, IRandomEngine randomEngine)
-		{
-			return GetFaceEdgesByRandomAdjacency(rootFaces, randomEngine, (DepthVisit tentativeVisit) => { return true; });
-		}
-
-		public static IEnumerable<DepthVisit> GetFaceEdgesByRandomAdjacency(IList<Topology.Face> rootFaces, IRandomEngine randomEngine, int maxDepth)
-		{
-			return GetFaceEdgesByRandomAdjacency(rootFaces, randomEngine, (DepthVisit tentativeVisit) => { return tentativeVisit.depth <= maxDepth; });
-		}
-
-		public static IEnumerable<DepthVisit> GetFaceEdgesByRandomAdjacency(
-			IList<Topology.Face> rootFaces, IRandomEngine randomEngine,
-			DepthVisit.ShouldVisitDelegate shouldVisit)
-		{
-			if (rootFaces.Count == 0) yield break;
-
-			var topology = rootFaces[0].topology;
-			var queue = new List<DepthQueueElement>(256);
-			BitArray visitedFaces = new BitArray(topology.faces.Count);
-
-			foreach (var rootFace in rootFaces)
-			{
-				visitedFaces[rootFace.index] = true;
-				foreach (var edge in rootFace.edges)
-				{
-					if (!edge.isOuterBoundary)
-					{
-						queue.Add(new DepthQueueElement(edge.index, 1));
-					}
-				}
-			}
-
-			while (queue.Count > 0)
-			{
-				var queueIndex = RandomUtility.HalfOpenRange(queue.Count, randomEngine);
-				var queueElement = queue[queueIndex];
-
-				queue[queueIndex] = queue[queue.Count - 1];
-				queue.RemoveAt(queue.Count - 1);
-
-				var farFaceIndex = topology.edgeData[queueElement.edgeIndex].face;
-
-				if (visitedFaces[farFaceIndex] == false)
-				{
-					var visit = new DepthVisit(new Topology.FaceEdge(topology, queueElement.edgeIndex), queueElement.depth);
-					if (shouldVisit(visit))
-					{
-						visitedFaces[farFaceIndex] = true;
-						yield return visit;
-
-						foreach (var edge in new Topology.Face(topology, farFaceIndex).edges)
-						{
-							if (edge.twinIndex != queueElement.edgeIndex && !edge.isOuterBoundary && visitedFaces[edge.farFace.index] == false)
-							{
-								queue.Add(new DepthQueueElement(edge.index, queueElement.depth + 1));
-							}
-						}
-					}
-				}
-			}
-		}
 
 		#endregion
 	}
