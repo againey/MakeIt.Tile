@@ -68,7 +68,7 @@ namespace Experilous.Examples.Topological
 			{
 				_random = new RandomUtility(XorShift128Plus.Create(948675));
 
-				_faceTriangulation = new DynamicMesh.SeparatedFacesUmbrellaTriangulation(
+				_faceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 					{
 						var face = edge.nearFace;
@@ -84,7 +84,7 @@ namespace Experilous.Examples.Topological
 						vertexAttributes.Advance();
 					});
 
-				_selectedFaceTriangulation = new DynamicMesh.SeparatedFacesUmbrellaTriangulation(
+				_selectedFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 					{
 						var face = edge.nearFace;
@@ -229,7 +229,7 @@ namespace Experilous.Examples.Topological
 				_faceTerrainIndices[face] = _random.WeightedIndex(terrainWeights, terrainWeightSum);
 			}
 
-			FaceVisitationUtility.VisitAdjacentInRandomOrder(rootFaces, _random.engine,
+			FaceVisitationUtility.VisitConnectedInRandomOrder(rootFaces, _random.engine,
 				(Topology.FaceEdge edge) =>
 				{
 					_faceTerrainIndices[edge.farFace] = _faceTerrainIndices[edge.nearFace];
@@ -238,7 +238,7 @@ namespace Experilous.Examples.Topological
 			_faceSeenStates = new bool[_topology.faces.Count].AsFaceAttribute();
 			_faceSightCounts = new int[_topology.faces.Count].AsFaceAttribute();
 
-			var triangulation = new DynamicMesh.SeparatedFacesUmbrellaTriangulation(2,
+			var triangulation = new SeparatedFacesUmbrellaTriangulation(2,
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					var face = edge.nearFace;

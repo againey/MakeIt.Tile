@@ -234,7 +234,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(topology.faceEdges, vertexPositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y);
 
-			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
+			var triangulation = new SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -257,7 +257,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculateGlobalPlanarNormalizedUVsFromVertexPositions(topology.faceEdges, vertexPositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y);
 
-			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
+			var triangulation = new SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -280,7 +280,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y, GetAspectRatioPreservation());
 
-			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
+			var triangulation = new SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -303,7 +303,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculatePerFacePlanarUniformlyNormalizedUVsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, facePositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y, GetAspectRatioPreservation());
 
-			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
+			var triangulation = new SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -326,7 +326,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y, GetAspectRatioPreservation());
 
-			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
+			var triangulation = new SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];
@@ -349,7 +349,7 @@ namespace Experilous.Examples.Topological
 
 			var edgeUVs = EdgeAttributeUtility.CalculatePerFacePlanarVariablyNormalizedUVsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, facePositions, Vector3.right * uvScale.x, Vector3.up * uvScale.y, GetAspectRatioPreservation());
 
-			var triangulation = new DynamicMesh.SeparatedFacesFanTriangulation(
+			var triangulation = new SeparatedFacesFanTriangulation(
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = vertexPositions[edge];

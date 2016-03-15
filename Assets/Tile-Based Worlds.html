@@ -135,8 +135,7 @@
 						<li><a href="#topology-traversal">Topology Traversal</a>
 							<ol>
 								<li><a href="#path-finding">Path Finding</a></li>
-								<li><a href="#distance-ordered-visitation">Distance Ordered Visitation</a></li>
-								<li><a href="#random-visitation">Random Visitation</a></li>
+								<li><a href="#connected-visitation">Connected Visitation</a></li>
 							</ol>
 						</li>
 					</ol>
@@ -179,7 +178,7 @@
 			
 			<section id="create-your-own">
 				<h2 class="section-head">Creating Your Own Content</h2>
-				<p>The content used in the above example scenes can be found in the <a href="Experilous/Examples/Tile-Based Worlds/Data">&lt;project&gt;/Assets/Experilous/Examples/Tile-Based Worlds/Data</a> folder.
+				<p>The content used in the above example scenes can be found in the <a href="Experilous/Examples/Tile-Based Worlds/Data">&lt;project&gt;/Assets/Experilous/Examples/Tile-Based Worlds/Data/</a> folder.
 					Most of the data is not meant to be edited directly.  However, if you locate and select the asset within each subfolder named "Generator.asset", the inspector will show you the full details for generating the other assets in that subfolder.
 					You can freely modify the values within the inspector and click the Generate button, and the associated scene should automatically use the new assets generated, in particular the prefab with all of the generated meshes.</p>
 				<p>To create a generator from scratch, use the Create button in the Projects window, or right click in the Projects window content area where you would like to create the generator.
@@ -335,6 +334,44 @@
 			<h2 class="section-head">Additional Utilities</h2>
 			<section id="dynamic-mesh">
 				<h3 class="section-head">Dynamic Mesh</h3>
+				<p>The <code>DynamicMesh</code> class is responsible for building one or more <code>Mesh</code> objects for a topology,
+					as well as easing the process of updating that mesh as various attributes of the topology change.
+					It does this by triangulating topology faces according to a custom triangulation method provided it,
+					and maintaining arrays of all relevant mesh data for easy and efficient updates.</p>
+				<p>Meshes can utilize a variety of different vertex attributes, depending on what is needed by the shader in use.
+					Therefore, the dynamic mesh is capable of accepting any combination of vertex attributes, and can acquire their values in any way desired.
+					This is achieved through the generalized <code>ITriangulation</code> interface,
+					as well as standard implementations of that interface which expose vertex attribute retrieval through custom delegates.</p>
+				<p>The three supplied triangulation methods are strip, fan, and umbrella triangulation.
+					The strip method will order the vertices and vertex indices of each face in such a way as to follow the conventional triangle strip pattern,
+					and the fan does likewise for its respective common pattern.
+					Note, however, that this does not mean that the GPU will be sent draw calls to render faces as actual triangle strips or fans,
+					only that the triangle vertices will be ordered in this fashion.</p>
+				<p>The umbrella pattern is similar to the fan, except that instead of starting at an arbitrary outer vertex and creating a fan from the remaining outer vertices,
+					it requires a center vertex also, and then builds a fan around all the outer vertices.
+					Additionally, the first and last triangle of this fan share the first vertex with each other, whereas a fan would require a duplicate.</p>
+				<p>All of these methods also support subdividing the face into concentric rings, specified by ring depth which defaults to 1.
+					Therefore, not only will the triangulation need values for the outer vertices (and the center vertex for the umbrella pattern),
+					vertex attribute values will also be needed for the inner vertices.
+					The delegates consumed by these triangulation classes will therefore expect the same number of vertex values to be supplied during each call as their are concentric rings,
+					setting the outermost rings first, moving inward to the innermost rings last.</p>
+				<p>Once a dynamic mesh has been constructed, the actual <code>Mesh</code> instances are accessible through the <code>submeshCount</code> property and the <code>GetSubmesh()</code> method,
+					or through the <code>submeshes</code> enumerable property.
+					(Note that "submesh" in this context is distinct from the submesh concept of Unity's <code>Mesh</code> class,
+					and refers to entirely separate <code>Mesh</code> instances, each with their own subset of vertices.)
+				<p>If changes need to occur to any particular vertex attribute or to any particular area of the mesh, <code>RebuildFace()</code> can be used to update a face's mesh data.
+					It must be given the same type of triangulation that was used to originally construct the mesh,
+					but the details of how the vertex attribute values are assigned can differ.
+					In particular, not all attributes need to be set; values that stay the same can be completely skipped.
+					For example, perhaps only the vertex colors need to be updated, or the UV values; positions and normals can be left as they are in this case.
+				<p>Rebuilding a face only updates the main memory representation of the mesh data.
+					Once all faces have been rebuilt with new data, call <code>RebuildMesh()</code> to finalize the changes and apply them to the actual <code>Mesh</code> instances.
+					You can specify which vertex attributes are to be considered dirty.
+					Only these arrays will be updated, and only for submeshes marked dirty through the process of rebuilding a face within a submesh.
+					This makes dynamic mesh updates more efficient than a brute-force rebuilding of all the data from scratch.</p>
+				<p>The triangle indices themselves cannot be altered once constructed, so do not attempt to alter the overall topological structure
+					(such as through randomization or pivoting/spinning individual edges).
+					If you do so, you will need to create a new dynamic mesh from scratch rather than reusing the current one and all of its submeshes.</p>
 			</section>
 			
 			<section id="randomization">
@@ -384,30 +421,69 @@
 						allowing fully concurrent processing on multiple threads without conflict.</p>
 				</section>
 				
-				<section id="distance-ordered-visitation">
-					<h4 class="section-head">Distance Ordered Visitation</h4>
-					<p>If you wish to enumerate nearby faces starting from a single initial face, and proceeding through the faces according to their distance from the initial face,
-						you can make use of the depth and distance based functions in the <code>FaceVisitationUtility</code> class.
-						Both breadth-first and depth-first traversals are supported, and distance can be measured by whatever means you need for your particular use case.</p>
-					<p>Default distance measurements are provided for simple depth (number of faces traversed from the initial face),
-						as well as spatial distances based on either Euclidean or spherical metrics.
-						Alternatively, an edge attribute can be provided which specifies the accumulable distance of each edge.
-						Maximum depth/distance can also be specified to cap the traversal to a local region around the initial face.</p>
-					<p>Vertices can be visited in the same way using the <code>VertexVisitationUtility</code> class.</p>
-				</section>
-				
-				<section id="random-visitation">
-					<h4 class="section-head">Random Visitation</h4>
-					<p>Random visitation is also provided within the <code>VertexVisitationUtility</code> and <code>FaceVisitationUtility</code> classes.
-						You specify the root vertices or faces, and the enumerator returned will randomly select unvisited vertices/faces
-						that are adjacent to one of the roots or any previously visited vertex/face, until no more adjacent vertices/faces remain.</p>
-					</p>This can be particularly convenient for dividing a topology into a fixed number of randomly shaped clusters.</p>
+				<section id="connected-visitation">
+					<h4 class="section-head">Connected Visitation</h4>
+					<p>If you wish to enumerate connected vertices or faces, you can make use of the various static methods of the <code>VertexVisitationUtility</code> and <code>FaceVisitationUtility</code> classes.
+						All methods have similar interfaces to support single or multiple starting elements, and a flexible selection of visitation delegates depending on the needs of each particular visitation.</p>
+					<p>The simplest delegate type provides only the vertex or face being visited.
+						All other information tracked by the visitation algorithm remains unexposed, and no additional control over how the algorithm proceeds or terminates is offered.
+					<p>A step up from there, a delegate can instead be provided with an edge instead of a vertex or face,
+						thus providing access to information about not only which vertex or face is currently being visited, but also which vertex or face it is coming from.</p>
+					<p>Some types of visitation can optionally provide additional information about the visitation.
+						Depth-ordered visitation can supply the current depth of visitation (the number of edges traversed from the root vertex or face).
+						Distance-ordered visitation can supply the cumulative distance from the root vertex or face;
+						the depth can also be provided in addition to or even instead of the distance, though distance will still determine the order of visitation.</p>
+					<p>Finally, all variants of delegate interface also support an optional out parameter to control the operation of the algorithm.
+						By default, this state parameter will be set to <code>Continue</code>, meaning that all connected unvisited neighbors of the current vertex or face will be added to the queue to visit shortly.
+						By setting this state to <code>Discontinue</code>, this vertex or face will still be marked as visited, but no further neighbors will be visited from this particular vertex or face.
+						(This does not prevent them from being visited through other neighbors, however.)
+						By setting this state to <code>Ignore</code>, it is as if the vertex or face were not yet visited at all, and a visitation may be attempted again, but from another neighbor through a different edge.
+						And lastly, by setting this state to <code>Stop</code>, the entire algorithm will terminate.
+						This is commonly useful when using the visitation methods as a search tool, looking for at least one connected vertex or face that fits a given criterion.
+						Once such an element is found, there's no point in continuing further.</p>
+					<p>The order of visitation is determined by the particular method group chosen, and come in four major types.
+						The <code>AnyOrder</code> type only concerns itself with visiting all connected elements with no focus on order.  This is ideal for many existence-based searches.
+						The <code>ByDepth</code> type orders visitation according to the number of edges traversed from root elements.
+						This can be done in breadth-first order (prioritizing small depths over large) or depth-first (large depths prioritized over small).
+						The <code>ByDistance</code> type is similar, but can use numerical edge attributes, or Euclidean or spherical positional attributes to order elements by cumulative distance from the root elements.
+						These similarly come in breadth-first and depth-first variants.
+						And the fourth is <code>RandomOrder</code> type, similar to the first, but guaranteeing an unbiased random order,
+						rather than an unspecified order that is likely to be mechanically biased by how elements are pushed onto and popped from the underlying queue.
+						This can be particularly convenient for dividing a topology into a collection of randomly shaped clusters.</p>
 				</section>
 			</section>
 		</section>
 
 		<section class="chapter" id="generation">
 			<h2 class="section-head">In-Editor Generation</h2>
+			<p>The Tile-Based Worlds framework has been designed first and foremost as a collection of run-time utilities, to allow building and interacting with topologies through user scripts.
+				But sometimes these topologies can be fully created beforehand, and so editor integration has been included to assist in these cases.</p>
+			<p>Use of these editor interfaces is done through the inspector of the <code>GeneratorExecutive</code> objects.
+				These can be created through the <code>Assets/Create/Topology</code> menu, and will be populated with a default set of data and object generators.
+				The interface closely mimics the standard inspector interface, with each generator presented similarly to how components are presented on a game object.
+				But generators also strongly follow a node-based model, where generators may have a variety of inputs and outputs and connect up to each other as needed.</p>
+			<p>Once all desired generators have been added and configured, the Generate button at the top of the inspector can be pressed to run all generators.
+				Depending on how each output is configured and consumed, some outputs will be saved as assets within the same folder as the root generator asset, or under subfolders.
+				Common assets such as meshes and prefabs can be used directly in scenes as normal, and will be updated in place if the data is regenerated with different settings.
+				Custom data (classes deriving from <code>ScriptableObject</code>) can be used within user scripts, or referenced by custom components that understand the particular data type.</p>
+			<p>By default, each generator's outputs are collapsed in the inspector.
+				Expanding will show an abbreviated list of outputs, with their names, data types, and a toggle to enable or disable them.
+				Each output can be further expanded, permitting the adjustment of its name, path (subfolder where it is saved), and more details on its type (mouseover to get a fully namespaced tooltip).
+				Additionally, its availability can be edited.
+				"Available During Generation" means that other generators can use this output as incoming data, but it won't be saved as a distinct asset file for use later on.
+				"Available After Generation" will hide the output when hooking up the inputs of other generators, but will still be saved as an asset file.
+				"Available Always" naturally combines the two.
+				Unchecking the "Enabled" toggle will essentially mark it as "Never Available", neither usable by other generator nor saved as an asset.</p>
+			<p>Each collection of generators tracks which assets where generated by its own generators, and will cleanup leftover assets when configurations change and regeneration creates fewer or a different set of outputs.
+				If for some reason you want to detach generated assets and use them in their current form independently from the generator,
+				you can click the "Detach Assets" button near the top of the inspector, and then move the assets to a location where they won't get overwritten by another generation pass.</p>
+			<p>Moving a collection of generators is as easy as moving or renaming the folder.
+				Alternatively, you should be able to move just the "Generator" asset and then regenerate the assets, and everything ought to be moved into the same folder as that asset.</p>
+			<p>If you would like to copy a collection of generators so that you can modify and generate similar but altered assets,
+				you can alt-drag the "Generator" asset to copy it to a different folder.
+				This copy will know to drop all associations with existing generated assets, and will therefore create entirely new assets when the Generate button is pressed, leaving the original assets untouched.</p>
+			<p>If the provided generators are not sufficient, additional custom generators can be created
+				using those in the <a href="Plugins/Editor/Experilous/Topological">Plugins/Editor/Experilous/Topological/</a> folder as a model.</p>
 		</section>
 		
 		<section class="chapter" id="wrap-around">

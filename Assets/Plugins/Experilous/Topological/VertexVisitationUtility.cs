@@ -117,7 +117,7 @@ namespace Experilous.Topological
 
 		#endregion
 
-		#region Any Order Adjacency Visitation
+		#region Any Order Connected Visitation
 
 		public delegate void VisitVertexEdgeDelegate(Topology.VertexEdge vertexEdge);
 		public delegate void VisitVertexDelegate(Topology.Vertex vertex);
@@ -127,12 +127,12 @@ namespace Experilous.Topological
 
 		#region Queue
 
-		private class AdjacencyQueue : Queue
+		private class ConnectedQueue : Queue
 		{
 			private List<int> _queue;
 			public int frontEdgeIndex;
 
-			public AdjacencyQueue()
+			public ConnectedQueue()
 			{
 				_queue = new List<int>();
 			}
@@ -159,7 +159,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		private static void VisitAdjacentInAnyOrder(AdjacencyQueue queue, Topology topology, VisitVertexEdgeDelegate visitor)
+		private static void VisitConnectedInAnyOrder(ConnectedQueue queue, Topology topology, VisitVertexEdgeDelegate visitor)
 		{
 			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
@@ -167,7 +167,7 @@ namespace Experilous.Topological
 			});
 		}
 
-		private static void VisitAdjacentInAnyOrder(AdjacencyQueue queue, Topology topology, VisitVertexDelegate visitor)
+		private static void VisitConnectedInAnyOrder(ConnectedQueue queue, Topology topology, VisitVertexDelegate visitor)
 		{
 			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
@@ -175,7 +175,7 @@ namespace Experilous.Topological
 			});
 		}
 
-		private static void VisitAdjacentInAnyOrder(AdjacencyQueue queue, Topology topology, VisitVertexEdgeWithStateDelegate visitor)
+		private static void VisitConnectedInAnyOrder(ConnectedQueue queue, Topology topology, VisitVertexEdgeWithStateDelegate visitor)
 		{
 			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
@@ -183,7 +183,7 @@ namespace Experilous.Topological
 			});
 		}
 
-		private static void VisitAdjacentInAnyOrder(AdjacencyQueue queue, Topology topology, VisitVertexWithStateDelegate visitor)
+		private static void VisitConnectedInAnyOrder(ConnectedQueue queue, Topology topology, VisitVertexWithStateDelegate visitor)
 		{
 			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
@@ -195,56 +195,56 @@ namespace Experilous.Topological
 
 		#region Visit From Single Root
 
-		public static void VisitAdjacentInAnyOrder(Topology.Vertex rootVertex, VisitVertexEdgeDelegate visitor)
+		public static void VisitConnectedInAnyOrder(Topology.Vertex rootVertex, VisitVertexEdgeDelegate visitor)
 		{
-			var queue = new AdjacencyQueue();
-			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootVertex), visitor);
+			var queue = new ConnectedQueue();
+			VisitConnectedInAnyOrder(queue, queue.PushRoots(rootVertex), visitor);
 		}
 
-		public static void VisitAdjacentInAnyOrder(Topology.Vertex rootVertex, VisitVertexDelegate visitor)
+		public static void VisitConnectedInAnyOrder(Topology.Vertex rootVertex, VisitVertexDelegate visitor)
 		{
-			var queue = new AdjacencyQueue();
-			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootVertex), visitor);
+			var queue = new ConnectedQueue();
+			VisitConnectedInAnyOrder(queue, queue.PushRoots(rootVertex), visitor);
 		}
 
-		public static void VisitAdjacentInAnyOrder(Topology.Vertex rootVertex, VisitVertexEdgeWithStateDelegate visitor)
+		public static void VisitConnectedInAnyOrder(Topology.Vertex rootVertex, VisitVertexEdgeWithStateDelegate visitor)
 		{
-			var queue = new AdjacencyQueue();
-			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootVertex), visitor);
+			var queue = new ConnectedQueue();
+			VisitConnectedInAnyOrder(queue, queue.PushRoots(rootVertex), visitor);
 		}
 
-		public static void VisitAdjacentInAnyOrder(Topology.Vertex rootVertex, VisitVertexWithStateDelegate visitor)
+		public static void VisitConnectedInAnyOrder(Topology.Vertex rootVertex, VisitVertexWithStateDelegate visitor)
 		{
-			var queue = new AdjacencyQueue();
-			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootVertex), visitor);
+			var queue = new ConnectedQueue();
+			VisitConnectedInAnyOrder(queue, queue.PushRoots(rootVertex), visitor);
 		}
 
 		#endregion
 
 		#region Visit From Multiple Roots
 
-		public static void VisitAdjacentInAnyOrder(IEnumerable<Topology.Vertex> rootVertices, VisitVertexEdgeDelegate visitor)
+		public static void VisitConnectedInAnyOrder(IEnumerable<Topology.Vertex> rootVertices, VisitVertexEdgeDelegate visitor)
 		{
-			var queue = new AdjacencyQueue();
-			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootVertices), visitor);
+			var queue = new ConnectedQueue();
+			VisitConnectedInAnyOrder(queue, queue.PushRoots(rootVertices), visitor);
 		}
 
-		public static void VisitAdjacentInAnyOrder(IEnumerable<Topology.Vertex> rootVertices, VisitVertexDelegate visitor)
+		public static void VisitConnectedInAnyOrder(IEnumerable<Topology.Vertex> rootVertices, VisitVertexDelegate visitor)
 		{
-			var queue = new AdjacencyQueue();
-			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootVertices), visitor);
+			var queue = new ConnectedQueue();
+			VisitConnectedInAnyOrder(queue, queue.PushRoots(rootVertices), visitor);
 		}
 
-		public static void VisitAdjacentInAnyOrder(IEnumerable<Topology.Vertex> rootVertices, VisitVertexEdgeWithStateDelegate visitor)
+		public static void VisitConnectedInAnyOrder(IEnumerable<Topology.Vertex> rootVertices, VisitVertexEdgeWithStateDelegate visitor)
 		{
-			var queue = new AdjacencyQueue();
-			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootVertices), visitor);
+			var queue = new ConnectedQueue();
+			VisitConnectedInAnyOrder(queue, queue.PushRoots(rootVertices), visitor);
 		}
 
-		public static void VisitAdjacentInAnyOrder(IEnumerable<Topology.Vertex> rootVertices, VisitVertexWithStateDelegate visitor)
+		public static void VisitConnectedInAnyOrder(IEnumerable<Topology.Vertex> rootVertices, VisitVertexWithStateDelegate visitor)
 		{
-			var queue = new AdjacencyQueue();
-			VisitAdjacentInAnyOrder(queue, queue.PushRoots(rootVertices), visitor);
+			var queue = new ConnectedQueue();
+			VisitConnectedInAnyOrder(queue, queue.PushRoots(rootVertices), visitor);
 		}
 
 		#endregion
@@ -1333,17 +1333,17 @@ namespace Experilous.Topological
 
 		#endregion
 
-		#region Random Order Adjacency Visitation
+		#region Random Order Connected Visitation
 
 		#region Queue
 
-		private class RandomAdjacencyQueue : Queue
+		private class RandomConnectedQueue : Queue
 		{
 			private List<int> _queue;
 			private IRandomEngine _randomEngine;
 			public int frontEdgeIndex;
 
-			public RandomAdjacencyQueue(IRandomEngine randomEngine)
+			public RandomConnectedQueue(IRandomEngine randomEngine)
 			{
 				_queue = new List<int>();
 				_randomEngine = randomEngine;
@@ -1373,7 +1373,7 @@ namespace Experilous.Topological
 			}
 		}
 
-		private static void VisitAdjacentInRandomOrder(RandomAdjacencyQueue queue, Topology topology, VisitVertexEdgeDelegate visitor)
+		private static void VisitConnectedInRandomOrder(RandomConnectedQueue queue, Topology topology, VisitVertexEdgeDelegate visitor)
 		{
 			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
@@ -1381,7 +1381,7 @@ namespace Experilous.Topological
 			});
 		}
 
-		private static void VisitAdjacentInRandomOrder(RandomAdjacencyQueue queue, Topology topology, VisitVertexDelegate visitor)
+		private static void VisitConnectedInRandomOrder(RandomConnectedQueue queue, Topology topology, VisitVertexDelegate visitor)
 		{
 			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
@@ -1389,7 +1389,7 @@ namespace Experilous.Topological
 			});
 		}
 
-		private static void VisitAdjacentInRandomOrder(RandomAdjacencyQueue queue, Topology topology, VisitVertexEdgeWithStateDelegate visitor)
+		private static void VisitConnectedInRandomOrder(RandomConnectedQueue queue, Topology topology, VisitVertexEdgeWithStateDelegate visitor)
 		{
 			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
@@ -1397,7 +1397,7 @@ namespace Experilous.Topological
 			});
 		}
 
-		private static void VisitAdjacentInRandomOrder(RandomAdjacencyQueue queue, Topology topology, VisitVertexWithStateDelegate visitor)
+		private static void VisitConnectedInRandomOrder(RandomConnectedQueue queue, Topology topology, VisitVertexWithStateDelegate visitor)
 		{
 			queue.Visit((int edgeIndex, ref VisitationState state) =>
 			{
@@ -1409,56 +1409,56 @@ namespace Experilous.Topological
 
 		#region Visit From Single Root
 
-		public static void VisitAdjacentInRandomOrder(Topology.Vertex rootVertex, IRandomEngine randomEngine, VisitVertexEdgeDelegate visitor)
+		public static void VisitConnectedInRandomOrder(Topology.Vertex rootVertex, IRandomEngine randomEngine, VisitVertexEdgeDelegate visitor)
 		{
-			var queue = new RandomAdjacencyQueue(randomEngine);
-			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootVertex), visitor);
+			var queue = new RandomConnectedQueue(randomEngine);
+			VisitConnectedInRandomOrder(queue, queue.PushRoots(rootVertex), visitor);
 		}
 
-		public static void VisitAdjacentInRandomOrder(Topology.Vertex rootVertex, IRandomEngine randomEngine, VisitVertexDelegate visitor)
+		public static void VisitConnectedInRandomOrder(Topology.Vertex rootVertex, IRandomEngine randomEngine, VisitVertexDelegate visitor)
 		{
-			var queue = new RandomAdjacencyQueue(randomEngine);
-			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootVertex), visitor);
+			var queue = new RandomConnectedQueue(randomEngine);
+			VisitConnectedInRandomOrder(queue, queue.PushRoots(rootVertex), visitor);
 		}
 
-		public static void VisitAdjacentInRandomOrder(Topology.Vertex rootVertex, IRandomEngine randomEngine, VisitVertexEdgeWithStateDelegate visitor)
+		public static void VisitConnectedInRandomOrder(Topology.Vertex rootVertex, IRandomEngine randomEngine, VisitVertexEdgeWithStateDelegate visitor)
 		{
-			var queue = new RandomAdjacencyQueue(randomEngine);
-			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootVertex), visitor);
+			var queue = new RandomConnectedQueue(randomEngine);
+			VisitConnectedInRandomOrder(queue, queue.PushRoots(rootVertex), visitor);
 		}
 
-		public static void VisitAdjacentInRandomOrder(Topology.Vertex rootVertex, IRandomEngine randomEngine, VisitVertexWithStateDelegate visitor)
+		public static void VisitConnectedInRandomOrder(Topology.Vertex rootVertex, IRandomEngine randomEngine, VisitVertexWithStateDelegate visitor)
 		{
-			var queue = new RandomAdjacencyQueue(randomEngine);
-			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootVertex), visitor);
+			var queue = new RandomConnectedQueue(randomEngine);
+			VisitConnectedInRandomOrder(queue, queue.PushRoots(rootVertex), visitor);
 		}
 
 		#endregion
 
 		#region Visit From Multiple Roots
 
-		public static void VisitAdjacentInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, IRandomEngine randomEngine, VisitVertexEdgeDelegate visitor)
+		public static void VisitConnectedInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, IRandomEngine randomEngine, VisitVertexEdgeDelegate visitor)
 		{
-			var queue = new RandomAdjacencyQueue(randomEngine);
-			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootVertices), visitor);
+			var queue = new RandomConnectedQueue(randomEngine);
+			VisitConnectedInRandomOrder(queue, queue.PushRoots(rootVertices), visitor);
 		}
 
-		public static void VisitAdjacentInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, IRandomEngine randomEngine, VisitVertexDelegate visitor)
+		public static void VisitConnectedInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, IRandomEngine randomEngine, VisitVertexDelegate visitor)
 		{
-			var queue = new RandomAdjacencyQueue(randomEngine);
-			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootVertices), visitor);
+			var queue = new RandomConnectedQueue(randomEngine);
+			VisitConnectedInRandomOrder(queue, queue.PushRoots(rootVertices), visitor);
 		}
 
-		public static void VisitAdjacentInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, IRandomEngine randomEngine, VisitVertexEdgeWithStateDelegate visitor)
+		public static void VisitConnectedInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, IRandomEngine randomEngine, VisitVertexEdgeWithStateDelegate visitor)
 		{
-			var queue = new RandomAdjacencyQueue(randomEngine);
-			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootVertices), visitor);
+			var queue = new RandomConnectedQueue(randomEngine);
+			VisitConnectedInRandomOrder(queue, queue.PushRoots(rootVertices), visitor);
 		}
 
-		public static void VisitAdjacentInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, IRandomEngine randomEngine, VisitVertexWithStateDelegate visitor)
+		public static void VisitConnectedInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, IRandomEngine randomEngine, VisitVertexWithStateDelegate visitor)
 		{
-			var queue = new RandomAdjacencyQueue(randomEngine);
-			VisitAdjacentInRandomOrder(queue, queue.PushRoots(rootVertices), visitor);
+			var queue = new RandomConnectedQueue(randomEngine);
+			VisitConnectedInRandomOrder(queue, queue.PushRoots(rootVertices), visitor);
 		}
 
 		#endregion

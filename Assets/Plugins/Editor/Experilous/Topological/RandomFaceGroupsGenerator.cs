@@ -111,7 +111,7 @@ namespace Experilous.Topological
 					faceGroupFaceIndices[faceGroupIndex].Add(face.index);
 				}
 
-				FaceVisitationUtility.VisitAdjacentInRandomOrder(rootFaces, randomEngine,
+				FaceVisitationUtility.VisitConnectedInRandomOrder(rootFaces, randomEngine,
 					(Topology.FaceEdge edge) =>
 					{
 						var faceGroupIndex = faceGroupIndices[edge.nearFace];

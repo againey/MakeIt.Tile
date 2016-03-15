@@ -86,7 +86,7 @@ namespace Experilous.Examples.Topological
 				_random = new RandomUtility(XorShift128Plus.Create(randomSeedText));
 
 			if (_normalFaceTriangulation == null)
-				_normalFaceTriangulation = new DynamicMesh.SeparatedFacesUmbrellaTriangulation(
+				_normalFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 					{
 						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 5f - vertexAttributes.position).normalized;
@@ -103,7 +103,7 @@ namespace Experilous.Examples.Topological
 					});
 
 			if (_selectedFaceTriangulation == null)
-				_selectedFaceTriangulation = new DynamicMesh.SeparatedFacesUmbrellaTriangulation(
+				_selectedFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 					{
 						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 1f - vertexAttributes.position).normalized;
@@ -298,7 +298,7 @@ namespace Experilous.Examples.Topological
 
 			var centerVertexNormal = _surface.surfaceNormal.normalized;
 
-			var triangulation = new DynamicMesh.SeparatedFacesUmbrellaTriangulation(2,
+			var triangulation = new SeparatedFacesUmbrellaTriangulation(2,
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = _vertexPositions[edge];
@@ -449,7 +449,7 @@ namespace Experilous.Examples.Topological
 			if (color == BoardState.Empty) return true;
 
 			bool hasLiberties = false;
-			FaceVisitationUtility.VisitAdjacentInAnyOrder(face,
+			FaceVisitationUtility.VisitConnectedInAnyOrder(face,
 				(Topology.Face visitFace, ref FaceVisitationUtility.VisitationState state) =>
 				{
 					var visitColor = _faceBoardStates[visitFace];
@@ -480,7 +480,7 @@ namespace Experilous.Examples.Topological
 			_faceBoardStates[face] = BoardState.Empty;
 			int captureCount = 1;
 
-			FaceVisitationUtility.VisitAdjacentInAnyOrder(face,
+			FaceVisitationUtility.VisitConnectedInAnyOrder(face,
 				(Topology.Face visitFace, ref FaceVisitationUtility.VisitationState state) =>
 				{
 					var visitColor = _faceBoardStates[visitFace];
