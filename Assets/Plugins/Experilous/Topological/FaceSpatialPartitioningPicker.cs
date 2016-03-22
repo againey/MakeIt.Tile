@@ -9,6 +9,7 @@ using System;
 
 namespace Experilous.Topological
 {
+	[AddComponentMenu("Tile-Based Worlds/Face Spatial Partitioning Picker")]
 	public class FaceSpatialPartitioningPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
 		public new Camera camera;
@@ -35,7 +36,7 @@ namespace Experilous.Topological
 
 		void Start()
 		{
-			this.DisableAndThrowOnUnassignedReference(camera, "The SpatialPartioningPicker component requires a reference to a Camera component.");
+			this.DisableAndThrowOnUnassignedReference(camera, "The FaceSpatialPartitioningPicker component requires a reference to a Camera component.");
 			_collider = GetComponent<Collider>();
 		}
 
