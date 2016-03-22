@@ -141,7 +141,6 @@
 					</ol>
 				</li>
 				<li><a href="#generation">In-Editor Generation</a></li>
-				<li><a href="#wrap-around">Integration with Wrap-Around Worlds</a></li>
 			</ol>
 		</section>
 		
@@ -154,8 +153,8 @@
 					The planar scenes each contain one planar topology, and can be controlled with standard arrow/WASD controls with mouse look; mouse wheel will adjust elevation.
 					The spherical scene is similar, but without mouse look; instead, it uses a camera controller that locks the view onto the sphere.</p>
 				<dl>
-					<dt><a href="Experilous/Examples/Tile-Based Worlds/Buried Bomb Hunter.unity">Buried Bomb Hunter</a></dt>
-					<dd>A clone of Minesweeper, supporting square, hexagonal, and jumbled cells.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Jumble Go.unity">Jumble Go</a></dt>
+					<dd>A basic implementation of Go, supporting square, hexagonal, and jumbled cells.</dd>
 					<dt><a href="Experilous/Examples/Tile-Based Worlds/Spherical Path Finding Demo.unity">Spherical Path Finding Demo</a></dt>
 					<dd>A generated tile-based planet with four different terrain types, unit path finding, and fog-of-war.</dd>
 					<dt><a href="Experilous/Examples/Tile-Based Worlds/Texture Demo.unity">Texture Demo</a></dt>
@@ -164,15 +163,6 @@
 					<dd>A few pre-generated planar surfaces with various tile shapes.</dd>
 					<dt><a href="Experilous/Examples/Tile-Based Worlds/Spherical Topology.unity">Spherical Topology.unity</a></dt>
 					<dd>A pre-generated spherical surface with randomly shaped tiles which mostly began as hexagonal tiles before being randomized.</dd>
-				</dl>
-				<p>If you also have access to the Wrap-Around Worlds framework and import
-					<a href="Experilous/Packages/Tile-Based Wrap-Around Integration - With Examples.unitypackage">Tile-Based Wrap-Around Integration - With Examples&#8203;.unitypackage</a>,
-					then you will gain access to a few more example scenes.</p>
-				<dl>
-					<dt><a href="Experilous/Examples/Tile-Based Wrap-Around Worlds/Planar Hex Grid Horizontal Wrap.unity">Planar Hex Grid Horizontal Wrap</a></dt>
-					<dd>A pre-generated planar surface with hexagonal tiles arranged at an angle to create a parallelogram-shaped world.  The world wraps around across the left and right edges.</dd>
-					<dt><a href="Experilous/Examples/Tile-Based Wrap-Around Worlds/Planar Random Grid Full Wrap.unity">Planar Random Grid Full Wrap</a></dt>
-					<dd>A pre-generated planar surface with randomly shaped tiles which began as hexagonal tiles before being randomized.  The world wraps around both across the top and bottom edges and across the left and right edges.</dd>
 				</dl>
 			</section>
 			
@@ -484,20 +474,6 @@
 				This copy will know to drop all associations with existing generated assets, and will therefore create entirely new assets when the Generate button is pressed, leaving the original assets untouched.</p>
 			<p>If the provided generators are not sufficient, additional custom generators can be created
 				using those in the <a href="Plugins/Editor/Experilous/Topological">Plugins/Editor/Experilous/Topological/</a> folder as a model.</p>
-		</section>
-		
-		<section class="chapter" id="wrap-around">
-			<h2 class="section-head">Integration with Wrap-Around Worlds</h2>
-			<p>If you also have access to the Wrap-Around Worlds framework and import
-				<a href="Experilous/Packages/Tile-Based Wrap-Around Integration - With Examples.unitypackage">Tile-Based Wrap-Around Integration&#8203;.unitypackage</a>,
-				then you will obtain some tools that can improve the integration of the functionalities of these two frameworks.</p>
-			<p>At present, the only addition is a different world type that frees you from having to manually configure its shape or wrap-around properties.
-				Instead, you only need to supply a <code>Surface</code> asset reference, and it will work out the world shape automatically.</p>
-			<p>Beyond that, if you are generating meshes and prefabs for your tile-based worlds,
-				you will probably want to ensure that the mesh generator uses subdivided chunks of the world to create multiple meshs,
-				and that the prefab assigned to the prefab generator includes the relevant element components described above (most likely just the <code>RenderableElement</code> component).
-				This will allow the wrapping information contained with the world topology to apply not just when enumerating topology element neighbors,
-				but also when rendering the world and applying physics, which is naturally ideal.</p>
 		</section>
 	</body>
 </html>
