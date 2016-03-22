@@ -8,6 +8,7 @@ syntax: regexp
 ^Miscellaneous/Screenshots/
 ^Miscellaneous/Videos/
 ^Miscellaneous/Export Test/
+^Miscellaneous/.*\.(7z|zip)$
 ^Library/
 ^Temp/
 ^Build/
