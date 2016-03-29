@@ -111,7 +111,7 @@
 				<li>Neighboring Tile Visitation</li>
 				<li>Randomization Library</li>
 			</ul>
-			<p>In additional to the above features, the framework is very extensible, to support whatever tiling patterns, tile attributes, and algorithms you might need.</p>
+			<p>In addition to the above features, the framework is very extensible, to support whatever tiling patterns, tile attributes, and algorithms you might need.</p>
 			<p><strong>Scripting Note:</strong> Although the framework does contain some high-level tools usable directly within the editor,
 				it is not designed as a top-to-bottom solution, but is rather intended to be a foundation upon which many different game mechanics can be easily built.
 				Additional scripting will therefore be necessary in almost all cases.<p>
@@ -192,7 +192,7 @@
 					<dt><a href="Experilous/Packages/Tile-Based Worlds.unitypackage">Tile-Based Worlds</a> (<a href="Experilous/Packages/Tile-Based Worlds - With Dependencies.unitypackage">with dependencies</a>)</dt>
 					<dd>The core Tile-Based Worlds framework, without supplemental files contained in the full package on the Unity Asset Store.</dd>
 					<dt><a href="Experilous/Packages/Math Utilities.unitypackage">Math Utilities</a></dt>
-					<dd>Utilities for mathematical and geometric calcuations and objects.</dd>
+					<dd>Utilities for mathematical and geometric calculations and objects.</dd>
 					<dt><a href="Experilous/Packages/Randomization.unitypackage">Randomization</a> (<a href="Experilous/Packages/Randomization - With Dependencies.unitypackage">with dependencies</a>)</dt>
 					<dd>Pseudo-random number generators, plus related utilities for generating random data.</dd>
 					<dt><a href="Experilous/Packages/Generation.unitypackage">Generation</a> (<a href="Experilous/Packages/Generation - With Dependencies.unitypackage">with dependencies</a>)</dt>
@@ -245,7 +245,7 @@
 				The <code>nearVertex</code> and <code>nearFace</code> properties can be used to get the implicit element whose neighors are being enumerated by a given <code>VertexEdge</code> or <code>FaceEdge</code>.</p>
 			<p>The majority of faces in a topology will be ordinary "internal" faces, but depending on the shape of the topology, some faces might be external.
 				This means that they're not part of the normal world, but are included in order to simplify the invariants of the data structure.
-				In particular, the requirement that every edge has exacty two neighboring faces, and the requirement that the neighboring vertex count, edge count, and face count are all equal for any given vertex or face.
+				In particular, the requirement that every edge has exactly two neighboring faces, and the requirement that the neighboring vertex count, edge count, and face count are all equal for any given vertex or face.
 				An example topology would be a chess board, which has sixty-four internal faces, and then one external face which represents everything outside of the chess board.
 				Another example would be the world map of the Civilization series of games, in which the north pole region and the south pole region are two distinct external faces.</p>
 		</section>
@@ -285,7 +285,7 @@
 				encoding details about the near vertex and face and far vertex and face all relate to each other and to the edge itself.
 				Edges can be used to access vertex and face attributes, and so such attributes can use the relational information to transform the vertex or face attribute value based on wrapping behavior.
 				For example, accessing a vertex position using a face edge will enable the attribute container to return the vertex position relative to the near face of the edge used for access.</p>
-			<p>Most attributes are oblivious to wrapping, and most attributes would not be able to meaningfully utilize wrapping information anway.
+			<p>Most attributes are oblivious to wrapping, and most attributes would not be able to meaningfully utilize wrapping information anyway.
 				To take advantage of wrapping behavior, either use the <code>PositionalVertexAttribute</code>, <code>PositionalEdgeAttribute</code>, and <code>PositionalFaceAttribute</code> classes to store your data,
 				or create similar classes of your own that make use of an edge's relational information when accessing the attribute using an edge.</p>
 		</section>
@@ -325,7 +325,7 @@
 						but also provide vertex positions according to the specifications of the surface.</p>
 					<p>Also, by implementing the <code>IFaceIndexer2D</code> and <code>IVertexIndexer2D</code> interfaces,
 						<code>RectangularQuadGrid</code> can be used to get the two-dimensional integer coordinate of each vertex and face,
-						or to perform the inverse operation, find the vertex or face givne a two-dimensional integer coordinate.
+						or to perform the inverse operation, find the vertex or face given a two-dimensional integer coordinate.
 						This makes it easy to implement any algorithms that are most naturally expressed using such a two-dimensional coordinate system.</p>
 				</section>
 				
@@ -348,7 +348,7 @@
 						but also provide vertex positions according to the specifications of the surface.</p>
 					<p>Also, by implementing the <code>IFaceIndexer2D</code> and <code>IVertexIndexer2D</code> interfaces,
 						<code>RectangularHexGrid</code> can be used to get the two-dimensional integer coordinate of each vertex and face,
-						or to perform the inverse operation, find the vertex or face givne a two-dimensional integer coordinate.
+						or to perform the inverse operation, find the vertex or face given a two-dimensional integer coordinate.
 						This makes it easy to implement any algorithms that are most naturally expressed using such a two-dimensional coordinate system.
 						Note that because hex grids are more complex than square grids, the exact behavior of the two-dimensional coordinates depends on how the grid was constructed.
 						Alternative implementations of <code>IFaceIndexer2D</code> and <code>IVertexIndexer2D</code> can be written to provide alternate indexing schemes if desired.</p>
@@ -375,11 +375,11 @@
 					only that the triangle vertices will be ordered in this fashion.</p>
 				<p>The umbrella pattern is similar to the fan, except that instead of starting at an arbitrary outer vertex and creating a fan from the remaining outer vertices,
 					it requires a center vertex also, and then builds a fan around all the outer vertices.
-					Additionally, the first and last triangle of this fan share the first vertex with each other, whereas a fan would require a duplicate.</p>
+					Additionally, the first and last triangles of this fan share the first vertex with each other, whereas a fan would require a duplicate.</p>
 				<p>All of these methods also support subdividing the face into concentric rings, specified by ring depth which defaults to 1.
 					Therefore, not only will the triangulation need values for the outer vertices (and the center vertex for the umbrella pattern),
 					vertex attribute values will also be needed for the inner vertices.
-					The delegates consumed by these triangulation classes will therefore expect the same number of vertex values to be supplied during each call as their are concentric rings,
+					The delegates consumed by these triangulation classes will therefore expect the same number of vertex values to be supplied during each call as there are concentric rings,
 					setting the outermost rings first, moving inward to the innermost rings last.</p>
 				<p>Once a dynamic mesh has been constructed, the actual <code>Mesh</code> instances are accessible through the <code>submeshCount</code> property and the <code>GetSubmesh()</code> method,
 					or through the <code>submeshes</code> enumerable property.
@@ -413,7 +413,7 @@
 					but it strongly biases faces with more neighbors to be significantly larger than faces with fewer neighbors.
 					The equal area constraint on the other hand prefers all faces to have roughly equal area,
 					but it tends to produce irregular polygon faces and edges of varying lengths.
-					There are examples of blending these two contraints together using any proportion desired.</p>
+					There are examples of blending these two constraints together using any proportion desired.</p>
 				<p>The repair pass is more of a blunt process to correct for any egregious errors produced in the main pass and not fixed by relaxation,
 					as well as such errors that are actually produced by the relaxation pass.
 					These are errors of concavity or more serious flaw in the shape of a face.</p>
