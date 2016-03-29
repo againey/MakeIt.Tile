@@ -18,3 +18,5 @@ syntax: regexp
 ^obj/
 ^[^/]*\.sln$
 ^[^/]*\.csproj$
+\~\$[^/]*\.docx$
+\~[^/]*\.tmp$

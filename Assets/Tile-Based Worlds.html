@@ -99,8 +99,20 @@
 				<div class="subtitle">User's Manual</div>
 			</h1>
 			<p>Tile-Based Worlds is a framework for Unity to aid in the creation and usage of game worlds which are divided up into discrete tiles.
-				It is designed to be maximally flexible, applying just as easily to the simple 8x8 game world of chess as to a large hex grid in a strategy game or even an irregular arrangement of tiles on the surface of a sphere.</p>
-			<p>Although the framework does contain some high-level tools such as for generating ready-to-use meshes and prefabs, and for detecting and handling tile-based mouse clicks,
+				It is designed to be maximally flexible, applying just as easily to the simple 8x8 game world of chess as to a large hex grid in a strategy game or even an irregular arrangement of tiles on the surface of a sphere.
+				It includes out-of-the-box support for:</p>
+			<ul>
+				<li>Square, Hex, and Irregular Grids</li>
+				<li>Planar and Spherical Worlds</li>
+				<li>World Edge Wrap-Around</li>
+				<li>Mouse Picking</li>
+				<li>A* Path Finding</li>
+				<li>Dynamic Mesh Generation</li>
+				<li>Neighboring Tile Visitation</li>
+				<li>Randomization Library</li>
+			</ul>
+			<p>In additional to the above features, the framework is very extensible, to support whatever tiling patterns, tile attributes, and algorithms you might need.</p>
+			<p><strong>Scripting Note:</strong> Although the framework does contain some high-level tools usable directly within the editor,
 				it is not designed as a top-to-bottom solution, but is rather intended to be a foundation upon which many different game mechanics can be easily built.
 				Additional scripting will therefore be necessary in almost all cases.<p>
 		</section>
@@ -111,6 +123,7 @@
 				<li><a href="#quick-start">Quick Start</a></li>
 					<ol>
 						<li><a href="#examples">Example Scenes &amp; Content</a></li>
+						<li><a href="#packages">Supplemental Packages</a></li>
 						<li><a href="#create-your-own">Creating Your Own Content</a></li>
 					</ol>
 				<li><a href="#topologies">Topologies, the Core Data Structure</a></li>
@@ -163,6 +176,29 @@
 					<dd>A few pre-generated planar surfaces with various tile shapes.</dd>
 					<dt><a href="Experilous/Examples/Tile-Based Worlds/Spherical Topology.unity">Spherical Topology.unity</a></dt>
 					<dd>A pre-generated spherical surface with randomly shaped tiles which mostly began as hexagonal tiles before being randomized.</dd>
+					<dt><a href="Experilous/Examples/Tile-Based Worlds/Tutorial 1.unity">Tutorial 1.unity</a></dt>
+					<dd>The final scene after going through the <a href="https://www.youtube.com/watch?v=Gl9TaOvjKX4" target="_blank">Tutorial #1 video on YouTube</a>.</dd>
+				</dl>
+			</section>
+
+			<section id="packages">
+				<h2 class="section-head">Supplemental Packages</h2>
+				<p>Included in the package are some additional packages for use at your convenience.
+					Some of these packages are subsets of the framework, containing only the files needed for the specified functionality,
+					plus dependencies if noted, without any supplemental files such as examples or automated tests.
+					You can therefore import these packages into new projects without needing to clean up any extraneous files.</p>
+				<p><strong>Note that if imported, they will not participate in the update notification process provided by the Unity Asset Store.</strong></p>
+				<dl>
+					<dt><a href="Experilous/Packages/Tile-Based Worlds.unitypackage">Tile-Based Worlds</a> (<a href="Experilous/Packages/Tile-Based Worlds - With Dependencies.unitypackage">with dependencies</a>)</dt>
+					<dd>The core Tile-Based Worlds framework, without supplemental files contained in the full package on the Unity Asset Store.</dd>
+					<dt><a href="Experilous/Packages/Math Utilities.unitypackage">Math Utilities</a></dt>
+					<dd>Utilities for mathematical and geometric calcuations and objects.</dd>
+					<dt><a href="Experilous/Packages/Randomization.unitypackage">Randomization</a> (<a href="Experilous/Packages/Randomization - With Dependencies.unitypackage">with dependencies</a>)</dt>
+					<dd>Pseudo-random number generators, plus related utilities for generating random data.</dd>
+					<dt><a href="Experilous/Packages/Generation.unitypackage">Generation</a> (<a href="Experilous/Packages/Generation - With Dependencies.unitypackage">with dependencies</a>)</dt>
+					<dd>Utilities for generically handling content generation from within the editor.</dd>
+					<dt><a href="Experilous/Packages/Tile-Based Worlds - Automated Tests.unitypackage">Tile-Based Worlds - Automated Tests</a></dt>
+					<dd>Automated tests for both the Tile-Based Worlds framework and supporting utilities.  Requires the Unity Test Tools asset, or Unity 5.3+ which has the test tools built-in.</dd>
 				</dl>
 			</section>
 			
