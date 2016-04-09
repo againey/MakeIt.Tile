@@ -93,7 +93,7 @@ namespace Experilous.Topological
 				var axis1DividedVector = axis1Vector / axisDivisions.y;
 				var axis0Dot = Vector3.Dot(axis1Normal, axis0DividedVector);
 				var axis1Dot = Vector3.Dot(axis0Normal, axis1DividedVector);
-				var origin = new Vector3(0f, 0f, 0f); //TODO this should come from somewhere, probably surface
+				var origin = surface.origin;
 
 				for (int i = 0; i < faceGroupFaceIndices.Length; ++i)
 				{

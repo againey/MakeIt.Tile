@@ -20,6 +20,8 @@ namespace Experilous.Examples.Topological
 		public Transform planetMeshes;
 		public Transform units;
 
+		public GameObject controlsPanel;
+
 		public float movementDuration = 0.1f;
 
 		private SphericalSurface _surface;
@@ -353,6 +355,10 @@ namespace Experilous.Examples.Topological
 
 		protected void Update()
 		{
+			if (Input.GetKeyUp(KeyCode.F1))
+			{
+				controlsPanel.SetActive(!controlsPanel.activeSelf);
+			}
 		}
 
 		private void Select(Topology.Face face)
