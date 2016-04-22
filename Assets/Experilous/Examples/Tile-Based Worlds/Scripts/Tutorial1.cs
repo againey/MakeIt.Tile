@@ -3,8 +3,8 @@
 \******************************************************************************/
 
 using UnityEngine;
-using Experilous;
 using Experilous.Topological;
+using System.Collections.Generic;
 
 namespace Experilous.Examples.Topological
 {
@@ -282,23 +282,35 @@ namespace Experilous.Examples.Topological
 			}
 		}
 
+		private IEnumerable<Topology.Face> EnumerateFaceNeighbors(Topology.Face face)
+		{
+			foreach (var edge in face.edges)
+			{
+				yield return edge.farFace;
+			}
+		}
+
 		private void ClearBlockedFaces(Topology.Face face)
 		{
 			_faceBlockedStates[face] = false;
 			_dynamicMesh.RebuildFace(face, _triangulationNormal);
 
-			FaceVisitationUtility.VisitBreadthFirstByDepth(face,
-				(Topology.Face visitFace, int depth, ref FaceVisitationUtility.VisitationState state) =>
+			FaceVisitationUtility.VisitFacesBreadthFirst(face,
+				(FaceVisit visit) =>
 				{
-					if (_faceBlockedStates[visitFace] == true)
+					if (_faceBlockedStates[visit.face] == true)
 					{
-						_faceBlockedStates[visitFace] = false;
-						_dynamicMesh.RebuildFace(visitFace, _triangulationNormal);
+						_faceBlockedStates[visit.face] = false;
+						_dynamicMesh.RebuildFace(visit.face, _triangulationNormal);
 					}
 
-					if (depth == clearRadius)
+					if (visit.depth < clearRadius)
 					{
-						state = FaceVisitationUtility.VisitationState.Discontinue;
+						return EnumerateFaceNeighbors(visit.face);
+					}
+					else
+					{
+						return null;
 					}
 				});
 		}

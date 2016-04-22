@@ -395,6 +395,133 @@ namespace Experilous.Topological
 			}
 		}
 
+		public interface IExtendedFaceEdge : IEquatable<IExtendedFaceEdge>
+		{
+			Topology topology { get; }
+
+			Face nearFace { get; }
+			Face farFace { get; }
+
+			EdgeWrap wrap { get; }
+		}
+
+#if false
+		/// <summary>
+		/// A wrapper for conveniently working with a topology face, providing access to its core properties and enumeration of its neighbors.
+		/// </summary>
+		/// <remarks>
+		/// <para>Edge wrappers come in three varieties, HalfEdge, VertexEdge, and FaceEdge.  The FaceEdge variety is focused on
+		/// representing an edge relative to its near face, and properties are named relative to rotating clockwise around the near
+		/// face where relevant.</para>
+		/// 
+		/// <para>In addition to providing access to its two vertex and face neighbors, access is also provided to previous and next half-
+		/// edges in the circular linked list around this half-edge's near face.  Note that getting the next half-edge requires one less
+		/// lookup than getting the previous half-edge, and is therefore recommended for the majority of cases.</para>
+		/// </remarks>
+		public struct ExtendedFaceEdge : IEquatable<FaceEdge>, IEquatable<VertexEdge>, IComparable<FaceEdge>, IComparable<VertexEdge>
+		{
+			private HalfEdge _initialEdge;
+			private HalfEdge _extendedEdge;
+
+			public ExtendedFaceEdge(Topology topology, int initialIndex, int extendedIndex)
+			{
+				_initialEdge = new HalfEdge(topology, initialIndex);
+				_extendedEdge = new HalfEdge(topology, extendedIndex);
+			}
+
+			public ExtendedFaceEdge(HalfEdge initialEdge, HalfEdge extendedEdge)
+			{
+				_initialEdge = initialEdge;
+				_extendedEdge = extendedEdge;
+			}
+
+			public ExtendedFaceEdge(VertexEdge vertexEdge)
+			{
+				_halfEdge = vertexEdge.halfEdge;
+			}
+
+			public ExtendedFaceEdge(FaceEdge faceEdge)
+			{
+				_halfEdge = faceEdge._halfEdge;
+			}
+
+			public static FaceEdge none { get { return new FaceEdge(); } }
+
+			public Topology topology { get { return _halfEdge.topology; } }
+
+			public int index { get { return _halfEdge.index; } }
+			public int twinIndex { get { return _halfEdge.twinIndex; } }
+			public bool isFirstTwin { get { return index < twinIndex; } }
+			public bool isSecondTwin { get { return index > twinIndex; } }
+
+			public FaceEdge twin { get { return new FaceEdge(_halfEdge.twin); } }
+			public FaceEdge firstTwin { get { return isFirstTwin ? this : twin; } }
+			public FaceEdge secondTwin { get { return isSecondTwin ? this : twin; } }
+			public FaceEdge prev { get { return new FaceEdge(_halfEdge.prevAroundFace); } }
+			public FaceEdge next { get { return new FaceEdge(_halfEdge.nextAroundFace); } }
+			public Vertex prevVertex { get { return _halfEdge.nearVertex; } }
+			public Vertex nextVertex { get { return _halfEdge.farVertex; } }
+			public Face nearFace { get { return _halfEdge.nearFace; } }
+			public Face farFace { get { return _halfEdge.farFace; } }
+
+			public EdgeWrap wrap { get { return _halfEdge.wrap; } }
+
+			public bool isBoundary { get { return _halfEdge.isBoundary; } }
+			public bool isNonBoundary { get { return _halfEdge.isNonBoundary; } }
+			public bool isOuterBoundary { get { return _halfEdge.isOuterBoundary; } }
+			public bool isInnerBoundary { get { return _halfEdge.isInnerBoundary; } }
+			public bool isInternal { get { return _halfEdge.isInternal; } }
+			public bool isExternal { get { return _halfEdge.isExternal; } }
+
+			public HalfEdge halfEdge { get { return _halfEdge; } }
+			public VertexEdge vertexEdge { get { return new VertexEdge(_halfEdge); } }
+
+			public static implicit operator bool(FaceEdge edge) { return edge._halfEdge; }
+
+			public override bool Equals(object other)
+			{
+				return
+					other is HalfEdge && index == ((HalfEdge)other).index ||
+					other is VertexEdge && index == ((VertexEdge)other).index ||
+					other is FaceEdge && index == ((FaceEdge)other).index;
+			}
+
+			public override int GetHashCode() { return _halfEdge.GetHashCode(); }
+
+			public bool Equals(HalfEdge other) { return _halfEdge.Equals(other); }
+			public int CompareTo(HalfEdge other) { return _halfEdge.CompareTo(other); }
+			public static bool operator ==(FaceEdge lhs, HalfEdge rhs) { return lhs._halfEdge == rhs; }
+			public static bool operator !=(FaceEdge lhs, HalfEdge rhs) { return lhs._halfEdge != rhs; }
+			public static bool operator < (FaceEdge lhs, HalfEdge rhs) { return lhs._halfEdge <  rhs; }
+			public static bool operator > (FaceEdge lhs, HalfEdge rhs) { return lhs._halfEdge >  rhs; }
+			public static bool operator <=(FaceEdge lhs, HalfEdge rhs) { return lhs._halfEdge <= rhs; }
+			public static bool operator >=(FaceEdge lhs, HalfEdge rhs) { return lhs._halfEdge >= rhs; }
+
+			public bool Equals(VertexEdge other) { return _halfEdge.Equals(other); }
+			public int CompareTo(VertexEdge other) { return _halfEdge.CompareTo(other); }
+			public static bool operator ==(FaceEdge lhs, VertexEdge rhs) { return lhs._halfEdge == rhs; }
+			public static bool operator !=(FaceEdge lhs, VertexEdge rhs) { return lhs._halfEdge != rhs; }
+			public static bool operator < (FaceEdge lhs, VertexEdge rhs) { return lhs._halfEdge <  rhs; }
+			public static bool operator > (FaceEdge lhs, VertexEdge rhs) { return lhs._halfEdge >  rhs; }
+			public static bool operator <=(FaceEdge lhs, VertexEdge rhs) { return lhs._halfEdge <= rhs; }
+			public static bool operator >=(FaceEdge lhs, VertexEdge rhs) { return lhs._halfEdge >= rhs; }
+
+			public bool Equals(FaceEdge other) { return _halfEdge.Equals(other._halfEdge); }
+			public int CompareTo(FaceEdge other) { return _halfEdge.CompareTo(other._halfEdge); }
+			public static bool operator ==(FaceEdge lhs, FaceEdge rhs) { return lhs._halfEdge == rhs._halfEdge; }
+			public static bool operator !=(FaceEdge lhs, FaceEdge rhs) { return lhs._halfEdge != rhs._halfEdge; }
+			public static bool operator < (FaceEdge lhs, FaceEdge rhs) { return lhs._halfEdge <  rhs._halfEdge; }
+			public static bool operator > (FaceEdge lhs, FaceEdge rhs) { return lhs._halfEdge >  rhs._halfEdge; }
+			public static bool operator <=(FaceEdge lhs, FaceEdge rhs) { return lhs._halfEdge <= rhs._halfEdge; }
+			public static bool operator >=(FaceEdge lhs, FaceEdge rhs) { return lhs._halfEdge >= rhs._halfEdge; }
+
+			public override string ToString()
+			{
+				return string.Format("Face Edge {0} (Twin Edge: {1}, Edges p/n: {2}/{3}), (Faces n/f: {6}/{7}), (Vertices p/n: {4}/{5})", index, twinIndex, prev.index, next.index, nearFace.index, farFace.index, prevVertex.index, nextVertex.index);
+			}
+		}
+#endif
+
 		public struct HalfEdgesIndexer
 		{
 			private Topology _topology;

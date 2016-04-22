@@ -106,6 +106,17 @@ namespace Experilous.Topological
 
 			public FaceEdgesIndexer edges { get { return new FaceEdgesIndexer(_topology, _index); } }
 
+			public IEnumerable<FaceEdge> enumerableEdges
+			{
+				get
+				{
+					foreach (var edge in edges)
+					{
+						yield return edge;
+					}
+				}
+			}
+
 			public struct ExtendedFaceEdgesIndexer
 			{
 				private Topology _topology;

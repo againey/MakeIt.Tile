@@ -3,11 +3,11 @@
 \******************************************************************************/
 
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Experilous.Randomization;
 using Experilous.Topological;
 using System;
+using System.Collections.Generic;
 
 namespace Experilous.Examples.Topological
 {
@@ -439,30 +439,39 @@ namespace Experilous.Examples.Topological
 			}
 		}
 
+		private IEnumerable<Topology.Face> EnumerateFaceNeighbors(Topology.Face face)
+		{
+			foreach (var edge in face.edges)
+			{
+				yield return edge.farFace;
+			}
+		}
+
 		private bool HasLiberties(Topology.Face face)
 		{
 			var color = _faceBoardStates[face];
 			if (color == BoardState.Empty) return true;
 
 			bool hasLiberties = false;
-			FaceVisitationUtility.VisitConnectedInAnyOrder(face,
-				(Topology.Face visitFace, ref FaceVisitationUtility.VisitationState state) =>
+
+			FaceVisitationUtility.VisitFaces(face, (FaceVisit visit) =>
+			{
+				var visitColor = _faceBoardStates[visit.face];
+				if (visitColor == BoardState.Empty)
 				{
-					var visitColor = _faceBoardStates[visitFace];
-					if (visitColor == color)
-					{
-						state = FaceVisitationUtility.VisitationState.Continue;
-					}
-					else if (visitColor == BoardState.Empty)
-					{
-						hasLiberties = true;
-						state = FaceVisitationUtility.VisitationState.Stop;
-					}
-					else
-					{
-						state = FaceVisitationUtility.VisitationState.Discontinue;
-					}
-				});
+					hasLiberties = true;
+					visit.Break();
+					return null;
+				}
+				else if (visitColor == color)
+				{
+					return EnumerateFaceNeighbors(visit.face);
+				}
+				else
+				{
+					return null;
+				}
+			});
 
 			return hasLiberties;
 		}
@@ -476,22 +485,21 @@ namespace Experilous.Examples.Topological
 			_faceBoardStates[face] = BoardState.Empty;
 			int captureCount = 1;
 
-			FaceVisitationUtility.VisitConnectedInAnyOrder(face,
-				(Topology.Face visitFace, ref FaceVisitationUtility.VisitationState state) =>
+			FaceVisitationUtility.VisitFaces(face, (FaceVisit visit) =>
+			{
+				var visitColor = _faceBoardStates[visit.face];
+				if (visitColor == color)
 				{
-					var visitColor = _faceBoardStates[visitFace];
-					if (visitColor == color)
-					{
-						SetPiece(visitFace, null);
-						_faceBoardStates[visitFace] = BoardState.Empty;
-						++captureCount;
-						state = FaceVisitationUtility.VisitationState.Continue;
-					}
-					else
-					{
-						state = FaceVisitationUtility.VisitationState.Discontinue;
-					}
-				});
+					SetPiece(visit.face, null);
+					_faceBoardStates[visit.face] = BoardState.Empty;
+					++captureCount;
+					return EnumerateFaceNeighbors(visit.face);
+				}
+				else
+				{
+					return null;
+				}
+			});
 
 			if (color == BoardState.Black)
 			{

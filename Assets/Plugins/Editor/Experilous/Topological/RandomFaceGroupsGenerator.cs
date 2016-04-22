@@ -77,6 +77,14 @@ namespace Experilous.Topological
 			}
 		}
 
+		private IEnumerable<Topology.FaceEdge> EnumerateFaceNeighborEdges(Topology.Face face)
+		{
+			foreach (var edge in face.edges)
+			{
+				yield return edge;
+			}
+		}
+
 		public override IEnumerator BeginGeneration()
 		{
 			var topology = topologyInputSlot.GetAsset<Topology>();
@@ -107,13 +115,17 @@ namespace Experilous.Topological
 					faceGroupFaceIndices[faceGroupIndex].Add(face.index);
 				}
 
-				FaceVisitationUtility.VisitConnectedInRandomOrder(rootFaces, randomEngine,
-					(Topology.FaceEdge edge) =>
+				FaceVisitationUtility.VisitFacesInRandomOrder(
+					rootFaces,
+					(FaceEdgeVisit visit) =>
 					{
-						var faceGroupIndex = faceGroupIndices[edge.nearFace];
-						faceGroupIndices[edge.farFace] = faceGroupIndex;
-						faceGroupFaceIndices[faceGroupIndex].Add(edge.farFace.index);
-					});
+						var faceGroupIndex = faceGroupIndices[visit.edge.nearFace];
+						faceGroupIndices[visit.face] = faceGroupIndex;
+						faceGroupFaceIndices[faceGroupIndex].Add(visit.face.index);
+
+						return EnumerateFaceNeighborEdges(visit.face);
+					},
+					randomEngine);
 			});
 			while (waitHandle.WaitOne(10) == false)
 			{
