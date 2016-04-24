@@ -123,7 +123,7 @@ namespace Experilous.Topological
 					faceGroupFaceIndices[faceGroupIndex].Add(face.index);
 				}
 
-				FaceVisitationUtility.VisitFacesInRandomOrder(
+				TopologyVisitor.VisitFacesInRandomOrder(
 					rootFaceEdges,
 					(FaceEdgeVisitor visitor) =>
 					{

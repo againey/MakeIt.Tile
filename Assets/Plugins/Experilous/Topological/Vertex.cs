@@ -104,59 +104,57 @@ namespace Experilous.Topological
 
 			public VertexEdgesIndexer edges { get { return new VertexEdgesIndexer(_topology, _index); } }
 
-			public struct ExtendedVertexEdgesIndexer
+			public struct OuterFaceEdgesIndexer
 			{
 				private Topology _topology;
 				private int _index;
 
-				public ExtendedVertexEdgesIndexer(Topology topology, int index)
+				public OuterFaceEdgesIndexer(Topology topology, int index)
 				{
 					_topology = topology;
 					_index = index;
 				}
 
-				public struct ExtendedVertexEdgeEnumerator
+				public struct OuterFaceEdgeEnumerator
 				{
 					private Topology _topology;
-					private int _firstEdgeTwinIndex;
-					private int _currentExtendedEdgeIndex;
-					private int _nextExtendedEdgeIndex;
-					private int _nextEdgeTwinIndex;
+					private int _firstVertexEdgeIndex;
+					private int _currentFaceEdgeIndex;
+					private int _nextFaceEdgeIndex;
+					private int _nextVertexEdgeIndex;
 
-					public ExtendedVertexEdgeEnumerator(Topology topology, int firstEdgeIndex)
+					public OuterFaceEdgeEnumerator(Topology topology, int firstEdgeIndex)
 					{
 						_topology = topology;
-						_firstEdgeTwinIndex = topology.edgeData[firstEdgeIndex].twin;
-						_currentExtendedEdgeIndex = -1;
-						_nextExtendedEdgeIndex = _firstEdgeTwinIndex;
-						_nextEdgeTwinIndex = _firstEdgeTwinIndex;
+						_firstVertexEdgeIndex = topology.edgeData[firstEdgeIndex].twin;
+						_currentFaceEdgeIndex = -1;
+						_nextFaceEdgeIndex = _firstVertexEdgeIndex;
+						_nextVertexEdgeIndex = _firstVertexEdgeIndex;
 					}
 
-					public VertexEdge Current { get { return new VertexEdge(_topology, _currentExtendedEdgeIndex); } }
+					public FaceEdge Current { get { return new FaceEdge(_topology, _currentFaceEdgeIndex); } }
 
 					public bool MoveNext()
 					{
-						if (_nextExtendedEdgeIndex != _nextEdgeTwinIndex)
+						if (_nextFaceEdgeIndex != _nextVertexEdgeIndex)
 						{
-							_currentExtendedEdgeIndex = _nextExtendedEdgeIndex;
-							_nextExtendedEdgeIndex = _topology.edgeData[_currentExtendedEdgeIndex].fNext;
+							_currentFaceEdgeIndex = _nextFaceEdgeIndex;
+							_nextFaceEdgeIndex = _topology.edgeData[_currentFaceEdgeIndex].fNext;
 							return true;
 						}
-						else if (_nextEdgeTwinIndex != _firstEdgeTwinIndex || _currentExtendedEdgeIndex == -1)
+						else if (_nextVertexEdgeIndex != _firstVertexEdgeIndex || _currentFaceEdgeIndex == -1)
 						{
 							do
 							{
-								var nextEdgeIndex = _topology.edgeData[_nextEdgeTwinIndex].twin;
-								_currentExtendedEdgeIndex = _topology.edgeData[nextEdgeIndex].fNext;
-								nextEdgeIndex = _topology.edgeData[nextEdgeIndex].vNext;
-								_nextEdgeTwinIndex = _topology.edgeData[nextEdgeIndex].twin;
-								if (_currentExtendedEdgeIndex == _firstEdgeTwinIndex)
+								_currentFaceEdgeIndex = _topology.edgeData[_topology.edgeData[_nextVertexEdgeIndex].twin].fNext;
+								_nextVertexEdgeIndex = _topology.edgeData[_nextVertexEdgeIndex].vNext;
+								if (_currentFaceEdgeIndex == _firstVertexEdgeIndex)
 								{
-									_nextExtendedEdgeIndex = _nextEdgeTwinIndex = _firstEdgeTwinIndex;
+									_nextFaceEdgeIndex = _nextVertexEdgeIndex = _firstVertexEdgeIndex;
 									return false;
 								}
-							} while (_currentExtendedEdgeIndex == _nextEdgeTwinIndex);
-							_nextExtendedEdgeIndex = _topology.edgeData[_currentExtendedEdgeIndex].fNext;
+							} while (_currentFaceEdgeIndex == _nextVertexEdgeIndex);
+							_nextFaceEdgeIndex = _topology.edgeData[_currentFaceEdgeIndex].fNext;
 							return true;
 						}
 						else
@@ -167,19 +165,19 @@ namespace Experilous.Topological
 
 					public void Reset()
 					{
-						_currentExtendedEdgeIndex = -1;
-						_nextExtendedEdgeIndex = -1;
-						_nextEdgeTwinIndex = _firstEdgeTwinIndex;
+						_currentFaceEdgeIndex = -1;
+						_nextFaceEdgeIndex = -1;
+						_nextVertexEdgeIndex = _firstVertexEdgeIndex;
 					}
 				}
 
-				public ExtendedVertexEdgeEnumerator GetEnumerator()
+				public OuterFaceEdgeEnumerator GetEnumerator()
 				{
-					return new ExtendedVertexEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
+					return new OuterFaceEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
 				}
 			}
 
-			public ExtendedVertexEdgesIndexer extendedEdges { get { return new ExtendedVertexEdgesIndexer(_topology, _index); } }
+			public OuterFaceEdgesIndexer outerFaceEdges { get { return new OuterFaceEdgesIndexer(_topology, _index); } }
 
 			public VertexEdge FindEdge(Vertex vertex)
 			{

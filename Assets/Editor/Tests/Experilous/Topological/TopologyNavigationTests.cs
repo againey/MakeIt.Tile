@@ -32,7 +32,7 @@ namespace Experilous.Topological.Tests
 		}
 
 		[Test]
-		public void FaceExtendedNeighborFaces()
+		public void FaceOutrVertexEdgeFaces()
 		{
 			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new Index2D(3, 3));
 			var topology = TopologyUtility.BuildTopology(surface);
@@ -80,30 +80,30 @@ namespace Experilous.Topological.Tests
 		}
 
 		[Test]
-		public void VertexExtendedNeighborVertices()
+		public void VertexOuterFaceEdgeVertices()
 		{
 			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new Index2D(2, 2));
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var vertex = topology.vertices[surface.GetVertexIndex(1, 1)];
-			var neighborVertexEdges = vertex.extendedEdges.GetEnumerator();
+			var neighborVertexEdges = vertex.outerFaceEdges.GetEnumerator();
 
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(0, 0), neighborVertexEdges.Current.farVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(0, 0), neighborVertexEdges.Current.nextVertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(0, 1), neighborVertexEdges.Current.farVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(0, 1), neighborVertexEdges.Current.nextVertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(0, 2), neighborVertexEdges.Current.farVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(0, 2), neighborVertexEdges.Current.nextVertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(1, 2), neighborVertexEdges.Current.farVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(1, 2), neighborVertexEdges.Current.nextVertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(2, 2), neighborVertexEdges.Current.farVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(2, 2), neighborVertexEdges.Current.nextVertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(2, 1), neighborVertexEdges.Current.farVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(2, 1), neighborVertexEdges.Current.nextVertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(2, 0), neighborVertexEdges.Current.farVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(2, 0), neighborVertexEdges.Current.nextVertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(1, 0), neighborVertexEdges.Current.farVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(1, 0), neighborVertexEdges.Current.nextVertex.index);
 			Assert.False(neighborVertexEdges.MoveNext());
 		}
 	}

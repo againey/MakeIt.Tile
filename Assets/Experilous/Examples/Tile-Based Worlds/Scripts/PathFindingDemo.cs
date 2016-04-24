@@ -232,7 +232,7 @@ namespace Experilous.Examples.Topological
 				_faceTerrainIndices[face] = _random.WeightedIndex(terrainWeights, terrainWeightSum);
 			}
 
-			FaceVisitationUtility.VisitFacesInRandomOrder(rootFaceEdges, (FaceEdgeVisitor visitor) =>
+			TopologyVisitor.VisitFacesInRandomOrder(rootFaceEdges, (FaceEdgeVisitor visitor) =>
 			{
 				_faceTerrainIndices[visitor.edge.farFace] = _faceTerrainIndices[visitor.edge.nearFace];
 
@@ -336,7 +336,7 @@ namespace Experilous.Examples.Topological
 			_faceSightCounts[face] += 1;
 			_dynamicMesh.RebuildFace(face, _faceTriangulation);
 
-			FaceVisitationUtility.VisitFacesInBreadthFirstOrder(face, (FaceVisitor visitor) =>
+			TopologyVisitor.VisitFacesInBreadthFirstOrder(face, (FaceVisitor visitor) =>
 			{
 				_faceSeenStates[visitor.face] = true;
 				if (visitor.depth < 4)
@@ -359,7 +359,7 @@ namespace Experilous.Examples.Topological
 			_faceSightCounts[face] -= 1;
 			_dynamicMesh.RebuildFace(face, _faceTriangulation);
 
-			FaceVisitationUtility.VisitFacesInBreadthFirstOrder(face, (FaceVisitor visitor) =>
+			TopologyVisitor.VisitFacesInBreadthFirstOrder(face, (FaceVisitor visitor) =>
 			{
 				_faceSightCounts[visitor.face] -= 1;
 				_dynamicMesh.RebuildFace(visitor.face, _faceTriangulation);

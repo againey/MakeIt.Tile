@@ -287,7 +287,7 @@ namespace Experilous.Examples.Topological
 			_faceBlockedStates[face] = false;
 			_dynamicMesh.RebuildFace(face, _triangulationNormal);
 
-			FaceVisitationUtility.VisitFacesInBreadthFirstOrder(face,
+			TopologyVisitor.VisitFacesInBreadthFirstOrder(face,
 				(FaceVisitor visitor) =>
 				{
 					if (_faceBlockedStates[visitor.face] == true)

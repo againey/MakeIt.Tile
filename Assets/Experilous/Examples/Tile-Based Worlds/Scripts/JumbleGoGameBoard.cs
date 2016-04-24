@@ -446,7 +446,7 @@ namespace Experilous.Examples.Topological
 
 			bool hasLiberties = false;
 
-			FaceVisitationUtility.VisitFaces(face, (FaceVisitor visitor) =>
+			TopologyVisitor.VisitFaces(face, (FaceVisitor visitor) =>
 			{
 				var visitColor = _faceBoardStates[visitor.face];
 				if (visitColor == BoardState.Empty)
@@ -478,7 +478,7 @@ namespace Experilous.Examples.Topological
 			_faceBoardStates[face] = BoardState.Empty;
 			int captureCount = 1;
 
-			FaceVisitationUtility.VisitFaces(face, (FaceVisitor visitor) =>
+			TopologyVisitor.VisitFaces(face, (FaceVisitor visitor) =>
 			{
 				var visitColor = _faceBoardStates[visitor.face];
 				if (visitColor == color)
