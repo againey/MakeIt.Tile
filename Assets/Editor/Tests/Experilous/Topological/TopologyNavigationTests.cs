@@ -38,24 +38,24 @@ namespace Experilous.Topological.Tests
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var face = topology.faces[surface.GetFaceIndex(1, 1)];
-			var neighborFaceEdges = face.extendedEdges.GetEnumerator();
+			var neighborFaceEdges = face.outerVertexEdges.GetEnumerator();
 
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(1, 0), neighborFaceEdges.Current.farFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(1, 0), neighborFaceEdges.Current.prevFace.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(0, 0), neighborFaceEdges.Current.farFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(0, 0), neighborFaceEdges.Current.prevFace.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(0, 1), neighborFaceEdges.Current.farFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(0, 1), neighborFaceEdges.Current.prevFace.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(0, 2), neighborFaceEdges.Current.farFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(0, 2), neighborFaceEdges.Current.prevFace.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(1, 2), neighborFaceEdges.Current.farFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(1, 2), neighborFaceEdges.Current.prevFace.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(2, 2), neighborFaceEdges.Current.farFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(2, 2), neighborFaceEdges.Current.prevFace.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(2, 1), neighborFaceEdges.Current.farFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(2, 1), neighborFaceEdges.Current.prevFace.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(2, 0), neighborFaceEdges.Current.farFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(2, 0), neighborFaceEdges.Current.prevFace.index);
 			Assert.False(neighborFaceEdges.MoveNext());
 		}
 
