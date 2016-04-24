@@ -439,14 +439,6 @@ namespace Experilous.Examples.Topological
 			}
 		}
 
-		private IEnumerable<Topology.Face> EnumerateFaceNeighbors(Topology.Face face)
-		{
-			foreach (var edge in face.edges)
-			{
-				yield return edge.farFace;
-			}
-		}
-
 		private bool HasLiberties(Topology.Face face)
 		{
 			var color = _faceBoardStates[face];
@@ -454,22 +446,23 @@ namespace Experilous.Examples.Topological
 
 			bool hasLiberties = false;
 
-			FaceVisitationUtility.VisitFaces(face, (FaceVisit visit) =>
+			FaceVisitationUtility.VisitFaces(face, (FaceVisitor visitor) =>
 			{
-				var visitColor = _faceBoardStates[visit.face];
+				var visitColor = _faceBoardStates[visitor.face];
 				if (visitColor == BoardState.Empty)
 				{
 					hasLiberties = true;
-					visit.Break();
-					return null;
+					visitor.Break();
 				}
 				else if (visitColor == color)
 				{
-					return EnumerateFaceNeighbors(visit.face);
-				}
-				else
-				{
-					return null;
+					foreach (var edge in face.edges)
+					{
+						if (edge.farFace.isInternal)
+						{
+							visitor.VisitNeighbor(edge.farFace);
+						}
+					}
 				}
 			});
 
@@ -485,19 +478,22 @@ namespace Experilous.Examples.Topological
 			_faceBoardStates[face] = BoardState.Empty;
 			int captureCount = 1;
 
-			FaceVisitationUtility.VisitFaces(face, (FaceVisit visit) =>
+			FaceVisitationUtility.VisitFaces(face, (FaceVisitor visitor) =>
 			{
-				var visitColor = _faceBoardStates[visit.face];
+				var visitColor = _faceBoardStates[visitor.face];
 				if (visitColor == color)
 				{
-					SetPiece(visit.face, null);
-					_faceBoardStates[visit.face] = BoardState.Empty;
+					SetPiece(visitor.face, null);
+					_faceBoardStates[visitor.face] = BoardState.Empty;
 					++captureCount;
-					return EnumerateFaceNeighbors(visit.face);
-				}
-				else
-				{
-					return null;
+
+					foreach (var edge in face.edges)
+					{
+						if (edge.farFace.isInternal)
+						{
+							visitor.VisitNeighbor(edge.farFace);
+						}
+					}
 				}
 			});
 

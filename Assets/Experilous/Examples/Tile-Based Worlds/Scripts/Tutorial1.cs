@@ -282,35 +282,29 @@ namespace Experilous.Examples.Topological
 			}
 		}
 
-		private IEnumerable<Topology.Face> EnumerateFaceNeighbors(Topology.Face face)
-		{
-			foreach (var edge in face.edges)
-			{
-				yield return edge.farFace;
-			}
-		}
-
 		private void ClearBlockedFaces(Topology.Face face)
 		{
 			_faceBlockedStates[face] = false;
 			_dynamicMesh.RebuildFace(face, _triangulationNormal);
 
-			FaceVisitationUtility.VisitFacesBreadthFirst(face,
-				(FaceVisit visit) =>
+			FaceVisitationUtility.VisitFacesInBreadthFirstOrder(face,
+				(FaceVisitor visitor) =>
 				{
-					if (_faceBlockedStates[visit.face] == true)
+					if (_faceBlockedStates[visitor.face] == true)
 					{
-						_faceBlockedStates[visit.face] = false;
-						_dynamicMesh.RebuildFace(visit.face, _triangulationNormal);
+						_faceBlockedStates[visitor.face] = false;
+						_dynamicMesh.RebuildFace(visitor.face, _triangulationNormal);
 					}
 
-					if (visit.depth < clearRadius)
+					if (visitor.depth < clearRadius)
 					{
-						return EnumerateFaceNeighbors(visit.face);
-					}
-					else
-					{
-						return null;
+						foreach (var edge in face.edges)
+						{
+							if (edge.farFace.isInternal)
+							{
+								visitor.VisitNeighbor(edge.farFace);
+							}
+						}
 					}
 				});
 		}

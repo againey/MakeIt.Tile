@@ -216,6 +216,7 @@ namespace Experilous.Examples.Topological
 			foreach (var weight in terrainWeights) terrainWeightSum += weight;
 
 			var rootFaces = new List<Topology.Face>();
+			var rootFaceEdges = new List<Topology.FaceEdge>();
 			for (int regionIndex = 0; regionIndex < regionCount; ++regionIndex)
 			{
 				Topology.Face face;
@@ -224,10 +225,23 @@ namespace Experilous.Examples.Topological
 					face = _topology.faces[_random.HalfOpenRange(0, _topology.internalFaces.Count)];
 				} while (rootFaces.Contains(face));
 				rootFaces.Add(face);
+				foreach (var edge in face.edges)
+				{
+					rootFaceEdges.Add(edge);
+				}
 				_faceTerrainIndices[face] = _random.WeightedIndex(terrainWeights, terrainWeightSum);
 			}
 
-			FaceVisitationUtility.VisitFacesInRandomOrder(rootFaces, BuildRegionVisit, _random.engine);
+			FaceVisitationUtility.VisitFacesInRandomOrder(rootFaceEdges, (FaceEdgeVisitor visitor) =>
+			{
+				_faceTerrainIndices[visitor.edge.farFace] = _faceTerrainIndices[visitor.edge.nearFace];
+
+				foreach (var edge in visitor.edge.farFace.edges)
+				{
+					visitor.VisitNeighbor(edge);
+				}
+			},
+			_random.engine);
 
 			_faceSeenStates = new bool[_topology.faces.Count].AsFaceAttribute();
 			_faceSightCounts = new int[_topology.faces.Count].AsFaceAttribute();
@@ -316,40 +330,28 @@ namespace Experilous.Examples.Topological
 			return 0.375f;
 		}
 
-		private IEnumerable<Topology.FaceEdge> BuildRegionVisit(FaceEdgeVisit visit)
-		{
-			if (visit.edge) _faceTerrainIndices[visit.face] = _faceTerrainIndices[visit.edge.nearFace];
-
-			foreach (var edge in visit.face.edges)
-			{
-				yield return edge;
-			}
-		}
-
 		private void RevealUnitVicinity(Topology.Face face)
 		{
 			_faceSeenStates[face] = true;
 			_faceSightCounts[face] += 1;
 			_dynamicMesh.RebuildFace(face, _faceTriangulation);
 
-			FaceVisitationUtility.VisitFacesBreadthFirst(face, RevealUnitVicinityVisit);
-		}
-
-		private IEnumerable<Topology.Face> RevealUnitVicinityVisit(FaceVisit visit)
-		{
-			_faceSeenStates[visit.face] = true;
-			if (visit.depth < 4)
+			FaceVisitationUtility.VisitFacesInBreadthFirstOrder(face, (FaceVisitor visitor) =>
 			{
-				_faceSightCounts[visit.face] += 1;
-			}
-			_dynamicMesh.RebuildFace(visit.face, _faceTriangulation);
-			if (visit.depth < 5)
-			{
-				foreach (var edge in visit.face.edges)
+				_faceSeenStates[visitor.face] = true;
+				if (visitor.depth < 4)
 				{
-					yield return edge.farFace;
+					_faceSightCounts[visitor.face] += 1;
 				}
-			}
+				_dynamicMesh.RebuildFace(visitor.face, _faceTriangulation);
+				if (visitor.depth < 5)
+				{
+					foreach (var edge in visitor.face.edges)
+					{
+						visitor.VisitNeighbor(edge.farFace);
+					}
+				}
+			});
 		}
 
 		private void ObscureUnitVicinity(Topology.Face face)
@@ -357,20 +359,19 @@ namespace Experilous.Examples.Topological
 			_faceSightCounts[face] -= 1;
 			_dynamicMesh.RebuildFace(face, _faceTriangulation);
 
-			FaceVisitationUtility.VisitFacesBreadthFirst(face, ObscureUnitVicinityVisit);
-		}
-
-		private IEnumerable<Topology.Face> ObscureUnitVicinityVisit(FaceVisit visit)
-		{
-			_faceSightCounts[visit.face] -= 1;
-			_dynamicMesh.RebuildFace(visit.face, _faceTriangulation);
-			if (visit.depth < 3)
+			FaceVisitationUtility.VisitFacesInBreadthFirstOrder(face, (FaceVisitor visitor) =>
 			{
-				foreach (var edge in visit.face.edges)
+				_faceSightCounts[visitor.face] -= 1;
+				_dynamicMesh.RebuildFace(visitor.face, _faceTriangulation);
+
+				if (visitor.depth < 3)
 				{
-					yield return edge.farFace;
+					foreach (var edge in visitor.face.edges)
+					{
+						visitor.VisitNeighbor(edge.farFace);
+					}
 				}
-			}
+			});
 		}
 
 		protected void Update()

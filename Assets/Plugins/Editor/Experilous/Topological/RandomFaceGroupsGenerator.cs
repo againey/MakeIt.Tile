@@ -100,6 +100,7 @@ namespace Experilous.Topological
 			var waitHandle = executive.GenerateConcurrently(() =>
 			{
 				var rootFaces = new List<Topology.Face>();
+				var rootFaceEdges = new List<Topology.FaceEdge>();
 
 				for (int faceGroupIndex = 0; faceGroupIndex < clampedRootCount; ++faceGroupIndex)
 				{
@@ -111,19 +112,32 @@ namespace Experilous.Topological
 						face = topology.faces[RandomUtility.HalfOpenRange(0, topology.internalFaces.Count, randomEngine)];
 					} while (rootFaces.Contains(face));
 					rootFaces.Add(face);
+					foreach (var edge in face.edges)
+					{
+						if (edge.farFace.isInternal)
+						{
+							rootFaceEdges.Add(edge);
+						}
+					}
 					faceGroupIndices[face] = faceGroupIndex;
 					faceGroupFaceIndices[faceGroupIndex].Add(face.index);
 				}
 
 				FaceVisitationUtility.VisitFacesInRandomOrder(
-					rootFaces,
-					(FaceEdgeVisit visit) =>
+					rootFaceEdges,
+					(FaceEdgeVisitor visitor) =>
 					{
-						var faceGroupIndex = faceGroupIndices[visit.edge.nearFace];
-						faceGroupIndices[visit.face] = faceGroupIndex;
-						faceGroupFaceIndices[faceGroupIndex].Add(visit.face.index);
+						var faceGroupIndex = faceGroupIndices[visitor.edge.nearFace];
+						faceGroupIndices[visitor.edge.farFace] = faceGroupIndex;
+						faceGroupFaceIndices[faceGroupIndex].Add(visitor.edge.farFace.index);
 
-						return EnumerateFaceNeighborEdges(visit.face);
+						foreach (var edge in visitor.edge.farFace.edges)
+						{
+							if (edge.farFace.isInternal && edge.twin != visitor.edge)
+							{
+								visitor.VisitNeighbor(edge);
+							}
+						}
 					},
 					randomEngine);
 			});
