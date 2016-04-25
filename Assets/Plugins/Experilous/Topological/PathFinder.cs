@@ -49,7 +49,7 @@ namespace Experilous.Topological
 
 		#region Private A* Types and Data
 
-		private PriorityQueue<Node> _queue;
+		private DelegateOrderedPriorityQueue<Node> _queue;
 		private Dictionary<int, Node> _openSet;
 		private Dictionary<int, Node> _closedSet;
 
@@ -556,7 +556,7 @@ namespace Experilous.Topological
 
 			if (_queue == null)
 			{
-				_queue = new PriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.vertices.Count)));
+				_queue = new DelegateOrderedPriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.vertices.Count)));
 				_openSet = new Dictionary<int, Node>();
 				_closedSet = new Dictionary<int, Node>();
 			}
@@ -631,7 +631,7 @@ namespace Experilous.Topological
 
 			if (_queue == null)
 			{
-				_queue = new PriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.faces.Count)));
+				_queue = new DelegateOrderedPriorityQueue<Node>(Node.AreOrdered, Mathf.CeilToInt(Mathf.Sqrt(source.topology.faces.Count)));
 				_openSet = new Dictionary<int, Node>();
 				_closedSet = new Dictionary<int, Node>();
 			}
