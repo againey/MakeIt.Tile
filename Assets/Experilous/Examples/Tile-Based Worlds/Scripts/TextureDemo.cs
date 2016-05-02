@@ -75,8 +75,9 @@ namespace Experilous.Examples.Topological
 		{
 			Vector3[] vertexPositionsArray;
 			var surface = RectangularHexGrid.Create(
-				new PlanarDescriptor(Vector3.right, Vector3.up),
-				new HexGridDescriptor(HexGridAxisStyles.Straight, HexGridAxisStyles.Staggered, HexGridAxisRelations.Obtuse, true),
+				HexGridDescriptor.CreateCornerUp(true, HexGridAxisStyles.StaggeredSymmetric),
+				Vector3.zero, Quaternion.identity,
+				false, false,
 				new Index2D(10, 11));
 			topology = surface.CreateManifold(out vertexPositionsArray);
 			vertexPositions = PositionalVertexAttribute.Create(surface, vertexPositionsArray);
@@ -86,8 +87,9 @@ namespace Experilous.Examples.Topological
 		{
 			Vector3[] vertexPositionsArray;
 			var surface = RectangularHexGrid.Create(
-				new PlanarDescriptor(Vector3.right, Vector3.up),
-				new HexGridDescriptor(HexGridAxisStyles.Staggered, HexGridAxisStyles.Straight, HexGridAxisRelations.Obtuse, true),
+				HexGridDescriptor.CreateSideUp(true, HexGridAxisStyles.StaggeredSymmetric),
+				Vector3.zero, Quaternion.identity,
+				false, false,
 				new Index2D(11, 10));
 			topology = surface.CreateManifold(out vertexPositionsArray);
 			vertexPositions = PositionalVertexAttribute.Create(surface, vertexPositionsArray);
@@ -97,8 +99,9 @@ namespace Experilous.Examples.Topological
 		{
 			Vector3[] vertexPositionsArray;
 			var surface = RectangularHexGrid.Create(
-				new PlanarDescriptor(Vector3.right, Vector3.up),
-				new HexGridDescriptor(HexGridAxisStyles.Staggered, HexGridAxisStyles.Straight, HexGridAxisRelations.Obtuse, true),
+				HexGridDescriptor.CreateSideUp(true, HexGridAxisStyles.StaggeredSymmetric),
+				Vector3.zero, Quaternion.identity,
+				false, false,
 				new Index2D(11, 10));
 			topology = surface.CreateManifold(out vertexPositionsArray);
 			vertexPositions = PositionalVertexAttribute.Create(surface, vertexPositionsArray);

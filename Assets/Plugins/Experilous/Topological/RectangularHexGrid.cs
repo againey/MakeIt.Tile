@@ -9,18 +9,22 @@ namespace Experilous.Topological
 {
 	public class RectangularHexGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{
-		public HexGridAxisStyles axis0Style;
-		public HexGridAxisStyles axis1Style;
-		public HexGridAxisRelations axisRelation;
-		public bool variableRowLength;
+		public Vector2 midpoint;
+		public Vector2 majorCorner;
+		public Vector2 minorCorner;
+
+		public bool midpointIsFirstAxis;
+		public HexGridAxisStyles axisStyle;
 
 		public Index2D size;
 		public Topology topology;
 
-		public Vector3 faceAxis0;
-		public Vector3 faceAxis1;
+		[SerializeField] private bool _axis0IsStraight;
+		[SerializeField] private bool _axis1IsStraight;
+		[SerializeField] private bool _originIsObtuse;
 
-		public const float halfSqrtThree = 0.8660254038f;
+		[SerializeField] private Vector3 _faceAxis0;
+		[SerializeField] private Vector3 _faceAxis1;
 
 		[SerializeField] private int _vertexCount;
 		[SerializeField] private int _edgeCount;
@@ -70,20 +74,48 @@ namespace Experilous.Topological
 		[SerializeField] private int _vertexInterceptOffsetOdd;
 		[SerializeField] private int _vertexInterceptOffsetLast;
 
-		public static RectangularHexGrid Create(PlanarDescriptor planarDescriptor, HexGridDescriptor hexDescriptor, Index2D size)
+		public static RectangularHexGrid Create(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, Index2D size)
 		{
-			return CreateInstance<RectangularHexGrid>().Reset(planarDescriptor, hexDescriptor, size);
+			return CreateInstance<RectangularHexGrid>().Reset(hexDescriptor, origin, rotation, isAxisWrapped0, isAxisWrapped1, size);
 		}
 
-		public RectangularHexGrid Reset(PlanarDescriptor planarDescriptor, HexGridDescriptor hexDescriptor, Index2D size)
+		public RectangularHexGrid Reset(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, Index2D size)
 		{
-			Reset(planarDescriptor);
-			faceAxis0 = planarDescriptor.axis0.vector;
-			faceAxis1 = planarDescriptor.axis1.vector;
-			axis0Style = hexDescriptor.axis0Style;
-			axis1Style = hexDescriptor.axis1Style;
-			axisRelation = hexDescriptor.axisRelation;
-			variableRowLength = hexDescriptor.variableRowLength;
+			midpoint = hexDescriptor.midpoint;
+			majorCorner = hexDescriptor.majorCorner;
+			minorCorner = hexDescriptor.minorCorner;
+
+			midpointIsFirstAxis = hexDescriptor.midpointIsFirstAxis;
+			axisStyle = hexDescriptor.axisStyle;
+
+			_originIsObtuse = Vector2.Dot(midpoint, minorCorner) < Vector2.Dot(midpoint, majorCorner);
+
+			if (axisStyle == HexGridAxisStyles.Straight)
+			{
+				_faceAxis0 = midpoint * 2f;
+				_faceAxis1 = majorCorner + minorCorner;
+			}
+			else
+			{
+				_faceAxis0 = midpoint * 2f;
+
+				if (_originIsObtuse)
+				{
+					_faceAxis1 = majorCorner + minorCorner + midpoint;
+				}
+				else
+				{
+					_faceAxis1 = majorCorner + minorCorner - midpoint;
+				}
+			}
+
+			if (!midpointIsFirstAxis)
+			{
+				Utility.Swap(ref _faceAxis0, ref _faceAxis1);
+			}
+
+			Reset(new PlanarDescriptor(_faceAxis0 * size.x, isAxisWrapped0, _faceAxis1 * size.y, isAxisWrapped1, origin, rotation * Vector3.back));
+
 			this.size = size;
 			topology = null;
 			Initialize();
@@ -105,17 +137,23 @@ namespace Experilous.Topological
 			if (size.x <= 0 || size.y <= 0)
 				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have an axis size less than or equal to zero.");
 
-			if (axis0Style == HexGridAxisStyles.Staggered && axis1Style == HexGridAxisStyles.Staggered)
-				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have both axis styles set to staggered.");
-			if (axis0Style == HexGridAxisStyles.Straight && axis1Style == HexGridAxisStyles.Straight && variableRowLength)
-				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a variable row length if neither axis style is set to staggered.");
-
-			if (axis0.isWrapped && axis1Style == HexGridAxisStyles.Staggered && variableRowLength ||
-				axis1.isWrapped && axis0Style == HexGridAxisStyles.Staggered && variableRowLength)
+			if (axis0.isWrapped && axisStyle == HexGridAxisStyles.StaggeredSymmetric)
 				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a variable row length and a wrapped straight axis when the other axis is staggered.");
-			if (axis0.isWrapped && axis0Style == HexGridAxisStyles.Staggered && (size.x % 2) != 0 ||
-				axis1.isWrapped && axis1Style == HexGridAxisStyles.Staggered && (size.y % 2) != 0)
-				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a wrapped staggered axis with an odd size.");
+			if (axis0.isWrapped && axisStyle == HexGridAxisStyles.Staggered)
+			{
+				if (midpointIsFirstAxis && (size.y % 2) != 0 || !midpointIsFirstAxis && (size.y % 2) != 0)
+				{
+					throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a wrapped staggered axis with an odd size.");
+				}
+			}
+
+			if (Vector3.Cross(axis0.vector, axis1.vector).sqrMagnitude < 0.001f)
+				throw new InvalidTopologyException("A planar surface cannot have nearly colinear axes.");
+
+			if (Mathf.Abs(GeometryUtility.SinMagnitude(midpoint, majorCorner)) < 0.001f ||
+				Mathf.Abs(GeometryUtility.SinMagnitude(midpoint, minorCorner)) < 0.001f ||
+				Mathf.Abs(GeometryUtility.SinMagnitude(minorCorner, majorCorner)) < 0.001f)
+				throw new InvalidTopologyException("A hexagonal grid cell shape cannot have nearly colinear defining vectors.");
 		}
 
 		private void InitializeCoreMetrics()
@@ -123,10 +161,7 @@ namespace Experilous.Topological
 			axis0.vector *= size.x;
 			axis1.vector *= size.y;
 
-			if (axis0Style == HexGridAxisStyles.Staggered) axis0.vector *= halfSqrtThree;
-			if (axis1Style == HexGridAxisStyles.Staggered) axis1.vector *= halfSqrtThree;
-
-			if (axis0Style != HexGridAxisStyles.Staggered)
+			if (midpointIsFirstAxis)
 			{
 				_faceColumnCount = size.x;
 				_faceRowCount = size.y;
@@ -155,34 +190,30 @@ namespace Experilous.Topological
 			_vertexRowEvenIndentNextFront = false;
 			_vertexRowOddIndentNextFront = false;
 
-			if (axis0Style == HexGridAxisStyles.Straight && axis1Style == HexGridAxisStyles.Straight)
+			if (axisStyle == HexGridAxisStyles.Straight)
 			{
-				switch (axisRelation)
+				if (!_originIsObtuse)
 				{
-					case HexGridAxisRelations.Acute:
-						_vertexRowEvenIndentNextFront = true;
-						_vertexRowOddIndentNextFront = true;
-						break;
-					case HexGridAxisRelations.Obtuse:
-						_vertexRowEvenIndentNextFront = false;
-						_vertexRowOddIndentNextFront = false;
-						break;
-					default: throw new NotImplementedException();
+					_vertexRowEvenIndentNextFront = true;
+					_vertexRowOddIndentNextFront = true;
+				}
+				else
+				{
+					_vertexRowEvenIndentNextFront = false;
+					_vertexRowOddIndentNextFront = false;
 				}
 			}
 			else
 			{
-				switch (axisRelation)
+				if (!_originIsObtuse)
 				{
-					case HexGridAxisRelations.Acute:
-						_vertexRowEvenIndentNextFront = false;
-						_vertexRowOddIndentNextFront = true;
-						break;
-					case HexGridAxisRelations.Obtuse:
-						_vertexRowEvenIndentNextFront = true;
-						_vertexRowOddIndentNextFront = false;
-						break;
-					default: throw new NotImplementedException();
+					_vertexRowEvenIndentNextFront = false;
+					_vertexRowOddIndentNextFront = true;
+				}
+				else
+				{
+					_vertexRowEvenIndentNextFront = true;
+					_vertexRowOddIndentNextFront = false;
 				}
 			}
 
@@ -191,7 +222,7 @@ namespace Experilous.Topological
 
 			// If row lengths are variable so that there's a symmetry on both ends of the rows, then
 			// the indentation on the back end is identical to that on the front end.
-			if (variableRowLength)
+			if (axisStyle == HexGridAxisStyles.StaggeredSymmetric)
 			{
 				_vertexRowEvenIndentNextBack = _vertexRowEvenIndentNextFront;
 				_vertexRowOddIndentNextBack = _vertexRowOddIndentNextFront;
@@ -211,8 +242,8 @@ namespace Experilous.Topological
 
 		private void InitializeFaceMetrics()
 		{
-			_faceColumnCountEven = (variableRowLength && _vertexRowEvenIndentNextFront && !_vertexRowOddIndentNextFront) ? _faceColumnCount - 1 : _faceColumnCount;
-			_faceColumnCountOdd = (variableRowLength && _vertexRowOddIndentNextFront && !_vertexRowEvenIndentNextFront) ? _faceColumnCount - 1 : _faceColumnCount;
+			_faceColumnCountEven = (axisStyle == HexGridAxisStyles.StaggeredSymmetric && _vertexRowEvenIndentNextFront && !_vertexRowOddIndentNextFront) ? _faceColumnCount - 1 : _faceColumnCount;
+			_faceColumnCountOdd = (axisStyle == HexGridAxisStyles.StaggeredSymmetric && _vertexRowOddIndentNextFront && !_vertexRowEvenIndentNextFront) ? _faceColumnCount - 1 : _faceColumnCount;
 			_faceColumnCountFirst = _faceColumnCountEven;
 			_faceColumnCountLast = MathUtility.IsEven(_faceRowCount) ? _faceColumnCountOdd : _faceColumnCountEven;
 			_faceColumnCountPair = _faceColumnCountEven + _faceColumnCountOdd;
@@ -238,7 +269,7 @@ namespace Experilous.Topological
 		private void InitializeVertexMetrics()
 		{
 			// If our rows have varying lengths, then rows can't be wrapping, and there'll be an odd number of vertices per row.
-			if (variableRowLength)
+			if (axisStyle == HexGridAxisStyles.StaggeredSymmetric)
 			{
 				_vertexColumnCount = _faceColumnCount * 2 + 1;
 			}
@@ -362,61 +393,41 @@ namespace Experilous.Topological
 		{
 			vertexPositions = new Vector3[vertexCount];
 
-			Vector3 rowAxisBasis;
-			Vector3 columnAxisBasis;
-			HexGridAxisStyles columnAxisStyle;
-
 			Vector3 rowAxis;
-			Vector3 rowAxisOddOffset;
 			Vector3 columnAxisDouble;
-			Vector3 columnAxisOddOffset;
 
-			if (!_reverseColumnsRows)
+			Vector3 evenCorner = _originIsObtuse ? minorCorner - majorCorner : -minorCorner;
+			Vector3 oddCorner = -majorCorner;
+			Vector3 oddRowOffset;
+
+			if (axisStyle == HexGridAxisStyles.Straight)
 			{
-				rowAxisBasis = faceAxis0;
-				columnAxisBasis = faceAxis1;
-				columnAxisStyle = axis1Style;
+				rowAxis = midpoint * 2f;
+				columnAxisDouble = (majorCorner + minorCorner) * 2f;
+				oddRowOffset = majorCorner + minorCorner;
 			}
 			else
 			{
-				rowAxisBasis = faceAxis1;
-				columnAxisBasis = faceAxis0;
-				columnAxisStyle = axis0Style;
-			}
+				rowAxis = midpoint * 2f;
 
-			if (columnAxisStyle != HexGridAxisStyles.Staggered)
-			{
-				rowAxis = rowAxisBasis * 0.5f;
-				columnAxisDouble = columnAxisBasis * 2f;
-				columnAxisOddOffset = columnAxisBasis;
-			}
-			else
-			{
-				rowAxis = rowAxisBasis * 0.5f;
-				columnAxisDouble = columnAxisBasis * halfSqrtThree * 2f;
-
-				switch (axisRelation)
+				if (_originIsObtuse)
 				{
-					case HexGridAxisRelations.Acute: columnAxisOddOffset = columnAxisBasis * halfSqrtThree + rowAxis; break;
-					case HexGridAxisRelations.Obtuse: columnAxisOddOffset = columnAxisBasis * halfSqrtThree - rowAxis; break;
-					default: throw new NotImplementedException();
+					columnAxisDouble = (majorCorner + minorCorner + midpoint) * 2f;
+					oddRowOffset = majorCorner + minorCorner;
 				}
-			}
-
-			switch (axisRelation)
-			{
-				case HexGridAxisRelations.Acute: rowAxisOddOffset = (4f * rowAxis - columnAxisOddOffset) / 3f - rowAxis; break;
-				case HexGridAxisRelations.Obtuse: rowAxisOddOffset = (2f * rowAxis - columnAxisOddOffset) / 3f - rowAxis; break;
-				default: throw new NotImplementedException();
+				else
+				{
+					columnAxisDouble = (majorCorner + minorCorner - midpoint) * 2f;
+					oddRowOffset = majorCorner + minorCorner;
+				}
 			}
 
 			for (int i = 0; i < vertexCount; ++i)
 			{
 				int col, row;
 				GetVertexColRow(i, out col, out row);
-				var vertexPosition = origin + col * rowAxis + (row / 2) * columnAxisDouble;
-				if (MathUtility.IsOdd(col)) vertexPosition += rowAxisOddOffset;
-				if (MathUtility.IsOdd(row)) vertexPosition += columnAxisOddOffset;
+				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble + (MathUtility.IsOdd(col) ? oddCorner : evenCorner);
+				if (MathUtility.IsOdd(row)) vertexPosition += oddRowOffset;
 				vertexPositions[i] = vertexPosition;
 			}
 
@@ -507,7 +518,7 @@ namespace Experilous.Topological
 
 		private void GetFaceColRow(int internalFaceIndex, out int col, out int row)
 		{
-			if (!variableRowLength)
+			if (axisStyle != HexGridAxisStyles.StaggeredSymmetric)
 			{
 				col = internalFaceIndex % _faceColumnCount;
 				row = internalFaceIndex / _faceColumnCount;
@@ -777,27 +788,51 @@ namespace Experilous.Topological
 	{
 		Straight,
 		Staggered,
-	}
-
-	public enum HexGridAxisRelations
-	{
-		Acute,
-		Obtuse,
+		StaggeredSymmetric,
 	}
 
 	public struct HexGridDescriptor
 	{
-		public HexGridAxisStyles axis0Style;
-		public HexGridAxisStyles axis1Style;
-		public HexGridAxisRelations axisRelation;
-		public bool variableRowLength;
+		public Vector2 midpoint;
+		public Vector2 majorCorner;
+		public Vector2 minorCorner;
 
-		public HexGridDescriptor(HexGridAxisStyles axis0Style, HexGridAxisStyles axis1Style, HexGridAxisRelations axisRelation, bool variableRowLength = false)
+		public bool midpointIsFirstAxis;
+		public HexGridAxisStyles axisStyle;
+
+		public HexGridDescriptor(Vector2 midpoint, Vector2 majorCorner, Vector2 minorCorner, bool midpointIsFirstAxis, HexGridAxisStyles axisStyle)
 		{
-			this.axis0Style = axis0Style;
-			this.axis1Style = axis1Style;
-			this.axisRelation = axisRelation;
-			this.variableRowLength = variableRowLength;
+			this.midpoint = midpoint;
+			this.majorCorner = majorCorner;
+			this.minorCorner = minorCorner;
+			this.midpointIsFirstAxis = midpointIsFirstAxis;
+			this.axisStyle = axisStyle;
+		}
+
+		public const float sqrtThree = 1.732050808f;
+		public const float halfSqrtThree = 0.8660254038f;
+		public const float oneOverSqrtThree = 0.5773502692f;
+		public const float twoOverSqrtThree = 1.154700538f;
+
+		public static HexGridDescriptor standardCornerUp { get { return CreateCornerUp(true, HexGridAxisStyles.Staggered); } }
+		public static HexGridDescriptor standardSideUp { get { return CreateSideUp(true, HexGridAxisStyles.Staggered); } }
+
+		public static HexGridDescriptor CreateCornerUp(bool originIsObtuse, HexGridAxisStyles axisStyle)
+		{
+			return new HexGridDescriptor(
+				new Vector2(0.5f, 0f),
+				new Vector2(0f, oneOverSqrtThree),
+				new Vector2(originIsObtuse ? -0.5f : 0.5f, oneOverSqrtThree * 0.5f),
+				true, axisStyle);
+		}
+
+		public static HexGridDescriptor CreateSideUp(bool originIsObtuse, HexGridAxisStyles axisStyle)
+		{
+			return new HexGridDescriptor(
+				new Vector2(0f, 0.5f),
+				new Vector2(oneOverSqrtThree, 0f),
+				new Vector2(oneOverSqrtThree * 0.5f, originIsObtuse ? -0.5f : 0.5f),
+				false, axisStyle);
 		}
 	}
 }

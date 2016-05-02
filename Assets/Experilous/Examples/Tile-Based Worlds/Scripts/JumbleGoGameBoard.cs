@@ -198,8 +198,9 @@ namespace Experilous.Examples.Topological
 					boardSize = new Index2D(19, 19);
 				}
 				_surface = RectangularHexGrid.Create(
-					new PlanarDescriptor(Vector3.right, Vector3.up),
-					new HexGridDescriptor(HexGridAxisStyles.Straight, HexGridAxisStyles.Staggered, HexGridAxisRelations.Obtuse, true),
+					HexGridDescriptor.CreateCornerUp(true, HexGridAxisStyles.StaggeredSymmetric),
+					Vector3.zero, Quaternion.identity,
+					false, false,
 					boardSize);
 				_topology = ((RectangularHexGrid)_surface).CreateManifold(out vertexPositionsArray);
 				_vertexPositions = PositionalVertexAttribute.Create(_surface, vertexPositionsArray);
@@ -220,8 +221,9 @@ namespace Experilous.Examples.Topological
 					boardSize = new Index2D(19, 19);
 				}
 				_surface = RectangularHexGrid.Create(
-					new PlanarDescriptor(Vector3.right, Vector3.up),
-					new HexGridDescriptor(HexGridAxisStyles.Straight, HexGridAxisStyles.Staggered, HexGridAxisRelations.Obtuse, true),
+					HexGridDescriptor.CreateCornerUp(true, HexGridAxisStyles.StaggeredSymmetric),
+					Vector3.zero, Quaternion.identity,
+					false, false,
 					boardSize);
 				_topology = ((RectangularHexGrid)_surface).CreateManifold(out vertexPositionsArray);
 				_vertexPositions = PositionalVertexAttribute.Create(_surface, vertexPositionsArray);

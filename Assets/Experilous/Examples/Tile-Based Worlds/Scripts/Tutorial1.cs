@@ -114,8 +114,9 @@ namespace Experilous.Examples.Topological
 		protected void Start()
 		{
 			var hexGridSurface = RectangularHexGrid.Create(
-				new PlanarDescriptor(Vector3.right, Vector3.forward),
-				new HexGridDescriptor(HexGridAxisStyles.Staggered, HexGridAxisStyles.Straight, HexGridAxisRelations.Obtuse, true),
+				HexGridDescriptor.CreateSideUp(true, HexGridAxisStyles.StaggeredSymmetric),
+				Vector3.zero, Quaternion.identity,
+				false, false,
 				new Index2D(topologyWidth, topologyHeight));
 
 			_surface = hexGridSurface;

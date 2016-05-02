@@ -336,7 +336,7 @@ namespace Experilous.Topological
 			}
 
 			const float angledShort = 0.5f;
-			const float angledLong = RectangularHexGrid.halfSqrtThree;
+			const float angledLong = HexGridDescriptor.halfSqrtThree;
 
 			Vector3 basicHorizontalAxis;
 			Vector3 basicVerticalAxis;
@@ -344,7 +344,7 @@ namespace Experilous.Topological
 			Vector3 finalVerticalAxis;
 			HexGridAxisStyles finalHorizontalAxisStyle;
 			HexGridAxisStyles finalVerticalAxisStyle;
-			HexGridAxisRelations finalAxisRelation;
+			bool finalOriginIsObtuse;
 			bool finalVariableRowLength;
 
 			switch (hexGridHorizontalAxisOptions)
@@ -370,7 +370,7 @@ namespace Experilous.Topological
 				case HexGridAxisStyleOptions.ObliqueAcute:
 					finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
 					finalVerticalAxisStyle = HexGridAxisStyles.Straight;
-					finalAxisRelation = HexGridAxisRelations.Acute;
+					finalOriginIsObtuse = false;
 					finalVariableRowLength = false;
 
 					if (hexGridAxisOptions != HexGridAxisOptions.Custom)
@@ -403,7 +403,7 @@ namespace Experilous.Topological
 				case HexGridAxisStyleOptions.ObliqueObtuse:
 					finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
 					finalVerticalAxisStyle = HexGridAxisStyles.Straight;
-					finalAxisRelation = HexGridAxisRelations.Obtuse;
+					finalOriginIsObtuse = true;
 					finalVariableRowLength = false;
 
 					if (hexGridAxisOptions != HexGridAxisOptions.Custom)
@@ -437,8 +437,7 @@ namespace Experilous.Topological
 				case HexGridAxisStyleOptions.StaggeredVerticallyObtuse:
 					finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
 					finalVerticalAxisStyle = HexGridAxisStyles.Staggered;
-					finalAxisRelation = hexGridAxisStyleOptions == HexGridAxisStyleOptions.StaggeredVerticallyAcute
-						? HexGridAxisRelations.Acute : HexGridAxisRelations.Obtuse;
+					finalOriginIsObtuse = (hexGridAxisStyleOptions != HexGridAxisStyleOptions.StaggeredVerticallyAcute);
 					finalVariableRowLength = variableRowLength;
 					finalHorizontalAxis = basicHorizontalAxis;
 					finalVerticalAxis = basicVerticalAxis;
@@ -447,8 +446,7 @@ namespace Experilous.Topological
 				case HexGridAxisStyleOptions.StaggeredHorizontallyObtuse:
 					finalHorizontalAxisStyle = HexGridAxisStyles.Staggered;
 					finalVerticalAxisStyle = HexGridAxisStyles.Straight;
-					finalAxisRelation = hexGridAxisStyleOptions == HexGridAxisStyleOptions.StaggeredHorizontallyAcute
-						? HexGridAxisRelations.Acute : HexGridAxisRelations.Obtuse;
+					finalOriginIsObtuse = (hexGridAxisStyleOptions != HexGridAxisStyleOptions.StaggeredHorizontallyAcute);
 					finalVariableRowLength = variableRowLength;
 					finalHorizontalAxis = basicHorizontalAxis;
 					finalVerticalAxis = basicVerticalAxis;
@@ -470,13 +468,11 @@ namespace Experilous.Topological
 
 			if (size.x > 0 && size.y > 0)
 			{
+				//TODO:  Fix this, because this is entirely wrong, and probably needs a completely new UI.
 				surface.Reset(
-					new PlanarDescriptor(
-						new PlanarAxis(finalHorizontalAxis, (wrapOptions & WrapOptions.WrapHorizontally) != 0),
-						new PlanarAxis(finalVerticalAxis, (wrapOptions & WrapOptions.WrapVertically) != 0),
-						originPosition,
-						finalNormal),
-					new HexGridDescriptor(finalHorizontalAxisStyle, finalVerticalAxisStyle, finalAxisRelation, finalVariableRowLength),
+					new HexGridDescriptor(finalHorizontalAxis, finalVerticalAxis, finalHorizontalAxis + finalVerticalAxis, true, HexGridAxisStyles.Straight),
+					originPosition, Quaternion.identity,
+					(wrapOptions & WrapOptions.WrapHorizontally) != 0, (wrapOptions & WrapOptions.WrapVertically) != 0,
 					size);
 			}
 
