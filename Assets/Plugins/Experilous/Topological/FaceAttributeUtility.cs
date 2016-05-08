@@ -821,6 +821,10 @@ namespace Experilous.Topological
 
 		#endregion
 
+		#region CalculateGlobalUVs...(...)
+
+		#region CalculateGlobalPlanarUVs...(...)
+
 		public static IFaceAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromFacePositions(faces, facePositions, Vector3.zero, uAxis, vAxis, new Vector2[faces.Count].AsFaceAttribute());
@@ -856,6 +860,33 @@ namespace Experilous.Topological
 
 			return uvs;
 		}
+
+		#endregion
+
+		#region CalculateGlobalSphericalUVs...(...)
+
+		public static IFaceAttribute<Vector2> CalculateGlobalSphericalUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, Quaternion orientation)
+		{
+			return CalculateGlobalSphericalUVsFromFacePositions(faces, facePositions, orientation, new Vector2[faces.Count].AsFaceAttribute());
+		}
+
+		public static IFaceAttribute<Vector2> CalculateGlobalSphericalUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, Quaternion orientation, IFaceAttribute<Vector2> uvs)
+		{
+			var twoPi = Mathf.PI * 2f;
+			foreach (var face in faces)
+			{
+				var normal = (orientation * facePositions[face]).normalized;
+				uvs[face] = new Vector2(
+					Mathf.Atan2(normal.z, normal.x) / twoPi,
+					Mathf.Acos(normal.y) / twoPi);
+			}
+
+			return uvs;
+		}
+
+		#endregion
+
+		#endregion
 
 		public static IFaceAttribute<Vector2> CalculateUnnormalizedUVsFromFacePositions(Topology.FacesIndexer faces, IFaceAttribute<Vector3> facePositions, IFaceAttribute<UVFrame3> uvFrames)
 		{
