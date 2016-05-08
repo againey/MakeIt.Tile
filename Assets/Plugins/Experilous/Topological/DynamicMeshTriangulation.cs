@@ -7,8 +7,6 @@ using System;
 
 namespace Experilous.Topological
 {
-	#region Triangulation
-
 	/// <summary>
 	/// Triangulates a topology face using a triangle strip pattern, not sharing vertices among other faces.
 	/// </summary>
@@ -419,5 +417,112 @@ namespace Experilous.Topological
 		}
 	}
 
-	#endregion
+	/// <summary>
+	/// </summary>
+	/// <remarks>
+	/// </remarks>
+	/// <seealso cref="DynamicMesh"/>
+	/// <seealso cref="DynamicMesh.ITriangulation"/>
+	public class SeparatedFacesKiteCornerStripTriangulation : DynamicMesh.ITriangulation
+	{
+		private Action<Topology.FaceEdge, DynamicMesh.IIndexedVertexAttributes> _addCornerVertices;
+
+		/// <summary>
+		/// </summary>
+		/// <seealso cref="DynamicMesh"/>
+		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
+		public SeparatedFacesKiteCornerStripTriangulation(Action<Topology.FaceEdge, DynamicMesh.IIndexedVertexAttributes> addCornerVertices)
+		{
+			_addCornerVertices = addCornerVertices;
+		}
+
+		public int GetVertexCount(Topology.Face face)
+		{
+			return face.neighborCount * 4;
+		}
+
+		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
+		{
+			int neighborCount = face.neighborCount;
+			int currentVertexIndex = vertexAttributes.index;
+
+			//        __(0)__
+			//    __--   |   --__
+			// (1)       |       (2)__
+			//   \       |       / \  --__
+			//    \   A  |  B   /   \     --__
+			//     \     |     /     \        --__
+			//      \    |    /       \           --__
+			//       \   |   /         \              --(5)
+			//        \  |  /           \               /
+			//         \ | /       C     \     D       /
+			//          (3)__             \           /
+			//               --__          \         /
+			//                   --__       \       /
+			//                       --__    \     /
+			//                           --__ \   /
+			//                               --(7)
+
+			for (int neighborIndex = 0; neighborIndex < neighborCount; ++neighborIndex)
+			{
+				// A (1->0->3)
+				triangleIndices.Add(currentVertexIndex + 1);
+				triangleIndices.Add(currentVertexIndex + 0);
+				triangleIndices.Add(currentVertexIndex + 3);
+				// B (3->0->2)
+				triangleIndices.Add(currentVertexIndex + 3);
+				triangleIndices.Add(currentVertexIndex + 0);
+				triangleIndices.Add(currentVertexIndex + 2);
+				// C (3->2->7)
+				triangleIndices.Add(currentVertexIndex + 3);
+				triangleIndices.Add(currentVertexIndex + 2);
+				triangleIndices.Add(currentVertexIndex + 7);
+				// D (7->2->1)
+				triangleIndices.Add(currentVertexIndex + 7);
+				triangleIndices.Add(currentVertexIndex + 2);
+				triangleIndices.Add(currentVertexIndex + 5);
+
+				currentVertexIndex += 4;
+			}
+
+			triangleIndices[triangleIndices.Count - 4] = vertexAttributes.index + 3;
+			triangleIndices[triangleIndices.Count - 3] = vertexAttributes.index + 3;
+			triangleIndices[triangleIndices.Count - 1] = vertexAttributes.index + 1;
+
+			int forwardVertexIndex = vertexAttributes.index + 3;
+			int backwardVertexIndex = vertexAttributes.index + neighborCount * 4 - 1;
+
+			int triangleIndex = 2;
+			while (triangleIndex < neighborCount)
+			{
+				triangleIndices.Add(backwardVertexIndex);
+				triangleIndices.Add(forwardVertexIndex);
+				backwardVertexIndex -= 4;
+				triangleIndices.Add(backwardVertexIndex);
+
+				if (++triangleIndex == neighborCount) break;
+
+				triangleIndices.Add(backwardVertexIndex);
+				triangleIndices.Add(forwardVertexIndex);
+				forwardVertexIndex += 4;
+				triangleIndices.Add(forwardVertexIndex);
+
+				++triangleIndex;
+			}
+
+			RebuildFace(face, vertexAttributes);
+		}
+
+		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
+		{
+			foreach (var edge in face.edges)
+			{
+				_addCornerVertices(edge, vertexAttributes);
+			}
+		}
+
+		public void FinalizeSubmesh(int index)
+		{
+		}
+	}
 }

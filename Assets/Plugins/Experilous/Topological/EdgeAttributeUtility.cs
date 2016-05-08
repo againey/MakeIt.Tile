@@ -98,6 +98,27 @@ namespace Experilous.Topological
 			return faceAngles;
 		}
 
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions)
+		{
+			return CalculateFaceEdgeBisectorsFromVertexPositions(faceEdges, vertexPositions, new Vector3[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, IEdgeAttribute<Vector3> bisectors)
+		{
+			foreach (var edge in faceEdges)
+			{
+				var p0 = vertexPositions[edge.prev];
+				var p1 = vertexPositions[edge];
+				var p2 = vertexPositions[edge.next];
+				var v1to0 = (p0 - p1).normalized;
+				var v1to2 = (p2 - p1).normalized;
+				var sum = v1to0 + v1to2;
+				bisectors[edge] = sum.normalized;
+			}
+
+			return bisectors;
+		}
+
 		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions)
 		{
 			return CalculateFaceEdgeBisectorsFromVertexPositions(faceEdges, faces, vertexPositions, facePositions, new Vector3[faceEdges.Count].AsEdgeAttribute());
@@ -205,6 +226,42 @@ namespace Experilous.Topological
 			}
 
 			return faceEdgeMidpoints;
+		}
+
+		public static void CalculateFaceEdgeCornerKitePositionsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, float kiteLongEdgeLength, out IEdgeAttribute<Vector3> leadingPositions, out IEdgeAttribute<Vector3> followingPositions, out IEdgeAttribute<Vector3> interiorPositions)
+		{
+			leadingPositions = new Vector3[faceEdges.Count].AsEdgeAttribute();
+			followingPositions = new Vector3[faceEdges.Count].AsEdgeAttribute();
+			interiorPositions = new Vector3[faceEdges.Count].AsEdgeAttribute();
+			CalculateFaceEdgeCornerKitePositionsFromVertexPositions(faceEdges, vertexPositions, kiteLongEdgeLength, leadingPositions, followingPositions, interiorPositions);
+		}
+
+		public static void CalculateFaceEdgeCornerKitePositionsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, float kiteLongEdgeLength, IEdgeAttribute<Vector3> leadingPositions, IEdgeAttribute<Vector3> followingPositions, IEdgeAttribute<Vector3> interiorPositions)
+		{
+			foreach (var edge in faceEdges)
+			{
+				var p0 = vertexPositions[edge.prev];
+				var p1 = vertexPositions[edge];
+				var p2 = vertexPositions[edge.next];
+				var v1to0 = (p0 - p1).normalized;
+				var v1to2 = (p2 - p1).normalized;
+				var bisector = v1to0 + v1to2;
+				if (bisector != Vector3.zero)
+				{
+					bisector.Normalize();
+					var interiorHalfAngleSine = Vector3.Cross(bisector, v1to2).magnitude;
+					var kiteAxis = bisector * (kiteLongEdgeLength / interiorHalfAngleSine);
+					interiorPositions[edge] = p1 + kiteAxis;
+					leadingPositions[edge] = p1 + kiteAxis.ProjectOntoUnit(v1to0);
+					followingPositions[edge] = p1 + kiteAxis.ProjectOntoUnit(v1to2);
+				}
+				else
+				{
+					interiorPositions[edge] = p1;
+					leadingPositions[edge] = p1;
+					followingPositions[edge] = p1;
+				}
+			}
 		}
 
 		#region CalculateUVs...(...)
