@@ -153,7 +153,7 @@ namespace Experilous.Examples.Topological
 			TopologyRandomizer.Randomize(
 				topology, 1, 0.2f,
 				3, 3, 5, 7, false,
-				new RandomUtility(XorShift128Plus.Create(23478)),
+				XorShift128PlusB.Create(23478),
 				relaxationLoopFunction);
 		}
 

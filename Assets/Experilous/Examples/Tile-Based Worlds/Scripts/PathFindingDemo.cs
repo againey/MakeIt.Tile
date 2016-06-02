@@ -51,7 +51,7 @@ namespace Experilous.Examples.Topological
 
 		[NonSerialized] private bool _initialized;
 
-		[NonSerialized] private RandomUtility _random;
+		[NonSerialized] private IRandomEngine _random;
 
 		[NonSerialized] private DynamicMesh.ITriangulation _faceTriangulation;
 		[NonSerialized] private DynamicMesh.ITriangulation _selectedFaceTriangulation;
@@ -64,7 +64,7 @@ namespace Experilous.Examples.Topological
 		{
 			if (!_initialized)
 			{
-				_random = new RandomUtility(XorShift128Plus.Create(948675));
+				_random = XorShift128PlusB.Create(948675);
 
 				_faceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
@@ -222,14 +222,14 @@ namespace Experilous.Examples.Topological
 				Topology.Face face;
 				do
 				{
-					face = _topology.faces[_random.HalfOpenRange(0, _topology.internalFaces.Count)];
+					face = _topology.internalFaces.RandomElement(_random);
 				} while (rootFaces.Contains(face));
 				rootFaces.Add(face);
 				foreach (var edge in face.edges)
 				{
 					rootFaceEdges.Add(edge);
 				}
-				_faceTerrainIndices[face] = _random.WeightedIndex(terrainWeights, terrainWeightSum);
+				_faceTerrainIndices[face] = RandomIndex.Weighted(terrainWeights, terrainWeightSum, _random);
 			}
 
 			TopologyVisitor.VisitFacesInRandomOrder(rootFaceEdges, (FaceEdgeVisitor visitor) =>
@@ -241,7 +241,7 @@ namespace Experilous.Examples.Topological
 					visitor.VisitNeighbor(edge);
 				}
 			},
-			_random.engine);
+			_random);
 
 			_faceSeenStates = new bool[_topology.faces.Count].AsFaceAttribute();
 			_faceSightCounts = new int[_topology.faces.Count].AsFaceAttribute();
@@ -296,7 +296,7 @@ namespace Experilous.Examples.Topological
 				Topology.Face face;
 				do
 				{
-					face = _topology.faces[_random.HalfOpenRange(0, _topology.internalFaces.Count)];
+					face = _topology.internalFaces.RandomElement(_random);
 				} while (_faceTerrainIndices[face] == 1 || _faceUnits[face] != null);
 
 				var unit = Instantiate(unitPrefab);

@@ -20,3 +20,12 @@ syntax: regexp
 ^[^/]*\.csproj$
 \~\$[^/]*\.docx$
 \~[^/]*\.tmp$
+^Miscellaneous/C\+\+/.*/[^/]*\.tlog$
+^Miscellaneous/C\+\+/.*/[^/]*\.lastbuildstate$
+^Miscellaneous/C\+\+/.*/[^/]*\.exe$
+^Miscellaneous/C\+\+/.*/[^/]*\.ilk$
+^Miscellaneous/C\+\+/.*/[^/]*\.log$
+^Miscellaneous/C\+\+/.*/[^/]*\.pdb$
+^Miscellaneous/C\+\+/.*/[^/]*\.obj$
+^Miscellaneous/C\+\+/.*/[^/]*\.idb$
+^Miscellaneous/C\+\+/.*/[^/]*\.sdf$

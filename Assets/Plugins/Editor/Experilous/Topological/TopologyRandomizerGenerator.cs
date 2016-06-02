@@ -87,7 +87,7 @@ namespace Experilous.Topological
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexPositions = vertexPositionsInputSlot.source != null ? vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>() : null;
 
-			var random = new RandomUtility(randomness.GetRandomEngine());
+			var random = randomness.GetRandomEngine();
 
 			System.Func<float> relaxIterationFunction = null;
 			System.Func<bool> repairFunction = null;

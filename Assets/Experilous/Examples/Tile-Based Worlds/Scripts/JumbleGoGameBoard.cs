@@ -36,7 +36,7 @@ namespace Experilous.Examples.Topological
 		public Text whiteCountText;
 		public Text blackCountText;
 
-		private RandomUtility _random;
+		private IRandomEngine _random;
 
 		private int _blackCount;
 		private int _whiteCount;
@@ -79,7 +79,7 @@ namespace Experilous.Examples.Topological
 		protected void OnEnable()
 		{
 			if (_random == null)
-				_random = new RandomUtility(XorShift128Plus.Create(randomSeedText));
+				_random = XorShift128PlusB.Create(randomSeedText);
 
 			if (_normalFaceTriangulation == null)
 				_normalFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(

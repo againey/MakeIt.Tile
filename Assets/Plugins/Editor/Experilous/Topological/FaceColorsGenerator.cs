@@ -122,11 +122,11 @@ namespace Experilous.Topological
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var faceColors = ColorFaceAttribute.Create(topology.internalFaces.Count);
 
-			var random = new RandomUtility(randomness.GetRandomEngine());
+			var random = randomness.GetRandomEngine();
 
 			foreach (var face in topology.internalFaces)
 			{
-				faceColors[face] = new Color(random.ClosedFloatUnit(), random.ClosedFloatUnit(), random.ClosedFloatUnit());
+				faceColors[face] = new Color(RandomUnit.ClosedFloat(random), RandomUnit.ClosedFloat(random), RandomUnit.ClosedFloat(random));
 			}
 
 			faceColorsOutputSlot.SetAsset(faceColors);
@@ -138,11 +138,11 @@ namespace Experilous.Topological
 			var faceGroups = faceGroupCollection.faceGroups;
 			var faceGroupColorsArray = new Color[faceGroups.Length];
 
-			var random = new RandomUtility(randomness.GetRandomEngine());
+			var random = randomness.GetRandomEngine();
 
 			for (int i = 0; i < faceGroups.Length; ++i)
 			{
-				faceGroupColorsArray[i] = new Color(random.ClosedFloatUnit(), random.ClosedFloatUnit(), random.ClosedFloatUnit());
+				faceGroupColorsArray[i] = new Color(RandomUnit.ClosedFloat(random), RandomUnit.ClosedFloat(random), RandomUnit.ClosedFloat(random));
 			}
 
 			faceGroupColorsOutputSlot.SetAsset(ColorFaceGroupAttribute.Create(faceGroupColorsArray).SetName((faceGroupCollection.name + " Colors").TrimStart()));

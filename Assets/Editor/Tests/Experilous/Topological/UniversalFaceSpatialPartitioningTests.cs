@@ -78,7 +78,7 @@ namespace Experilous.Topological.Tests
 
 		public void CreateHexGrid(int width, int height)
 		{
-			surface = RectangularHexGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new HexGridDescriptor(HexGridAxisStyles.Straight, HexGridAxisStyles.Staggered, HexGridAxisRelations.Obtuse), new Index2D(width, height));
+			surface = RectangularHexGrid.Create(HexGridDescriptor.standardCornerUp, Vector3.zero, Quaternion.identity, false, false, new Index2D(width, height));
 			Vector3[] vertexPositionsArray;
 			topology = ((RectangularHexGrid)surface).CreateManifold(out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
@@ -93,13 +93,13 @@ namespace Experilous.Topological.Tests
 			Vector3[] vertexPositionsArray;
 			topology = quadGrid.CreateManifold(out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
-			var random = new RandomUtility(XorShift128Plus.Create(seed));
+			var random = XorShift128Plus.Create(seed);
 			var maxOffsetRadius = Mathf.Sqrt(2f) / 5f;
 			for (int y = 1; y < height; ++y)
 			{
 				for (int x = 1; x < width; ++x)
 				{
-					vertexPositions[quadGrid.GetVertexIndex(x, y)] += (Vector3)random.CircleVector2(maxOffsetRadius);
+					vertexPositions[quadGrid.GetVertexIndex(x, y)] += (Vector3)RandomRadial2D.PointWithinClosedCircle(maxOffsetRadius, random);
 				}
 			}
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
@@ -108,18 +108,18 @@ namespace Experilous.Topological.Tests
 
 		public void CreateDistortedHexGrid(int width, int height, int seed)
 		{
-			var hexGrid = RectangularHexGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new HexGridDescriptor(HexGridAxisStyles.Straight, HexGridAxisStyles.Staggered, HexGridAxisRelations.Obtuse), new Index2D(width, height));
+			var hexGrid = RectangularHexGrid.Create(HexGridDescriptor.standardCornerUp, Vector3.zero, Quaternion.identity, false, false, new Index2D(width, height));
 			surface = hexGrid;
 			Vector3[] vertexPositionsArray;
 			topology = hexGrid.CreateManifold(out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
-			var random = new RandomUtility(XorShift128Plus.Create(seed));
+			var random = XorShift128Plus.Create(seed);
 			var maxOffsetRadius = Mathf.Sqrt(3f) / 8f;
 			foreach (var vertex in topology.vertices)
 			{
 				if (!vertex.hasExternalFaceNeighbor)
 				{
-					vertexPositions[vertex] += (Vector3)random.CircleVector2(maxOffsetRadius);
+					vertexPositions[vertex] += (Vector3)RandomRadial2D.PointWithinClosedCircle(maxOffsetRadius, random);
 				}
 			}
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);

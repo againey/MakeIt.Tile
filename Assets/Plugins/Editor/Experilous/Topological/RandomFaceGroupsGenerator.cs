@@ -109,7 +109,7 @@ namespace Experilous.Topological
 					Topology.Face face;
 					do
 					{
-						face = topology.faces[RandomUtility.HalfOpenRange(0, topology.internalFaces.Count, randomEngine)];
+						face = topology.internalFaces.RandomElement(randomEngine);
 					} while (rootFaces.Contains(face));
 					rootFaces.Add(face);
 					foreach (var edge in face.edges)

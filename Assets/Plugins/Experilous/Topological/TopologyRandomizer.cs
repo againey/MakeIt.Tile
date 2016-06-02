@@ -8,7 +8,7 @@ namespace Experilous.Topological
 {
 	public static class TopologyRandomizer
 	{
-		public static void Randomize(Topology topology, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, RandomUtility random, System.Action relaxFunction)
+		public static void Randomize(Topology topology, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, IRandomEngine random, System.Action relaxFunction)
 		{
 			var perPassRandomizationFrequency = frequency / passCount;
 
@@ -39,7 +39,7 @@ namespace Experilous.Topological
 
 					if (verticesCanChange && facesCanChange)
 					{
-						var randomValue = random.HalfOpenFloatUnit();
+						var randomValue = RandomUnit.HalfOpenFloat(random);
 						if (randomValue < perPassRandomizationFrequency)
 						{
 							if (randomValue < perPassRandomizationFrequency * 0.5f)
@@ -54,7 +54,7 @@ namespace Experilous.Topological
 					}
 					else if (verticesCanChange || facesCanChange)
 					{
-						if (random.HalfOpenFloatUnit() < perPassRandomizationFrequency)
+						if (RandomUnit.HalfOpenFloat(random) < perPassRandomizationFrequency)
 						{
 							if (verticesCanChange)
 							{
