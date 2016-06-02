@@ -19,8 +19,6 @@ namespace Experilous.Topological
 		public Index2D size;
 		public Topology topology;
 
-		[SerializeField] private bool _axis0IsStraight;
-		[SerializeField] private bool _axis1IsStraight;
 		[SerializeField] private bool _originIsObtuse;
 
 		[SerializeField] private Vector3 _faceAxis0;

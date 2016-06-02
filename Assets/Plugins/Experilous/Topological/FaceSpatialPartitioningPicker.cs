@@ -30,8 +30,6 @@ namespace Experilous.Topological
 		private Collider _collider = null;
 
 		private bool[] _picking = new bool[3];
-		private bool _pickingRight;
-		private bool _pickingMiddle;
 		private Topology.Face _currentFace;
 
 		void Start()
