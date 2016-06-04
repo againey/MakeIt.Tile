@@ -51,6 +51,16 @@ namespace Experilous.Topological
 			VertexVisitor.VisitAll(rootVertices, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate);
 		}
 
+		public static void VisitVertices<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor.VisitAll(rootVertex, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate, state);
+		}
+
+		public static void VisitVertices<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor.VisitAll(rootVertices, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate, state);
+		}
+
 		public static void VisitVertices<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
 			VertexVisitor<TDistance>.VisitAll(rootVertex, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate);
@@ -59,6 +69,16 @@ namespace Experilous.Topological
 		public static void VisitVertices<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
 			VertexVisitor<TDistance>.VisitAll(rootVertices, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate);
+		}
+
+		public static void VisitVertices<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+		}
+
+		public static void VisitVertices<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
 		public static void VisitVertices(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate)
@@ -71,6 +91,16 @@ namespace Experilous.Topological
 			VertexEdgeVisitor.VisitAll(rootEdges, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate);
 		}
 
+		public static void VisitVertices<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor.VisitAll(rootEdge, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate, state);
+		}
+
+		public static void VisitVertices<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor.VisitAll(rootEdges, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate, state);
+		}
+
 		public static void VisitVertices<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
 			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
@@ -79,6 +109,16 @@ namespace Experilous.Topological
 		public static void VisitVertices<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
 			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
+		}
+
+		public static void VisitVertices<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+		}
+
+		public static void VisitVertices<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
 		#endregion
@@ -95,6 +135,16 @@ namespace Experilous.Topological
 			FaceVisitor.VisitAll(rootFaces, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate);
 		}
 
+		public static void VisitFaces<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor.VisitAll(rootFace, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, state);
+		}
+
+		public static void VisitFaces<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor.VisitAll(rootFaces, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, state);
+		}
+
 		public static void VisitFaces<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
 			FaceVisitor<TDistance>.VisitAll(rootFace, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate);
@@ -103,6 +153,16 @@ namespace Experilous.Topological
 		public static void VisitFaces<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
 			FaceVisitor<TDistance>.VisitAll(rootFaces, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate);
+		}
+
+		public static void VisitFaces<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<TDistance>.VisitAll(rootFace, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+		}
+
+		public static void VisitFaces<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
 		public static void VisitFaces(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate)
@@ -115,6 +175,16 @@ namespace Experilous.Topological
 			FaceEdgeVisitor.VisitAll(rootEdges, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate);
 		}
 
+		public static void VisitFaces<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor.VisitAll(rootEdge, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate, state);
+		}
+
+		public static void VisitFaces<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor.VisitAll(rootEdges, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate, state);
+		}
+
 		public static void VisitFaces<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
 			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
@@ -123,6 +193,16 @@ namespace Experilous.Topological
 		public static void VisitFaces<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
 			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
+		}
+
+		public static void VisitFaces<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+		}
+
+		public static void VisitFaces<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
 		#endregion
@@ -135,42 +215,82 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInBreadthFirstOrder(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate);
+			VertexVisitor.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		public static void VisitVerticesInBreadthFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate);
+			VertexVisitor.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		public static void VisitVerticesInBreadthFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInBreadthFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInBreadthFirstOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		public static void VisitVerticesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		public static void VisitVerticesInBreadthFirstOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInBreadthFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+			VertexEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		public static void VisitVerticesInBreadthFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+			VertexEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		public static void VisitVerticesInBreadthFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInBreadthFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInBreadthFirstOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		public static void VisitVerticesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		public static void VisitVerticesInBreadthFirstOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -179,42 +299,82 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInBreadthFirstOrder(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
+			FaceVisitor.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		public static void VisitFacesInBreadthFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
+			FaceVisitor.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		public static void VisitFacesInBreadthFirstOrder<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+		}
+
+		public static void VisitFacesInBreadthFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		public static void VisitFacesInBreadthFirstOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		public static void VisitFacesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+		}
+
+		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		public static void VisitFacesInBreadthFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+			FaceEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		public static void VisitFacesInBreadthFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+			FaceEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		public static void VisitFacesInBreadthFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+		}
+
+		public static void VisitFacesInBreadthFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		public static void VisitFacesInBreadthFirstOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		public static void VisitFacesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+		}
+
+		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -227,42 +387,82 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInDepthFirstOrder(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate);
+			VertexVisitor.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
 		public static void VisitVerticesInDepthFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate);
+			VertexVisitor.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate);
+		}
+
+		public static void VisitVerticesInDepthFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInDepthFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInDepthFirstOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
 		public static void VisitVerticesInDepthFirstOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+		}
+
+		public static void VisitVerticesInDepthFirstOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInDepthFirstOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInDepthFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+			VertexEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
 		public static void VisitVerticesInDepthFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+			VertexEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+		}
+
+		public static void VisitVerticesInDepthFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInDepthFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInDepthFirstOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
 		public static void VisitVerticesInDepthFirstOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+		}
+
+		public static void VisitVerticesInDepthFirstOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInDepthFirstOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -271,42 +471,82 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInDepthFirstOrder(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate);
+			FaceVisitor.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
 		public static void VisitFacesInDepthFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate);
+			FaceVisitor.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate);
+		}
+
+		public static void VisitFacesInDepthFirstOrder<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate, state);
+		}
+
+		public static void VisitFacesInDepthFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		public static void VisitFacesInDepthFirstOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
 		public static void VisitFacesInDepthFirstOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+		}
+
+		public static void VisitFacesInDepthFirstOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+		}
+
+		public static void VisitFacesInDepthFirstOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		public static void VisitFacesInDepthFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+			FaceEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
 		public static void VisitFacesInDepthFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+			FaceEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+		}
+
+		public static void VisitFacesInDepthFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
+		}
+
+		public static void VisitFacesInDepthFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		public static void VisitFacesInDepthFirstOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
 		public static void VisitFacesInDepthFirstOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+		}
+
+		public static void VisitFacesInDepthFirstOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+		}
+
+		public static void VisitFacesInDepthFirstOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -413,22 +653,42 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInNearestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<int>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<int>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<int>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<int>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -437,22 +697,42 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInNearestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<uint>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<uint>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<uint>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<uint>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -461,22 +741,42 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInNearestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<float>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<float>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<float>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<float>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -485,22 +785,42 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInNearestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<double>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<double>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<double>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<double>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -513,22 +833,42 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInNearestDistanceOrder(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<int>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<int>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<int>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<int>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -537,22 +877,42 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInNearestDistanceOrder(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<uint>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<uint>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<uint>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<uint>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -561,22 +921,42 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInNearestDistanceOrder(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<float>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<float>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<float>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<float>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -585,22 +965,42 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInNearestDistanceOrder(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<double>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<double>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<double>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<double>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -709,22 +1109,42 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<int>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<int>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<int>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<int>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -733,22 +1153,42 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<uint>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<uint>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<uint>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<uint>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -757,22 +1197,42 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<float>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<float>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<float>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<float>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -781,22 +1241,42 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<double>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<double>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<double>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexVisitor<double>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VertexEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -809,22 +1289,42 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInFarthestDistanceOrder(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<int>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<int>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<int>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<int>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -833,22 +1333,42 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInFarthestDistanceOrder(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<uint>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<uint>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<uint>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<uint>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -857,22 +1377,42 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInFarthestDistanceOrder(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<float>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<float>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<float>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<float>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -881,22 +1421,42 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInFarthestDistanceOrder(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<double>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<double>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<double>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceVisitor<double>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+		}
+
+		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		{
+			FaceEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -909,48 +1469,88 @@ namespace Experilous.Topological
 
 		#region Vertex
 
-		public static void VisitVerticesInOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate, Containers.DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		public static void VisitVerticesInOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
-		public static void VisitVerticesInOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate, Containers.DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		public static void VisitVerticesInOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new Containers.DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
-		public static void VisitVerticesInOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		public static void VisitVerticesInOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
-		public static void VisitVerticesInOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		public static void VisitVerticesInOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+		}
+
+		public static void VisitVerticesInOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+		}
+
+		public static void VisitVerticesInOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Face
 
-		public static void VisitFacesInOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate, Containers.DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		public static void VisitFacesInOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
-		public static void VisitFacesInOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate, Containers.DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		public static void VisitFacesInOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new Containers.DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
-		public static void VisitFacesInOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		public static void VisitFacesInOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
-		public static void VisitFacesInOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		public static void VisitFacesInOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new Containers.DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+		}
+
+		public static void VisitFacesInOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+		}
+
+		public static void VisitFacesInOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+		}
+
+		public static void VisitFacesInOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+		}
+
+		public static void VisitFacesInOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
 		#endregion
@@ -963,42 +1563,82 @@ namespace Experilous.Topological
 
 		public static void VisitVerticesInRandomOrder(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			VertexVisitor.VisitAll(rootVertex, new Containers.RandomOrderQueue<VertexVisitor.QueueItem>(randomEngine), visitDelegate);
+			VertexVisitor.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor.QueueItem>(randomEngine), visitDelegate);
 		}
 
 		public static void VisitVerticesInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			VertexVisitor.VisitAll(rootVertices, new Containers.RandomOrderQueue<VertexVisitor.QueueItem>(randomEngine), visitDelegate);
+			VertexVisitor.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor.QueueItem>(randomEngine), visitDelegate);
+		}
+
+		public static void VisitVerticesInRandomOrder<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			VertexVisitor.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor.QueueItem>(randomEngine), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInRandomOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			VertexVisitor.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor.QueueItem>(randomEngine), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInRandomOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new Containers.RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
 		}
 
 		public static void VisitVerticesInRandomOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new Containers.RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+		}
+
+		public static void VisitVerticesInRandomOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			VertexVisitor<TDistance>.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			VertexVisitor<TDistance>.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInRandomOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new Containers.RandomOrderQueue<VertexEdgeVisitor.QueueItem>(randomEngine), visitDelegate);
+			VertexEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(randomEngine), visitDelegate);
 		}
 
 		public static void VisitVerticesInRandomOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new Containers.RandomOrderQueue<VertexEdgeVisitor.QueueItem>(randomEngine), visitDelegate);
+			VertexEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(randomEngine), visitDelegate);
+		}
+
+		public static void VisitVerticesInRandomOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			VertexEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(randomEngine), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInRandomOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			VertexEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(randomEngine), visitDelegate, state);
 		}
 
 		public static void VisitVerticesInRandomOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new Containers.RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
 		}
 
 		public static void VisitVerticesInRandomOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new Containers.RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+		}
+
+		public static void VisitVerticesInRandomOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate, state);
+		}
+
+		public static void VisitVerticesInRandomOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate, state);
 		}
 
 		#endregion
@@ -1007,42 +1647,82 @@ namespace Experilous.Topological
 
 		public static void VisitFacesInRandomOrder(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			FaceVisitor.VisitAll(rootFace, new Containers.RandomOrderQueue<FaceVisitor.QueueItem>(randomEngine), visitDelegate);
+			FaceVisitor.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor.QueueItem>(randomEngine), visitDelegate);
 		}
 
 		public static void VisitFacesInRandomOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			FaceVisitor.VisitAll(rootFaces, new Containers.RandomOrderQueue<FaceVisitor.QueueItem>(randomEngine), visitDelegate);
+			FaceVisitor.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(randomEngine), visitDelegate);
+		}
+
+		public static void VisitFacesInRandomOrder<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			FaceVisitor.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor.QueueItem>(randomEngine), visitDelegate, state);
+		}
+
+		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			FaceVisitor.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(randomEngine), visitDelegate, state);
 		}
 
 		public static void VisitFacesInRandomOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new Containers.RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
 		}
 
 		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new Containers.RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+		}
+
+		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			FaceVisitor<TDistance>.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate, state);
+		}
+
+		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			FaceVisitor<TDistance>.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate, state);
 		}
 
 		public static void VisitFacesInRandomOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new Containers.RandomOrderQueue<FaceEdgeVisitor.QueueItem>(randomEngine), visitDelegate);
+			FaceEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(randomEngine), visitDelegate);
 		}
 
 		public static void VisitFacesInRandomOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new Containers.RandomOrderQueue<FaceEdgeVisitor.QueueItem>(randomEngine), visitDelegate);
+			FaceEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(randomEngine), visitDelegate);
+		}
+
+		public static void VisitFacesInRandomOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			FaceEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(randomEngine), visitDelegate, state);
+		}
+
+		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			FaceEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(randomEngine), visitDelegate, state);
 		}
 
 		public static void VisitFacesInRandomOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new Containers.RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
 		}
 
 		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine randomEngine)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new Containers.RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate);
+		}
+
+		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate, state);
+		}
+
+		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine randomEngine)
+		{
+			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(randomEngine), visitDelegate, state);
 		}
 
 		#endregion
@@ -1072,9 +1752,9 @@ namespace Experilous.Topological
 		}
 
 		public delegate void VisitDelegate(VertexVisitor visitor);
+		public delegate void VisitDelegate<TState>(VertexVisitor visitor, TState state);
 
-		private Containers.IQueue<QueueItem> _queue;
-		private VisitDelegate _visitDelegate;
+		private IQueue<QueueItem> _queue;
 		private BitArray _visitedVertices;
 
 		private Topology.Vertex _vertex;
@@ -1102,31 +1782,40 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private VertexVisitor(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private VertexVisitor(Topology topology, IQueue<QueueItem> queue)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitDelegate = visitDelegate;
 			_visitedVertices = new BitArray(topology.vertices.Count);
 		}
 
-		public static void VisitAll(Topology.Vertex rootVertex, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootVertex, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.Vertex> rootVertices, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootVertices, queue), queue, visitDelegate);
 		}
 
-		private static Topology InitializeQueue(Topology.Vertex rootVertex, Containers.IQueue<QueueItem> queue)
+		public static void VisitAll<TState>(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootVertex, queue), queue, visitDelegate, state);
+		}
+
+		public static void VisitAll<TState>(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootVertices, queue), queue, visitDelegate, state);
+		}
+
+		private static Topology InitializeQueue(Topology.Vertex rootVertex, IQueue<QueueItem> queue)
 		{
 			queue.Push(new QueueItem(rootVertex.index, 0));
 			return rootVertex.topology;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.Vertex> rootVertices, Containers.IQueue<QueueItem> queue)
+		private static Topology InitializeQueue(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue)
 		{
 			var rootVerticesEnumerator = rootVertices.GetEnumerator();
 			if (!rootVerticesEnumerator.MoveNext()) return null;
@@ -1141,14 +1830,21 @@ namespace Experilous.Topological
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new VertexVisitor(topology, queue, visitDelegate);
-			visitor.VisitAll();
+			var visitor = new VertexVisitor(topology, queue);
+			visitor.VisitAll(visitDelegate);
 		}
 
-		private void VisitAll()
+		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			if (topology == null) return;
+			var visitor = new VertexVisitor(topology, queue);
+			visitor.VisitAll(visitDelegate, state);
+		}
+
+		private void VisitAll(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1161,7 +1857,28 @@ namespace Experilous.Topological
 				_vertex = new Topology.Vertex(_topology, queueItem.vertexIndex);
 				_depth = queueItem.depth;
 				_break = _ignore = false;
-				_visitDelegate(this);
+				visitDelegate(this);
+
+				// Check the visitation action and respond accordingly.
+				if (_break) return;
+				if (!_ignore) _visitedVertices[queueItem.vertexIndex] = true;
+			}
+		}
+
+		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		{
+			while (_queue.isEmpty == false)
+			{
+				var queueItem = _queue.Pop();
+
+				// Move on to the next queue item if we've already visited the target vertex.
+				if (_visitedVertices[queueItem.vertexIndex] == true) continue;
+
+				// Visit the vertex and get the list of adjacent neighbors.
+				_vertex = new Topology.Vertex(_topology, queueItem.vertexIndex);
+				_depth = queueItem.depth;
+				_break = _ignore = false;
+				visitDelegate(this, state);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;
@@ -1192,9 +1909,9 @@ namespace Experilous.Topological
 		}
 
 		public delegate void VisitDelegate(VertexVisitor<TDistance> visitor);
+		public delegate void VisitDelegate<TState>(VertexVisitor<TDistance> visitor, TState state);
 
-		private Containers.IQueue<QueueItem> _queue;
-		private VisitDelegate _visitDelegate;
+		private IQueue<QueueItem> _queue;
 		private BitArray _visitedVertices;
 
 		private Topology.Vertex _vertex;
@@ -1224,31 +1941,40 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private VertexVisitor(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private VertexVisitor(Topology topology, IQueue<QueueItem> queue)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitDelegate = visitDelegate;
 			_visitedVertices = new BitArray(topology.vertices.Count);
 		}
 
-		public static void VisitAll(Topology.Vertex rootVertex, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootVertex, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.Vertex> rootVertices, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootVertices, queue), queue, visitDelegate);
 		}
 
-		private static Topology InitializeQueue(Topology.Vertex rootVertex, Containers.IQueue<QueueItem> queue)
+		public static void VisitAll<TState>(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootVertex, queue), queue, visitDelegate, state);
+		}
+
+		public static void VisitAll<TState>(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootVertices, queue), queue, visitDelegate, state);
+		}
+
+		private static Topology InitializeQueue(Topology.Vertex rootVertex, IQueue<QueueItem> queue)
 		{
 			queue.Push(new QueueItem(rootVertex.index, 0, default(TDistance)));
 			return rootVertex.topology;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.Vertex> rootVertices, Containers.IQueue<QueueItem> queue)
+		private static Topology InitializeQueue(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue)
 		{
 			var rootVerticesEnumerator = rootVertices.GetEnumerator();
 			if (!rootVerticesEnumerator.MoveNext()) return null;
@@ -1263,14 +1989,21 @@ namespace Experilous.Topological
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new VertexVisitor<TDistance>(topology, queue, visitDelegate);
-			visitor.VisitAll();
+			var visitor = new VertexVisitor<TDistance>(topology, queue);
+			visitor.VisitAll(visitDelegate);
 		}
 
-		private void VisitAll()
+		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			if (topology == null) return;
+			var visitor = new VertexVisitor<TDistance>(topology, queue);
+			visitor.VisitAll(visitDelegate, state);
+		}
+
+		private void VisitAll(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1284,7 +2017,29 @@ namespace Experilous.Topological
 				_depth = queueItem.depth;
 				_distance = queueItem.distance;
 				_break = _ignore = false;
-				_visitDelegate(this);
+				visitDelegate(this);
+
+				// Check the visitation action and respond accordingly.
+				if (_break) return;
+				if (!_ignore) _visitedVertices[queueItem.vertexIndex] = true;
+			}
+		}
+
+		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		{
+			while (_queue.isEmpty == false)
+			{
+				var queueItem = _queue.Pop();
+
+				// Move on to the next queue item if we've already visited the target vertex.
+				if (_visitedVertices[queueItem.vertexIndex] == true) continue;
+
+				// Visit the vertex and get the list of adjacent neighbors.
+				_vertex = new Topology.Vertex(_topology, queueItem.vertexIndex);
+				_depth = queueItem.depth;
+				_distance = queueItem.distance;
+				_break = _ignore = false;
+				visitDelegate(this, state);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;
@@ -1313,9 +2068,9 @@ namespace Experilous.Topological
 		}
 
 		public delegate void VisitDelegate(VertexEdgeVisitor visitor);
+		public delegate void VisitDelegate<TState>(VertexEdgeVisitor visitor, TState state);
 
-		private Containers.IQueue<QueueItem> _queue;
-		private VisitDelegate _visitDelegate;
+		private IQueue<QueueItem> _queue;
 		private BitArray _visitedVertices;
 
 		private Topology.VertexEdge _edge;
@@ -1343,31 +2098,40 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private VertexEdgeVisitor(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private VertexEdgeVisitor(Topology topology, IQueue<QueueItem> queue)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitDelegate = visitDelegate;
 			_visitedVertices = new BitArray(topology.vertices.Count);
 		}
 
-		public static void VisitAll(Topology.VertexEdge rootEdge, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.VertexEdge> rootEdges, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate);
 		}
 
-		private static Topology InitializeQueue(Topology.VertexEdge rootEdge, Containers.IQueue<QueueItem> queue)
+		public static void VisitAll<TState>(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate, state);
+		}
+
+		public static void VisitAll<TState>(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate, state);
+		}
+
+		private static Topology InitializeQueue(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue)
 		{
 			queue.Push(new QueueItem(rootEdge.index, 0));
 			return rootEdge.topology;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.VertexEdge> rootEdges, Containers.IQueue<QueueItem> queue)
+		private static Topology InitializeQueue(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue)
 		{
 			var rootEdgesEnumerator = rootEdges.GetEnumerator();
 			if (!rootEdgesEnumerator.MoveNext()) return null;
@@ -1382,14 +2146,21 @@ namespace Experilous.Topological
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new VertexEdgeVisitor(topology, queue, visitDelegate);
-			visitor.VisitAll();
+			var visitor = new VertexEdgeVisitor(topology, queue);
+			visitor.VisitAll(visitDelegate);
 		}
 
-		private void VisitAll()
+		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			if (topology == null) return;
+			var visitor = new VertexEdgeVisitor(topology, queue);
+			visitor.VisitAll(visitDelegate, state);
+		}
+
+		private void VisitAll(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1403,7 +2174,29 @@ namespace Experilous.Topological
 				_edge = new Topology.VertexEdge(_topology, queueItem.edgeIndex);
 				_depth = queueItem.depth;
 				_break = _ignore = false;
-				_visitDelegate(this);
+				visitDelegate(this);
+
+				// Check the visitation action and respond accordingly.
+				if (_break) return;
+				if (!_ignore) _visitedVertices[vertexIndex] = true;
+			}
+		}
+
+		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		{
+			while (_queue.isEmpty == false)
+			{
+				var queueItem = _queue.Pop();
+				var vertexIndex = _topology.edgeData[queueItem.edgeIndex].vertex;
+
+				// Move on to the next queue item if we've already visited the target vertex.
+				if (_visitedVertices[vertexIndex] == true) continue;
+
+				// Visit the vertex and get the list of adjacent neighbors.
+				_edge = new Topology.VertexEdge(_topology, queueItem.edgeIndex);
+				_depth = queueItem.depth;
+				_break = _ignore = false;
+				visitDelegate(this, state);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;
@@ -1434,9 +2227,9 @@ namespace Experilous.Topological
 		}
 
 		public delegate void VisitDelegate(VertexEdgeVisitor<TDistance> visitor);
+		public delegate void VisitDelegate<TState>(VertexEdgeVisitor<TDistance> visitor, TState state);
 
-		private Containers.IQueue<QueueItem> _queue;
-		private VisitDelegate _visitDelegate;
+		private IQueue<QueueItem> _queue;
 		private BitArray _visitedVertices;
 
 		private Topology.VertexEdge _edge;
@@ -1466,31 +2259,40 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private VertexEdgeVisitor(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private VertexEdgeVisitor(Topology topology, IQueue<QueueItem> queue)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitDelegate = visitDelegate;
 			_visitedVertices = new BitArray(topology.vertices.Count);
 		}
 
-		public static void VisitAll(Topology.VertexEdge rootEdge, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.VertexEdge> rootEdges, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate);
 		}
 
-		private static Topology InitializeQueue(Topology.VertexEdge rootEdge, Containers.IQueue<QueueItem> queue)
+		public static void VisitAll<TState>(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate, state);
+		}
+
+		public static void VisitAll<TState>(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate, state);
+		}
+
+		private static Topology InitializeQueue(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue)
 		{
 			queue.Push(new QueueItem(rootEdge.index, 0, default(TDistance)));
 			return rootEdge.topology;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.VertexEdge> rootEdge, Containers.IQueue<QueueItem> queue)
+		private static Topology InitializeQueue(IEnumerable<Topology.VertexEdge> rootEdge, IQueue<QueueItem> queue)
 		{
 			var rootEdgesEnumerator = rootEdge.GetEnumerator();
 			if (!rootEdgesEnumerator.MoveNext()) return null;
@@ -1505,14 +2307,21 @@ namespace Experilous.Topological
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitDelegate);
-			visitor.VisitAll();
+			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue);
+			visitor.VisitAll(visitDelegate);
 		}
 
-		private void VisitAll()
+		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			if (topology == null) return;
+			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue);
+			visitor.VisitAll(visitDelegate, state);
+		}
+
+		private void VisitAll(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1527,7 +2336,30 @@ namespace Experilous.Topological
 				_depth = queueItem.depth;
 				_distance = queueItem.distance;
 				_break = _ignore = false;
-				_visitDelegate(this);
+				visitDelegate(this);
+
+				// Check the visitation action and respond accordingly.
+				if (_break) return;
+				if (!_ignore) _visitedVertices[vertexIndex] = true;
+			}
+		}
+
+		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		{
+			while (_queue.isEmpty == false)
+			{
+				var queueItem = _queue.Pop();
+				var vertexIndex = _topology.edgeData[queueItem.edgeIndex].vertex;
+
+				// Move on to the next queue item if we've already visited the target vertex.
+				if (_visitedVertices[vertexIndex] == true) continue;
+
+				// Visit the vertex and get the list of adjacent neighbors.
+				_edge = new Topology.VertexEdge(_topology, queueItem.edgeIndex);
+				_depth = queueItem.depth;
+				_distance = queueItem.distance;
+				_break = _ignore = false;
+				visitDelegate(this, state);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;
@@ -1560,9 +2392,9 @@ namespace Experilous.Topological
 		}
 
 		public delegate void VisitDelegate(FaceVisitor visitor);
+		public delegate void VisitDelegate<TState>(FaceVisitor visitor, TState state);
 
-		private Containers.IQueue<QueueItem> _queue;
-		private VisitDelegate _visitDelegate;
+		private IQueue<QueueItem> _queue;
 		private BitArray _visitedFaces;
 
 		private Topology.Face _face;
@@ -1590,31 +2422,40 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private FaceVisitor(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private FaceVisitor(Topology topology, IQueue<QueueItem> queue)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitDelegate = visitDelegate;
 			_visitedFaces = new BitArray(topology.faces.Count);
 		}
 
-		public static void VisitAll(Topology.Face rootFace, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootFace, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.Face> rootFaces, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootFaces, queue), queue, visitDelegate);
 		}
 
-		private static Topology InitializeQueue(Topology.Face rootFace, Containers.IQueue<QueueItem> queue)
+		public static void VisitAll<TState>(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootFace, queue), queue, visitDelegate, state);
+		}
+
+		public static void VisitAll<TState>(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootFaces, queue), queue, visitDelegate, state);
+		}
+
+		private static Topology InitializeQueue(Topology.Face rootFace, IQueue<QueueItem> queue)
 		{
 			queue.Push(new QueueItem(rootFace.index, 0));
 			return rootFace.topology;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.Face> rootFaces, Containers.IQueue<QueueItem> queue)
+		private static Topology InitializeQueue(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue)
 		{
 			var rootFacesEnumerator = rootFaces.GetEnumerator();
 			if (!rootFacesEnumerator.MoveNext()) return null;
@@ -1629,14 +2470,21 @@ namespace Experilous.Topological
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new FaceVisitor(topology, queue, visitDelegate);
-			visitor.VisitAll();
+			var visitor = new FaceVisitor(topology, queue);
+			visitor.VisitAll(visitDelegate);
 		}
 
-		private void VisitAll()
+		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			if (topology == null) return;
+			var visitor = new FaceVisitor(topology, queue);
+			visitor.VisitAll(visitDelegate, state);
+		}
+
+		private void VisitAll(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1649,7 +2497,28 @@ namespace Experilous.Topological
 				_face = new Topology.Face(_topology, queueItem.faceIndex);
 				_depth = queueItem.depth;
 				_break = _ignore = false;
-				_visitDelegate(this);
+				visitDelegate(this);
+
+				// Check the visitation action and respond accordingly.
+				if (_break) return;
+				if (!_ignore) _visitedFaces[queueItem.faceIndex] = true;
+			}
+		}
+
+		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		{
+			while (_queue.isEmpty == false)
+			{
+				var queueItem = _queue.Pop();
+
+				// Move on to the next queue item if we've already visited the target face.
+				if (_visitedFaces[queueItem.faceIndex] == true) continue;
+
+				// Visit the face and get the list of adjacent neighbors.
+				_face = new Topology.Face(_topology, queueItem.faceIndex);
+				_depth = queueItem.depth;
+				_break = _ignore = false;
+				visitDelegate(this, state);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;
@@ -1680,9 +2549,9 @@ namespace Experilous.Topological
 		}
 
 		public delegate void VisitDelegate(FaceVisitor<TDistance> visitor);
+		public delegate void VisitDelegate<TState>(FaceVisitor<TDistance> visitor, TState state);
 
-		private Containers.IQueue<QueueItem> _queue;
-		private VisitDelegate _visitDelegate;
+		private IQueue<QueueItem> _queue;
 		private BitArray _visitedFaces;
 
 		private Topology.Face _face;
@@ -1712,31 +2581,40 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private FaceVisitor(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private FaceVisitor(Topology topology, IQueue<QueueItem> queue)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitDelegate = visitDelegate;
 			_visitedFaces = new BitArray(topology.faces.Count);
 		}
 
-		public static void VisitAll(Topology.Face rootFace, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootFace, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.Face> rootFaces, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootFaces, queue), queue, visitDelegate);
 		}
 
-		private static Topology InitializeQueue(Topology.Face rootFace, Containers.IQueue<QueueItem> queue)
+		public static void VisitAll<TState>(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootFace, queue), queue, visitDelegate, state);
+		}
+
+		public static void VisitAll<TState>(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootFaces, queue), queue, visitDelegate, state);
+		}
+
+		private static Topology InitializeQueue(Topology.Face rootFace, IQueue<QueueItem> queue)
 		{
 			queue.Push(new QueueItem(rootFace.index, 0, default(TDistance)));
 			return rootFace.topology;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.Face> rootFaces, Containers.IQueue<QueueItem> queue)
+		private static Topology InitializeQueue(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue)
 		{
 			var rootFacesEnumerator = rootFaces.GetEnumerator();
 			if (!rootFacesEnumerator.MoveNext()) return null;
@@ -1751,14 +2629,21 @@ namespace Experilous.Topological
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new FaceVisitor<TDistance>(topology, queue, visitDelegate);
-			visitor.VisitAll();
+			var visitor = new FaceVisitor<TDistance>(topology, queue);
+			visitor.VisitAll(visitDelegate);
 		}
 
-		private void VisitAll()
+		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			if (topology == null) return;
+			var visitor = new FaceVisitor<TDistance>(topology, queue);
+			visitor.VisitAll(visitDelegate, state);
+		}
+
+		private void VisitAll(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1772,7 +2657,29 @@ namespace Experilous.Topological
 				_depth = queueItem.depth;
 				_distance = queueItem.distance;
 				_break = _ignore = false;
-				_visitDelegate(this);
+				visitDelegate(this);
+
+				// Check the visitation action and respond accordingly.
+				if (_break) return;
+				if (!_ignore) _visitedFaces[queueItem.faceIndex] = true;
+			}
+		}
+
+		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		{
+			while (_queue.isEmpty == false)
+			{
+				var queueItem = _queue.Pop();
+
+				// Move on to the next queue item if we've already visited the target face.
+				if (_visitedFaces[queueItem.faceIndex] == true) continue;
+
+				// Visit the face and get the list of adjacent neighbors.
+				_face = new Topology.Face(_topology, queueItem.faceIndex);
+				_depth = queueItem.depth;
+				_distance = queueItem.distance;
+				_break = _ignore = false;
+				visitDelegate(this, state);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;
@@ -1801,9 +2708,9 @@ namespace Experilous.Topological
 		}
 
 		public delegate void VisitDelegate(FaceEdgeVisitor visitor);
+		public delegate void VisitDelegate<TState>(FaceEdgeVisitor visitor, TState state);
 
-		private Containers.IQueue<QueueItem> _queue;
-		private VisitDelegate _visitDelegate;
+		private IQueue<QueueItem> _queue;
 		private BitArray _visitedFaces;
 
 		private Topology.FaceEdge _edge;
@@ -1831,31 +2738,40 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private FaceEdgeVisitor(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private FaceEdgeVisitor(Topology topology, IQueue<QueueItem> queue)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitDelegate = visitDelegate;
 			_visitedFaces = new BitArray(topology.faces.Count);
 		}
 
-		public static void VisitAll(Topology.FaceEdge rootEdge, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.FaceEdge> rootEdges, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate);
 		}
 
-		private static Topology InitializeQueue(Topology.FaceEdge rootEdge, Containers.IQueue<QueueItem> queue)
+		public static void VisitAll<TState>(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate, state);
+		}
+
+		public static void VisitAll<TState>(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate, state);
+		}
+
+		private static Topology InitializeQueue(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue)
 		{
 			queue.Push(new QueueItem(rootEdge.index, 0));
 			return rootEdge.topology;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.FaceEdge> rootEdges, Containers.IQueue<QueueItem> queue)
+		private static Topology InitializeQueue(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue)
 		{
 			var rootEdgesEnumerator = rootEdges.GetEnumerator();
 			if (!rootEdgesEnumerator.MoveNext()) return null;
@@ -1870,14 +2786,21 @@ namespace Experilous.Topological
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new FaceEdgeVisitor(topology, queue, visitDelegate);
-			visitor.VisitAll();
+			var visitor = new FaceEdgeVisitor(topology, queue);
+			visitor.VisitAll(visitDelegate);
 		}
 
-		private void VisitAll()
+		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			if (topology == null) return;
+			var visitor = new FaceEdgeVisitor(topology, queue);
+			visitor.VisitAll(visitDelegate, state);
+		}
+
+		private void VisitAll(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1891,7 +2814,29 @@ namespace Experilous.Topological
 				_edge = new Topology.FaceEdge(_topology, queueItem.edgeIndex);
 				_depth = queueItem.depth;
 				_break = _ignore = false;
-				_visitDelegate(this);
+				visitDelegate(this);
+
+				// Check the visitation action and respond accordingly.
+				if (_break) return;
+				if (!_ignore) _visitedFaces[faceIndex] = true;
+			}
+		}
+
+		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		{
+			while (_queue.isEmpty == false)
+			{
+				var queueItem = _queue.Pop();
+				var faceIndex = _topology.edgeData[queueItem.edgeIndex].face;
+
+				// Move on to the next queue item if we've already visited the target face.
+				if (_visitedFaces[faceIndex] == true) continue;
+
+				// Visit the face and get the list of adjacent neighbors.
+				_edge = new Topology.FaceEdge(_topology, queueItem.edgeIndex);
+				_depth = queueItem.depth;
+				_break = _ignore = false;
+				visitDelegate(this, state);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;
@@ -1922,9 +2867,9 @@ namespace Experilous.Topological
 		}
 
 		public delegate void VisitDelegate(FaceEdgeVisitor<TDistance> visitor);
+		public delegate void VisitDelegate<TState>(FaceEdgeVisitor<TDistance> visitor, TState state);
 
-		private Containers.IQueue<QueueItem> _queue;
-		private VisitDelegate _visitDelegate;
+		private IQueue<QueueItem> _queue;
 		private BitArray _visitedFaces;
 
 		private Topology.FaceEdge _edge;
@@ -1954,31 +2899,40 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private FaceEdgeVisitor(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private FaceEdgeVisitor(Topology topology, IQueue<QueueItem> queue)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitDelegate = visitDelegate;
 			_visitedFaces = new BitArray(topology.faces.Count);
 		}
 
-		public static void VisitAll(Topology.FaceEdge rootEdge, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.FaceEdge> rootEdges, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		public static void VisitAll(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate);
 		}
 
-		private static Topology InitializeQueue(Topology.FaceEdge rootEdge, Containers.IQueue<QueueItem> queue)
+		public static void VisitAll<TState>(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate, state);
+		}
+
+		public static void VisitAll<TState>(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate, state);
+		}
+
+		private static Topology InitializeQueue(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue)
 		{
 			queue.Push(new QueueItem(rootEdge.index, 0, default(TDistance)));
 			return rootEdge.topology;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.FaceEdge> rootEdge, Containers.IQueue<QueueItem> queue)
+		private static Topology InitializeQueue(IEnumerable<Topology.FaceEdge> rootEdge, IQueue<QueueItem> queue)
 		{
 			var rootEdgesEnumerator = rootEdge.GetEnumerator();
 			if (!rootEdgesEnumerator.MoveNext()) return null;
@@ -1993,14 +2947,21 @@ namespace Experilous.Topological
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, Containers.IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitDelegate);
-			visitor.VisitAll();
+			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue);
+			visitor.VisitAll(visitDelegate);
 		}
 
-		private void VisitAll()
+		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		{
+			if (topology == null) return;
+			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue);
+			visitor.VisitAll(visitDelegate, state);
+		}
+
+		private void VisitAll(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2015,7 +2976,30 @@ namespace Experilous.Topological
 				_depth = queueItem.depth;
 				_distance = queueItem.distance;
 				_break = _ignore = false;
-				_visitDelegate(this);
+				visitDelegate(this);
+
+				// Check the visitation action and respond accordingly.
+				if (_break) return;
+				if (!_ignore) _visitedFaces[faceIndex] = true;
+			}
+		}
+
+		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		{
+			while (_queue.isEmpty == false)
+			{
+				var queueItem = _queue.Pop();
+				var faceIndex = _topology.edgeData[queueItem.edgeIndex].face;
+
+				// Move on to the next queue item if we've already visited the target face.
+				if (_visitedFaces[faceIndex] == true) continue;
+
+				// Visit the face and get the list of adjacent neighbors.
+				_edge = new Topology.FaceEdge(_topology, queueItem.edgeIndex);
+				_depth = queueItem.depth;
+				_distance = queueItem.distance;
+				_break = _ignore = false;
+				visitDelegate(this, state);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;
