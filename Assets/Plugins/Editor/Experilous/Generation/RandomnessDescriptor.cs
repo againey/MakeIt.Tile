@@ -73,7 +73,7 @@ namespace Experilous.Generation
 				case SeedSource.SystemTime:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: return NativeRandomEngine.Create();
+						case RandomEngineType.Native: return SystemRandomEngine.Create();
 						case RandomEngineType.SplitMix64: return SplitMix64.Create();
 						case RandomEngineType.SplitMix64B: return SplitMix64B.Create();
 						case RandomEngineType.XorShift128Plus: return XorShift128Plus.Create();
@@ -85,7 +85,7 @@ namespace Experilous.Generation
 				case SeedSource.Numerical:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: return NativeRandomEngine.Create(seedNumber);
+						case RandomEngineType.Native: return SystemRandomEngine.Create(seedNumber);
 						case RandomEngineType.SplitMix64: return SplitMix64.Create(seedNumber);
 						case RandomEngineType.SplitMix64B: return SplitMix64B.Create(seedNumber);
 						case RandomEngineType.XorShift128Plus: return XorShift128Plus.Create(seedNumber);
@@ -97,7 +97,7 @@ namespace Experilous.Generation
 				case SeedSource.Textual:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: return NativeRandomEngine.Create(seedText);
+						case RandomEngineType.Native: return SystemRandomEngine.Create(seedText);
 						case RandomEngineType.SplitMix64: return SplitMix64.Create(seedText);
 						case RandomEngineType.SplitMix64B: return SplitMix64B.Create(seedText);
 						case RandomEngineType.XorShift128Plus: return XorShift128Plus.Create(seedText);
@@ -109,7 +109,7 @@ namespace Experilous.Generation
 				case SeedSource.RandomEngine:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: return NativeRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
+						case RandomEngineType.Native: return SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
 						case RandomEngineType.SplitMix64: return SplitMix64.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
 						case RandomEngineType.SplitMix64B: return SplitMix64B.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
 						case RandomEngineType.XorShift128Plus: return XorShift128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
@@ -121,7 +121,7 @@ namespace Experilous.Generation
 				case SeedSource.RandomEngineAndSystemTime:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: { var engine = NativeRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(); return engine; }
+						case RandomEngineType.Native: { var engine = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(); return engine; }
 						case RandomEngineType.SplitMix64: { var engine = SplitMix64.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(); return engine; }
 						case RandomEngineType.SplitMix64B: { var engine = SplitMix64B.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(); return engine; }
 						case RandomEngineType.XorShift128Plus: { var engine = XorShift128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(); return engine; }
@@ -133,7 +133,7 @@ namespace Experilous.Generation
 				case SeedSource.RandomEngineAndNumerical:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: { var engine = NativeRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedNumber); return engine; }
+						case RandomEngineType.Native: { var engine = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedNumber); return engine; }
 						case RandomEngineType.SplitMix64: { var engine = SplitMix64.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedNumber); return engine; }
 						case RandomEngineType.SplitMix64B: { var engine = SplitMix64B.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedNumber); return engine; }
 						case RandomEngineType.XorShift128Plus: { var engine = XorShift128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedNumber); return engine; }
@@ -145,7 +145,7 @@ namespace Experilous.Generation
 				case SeedSource.RandomEngineAndTextual:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: { var engine = NativeRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedText); return engine; }
+						case RandomEngineType.Native: { var engine = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedText); return engine; }
 						case RandomEngineType.SplitMix64: { var engine = SplitMix64.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedText); return engine; }
 						case RandomEngineType.SplitMix64B: { var engine = SplitMix64B.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedText); return engine; }
 						case RandomEngineType.XorShift128Plus: { var engine = XorShift128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); engine.MergeSeed(seedText); return engine; }
