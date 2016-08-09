@@ -229,7 +229,7 @@ namespace Experilous.Examples.Topological
 				{
 					rootFaceEdges.Add(edge);
 				}
-				_faceTerrainIndices[face] = RandomIndex.Weighted(terrainWeights, terrainWeightSum, _random);
+				_faceTerrainIndices[face] = _random.Index().Weighted(terrainWeights, terrainWeightSum);
 			}
 
 			TopologyVisitor.VisitFacesInRandomOrder(rootFaceEdges, (FaceEdgeVisitor visitor) =>
