@@ -39,7 +39,7 @@ namespace Experilous.Topological
 
 					if (verticesCanChange && facesCanChange)
 					{
-						var randomValue = RandomUnit.HalfOpenFloat(random);
+						var randomValue = random.HalfOpenFloatUnit();
 						if (randomValue < perPassRandomizationFrequency)
 						{
 							if (randomValue < perPassRandomizationFrequency * 0.5f)
@@ -54,7 +54,7 @@ namespace Experilous.Topological
 					}
 					else if (verticesCanChange || facesCanChange)
 					{
-						if (RandomUnit.HalfOpenFloat(random) < perPassRandomizationFrequency)
+						if (random.HalfOpenFloatUnit() < perPassRandomizationFrequency)
 						{
 							if (verticesCanChange)
 							{

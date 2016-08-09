@@ -91,7 +91,7 @@ namespace Experilous.Topological
 			var faceGroupIndices = new int[topology.internalFaces.Count].AsFaceAttribute();
 			List<int>[] faceGroupFaceIndices;
 
-			var randomEngine = randomness.GetRandomEngine();
+			var random = randomness.GetRandomEngine();
 
 			var clampedRootCount = Mathf.Clamp(groupCount, 1, topology.internalFaces.Count);
 
@@ -109,7 +109,7 @@ namespace Experilous.Topological
 					Topology.Face face;
 					do
 					{
-						face = topology.internalFaces.RandomElement(randomEngine);
+						face = topology.internalFaces.RandomElement(random);
 					} while (rootFaces.Contains(face));
 					rootFaces.Add(face);
 					foreach (var edge in face.edges)
@@ -139,7 +139,7 @@ namespace Experilous.Topological
 							}
 						}
 					},
-					randomEngine);
+					random);
 			});
 			while (waitHandle.WaitOne(10) == false)
 			{

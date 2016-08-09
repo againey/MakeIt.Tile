@@ -99,7 +99,7 @@ namespace Experilous.Topological.Tests
 			{
 				for (int x = 1; x < width; ++x)
 				{
-					vertexPositions[quadGrid.GetVertexIndex(x, y)] += (Vector3)RandomVector.PointWithinCircle(maxOffsetRadius, random);
+					vertexPositions[quadGrid.GetVertexIndex(x, y)] += (Vector3)random.PointWithinCircle(maxOffsetRadius);
 				}
 			}
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
@@ -119,7 +119,7 @@ namespace Experilous.Topological.Tests
 			{
 				if (!vertex.hasExternalFaceNeighbor)
 				{
-					vertexPositions[vertex] += (Vector3)RandomVector.PointWithinCircle(maxOffsetRadius, random);
+					vertexPositions[vertex] += (Vector3)random.PointWithinCircle(maxOffsetRadius);
 				}
 			}
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);

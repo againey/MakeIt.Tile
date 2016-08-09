@@ -126,7 +126,7 @@ namespace Experilous.Topological
 
 			foreach (var face in topology.internalFaces)
 			{
-				faceColors[face] = new Color(RandomUnit.ClosedFloat(random), RandomUnit.ClosedFloat(random), RandomUnit.ClosedFloat(random));
+				faceColors[face] = RandomColor.RGB(random);
 			}
 
 			faceColorsOutputSlot.SetAsset(faceColors);
@@ -142,7 +142,7 @@ namespace Experilous.Topological
 
 			for (int i = 0; i < faceGroups.Length; ++i)
 			{
-				faceGroupColorsArray[i] = new Color(RandomUnit.ClosedFloat(random), RandomUnit.ClosedFloat(random), RandomUnit.ClosedFloat(random));
+				faceGroupColorsArray[i] = RandomColor.RGB(random);
 			}
 
 			faceGroupColorsOutputSlot.SetAsset(ColorFaceGroupAttribute.Create(faceGroupColorsArray).SetName((faceGroupCollection.name + " Colors").TrimStart()));
