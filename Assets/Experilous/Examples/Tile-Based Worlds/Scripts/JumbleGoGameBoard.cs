@@ -79,7 +79,7 @@ namespace Experilous.Examples.Topological
 		protected void OnEnable()
 		{
 			if (_random == null)
-				_random = XorShift128PlusB.Create(randomSeedText);
+				_random = XorShift128Plus.Create(randomSeedText);
 
 			if (_normalFaceTriangulation == null)
 				_normalFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(

@@ -64,7 +64,7 @@ namespace Experilous.Examples.Topological
 		{
 			if (!_initialized)
 			{
-				_random = XorShift128PlusB.Create(948675);
+				_random = XorShift128Plus.Create(948675);
 
 				_faceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
@@ -238,7 +238,10 @@ namespace Experilous.Examples.Topological
 
 				foreach (var edge in visitor.edge.farFace.edges)
 				{
-					visitor.VisitNeighbor(edge);
+					if (edge.twinIndex != visitor.edge.index && !edge.isOuterBoundary && !visitor.HasBeenVisited(edge.farFace))
+					{
+						visitor.VisitNeighbor(edge);
+					}
 				}
 			},
 			_random);

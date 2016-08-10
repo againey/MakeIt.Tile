@@ -23,13 +23,12 @@ namespace Experilous.Generation
 
 		public enum RandomEngineType
 		{
-			XorShift128PlusB,
-			SplitMix64B,
-			Native,
 			XorShift128Plus,
+			SplitMix64,
+			System,
+			Unity,
 			XorShift1024Star,
 			XoroShiro128Plus,
-			SplitMix64,
 		}
 
 		public RandomEngineType randomEngineType;
@@ -73,11 +72,10 @@ namespace Experilous.Generation
 				case SeedSource.SystemTime:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: return SystemRandomEngine.Create();
+						case RandomEngineType.System: return SystemRandomEngine.Create();
+						case RandomEngineType.Unity: return UnityRandomEngine.Create();
 						case RandomEngineType.SplitMix64: return SplitMix64.Create();
-						case RandomEngineType.SplitMix64B: return SplitMix64B.Create();
 						case RandomEngineType.XorShift128Plus: return XorShift128Plus.Create();
-						case RandomEngineType.XorShift128PlusB: return XorShift128PlusB.Create();
 						case RandomEngineType.XorShift1024Star: return XorShift1024Star.Create();
 						case RandomEngineType.XoroShiro128Plus: return XoroShiro128Plus.Create();
 						default: throw new NotImplementedException();
@@ -85,11 +83,10 @@ namespace Experilous.Generation
 				case SeedSource.Numerical:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: return SystemRandomEngine.Create(seedNumber);
+						case RandomEngineType.System: return SystemRandomEngine.Create(seedNumber);
+						case RandomEngineType.Unity: return UnityRandomEngine.Create(seedNumber);
 						case RandomEngineType.SplitMix64: return SplitMix64.Create(seedNumber);
-						case RandomEngineType.SplitMix64B: return SplitMix64B.Create(seedNumber);
 						case RandomEngineType.XorShift128Plus: return XorShift128Plus.Create(seedNumber);
-						case RandomEngineType.XorShift128PlusB: return XorShift128PlusB.Create(seedNumber);
 						case RandomEngineType.XorShift1024Star: return XorShift1024Star.Create(seedNumber);
 						case RandomEngineType.XoroShiro128Plus: return XoroShiro128Plus.Create(seedNumber);
 						default: throw new NotImplementedException();
@@ -97,11 +94,10 @@ namespace Experilous.Generation
 				case SeedSource.Textual:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: return SystemRandomEngine.Create(seedText);
+						case RandomEngineType.System: return SystemRandomEngine.Create(seedText);
+						case RandomEngineType.Unity: return UnityRandomEngine.Create(seedText);
 						case RandomEngineType.SplitMix64: return SplitMix64.Create(seedText);
-						case RandomEngineType.SplitMix64B: return SplitMix64B.Create(seedText);
 						case RandomEngineType.XorShift128Plus: return XorShift128Plus.Create(seedText);
-						case RandomEngineType.XorShift128PlusB: return XorShift128PlusB.Create(seedText);
 						case RandomEngineType.XorShift1024Star: return XorShift1024Star.Create(seedText);
 						case RandomEngineType.XoroShiro128Plus: return XoroShiro128Plus.Create(seedText);
 						default: throw new NotImplementedException();
@@ -109,11 +105,10 @@ namespace Experilous.Generation
 				case SeedSource.RandomEngine:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: return SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
+						case RandomEngineType.System: return SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
+						case RandomEngineType.Unity: return UnityRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
 						case RandomEngineType.SplitMix64: return SplitMix64.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
-						case RandomEngineType.SplitMix64B: return SplitMix64B.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
 						case RandomEngineType.XorShift128Plus: return XorShift128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
-						case RandomEngineType.XorShift128PlusB: return XorShift128PlusB.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
 						case RandomEngineType.XorShift1024Star: return XorShift1024Star.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
 						case RandomEngineType.XoroShiro128Plus: return XoroShiro128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>());
 						default: throw new NotImplementedException();
@@ -121,11 +116,10 @@ namespace Experilous.Generation
 				case SeedSource.RandomEngineAndSystemTime:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: { var random = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
+						case RandomEngineType.System: { var random = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
+						case RandomEngineType.Unity: { var random = UnityRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
 						case RandomEngineType.SplitMix64: { var random = SplitMix64.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
-						case RandomEngineType.SplitMix64B: { var random = SplitMix64B.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
 						case RandomEngineType.XorShift128Plus: { var random = XorShift128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
-						case RandomEngineType.XorShift128PlusB: { var random = XorShift128PlusB.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
 						case RandomEngineType.XorShift1024Star: { var random = XorShift1024Star.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
 						case RandomEngineType.XoroShiro128Plus: { var random = XoroShiro128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(); return random; }
 						default: throw new NotImplementedException();
@@ -133,11 +127,10 @@ namespace Experilous.Generation
 				case SeedSource.RandomEngineAndNumerical:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: { var random = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
+						case RandomEngineType.System: { var random = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
+						case RandomEngineType.Unity: { var random = UnityRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
 						case RandomEngineType.SplitMix64: { var random = SplitMix64.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
-						case RandomEngineType.SplitMix64B: { var random = SplitMix64B.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
 						case RandomEngineType.XorShift128Plus: { var random = XorShift128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
-						case RandomEngineType.XorShift128PlusB: { var random = XorShift128PlusB.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
 						case RandomEngineType.XorShift1024Star: { var random = XorShift1024Star.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
 						case RandomEngineType.XoroShiro128Plus: { var random = XoroShiro128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedNumber); return random; }
 						default: throw new NotImplementedException();
@@ -145,11 +138,10 @@ namespace Experilous.Generation
 				case SeedSource.RandomEngineAndTextual:
 					switch (randomEngineType)
 					{
-						case RandomEngineType.Native: { var random = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
+						case RandomEngineType.System: { var random = SystemRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
+						case RandomEngineType.Unity: { var random = UnityRandomEngine.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
 						case RandomEngineType.SplitMix64: { var random = SplitMix64.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
-						case RandomEngineType.SplitMix64B: { var random = SplitMix64B.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
 						case RandomEngineType.XorShift128Plus: { var random = XorShift128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
-						case RandomEngineType.XorShift128PlusB: { var random = XorShift128PlusB.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
 						case RandomEngineType.XorShift1024Star: { var random = XorShift1024Star.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
 						case RandomEngineType.XoroShiro128Plus: { var random = XoroShiro128Plus.Create(randomEngineSeedInputSlot.GetAsset<IRandomEngine>()); random.MergeSeed(seedText); return random; }
 						default: throw new NotImplementedException();

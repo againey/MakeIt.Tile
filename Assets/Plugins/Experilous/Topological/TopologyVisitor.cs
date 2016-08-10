@@ -1761,6 +1761,11 @@ namespace Experilous.Topological
 
 		public Topology.Vertex vertex { get { return _vertex; } }
 
+		public bool HasBeenVisited(Topology.Vertex vertex)
+		{
+			return _visitedVertices[vertex.index];
+		}
+
 		public void VisitNeighbor(Topology.Vertex vertex)
 		{
 			_queue.Push(new QueueItem(vertex.index, _depth + 1));
@@ -1920,6 +1925,11 @@ namespace Experilous.Topological
 		public Topology.Vertex vertex { get { return _vertex; } }
 		public TDistance distance { get { return _distance; } }
 
+		public bool HasBeenVisited(Topology.Vertex vertex)
+		{
+			return _visitedVertices[vertex.index];
+		}
+
 		public void VisitNeighbor(Topology.Vertex vertex, TDistance distance)
 		{
 			_queue.Push(new QueueItem(vertex.index, _depth + 1, distance));
@@ -2077,6 +2087,11 @@ namespace Experilous.Topological
 
 		public Topology.VertexEdge edge { get { return _edge; } }
 
+		public bool HasBeenVisited(Topology.Vertex vertex)
+		{
+			return _visitedVertices[vertex.index];
+		}
+
 		public void VisitNeighbor(Topology.VertexEdge edge)
 		{
 			_queue.Push(new QueueItem(edge.index, _depth + 1));
@@ -2098,66 +2113,92 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private VertexEdgeVisitor(Topology topology, IQueue<QueueItem> queue)
+		private VertexEdgeVisitor(Topology topology, IQueue<QueueItem> queue, BitArray visitedVertices)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitedVertices = new BitArray(topology.vertices.Count);
+			_visitedVertices = visitedVertices;
 		}
 
 		public static void VisitAll(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate);
+			Topology topology;
+			BitArray visitedVertices;
+			if (!Prepare(rootEdge, queue, out topology, out visitedVertices)) return;
+			var visitor = new VertexEdgeVisitor(topology, queue, visitedVertices);
+			visitor.VisitAll(visitDelegate);
 		}
 
 		public static void VisitAll(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate);
+			Topology topology;
+			BitArray visitedVertices;
+			if (!Prepare(rootEdges, queue, out topology, out visitedVertices)) return;
+			var visitor = new VertexEdgeVisitor(topology, queue, visitedVertices);
+			visitor.VisitAll(visitDelegate);
 		}
 
 		public static void VisitAll<TState>(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate, state);
+			Topology topology;
+			BitArray visitedVertices;
+			if (!Prepare(rootEdge, queue, out topology, out visitedVertices)) return;
+			var visitor = new VertexEdgeVisitor(topology, queue, visitedVertices);
+			visitor.VisitAll(visitDelegate, state);
 		}
 
 		public static void VisitAll<TState>(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate, state);
+			Topology topology;
+			BitArray visitedVertices;
+			if (!Prepare(rootEdges, queue, out topology, out visitedVertices)) return;
+			var visitor = new VertexEdgeVisitor(topology, queue, visitedVertices);
+			visitor.VisitAll(visitDelegate, state);
 		}
 
-		private static Topology InitializeQueue(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue)
+		private static bool Prepare(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedVertices)
 		{
+			topology = rootEdge.topology;
+			if (topology == null)
+			{
+				visitedVertices = null;
+				return false;
+			}
+
+			visitedVertices = new BitArray(topology.vertices.Count);
+
 			queue.Push(new QueueItem(rootEdge.index, 0));
-			return rootEdge.topology;
+			visitedVertices[rootEdge.nearVertex.index] = true;
+
+			return true;;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue)
+		private static bool Prepare(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedVertices)
 		{
 			var rootEdgesEnumerator = rootEdges.GetEnumerator();
-			if (!rootEdgesEnumerator.MoveNext()) return null;
+			if (!rootEdgesEnumerator.MoveNext())
+			{
+				topology = null;
+				visitedVertices = null;
+				return false;
+			}
 
-			var topology = rootEdgesEnumerator.Current.topology;
+			topology = rootEdgesEnumerator.Current.topology;
+			if (topology == null)
+			{
+				visitedVertices = null;
+				return false;
+			}
 
+			visitedVertices = new BitArray(topology.vertices.Count);
 			do
 			{
-				queue.Push(new QueueItem(rootEdgesEnumerator.Current.index, 0));
+				var rootEdge = rootEdgesEnumerator.Current;
+				queue.Push(new QueueItem(rootEdge.index, 0));
+				visitedVertices[rootEdge.nearVertex.index] = true;
 			} while (rootEdgesEnumerator.MoveNext());
 
 			return topology;
-		}
-
-		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
-		{
-			if (topology == null) return;
-			var visitor = new VertexEdgeVisitor(topology, queue);
-			visitor.VisitAll(visitDelegate);
-		}
-
-		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
-		{
-			if (topology == null) return;
-			var visitor = new VertexEdgeVisitor(topology, queue);
-			visitor.VisitAll(visitDelegate, state);
 		}
 
 		private void VisitAll(VisitDelegate visitDelegate)
@@ -2238,6 +2279,11 @@ namespace Experilous.Topological
 		public Topology.VertexEdge edge { get { return _edge; } }
 		public TDistance distance { get { return _distance; } }
 
+		public bool HasBeenVisited(Topology.Vertex vertex)
+		{
+			return _visitedVertices[vertex.index];
+		}
+
 		public void VisitNeighbor(Topology.VertexEdge edge, TDistance distance)
 		{
 			_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
@@ -2259,66 +2305,92 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private VertexEdgeVisitor(Topology topology, IQueue<QueueItem> queue)
+		private VertexEdgeVisitor(Topology topology, IQueue<QueueItem> queue, BitArray visitedVertices)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitedVertices = new BitArray(topology.vertices.Count);
+			_visitedVertices = visitedVertices;
 		}
 
 		public static void VisitAll(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate);
+			Topology topology;
+			BitArray visitedVertices;
+			if (!Prepare(rootEdge, queue, out topology, out visitedVertices)) return;
+			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitedVertices);
+			visitor.VisitAll(visitDelegate);
 		}
 
 		public static void VisitAll(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate);
+			Topology topology;
+			BitArray visitedVertices;
+			if (!Prepare(rootEdges, queue, out topology, out visitedVertices)) return;
+			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitedVertices);
+			visitor.VisitAll(visitDelegate);
 		}
 
 		public static void VisitAll<TState>(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate, state);
+			Topology topology;
+			BitArray visitedVertices;
+			if (!Prepare(rootEdge, queue, out topology, out visitedVertices)) return;
+			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitedVertices);
+			visitor.VisitAll(visitDelegate, state);
 		}
 
 		public static void VisitAll<TState>(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate, state);
+			Topology topology;
+			BitArray visitedVertices;
+			if (!Prepare(rootEdges, queue, out topology, out visitedVertices)) return;
+			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitedVertices);
+			visitor.VisitAll(visitDelegate, state);
 		}
 
-		private static Topology InitializeQueue(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue)
+		private static bool Prepare(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedVertices)
 		{
+			topology = rootEdge.topology;
+			if (topology == null)
+			{
+				visitedVertices = null;
+				return false;
+			}
+
+			visitedVertices = new BitArray(topology.vertices.Count);
+
 			queue.Push(new QueueItem(rootEdge.index, 0, default(TDistance)));
-			return rootEdge.topology;
+			visitedVertices[rootEdge.nearVertex.index] = true;
+
+			return true;;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.VertexEdge> rootEdge, IQueue<QueueItem> queue)
+		private static bool Prepare(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedVertices)
 		{
-			var rootEdgesEnumerator = rootEdge.GetEnumerator();
-			if (!rootEdgesEnumerator.MoveNext()) return null;
+			var rootEdgesEnumerator = rootEdges.GetEnumerator();
+			if (!rootEdgesEnumerator.MoveNext())
+			{
+				topology = null;
+				visitedVertices = null;
+				return false;
+			}
 
-			var topology = rootEdgesEnumerator.Current.topology;
+			topology = rootEdgesEnumerator.Current.topology;
+			if (topology == null)
+			{
+				visitedVertices = null;
+				return false;
+			}
 
+			visitedVertices = new BitArray(topology.vertices.Count);
 			do
 			{
-				queue.Push(new QueueItem(rootEdgesEnumerator.Current.index, 0, default(TDistance)));
+				var rootEdge = rootEdgesEnumerator.Current;
+				queue.Push(new QueueItem(rootEdge.index, 0, default(TDistance)));
+				visitedVertices[rootEdge.nearVertex.index] = true;
 			} while (rootEdgesEnumerator.MoveNext());
 
 			return topology;
-		}
-
-		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
-		{
-			if (topology == null) return;
-			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue);
-			visitor.VisitAll(visitDelegate);
-		}
-
-		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
-		{
-			if (topology == null) return;
-			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue);
-			visitor.VisitAll(visitDelegate, state);
 		}
 
 		private void VisitAll(VisitDelegate visitDelegate)
@@ -2400,6 +2472,11 @@ namespace Experilous.Topological
 		private Topology.Face _face;
 
 		public Topology.Face face { get { return _face; } }
+
+		public bool HasBeenVisited(Topology.Face face)
+		{
+			return _visitedFaces[face.index];
+		}
 
 		public void VisitNeighbor(Topology.Face face)
 		{
@@ -2560,6 +2637,11 @@ namespace Experilous.Topological
 		public Topology.Face face { get { return _face; } }
 		public TDistance distance { get { return _distance; } }
 
+		public bool HasBeenVisited(Topology.Face face)
+		{
+			return _visitedFaces[face.index];
+		}
+
 		public void VisitNeighbor(Topology.Face face, TDistance distance)
 		{
 			_queue.Push(new QueueItem(face.index, _depth + 1, distance));
@@ -2717,6 +2799,11 @@ namespace Experilous.Topological
 
 		public Topology.FaceEdge edge { get { return _edge; } }
 
+		public bool HasBeenVisited(Topology.Face face)
+		{
+			return _visitedFaces[face.index];
+		}
+
 		public void VisitNeighbor(Topology.FaceEdge edge)
 		{
 			_queue.Push(new QueueItem(edge.index, _depth + 1));
@@ -2738,66 +2825,92 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private FaceEdgeVisitor(Topology topology, IQueue<QueueItem> queue)
+		private FaceEdgeVisitor(Topology topology, IQueue<QueueItem> queue, BitArray visitedFaces)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitedFaces = new BitArray(topology.faces.Count);
+			_visitedFaces = visitedFaces;
 		}
 
 		public static void VisitAll(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate);
+			Topology topology;
+			BitArray visitedFaces;
+			if (!Prepare(rootEdge, queue, out topology, out visitedFaces)) return;
+			var visitor = new FaceEdgeVisitor(topology, queue, visitedFaces);
+			visitor.VisitAll(visitDelegate);
 		}
 
 		public static void VisitAll(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate);
+			Topology topology;
+			BitArray visitedFaces;
+			if (!Prepare(rootEdges, queue, out topology, out visitedFaces)) return;
+			var visitor = new FaceEdgeVisitor(topology, queue, visitedFaces);
+			visitor.VisitAll(visitDelegate);
 		}
 
 		public static void VisitAll<TState>(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate, state);
+			Topology topology;
+			BitArray visitedFaces;
+			if (!Prepare(rootEdge, queue, out topology, out visitedFaces)) return;
+			var visitor = new FaceEdgeVisitor(topology, queue, visitedFaces);
+			visitor.VisitAll(visitDelegate, state);
 		}
 
 		public static void VisitAll<TState>(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate, state);
+			Topology topology;
+			BitArray visitedFaces;
+			if (!Prepare(rootEdges, queue, out topology, out visitedFaces)) return;
+			var visitor = new FaceEdgeVisitor(topology, queue, visitedFaces);
+			visitor.VisitAll(visitDelegate, state);
 		}
 
-		private static Topology InitializeQueue(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue)
+		private static bool Prepare(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedFaces)
 		{
+			topology = rootEdge.topology;
+			if (topology == null)
+			{
+				visitedFaces = null;
+				return false;
+			}
+
+			visitedFaces = new BitArray(topology.faces.Count);
+
 			queue.Push(new QueueItem(rootEdge.index, 0));
-			return rootEdge.topology;
+			visitedFaces[rootEdge.nearFace.index] = true;
+
+			return true;;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue)
+		private static bool Prepare(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedFaces)
 		{
 			var rootEdgesEnumerator = rootEdges.GetEnumerator();
-			if (!rootEdgesEnumerator.MoveNext()) return null;
+			if (!rootEdgesEnumerator.MoveNext())
+			{
+				topology = null;
+				visitedFaces = null;
+				return false;
+			}
 
-			var topology = rootEdgesEnumerator.Current.topology;
+			topology = rootEdgesEnumerator.Current.topology;
+			if (topology == null)
+			{
+				visitedFaces = null;
+				return false;
+			}
 
+			visitedFaces = new BitArray(topology.faces.Count);
 			do
 			{
-				queue.Push(new QueueItem(rootEdgesEnumerator.Current.index, 0));
+				var rootEdge = rootEdgesEnumerator.Current;
+				queue.Push(new QueueItem(rootEdge.index, 0));
+				visitedFaces[rootEdge.nearFace.index] = true;
 			} while (rootEdgesEnumerator.MoveNext());
 
 			return topology;
-		}
-
-		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
-		{
-			if (topology == null) return;
-			var visitor = new FaceEdgeVisitor(topology, queue);
-			visitor.VisitAll(visitDelegate);
-		}
-
-		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
-		{
-			if (topology == null) return;
-			var visitor = new FaceEdgeVisitor(topology, queue);
-			visitor.VisitAll(visitDelegate, state);
 		}
 
 		private void VisitAll(VisitDelegate visitDelegate)
@@ -2878,6 +2991,11 @@ namespace Experilous.Topological
 		public Topology.FaceEdge edge { get { return _edge; } }
 		public TDistance distance { get { return _distance; } }
 
+		public bool HasBeenVisited(Topology.Face face)
+		{
+			return _visitedFaces[face.index];
+		}
+
 		public void VisitNeighbor(Topology.FaceEdge edge, TDistance distance)
 		{
 			_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
@@ -2899,66 +3017,92 @@ namespace Experilous.Topological
 			return lhs.depth >= rhs.depth;
 		}
 
-		private FaceEdgeVisitor(Topology topology, IQueue<QueueItem> queue)
+		private FaceEdgeVisitor(Topology topology, IQueue<QueueItem> queue, BitArray visitedFaces)
 			: base(topology)
 		{
 			_queue = queue;
-			_visitedFaces = new BitArray(topology.faces.Count);
+			_visitedFaces = visitedFaces;
 		}
 
 		public static void VisitAll(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate);
+			Topology topology;
+			BitArray visitedFaces;
+			if (!Prepare(rootEdge, queue, out topology, out visitedFaces)) return;
+			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitedFaces);
+			visitor.VisitAll(visitDelegate);
 		}
 
 		public static void VisitAll(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate);
+			Topology topology;
+			BitArray visitedFaces;
+			if (!Prepare(rootEdges, queue, out topology, out visitedFaces)) return;
+			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitedFaces);
+			visitor.VisitAll(visitDelegate);
 		}
 
 		public static void VisitAll<TState>(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootEdge, queue), queue, visitDelegate, state);
+			Topology topology;
+			BitArray visitedFaces;
+			if (!Prepare(rootEdge, queue, out topology, out visitedFaces)) return;
+			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitedFaces);
+			visitor.VisitAll(visitDelegate, state);
 		}
 
 		public static void VisitAll<TState>(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootEdges, queue), queue, visitDelegate, state);
+			Topology topology;
+			BitArray visitedFaces;
+			if (!Prepare(rootEdges, queue, out topology, out visitedFaces)) return;
+			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitedFaces);
+			visitor.VisitAll(visitDelegate, state);
 		}
 
-		private static Topology InitializeQueue(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue)
+		private static bool Prepare(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedFaces)
 		{
+			topology = rootEdge.topology;
+			if (topology == null)
+			{
+				visitedFaces = null;
+				return false;
+			}
+
+			visitedFaces = new BitArray(topology.faces.Count);
+
 			queue.Push(new QueueItem(rootEdge.index, 0, default(TDistance)));
-			return rootEdge.topology;
+			visitedFaces[rootEdge.nearFace.index] = true;
+
+			return true;;
 		}
 
-		private static Topology InitializeQueue(IEnumerable<Topology.FaceEdge> rootEdge, IQueue<QueueItem> queue)
+		private static bool Prepare(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedFaces)
 		{
-			var rootEdgesEnumerator = rootEdge.GetEnumerator();
-			if (!rootEdgesEnumerator.MoveNext()) return null;
+			var rootEdgesEnumerator = rootEdges.GetEnumerator();
+			if (!rootEdgesEnumerator.MoveNext())
+			{
+				topology = null;
+				visitedFaces = null;
+				return false;
+			}
 
-			var topology = rootEdgesEnumerator.Current.topology;
+			topology = rootEdgesEnumerator.Current.topology;
+			if (topology == null)
+			{
+				visitedFaces = null;
+				return false;
+			}
 
+			visitedFaces = new BitArray(topology.faces.Count);
 			do
 			{
-				queue.Push(new QueueItem(rootEdgesEnumerator.Current.index, 0, default(TDistance)));
+				var rootEdge = rootEdgesEnumerator.Current;
+				queue.Push(new QueueItem(rootEdge.index, 0, default(TDistance)));
+				visitedFaces[rootEdge.nearFace.index] = true;
 			} while (rootEdgesEnumerator.MoveNext());
 
 			return topology;
-		}
-
-		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
-		{
-			if (topology == null) return;
-			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue);
-			visitor.VisitAll(visitDelegate);
-		}
-
-		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
-		{
-			if (topology == null) return;
-			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue);
-			visitor.VisitAll(visitDelegate, state);
 		}
 
 		private void VisitAll(VisitDelegate visitDelegate)
