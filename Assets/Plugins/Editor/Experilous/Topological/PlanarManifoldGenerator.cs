@@ -342,8 +342,8 @@ namespace Experilous.Topological
 			Vector3 basicVerticalAxis;
 			Vector3 finalHorizontalAxis;
 			Vector3 finalVerticalAxis;
-			HexGridAxisStyles finalHorizontalAxisStyle;
-			HexGridAxisStyles finalVerticalAxisStyle;
+			//HexGridAxisStyles finalHorizontalAxisStyle;
+			//HexGridAxisStyles finalVerticalAxisStyle;
 			bool finalOriginIsObtuse;
 			bool finalVariableRowLength;
 
@@ -368,8 +368,8 @@ namespace Experilous.Topological
 			switch (hexGridAxisStyleOptions)
 			{
 				case HexGridAxisStyleOptions.ObliqueAcute:
-					finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
-					finalVerticalAxisStyle = HexGridAxisStyles.Straight;
+					//finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
+					//finalVerticalAxisStyle = HexGridAxisStyles.Straight;
 					finalOriginIsObtuse = false;
 					finalVariableRowLength = false;
 
@@ -401,8 +401,8 @@ namespace Experilous.Topological
 					}
 					break;
 				case HexGridAxisStyleOptions.ObliqueObtuse:
-					finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
-					finalVerticalAxisStyle = HexGridAxisStyles.Straight;
+					//finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
+					//finalVerticalAxisStyle = HexGridAxisStyles.Straight;
 					finalOriginIsObtuse = true;
 					finalVariableRowLength = false;
 
@@ -435,8 +435,8 @@ namespace Experilous.Topological
 					break;
 				case HexGridAxisStyleOptions.StaggeredVerticallyAcute:
 				case HexGridAxisStyleOptions.StaggeredVerticallyObtuse:
-					finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
-					finalVerticalAxisStyle = HexGridAxisStyles.Staggered;
+					//finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
+					//finalVerticalAxisStyle = HexGridAxisStyles.Staggered;
 					finalOriginIsObtuse = (hexGridAxisStyleOptions != HexGridAxisStyleOptions.StaggeredVerticallyAcute);
 					finalVariableRowLength = variableRowLength;
 					finalHorizontalAxis = basicHorizontalAxis;
@@ -444,8 +444,8 @@ namespace Experilous.Topological
 					break;
 				case HexGridAxisStyleOptions.StaggeredHorizontallyAcute:
 				case HexGridAxisStyleOptions.StaggeredHorizontallyObtuse:
-					finalHorizontalAxisStyle = HexGridAxisStyles.Staggered;
-					finalVerticalAxisStyle = HexGridAxisStyles.Straight;
+					//finalHorizontalAxisStyle = HexGridAxisStyles.Staggered;
+					//finalVerticalAxisStyle = HexGridAxisStyles.Straight;
 					finalOriginIsObtuse = (hexGridAxisStyleOptions != HexGridAxisStyleOptions.StaggeredHorizontallyAcute);
 					finalVariableRowLength = variableRowLength;
 					finalHorizontalAxis = basicHorizontalAxis;
