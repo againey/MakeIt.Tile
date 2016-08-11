@@ -13,7 +13,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateWideGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, false), new Index2D(5, 3));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, false), new IntVector2(5, 3));
 
 			Assert.AreEqual(5, grid.faceAxis0Count);
 			Assert.AreEqual(3, grid.faceAxis1Count);
@@ -30,7 +30,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateTallGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, false), new Index2D(3, 5));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, false), new IntVector2(3, 5));
 
 			Assert.AreEqual(3, grid.faceAxis0Count);
 			Assert.AreEqual(5, grid.faceAxis1Count);
@@ -47,7 +47,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateSquareGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, false), new Index2D(4, 4));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, false), new IntVector2(4, 4));
 
 			Assert.AreEqual(4, grid.faceAxis0Count);
 			Assert.AreEqual(4, grid.faceAxis1Count);
@@ -64,7 +64,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateWideHorizontallyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, false), new Index2D(5, 3));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, false), new IntVector2(5, 3));
 
 			Assert.AreEqual(5, grid.faceAxis0Count);
 			Assert.AreEqual(3, grid.faceAxis1Count);
@@ -81,7 +81,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateTallHorizontallyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, false), new Index2D(3, 5));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, false), new IntVector2(3, 5));
 
 			Assert.AreEqual(3, grid.faceAxis0Count);
 			Assert.AreEqual(5, grid.faceAxis1Count);
@@ -98,7 +98,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateSquareHorizontallyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, false), new Index2D(4, 4));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, false), new IntVector2(4, 4));
 
 			Assert.AreEqual(4, grid.faceAxis0Count);
 			Assert.AreEqual(4, grid.faceAxis1Count);
@@ -115,7 +115,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateWideVerticallyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, true), new Index2D(5, 3));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, true), new IntVector2(5, 3));
 
 			Assert.AreEqual(5, grid.faceAxis0Count);
 			Assert.AreEqual(3, grid.faceAxis1Count);
@@ -132,7 +132,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateTallVerticallyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, true), new Index2D(3, 5));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, true), new IntVector2(3, 5));
 
 			Assert.AreEqual(3, grid.faceAxis0Count);
 			Assert.AreEqual(5, grid.faceAxis1Count);
@@ -149,7 +149,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateSquareVerticallyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, true), new Index2D(4, 4));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, false, Vector3.up, true), new IntVector2(4, 4));
 
 			Assert.AreEqual(4, grid.faceAxis0Count);
 			Assert.AreEqual(4, grid.faceAxis1Count);
@@ -166,7 +166,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateWideFullyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, true), new Index2D(5, 3));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, true), new IntVector2(5, 3));
 
 			Assert.AreEqual(5, grid.faceAxis0Count);
 			Assert.AreEqual(3, grid.faceAxis1Count);
@@ -183,7 +183,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateTallFullyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, true), new Index2D(3, 5));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, true), new IntVector2(3, 5));
 
 			Assert.AreEqual(3, grid.faceAxis0Count);
 			Assert.AreEqual(5, grid.faceAxis1Count);
@@ -200,7 +200,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public static void ValidateSquareFullyWrappedGridElementCounts()
 		{
-			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, true), new Index2D(4, 4));
+			var grid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, true, Vector3.up, true), new IntVector2(4, 4));
 
 			Assert.AreEqual(4, grid.faceAxis0Count);
 			Assert.AreEqual(4, grid.faceAxis1Count);

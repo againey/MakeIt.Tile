@@ -14,7 +14,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public void FaceNeighborFaces()
 		{
-			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new Index2D(3, 3));
+			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new IntVector2(3, 3));
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var face = topology.faces[surface.GetFaceIndex(1, 1)];
@@ -34,7 +34,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public void FaceOutrVertexEdgeFaces()
 		{
-			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new Index2D(3, 3));
+			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new IntVector2(3, 3));
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var face = topology.faces[surface.GetFaceIndex(1, 1)];
@@ -62,7 +62,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public void VertexNeighborVertices()
 		{
-			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new Index2D(2, 2));
+			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new IntVector2(2, 2));
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var vertex = topology.vertices[surface.GetVertexIndex(1, 1)];
@@ -82,7 +82,7 @@ namespace Experilous.Topological.Tests
 		[Test]
 		public void VertexOuterFaceEdgeVertices()
 		{
-			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new Index2D(2, 2));
+			var surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new IntVector2(2, 2));
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var vertex = topology.vertices[surface.GetVertexIndex(1, 1)];

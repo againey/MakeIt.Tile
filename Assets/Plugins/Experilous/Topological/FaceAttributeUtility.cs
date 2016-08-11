@@ -295,8 +295,8 @@ namespace Experilous.Topological
 				var max = new Vector2(float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -311,8 +311,8 @@ namespace Experilous.Topological
 				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -327,8 +327,8 @@ namespace Experilous.Topological
 				var max = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -359,8 +359,8 @@ namespace Experilous.Topological
 				var max = new Vector2(float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -375,8 +375,8 @@ namespace Experilous.Topological
 				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -391,8 +391,8 @@ namespace Experilous.Topological
 				var max = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -423,8 +423,8 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -439,8 +439,8 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -455,8 +455,8 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -487,8 +487,8 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -503,8 +503,8 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -519,8 +519,8 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				minValues[face] = min;
 				ranges[face] = max - min;
@@ -557,11 +557,11 @@ namespace Experilous.Topological
 				var max = new Vector2(float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -575,11 +575,11 @@ namespace Experilous.Topological
 				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -593,11 +593,11 @@ namespace Experilous.Topological
 				var max = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -629,11 +629,11 @@ namespace Experilous.Topological
 				var max = new Vector2(float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -647,11 +647,11 @@ namespace Experilous.Topological
 				var max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -665,11 +665,11 @@ namespace Experilous.Topological
 				var max = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -701,11 +701,11 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -719,11 +719,11 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -737,11 +737,11 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, vertexValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, vertexValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, vertexValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, vertexValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -773,11 +773,11 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -791,11 +791,11 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -809,11 +809,11 @@ namespace Experilous.Topological
 				var max = min + ranges[face];
 				foreach (var edge in face.edges)
 				{
-					min = GeometryUtility.AxisAlignedMin(min, edgeValues[edge]);
-					max = GeometryUtility.AxisAlignedMax(max, edgeValues[edge]);
+					min = GeometryTools.AxisAlignedMin(min, edgeValues[edge]);
+					max = GeometryTools.AxisAlignedMax(max, edgeValues[edge]);
 				}
 				var center = centerValues[face];
-				var extent = GeometryUtility.AxisAlignedMax(max - center, center - min);
+				var extent = GeometryTools.AxisAlignedMax(max - center, center - min);
 				minValues[face] = center - extent;
 				ranges[face] = extent * 2f;
 			}
@@ -854,8 +854,8 @@ namespace Experilous.Topological
 				var facePosition = facePositions[face];
 
 				uvs[face] = new Vector2(
-					GeometryUtility.GetIntersectionParameter(vPlane, new ScaledRay(facePosition, uAxisNeg)),
-					GeometryUtility.GetIntersectionParameter(uPlane, new ScaledRay(facePosition, vAxisNeg)));
+					GeometryTools.GetIntersectionParameter(vPlane, new ScaledRay(facePosition, uAxisNeg)),
+					GeometryTools.GetIntersectionParameter(uPlane, new ScaledRay(facePosition, vAxisNeg)));
 			}
 
 			return uvs;
@@ -914,7 +914,7 @@ namespace Experilous.Topological
 
 			foreach (var face in faces)
 			{
-				faceMaxUVRange = GeometryUtility.AxisAlignedMax(faceMaxUVRange, faceRangeUVs[face]);
+				faceMaxUVRange = GeometryTools.AxisAlignedMax(faceMaxUVRange, faceRangeUVs[face]);
 			}
 
 			var faceMaxUVExtent = faceMaxUVRange * 0.5f;

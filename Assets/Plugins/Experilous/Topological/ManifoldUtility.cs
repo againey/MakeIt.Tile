@@ -353,7 +353,7 @@ namespace Experilous.Topological
 
 		public static void Subdivide(Topology topology, IVertexAttribute<Vector3> vertexPositions, int degree, out Topology subdividedTopology, out Vector3[] subdividedVertexPositions)
 		{
-			Subdivide(topology, vertexPositions, degree, (Vector3 p0, Vector3 p1, float t) => { return GeometryUtility.LerpUnclamped(p0, p1, t); }, out subdividedTopology, out subdividedVertexPositions);
+			Subdivide(topology, vertexPositions, degree, (Vector3 p0, Vector3 p1, float t) => { return GeometryTools.LerpUnclamped(p0, p1, t); }, out subdividedTopology, out subdividedVertexPositions);
 		}
 	}
 }

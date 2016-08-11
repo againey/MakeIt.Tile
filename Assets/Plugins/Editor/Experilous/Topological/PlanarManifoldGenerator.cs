@@ -73,7 +73,7 @@ namespace Experilous.Topological
 		}
 
 		public PlanarTileShapes planarTileShape;
-		public Index2D size;
+		public IntVector2 size;
 		public HorizontalAxisOptions quadGridHorizontalAxisOptions;
 		public VerticalAxisOptions quadGridVerticalAxisOptions;
 		public HexGridAxisStyleOptions hexGridAxisStyleOptions;
@@ -125,7 +125,7 @@ namespace Experilous.Topological
 			vertexNormalsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
 			vertexNormalsGenerator.vertexPositionsInputSlot.source = manifoldGenerator.vertexPositionsOutputSlot;
 
-			rectangularFaceGroupsGenerator.axisDivisions = new Index2D(4, 4);
+			rectangularFaceGroupsGenerator.axisDivisions = new IntVector2(4, 4);
 			rectangularFaceGroupsGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
 			rectangularFaceGroupsGenerator.surfaceInputSlot.source = manifoldGenerator.surfaceOutputSlot;
 			rectangularFaceGroupsGenerator.facePositionsInputSlot.source = faceCentroidsGenerator.faceCentroidsOutputSlot;
@@ -154,7 +154,7 @@ namespace Experilous.Topological
 		{
 			// Fields
 			planarTileShape = PlanarTileShapes.Quadrilateral;
-			size = new Index2D(64, 64);
+			size = new IntVector2(64, 64);
 			quadGridHorizontalAxisOptions = HorizontalAxisOptions.LeftToRight;
 			quadGridVerticalAxisOptions = VerticalAxisOptions.BottomToTop;
 			hexGridAxisStyleOptions = HexGridAxisStyleOptions.ObliqueAcute;

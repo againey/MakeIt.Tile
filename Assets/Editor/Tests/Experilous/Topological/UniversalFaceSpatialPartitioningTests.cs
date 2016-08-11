@@ -68,7 +68,7 @@ namespace Experilous.Topological.Tests
 
 		public void CreateQuadGrid(int width, int height)
 		{
-			surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new Index2D(width, height));
+			surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new IntVector2(width, height));
 			Vector3[] vertexPositionsArray;
 			topology = ((RectangularQuadGrid)surface).CreateManifold(out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
@@ -78,7 +78,7 @@ namespace Experilous.Topological.Tests
 
 		public void CreateHexGrid(int width, int height)
 		{
-			surface = RectangularHexGrid.Create(HexGridDescriptor.standardCornerUp, Vector3.zero, Quaternion.identity, false, false, new Index2D(width, height));
+			surface = RectangularHexGrid.Create(HexGridDescriptor.standardCornerUp, Vector3.zero, Quaternion.identity, false, false, new IntVector2(width, height));
 			Vector3[] vertexPositionsArray;
 			topology = ((RectangularHexGrid)surface).CreateManifold(out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
@@ -88,7 +88,7 @@ namespace Experilous.Topological.Tests
 
 		public void CreateDistortedQuadGrid(int width, int height, int seed)
 		{
-			var quadGrid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new Index2D(width, height));
+			var quadGrid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new IntVector2(width, height));
 			surface = quadGrid;
 			Vector3[] vertexPositionsArray;
 			topology = quadGrid.CreateManifold(out vertexPositionsArray);
@@ -108,7 +108,7 @@ namespace Experilous.Topological.Tests
 
 		public void CreateDistortedHexGrid(int width, int height, int seed)
 		{
-			var hexGrid = RectangularHexGrid.Create(HexGridDescriptor.standardCornerUp, Vector3.zero, Quaternion.identity, false, false, new Index2D(width, height));
+			var hexGrid = RectangularHexGrid.Create(HexGridDescriptor.standardCornerUp, Vector3.zero, Quaternion.identity, false, false, new IntVector2(width, height));
 			surface = hexGrid;
 			Vector3[] vertexPositionsArray;
 			topology = hexGrid.CreateManifold(out vertexPositionsArray);

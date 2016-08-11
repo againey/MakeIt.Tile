@@ -9,7 +9,7 @@ namespace Experilous.Topological
 {
 	public class RectangularQuadGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{
-		public Index2D size;
+		public IntVector2 size;
 		public Topology topology;
 
 		public Vector3 faceAxis0;
@@ -26,12 +26,12 @@ namespace Experilous.Topological
 		[SerializeField] private int _internalFaceCount;
 		[SerializeField] private int _externalFaceCount;
 
-		public static RectangularQuadGrid Create(PlanarDescriptor planarDescriptor, Index2D size)
+		public static RectangularQuadGrid Create(PlanarDescriptor planarDescriptor, IntVector2 size)
 		{
 			return CreateInstance<RectangularQuadGrid>().Reset(planarDescriptor, size);
 		}
 
-		public RectangularQuadGrid Reset(PlanarDescriptor planarDescriptor, Index2D size)
+		public RectangularQuadGrid Reset(PlanarDescriptor planarDescriptor, IntVector2 size)
 		{
 			Reset(planarDescriptor);
 			faceAxis0 = planarDescriptor.axis0.vector;
@@ -169,9 +169,9 @@ namespace Experilous.Topological
 
 		#region IFaceIndexer2D Methods
 
-		public Index2D GetFaceIndex2D(int internalFaceIndex)
+		public IntVector2 GetFaceIndex2D(int internalFaceIndex)
 		{
-			return new Index2D(
+			return new IntVector2(
 				internalFaceIndex % _faceAxis0Count,
 				internalFaceIndex / _faceAxis0Count);
 		}
@@ -183,35 +183,35 @@ namespace Experilous.Topological
 
 		public int FaceWrapX(int x)
 		{
-			return axis0.isWrapped ? MathUtility.Modulo(x, _faceAxis0Count) : x;
+			return axis0.isWrapped ? MathTools.Modulo(x, _faceAxis0Count) : x;
 		}
 
 		public int FaceWrapY(int y)
 		{
-			return axis1.isWrapped ? MathUtility.Modulo(y, _faceAxis1Count) : y;
+			return axis1.isWrapped ? MathTools.Modulo(y, _faceAxis1Count) : y;
 		}
 
-		public Topology.Face GetFace(Index2D index) { return topology.faces[GetFaceIndex(index.x, index.y)]; }
+		public Topology.Face GetFace(IntVector2 index) { return topology.faces[GetFaceIndex(index.x, index.y)]; }
 		public Topology.Face GetFace(int x, int y) { return topology.faces[GetFaceIndex(x, y)]; }
-		public int GetFaceIndex(Index2D index) { return GetFaceIndex(index.x, index.y); }
+		public int GetFaceIndex(IntVector2 index) { return GetFaceIndex(index.x, index.y); }
 
-		public Index2D GetFaceIndex2D(Topology.Face internalFace) { return GetFaceIndex2D(internalFace.index); }
+		public IntVector2 GetFaceIndex2D(Topology.Face internalFace) { return GetFaceIndex2D(internalFace.index); }
 
-		public Index2D FaceWrap(int x, int y) { return new Index2D(FaceWrapX(x), FaceWrapY(y)); }
-		public Index2D FaceWrap(Index2D index) { return new Index2D(FaceWrapX(index.x), FaceWrapY(index.y)); }
+		public IntVector2 FaceWrap(int x, int y) { return new IntVector2(FaceWrapX(x), FaceWrapY(y)); }
+		public IntVector2 FaceWrap(IntVector2 index) { return new IntVector2(FaceWrapX(index.x), FaceWrapY(index.y)); }
 
-		public Topology.Face GetWrappedFace(Index2D index) { return GetFace(FaceWrap(index)); }
+		public Topology.Face GetWrappedFace(IntVector2 index) { return GetFace(FaceWrap(index)); }
 		public Topology.Face GetWrappedFace(int x, int y) { return GetFace(FaceWrap(x, y)); }
-		public int GetWrappedFaceIndex(Index2D index) { return GetFaceIndex(FaceWrap(index)); }
+		public int GetWrappedFaceIndex(IntVector2 index) { return GetFaceIndex(FaceWrap(index)); }
 		public int GetWrappedFaceIndex(int x, int y) { return GetFaceIndex(FaceWrap(x, y)); }
 
 		#endregion
 
 		#region IVertexIndexer2D Methods
 
-		public Index2D GetVertexIndex2D(int vertexIndex)
+		public IntVector2 GetVertexIndex2D(int vertexIndex)
 		{
-			return new Index2D(
+			return new IntVector2(
 				vertexIndex % _vertexAxis0Count,
 				vertexIndex / _vertexAxis0Count);
 		}
@@ -223,26 +223,26 @@ namespace Experilous.Topological
 
 		public int VertexWrapX(int x)
 		{
-			return axis0.isWrapped ? MathUtility.Modulo(x, _vertexAxis0Count) : x;
+			return axis0.isWrapped ? MathTools.Modulo(x, _vertexAxis0Count) : x;
 		}
 
 		public int VertexWrapY(int y)
 		{
-			return axis1.isWrapped ? MathUtility.Modulo(y, _vertexAxis1Count) : y;
+			return axis1.isWrapped ? MathTools.Modulo(y, _vertexAxis1Count) : y;
 		}
 
-		public Topology.Vertex GetVertex(Index2D index) { return topology.vertices[GetVertexIndex(index.x, index.y)]; }
+		public Topology.Vertex GetVertex(IntVector2 index) { return topology.vertices[GetVertexIndex(index.x, index.y)]; }
 		public Topology.Vertex GetVertex(int x, int y) { return topology.vertices[GetVertexIndex(x, y)]; }
-		public int GetVertexIndex(Index2D index) { return GetVertexIndex(index.x, index.y); }
+		public int GetVertexIndex(IntVector2 index) { return GetVertexIndex(index.x, index.y); }
 
-		public Index2D GetVertexIndex2D(Topology.Vertex vertex) { return GetVertexIndex2D(vertex.index); }
+		public IntVector2 GetVertexIndex2D(Topology.Vertex vertex) { return GetVertexIndex2D(vertex.index); }
 
-		public Index2D VertexWrap(int x, int y) { return new Index2D(VertexWrapX(x), VertexWrapY(y)); }
-		public Index2D VertexWrap(Index2D index) { return new Index2D(VertexWrapX(index.x), VertexWrapY(index.y)); }
+		public IntVector2 VertexWrap(int x, int y) { return new IntVector2(VertexWrapX(x), VertexWrapY(y)); }
+		public IntVector2 VertexWrap(IntVector2 index) { return new IntVector2(VertexWrapX(index.x), VertexWrapY(index.y)); }
 
-		public Topology.Vertex GetWrappedVertex(Index2D index) { return GetVertex(VertexWrap(index)); }
+		public Topology.Vertex GetWrappedVertex(IntVector2 index) { return GetVertex(VertexWrap(index)); }
 		public Topology.Vertex GetWrappedVertex(int x, int y) { return GetVertex(VertexWrap(x, y)); }
-		public int GetWrappedVertexIndex(Index2D index) { return GetVertexIndex(VertexWrap(index)); }
+		public int GetWrappedVertexIndex(IntVector2 index) { return GetVertexIndex(VertexWrap(index)); }
 		public int GetWrappedVertexIndex(int x, int y) { return GetVertexIndex(VertexWrap(x, y)); }
 
 		#endregion

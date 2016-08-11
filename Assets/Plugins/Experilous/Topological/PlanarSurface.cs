@@ -70,28 +70,28 @@ namespace Experilous.Topological
 
 		public override Vector3 Intersect(Ray ray)
 		{
-			return GeometryUtility.Intersect(plane, ray);
+			return GeometryTools.Intersect(plane, ray);
 		}
 
 		public override Vector3 Intersect(ScaledRay ray)
 		{
-			return GeometryUtility.Intersect(plane, ray);
+			return GeometryTools.Intersect(plane, ray);
 		}
 
 		public override bool Intersect(Ray ray, out Vector3 intersection)
 		{
-			return GeometryUtility.Intersect(plane, ray, out intersection);
+			return GeometryTools.Intersect(plane, ray, out intersection);
 		}
 
 		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
 		{
-			return GeometryUtility.Intersect(plane, ray, out intersection);
+			return GeometryTools.Intersect(plane, ray, out intersection);
 		}
 
 		public override Vector3 Project(Vector3 position)
 		{
 			var line = new Ray(position, plane.normal);
-			return GeometryUtility.Intersect(plane, line);
+			return GeometryTools.Intersect(plane, line);
 		}
 
 		public override Vector3 GetNormal(Vector3 position)
@@ -99,9 +99,9 @@ namespace Experilous.Topological
 			return surfaceNormal;
 		}
 
-		public Index2D GetWrapIndex2D(Vector3 position)
+		public IntVector2 GetWrapIndex2D(Vector3 position)
 		{
-			Index2D index2D = new Index2D(0, 0);
+			IntVector2 index2D = new IntVector2(0, 0);
 			var relativePosition = position - origin;
 			if (axis0.isWrapped)
 			{

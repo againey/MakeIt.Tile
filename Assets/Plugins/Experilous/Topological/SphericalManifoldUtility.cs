@@ -172,11 +172,11 @@ namespace Experilous.Topological
 			Func<Vector3, Vector3, float, Vector3> interpolator;
 			if (circumsphereRadius == 1f)
 			{
-				interpolator = (Vector3 p0, Vector3 p1, float t) => { return GeometryUtility.SlerpUnitVectors(p0, p1, t); };
+				interpolator = (Vector3 p0, Vector3 p1, float t) => { return GeometryTools.SlerpUnitVectors(p0, p1, t); };
 			}
 			else
 			{
-				interpolator = (Vector3 p0, Vector3 p1, float t) => { return GeometryUtility.SlerpUnitVectors(p0 / circumsphereRadius, p1 / circumsphereRadius, t) * circumsphereRadius; };
+				interpolator = (Vector3 p0, Vector3 p1, float t) => { return GeometryTools.SlerpUnitVectors(p0 / circumsphereRadius, p1 / circumsphereRadius, t) * circumsphereRadius; };
 			}
 			ManifoldUtility.Subdivide(topology, vertexPositions, degree, interpolator, out subdividedTopology, out subdividedVertexPositions);
 		}

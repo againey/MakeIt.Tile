@@ -57,7 +57,7 @@ namespace Experilous.Topological
 
 			public void Intersect(Vector3 p0, Vector3 p1, out Vector3 underIntersection, out Vector3 overIntersection)
 			{
-				if (GeometryUtility.Intersect(_plane, p0, p1, out underIntersection))
+				if (GeometryTools.Intersect(_plane, p0, p1, out underIntersection))
 				{
 					overIntersection = underIntersection;
 				}

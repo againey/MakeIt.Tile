@@ -117,7 +117,7 @@ namespace Experilous.Examples.Topological
 				HexGridDescriptor.CreateSideUp(true, HexGridAxisStyles.StaggeredSymmetric),
 				Vector3.zero, Quaternion.identity,
 				false, false,
-				new Index2D(topologyWidth, topologyHeight));
+				new IntVector2(topologyWidth, topologyHeight));
 
 			_surface = hexGridSurface;
 

@@ -22,7 +22,7 @@ namespace Experilous.Topological
 				var p0 = vertexPositions[vertexEdge.next.farVertex];
 				var p1 = vertexPositions[vertexEdge.nearVertex];
 				var p2 = vertexPositions[vertexEdge.farVertex];
-				vertexAngles[vertexEdge] = GeometryUtility.AngleBetweenVectors(p1 - p0, p2 - p0);
+				vertexAngles[vertexEdge] = GeometryTools.AngleBetweenVectors(p1 - p0, p2 - p0);
 			}
 
 			return vertexAngles;
@@ -74,7 +74,7 @@ namespace Experilous.Topological
 				var p0 = vertexPositions[faceEdge.prev.prevVertex];
 				var p1 = vertexPositions[faceEdge.prevVertex];
 				var p2 = vertexPositions[faceEdge.nextVertex];
-				faceAngles[faceEdge] = GeometryUtility.AngleBetweenVectors(p1 - p0, p2 - p0);
+				faceAngles[faceEdge] = GeometryTools.AngleBetweenVectors(p1 - p0, p2 - p0);
 			}
 
 			return faceAngles;
@@ -92,7 +92,7 @@ namespace Experilous.Topological
 				var p0 = faceCentroids[faceEdge.prev.farFace];
 				var p1 = faceCentroids[faceEdge.nearFace];
 				var p2 = faceCentroids[faceEdge.farFace];
-				faceAngles[faceEdge] = GeometryUtility.AngleBetweenVectors(p0 - p1, p2 - p1);
+				faceAngles[faceEdge] = GeometryTools.AngleBetweenVectors(p0 - p1, p2 - p1);
 			}
 
 			return faceAngles;
@@ -174,7 +174,7 @@ namespace Experilous.Topological
 				var v10 = Vector3.Cross(Vector3.Cross(p0 - p1, p1), p1);
 				var v12 = Vector3.Cross(Vector3.Cross(p2 - p1, p1), p1);
 
-				faceAngles[faceEdge] = GeometryUtility.AngleBetweenVectors(v10, v12);
+				faceAngles[faceEdge] = GeometryTools.AngleBetweenVectors(v10, v12);
 			}
 
 			return faceAngles;
@@ -299,8 +299,8 @@ namespace Experilous.Topological
 				var vertexPosition = vertexPositions[edge];
 
 				uvs[edge] = new Vector2(
-					GeometryUtility.GetIntersectionParameter(vPlane, new ScaledRay(vertexPosition, uAxisNeg)),
-					GeometryUtility.GetIntersectionParameter(uPlane, new ScaledRay(vertexPosition, vAxisNeg)));
+					GeometryTools.GetIntersectionParameter(vPlane, new ScaledRay(vertexPosition, uAxisNeg)),
+					GeometryTools.GetIntersectionParameter(uPlane, new ScaledRay(vertexPosition, vAxisNeg)));
 			}
 
 			return uvs;
@@ -320,8 +320,8 @@ namespace Experilous.Topological
 
 			foreach (var edge in faceEdges)
 			{
-				uvMin = GeometryUtility.AxisAlignedMin(uvMin, uvs[edge]);
-				uvMax = GeometryUtility.AxisAlignedMax(uvMax, uvs[edge]);
+				uvMin = GeometryTools.AxisAlignedMin(uvMin, uvs[edge]);
+				uvMax = GeometryTools.AxisAlignedMax(uvMax, uvs[edge]);
 			}
 
 			var uvRange = uvMax - uvMin;
@@ -386,7 +386,7 @@ namespace Experilous.Topological
 
 			FaceAttributeUtility.CalculateFaceEdgeMinAndRangeValues(faces, unnormalizedUVs, faceMinUVs, faceRangeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = AspectRatioTools.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -419,7 +419,7 @@ namespace Experilous.Topological
 
 			FaceAttributeUtility.CalculateCenteredFaceEdgeMinAndRangeValues(faces, unnormalizedEdgeUVs, unnormalizedFaceUVs, faceMinUVs, faceRangeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = AspectRatioTools.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -442,8 +442,8 @@ namespace Experilous.Topological
 
 				foreach (var edge in face.edges)
 				{
-					uvMin = GeometryUtility.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
-					uvMax = GeometryUtility.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
+					uvMin = GeometryTools.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
+					uvMax = GeometryTools.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
 				}
 
 				var uvRange = uvMax - uvMin;
@@ -462,7 +462,7 @@ namespace Experilous.Topological
 		{
 			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedUVs, uvs);
 
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = AspectRatioTools.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -471,8 +471,8 @@ namespace Experilous.Topological
 
 				foreach (var edge in face.edges)
 				{
-					uvMin = GeometryUtility.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
-					uvMax = GeometryUtility.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
+					uvMin = GeometryTools.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
+					uvMax = GeometryTools.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
 				}
 
 				var uvRange = uvMax - uvMin;
@@ -497,12 +497,12 @@ namespace Experilous.Topological
 
 				foreach (var edge in face.edges)
 				{
-					uvMin = GeometryUtility.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
-					uvMax = GeometryUtility.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
+					uvMin = GeometryTools.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
+					uvMax = GeometryTools.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
 				}
 
 				var center = unnormalizedFaceUVs[face];
-				var extent = GeometryUtility.AxisAlignedMax(uvMax - center, center - uvMin);
+				var extent = GeometryTools.AxisAlignedMax(uvMax - center, center - uvMin);
 				uvMin = center - extent;
 				var uvRange = extent * 2f;
 				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
@@ -520,7 +520,7 @@ namespace Experilous.Topological
 		{
 			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedEdgeUVs, edgeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = AspectRatioTools.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -529,12 +529,12 @@ namespace Experilous.Topological
 
 				foreach (var edge in face.edges)
 				{
-					uvMin = GeometryUtility.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
-					uvMax = GeometryUtility.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
+					uvMin = GeometryTools.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
+					uvMax = GeometryTools.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
 				}
 
 				var center = unnormalizedFaceUVs[face];
-				var extent = GeometryUtility.AxisAlignedMax(uvMax - center, center - uvMin);
+				var extent = GeometryTools.AxisAlignedMax(uvMax - center, center - uvMin);
 				uvMin = center - extent;
 				var uvRange = extent * 2f;
 				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
@@ -559,7 +559,7 @@ namespace Experilous.Topological
 
 			foreach (var face in faces)
 			{
-				faceMaxUVRange = GeometryUtility.AxisAlignedMax(faceMaxUVRange, faceRangeUVs[face]);
+				faceMaxUVRange = GeometryTools.AxisAlignedMax(faceMaxUVRange, faceRangeUVs[face]);
 			}
 
 			var faceMaxUVExtent = faceMaxUVRange * 0.5f;

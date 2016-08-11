@@ -728,13 +728,13 @@ namespace Experilous.Topological
 				{
 					var sourcePosition = vertexPositions[s];
 					var targetPosition = vertexPositions[t];
-					return GeometryUtility.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return GeometryTools.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				(Topology.VertexEdge edge, int pathLength) =>
 				{
 					var sourcePosition = vertexPositions[edge.nearVertex];
 					var targetPosition = vertexPositions[edge.farVertex];
-					return GeometryUtility.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return GeometryTools.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				path);
 		}
@@ -746,14 +746,14 @@ namespace Experilous.Topological
 				{
 					var sourcePosition = facePositions[s];
 					var targetPosition = facePositions[t];
-					return GeometryUtility.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return GeometryTools.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				(Topology.FaceEdge edge, int pathLength) =>
 				{
 					if (edge.isOuterBoundary) return float.PositiveInfinity;
 					var sourcePosition = facePositions[edge.nearFace];
 					var targetPosition = facePositions[edge.farFace];
-					return GeometryUtility.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return GeometryTools.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				path);
 		}

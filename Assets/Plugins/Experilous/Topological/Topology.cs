@@ -129,8 +129,8 @@ namespace Experilous.Topological
 		{
 			if (firstExternalFaceIndex < faceFirstEdgeIndices.Length) throw new InvalidOperationException("A dual topology cannot be derived from a topology with external faces.");
 
-			Utility.Swap(ref vertexNeighborCounts, ref faceNeighborCounts);
-			Utility.Swap(ref vertexFirstEdgeIndices, ref faceFirstEdgeIndices);
+			MiscTools.Swap(ref vertexNeighborCounts, ref faceNeighborCounts);
+			MiscTools.Swap(ref vertexFirstEdgeIndices, ref faceFirstEdgeIndices);
 
 			firstExternalFaceIndex = faceFirstEdgeIndices.Length;
 

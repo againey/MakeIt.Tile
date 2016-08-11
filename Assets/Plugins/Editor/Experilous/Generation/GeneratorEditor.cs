@@ -78,7 +78,7 @@ namespace Experilous.Generation
 					if (field.FieldType == typeof(List<OutputSlot>)) continue;
 					if (!IsInAssetGeneratorSubclass(field)) continue;
 
-					var labelAttribute = Utility.GetAttribute<LabelAttribute>(field);
+					var labelAttribute = MiscTools.GetAttribute<LabelAttribute>(field);
 					var labelContent = new GUIContent(
 						labelAttribute != null ? labelAttribute.text : property.displayName,
 						property.tooltip);

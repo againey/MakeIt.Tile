@@ -186,7 +186,7 @@ namespace Experilous.Topological
 
 		private IndexedVertexAttributeArrays GetIndexedVertexAttributeArrays(Submesh submesh, int index)
 		{
-			if (ThreadUtility.isMainThread)
+			if (ThreadTools.isMainThread)
 			{
 				return _cachedIndexedVertexAttributeArrays.MoveTo(submesh, index);
 			}

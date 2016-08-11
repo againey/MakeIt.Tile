@@ -16,7 +16,7 @@ namespace Experilous.Topological
 		public bool midpointIsFirstAxis;
 		public HexGridAxisStyles axisStyle;
 
-		public Index2D size;
+		public IntVector2 size;
 		public Topology topology;
 
 		[SerializeField] private bool _originIsObtuse;
@@ -72,12 +72,12 @@ namespace Experilous.Topological
 		[SerializeField] private int _vertexInterceptOffsetOdd;
 		[SerializeField] private int _vertexInterceptOffsetLast;
 
-		public static RectangularHexGrid Create(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, Index2D size)
+		public static RectangularHexGrid Create(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, IntVector2 size)
 		{
 			return CreateInstance<RectangularHexGrid>().Reset(hexDescriptor, origin, rotation, isAxisWrapped0, isAxisWrapped1, size);
 		}
 
-		public RectangularHexGrid Reset(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, Index2D size)
+		public RectangularHexGrid Reset(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, IntVector2 size)
 		{
 			midpoint = hexDescriptor.midpoint;
 			majorCorner = hexDescriptor.majorCorner;
@@ -109,7 +109,7 @@ namespace Experilous.Topological
 
 			if (!midpointIsFirstAxis)
 			{
-				Utility.Swap(ref _faceAxis0, ref _faceAxis1);
+				MiscTools.Swap(ref _faceAxis0, ref _faceAxis1);
 			}
 
 			Reset(new PlanarDescriptor(_faceAxis0 * size.x, isAxisWrapped0, _faceAxis1 * size.y, isAxisWrapped1, origin, rotation * Vector3.back));
@@ -148,9 +148,9 @@ namespace Experilous.Topological
 			if (Vector3.Cross(axis0.vector, axis1.vector).sqrMagnitude < 0.001f)
 				throw new InvalidTopologyException("A planar surface cannot have nearly colinear axes.");
 
-			if (Mathf.Abs(GeometryUtility.SinMagnitude(midpoint, majorCorner)) < 0.001f ||
-				Mathf.Abs(GeometryUtility.SinMagnitude(midpoint, minorCorner)) < 0.001f ||
-				Mathf.Abs(GeometryUtility.SinMagnitude(minorCorner, majorCorner)) < 0.001f)
+			if (Mathf.Abs(GeometryTools.SinMagnitude(midpoint, majorCorner)) < 0.001f ||
+				Mathf.Abs(GeometryTools.SinMagnitude(midpoint, minorCorner)) < 0.001f ||
+				Mathf.Abs(GeometryTools.SinMagnitude(minorCorner, majorCorner)) < 0.001f)
 				throw new InvalidTopologyException("A hexagonal grid cell shape cannot have nearly colinear defining vectors.");
 		}
 
@@ -216,7 +216,7 @@ namespace Experilous.Topological
 			}
 
 			_vertexRowFirstIndentNextFront = _vertexRowEvenIndentNextFront;
-			_vertexRowLastIndentNextFront = MathUtility.IsEven(_faceRowCount) ? _vertexRowEvenIndentNextFront : _vertexRowOddIndentNextFront;
+			_vertexRowLastIndentNextFront = MathTools.IsEven(_faceRowCount) ? _vertexRowEvenIndentNextFront : _vertexRowOddIndentNextFront;
 
 			// If row lengths are variable so that there's a symmetry on both ends of the rows, then
 			// the indentation on the back end is identical to that on the front end.
@@ -243,12 +243,12 @@ namespace Experilous.Topological
 			_faceColumnCountEven = (axisStyle == HexGridAxisStyles.StaggeredSymmetric && _vertexRowEvenIndentNextFront && !_vertexRowOddIndentNextFront) ? _faceColumnCount - 1 : _faceColumnCount;
 			_faceColumnCountOdd = (axisStyle == HexGridAxisStyles.StaggeredSymmetric && _vertexRowOddIndentNextFront && !_vertexRowEvenIndentNextFront) ? _faceColumnCount - 1 : _faceColumnCount;
 			_faceColumnCountFirst = _faceColumnCountEven;
-			_faceColumnCountLast = MathUtility.IsEven(_faceRowCount) ? _faceColumnCountOdd : _faceColumnCountEven;
+			_faceColumnCountLast = MathTools.IsEven(_faceRowCount) ? _faceColumnCountOdd : _faceColumnCountEven;
 			_faceColumnCountPair = _faceColumnCountEven + _faceColumnCountOdd;
 
 			_faceOffset = _faceColumnCount - _faceColumnCountEven;
 
-			_internalFaceCount = _faceColumnCountPair * (_faceRowCount / 2) + (MathUtility.IsEven(_faceRowCount) ? 0 : _faceColumnCountLast);
+			_internalFaceCount = _faceColumnCountPair * (_faceRowCount / 2) + (MathTools.IsEven(_faceRowCount) ? 0 : _faceColumnCountLast);
 
 			if (axis0.isWrapped && axis1.isWrapped)
 			{
@@ -330,8 +330,8 @@ namespace Experilous.Topological
 			// wrapping around column ends, while the intercept offset is instead based on the number of vertex
 			// rows, thus taking into account wrapping around column ends.  This is due to how each of these is
 			// used in various functions.
-			_vertexUpperOffsetLast = MathUtility.IsEven(_faceRowCount) ? _vertexUpperOffsetOdd : _vertexUpperOffsetEven;
-			_vertexInterceptOffsetLast = MathUtility.IsEven(_vertexRowCount) ? _vertexInterceptOffsetOdd : _vertexInterceptOffsetEven;
+			_vertexUpperOffsetLast = MathTools.IsEven(_faceRowCount) ? _vertexUpperOffsetOdd : _vertexUpperOffsetEven;
+			_vertexInterceptOffsetLast = MathTools.IsEven(_vertexRowCount) ? _vertexInterceptOffsetOdd : _vertexInterceptOffsetEven;
 
 			// If not wrapping at all, then the first and last row offsets might need adjustment,
 			// since the first and last rows might have a different arrangement of verticies than
@@ -424,8 +424,8 @@ namespace Experilous.Topological
 			{
 				int col, row;
 				GetVertexColRow(i, out col, out row);
-				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble + (MathUtility.IsOdd(col) ? oddCorner : evenCorner);
-				if (MathUtility.IsOdd(row)) vertexPosition += oddRowOffset;
+				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble + (MathTools.IsOdd(col) ? oddCorner : evenCorner);
+				if (MathTools.IsOdd(row)) vertexPosition += oddRowOffset;
 				vertexPositions[i] = vertexPosition;
 			}
 
@@ -529,9 +529,9 @@ namespace Experilous.Topological
 			}
 		}
 
-		public Index2D GetFaceIndex2D(int internalFaceIndex)
+		public IntVector2 GetFaceIndex2D(int internalFaceIndex)
 		{
-			Index2D index2D;
+			IntVector2 index2D;
 			if (!_reverseColumnsRows)
 			{
 				GetFaceColRow(internalFaceIndex, out index2D.x, out index2D.y);
@@ -558,18 +558,18 @@ namespace Experilous.Topological
 			throw new NotImplementedException();
 		}
 
-		public Topology.Face GetFace(Index2D index) { return topology.faces[GetFaceIndex(index.x, index.y)]; }
+		public Topology.Face GetFace(IntVector2 index) { return topology.faces[GetFaceIndex(index.x, index.y)]; }
 		public Topology.Face GetFace(int x, int y) { return topology.faces[GetFaceIndex(x, y)]; }
-		public int GetFaceIndex(Index2D index) { return GetFaceIndex(index.x, index.y); }
+		public int GetFaceIndex(IntVector2 index) { return GetFaceIndex(index.x, index.y); }
 
-		public Index2D GetFaceIndex2D(Topology.Face internalFace) { return GetFaceIndex2D(internalFace.index); }
+		public IntVector2 GetFaceIndex2D(Topology.Face internalFace) { return GetFaceIndex2D(internalFace.index); }
 
-		public Index2D FaceWrap(int x, int y) { return new Index2D(FaceWrapX(x), FaceWrapY(y)); }
-		public Index2D FaceWrap(Index2D index) { return new Index2D(FaceWrapX(index.x), FaceWrapY(index.y)); }
+		public IntVector2 FaceWrap(int x, int y) { return new IntVector2(FaceWrapX(x), FaceWrapY(y)); }
+		public IntVector2 FaceWrap(IntVector2 index) { return new IntVector2(FaceWrapX(index.x), FaceWrapY(index.y)); }
 
-		public Topology.Face GetWrappedFace(Index2D index) { return GetFace(FaceWrap(index)); }
+		public Topology.Face GetWrappedFace(IntVector2 index) { return GetFace(FaceWrap(index)); }
 		public Topology.Face GetWrappedFace(int x, int y) { return GetFace(FaceWrap(x, y)); }
-		public int GetWrappedFaceIndex(Index2D index) { return GetFaceIndex(FaceWrap(index)); }
+		public int GetWrappedFaceIndex(IntVector2 index) { return GetFaceIndex(FaceWrap(index)); }
 		public int GetWrappedFaceIndex(int x, int y) { return GetFaceIndex(FaceWrap(x, y)); }
 
 		#endregion
@@ -586,7 +586,7 @@ namespace Experilous.Topological
 			else if (vertexIndex < _vertexCount - _vertexColumnCountLast)
 			{
 				row = (vertexIndex - _vertexColumnCountFirst) / _vertexColumnCount + 1;
-				col = vertexIndex - (_vertexColumnCount * row + (MathUtility.IsEven(row) ? _vertexInterceptOffsetEven : _vertexInterceptOffsetOdd));
+				col = vertexIndex - (_vertexColumnCount * row + (MathTools.IsEven(row) ? _vertexInterceptOffsetEven : _vertexInterceptOffsetOdd));
 			}
 			else
 			{
@@ -595,9 +595,9 @@ namespace Experilous.Topological
 			}
 		}
 
-		public Index2D GetVertexIndex2D(int vertexIndex)
+		public IntVector2 GetVertexIndex2D(int vertexIndex)
 		{
-			Index2D index2D;
+			IntVector2 index2D;
 			if (!_reverseColumnsRows)
 			{
 				GetVertexColRow(vertexIndex, out index2D.x, out index2D.y);
@@ -624,18 +624,18 @@ namespace Experilous.Topological
 			throw new NotImplementedException();
 		}
 
-		public Topology.Vertex GetVertex(Index2D index) { return topology.vertices[GetVertexIndex(index.x, index.y)]; }
+		public Topology.Vertex GetVertex(IntVector2 index) { return topology.vertices[GetVertexIndex(index.x, index.y)]; }
 		public Topology.Vertex GetVertex(int x, int y) { return topology.vertices[GetVertexIndex(x, y)]; }
-		public int GetVertexIndex(Index2D index) { return GetVertexIndex(index.x, index.y); }
+		public int GetVertexIndex(IntVector2 index) { return GetVertexIndex(index.x, index.y); }
 
-		public Index2D GetVertexIndex2D(Topology.Vertex vertex) { return GetVertexIndex2D(vertex.index); }
+		public IntVector2 GetVertexIndex2D(Topology.Vertex vertex) { return GetVertexIndex2D(vertex.index); }
 
-		public Index2D VertexWrap(int x, int y) { return new Index2D(VertexWrapX(x), VertexWrapY(y)); }
-		public Index2D VertexWrap(Index2D index) { return new Index2D(VertexWrapX(index.x), VertexWrapY(index.y)); }
+		public IntVector2 VertexWrap(int x, int y) { return new IntVector2(VertexWrapX(x), VertexWrapY(y)); }
+		public IntVector2 VertexWrap(IntVector2 index) { return new IntVector2(VertexWrapX(index.x), VertexWrapY(index.y)); }
 
-		public Topology.Vertex GetWrappedVertex(Index2D index) { return GetVertex(VertexWrap(index)); }
+		public Topology.Vertex GetWrappedVertex(IntVector2 index) { return GetVertex(VertexWrap(index)); }
 		public Topology.Vertex GetWrappedVertex(int x, int y) { return GetVertex(VertexWrap(x, y)); }
-		public int GetWrappedVertexIndex(Index2D index) { return GetVertexIndex(VertexWrap(index)); }
+		public int GetWrappedVertexIndex(IntVector2 index) { return GetVertexIndex(VertexWrap(index)); }
 		public int GetWrappedVertexIndex(int x, int y) { return GetVertexIndex(VertexWrap(x, y)); }
 
 		#endregion
@@ -693,7 +693,7 @@ namespace Experilous.Topological
 			{
 				return _vertexLowerOffsetFirst;
 			}
-			else if (MathUtility.IsEven(row))
+			else if (MathTools.IsEven(row))
 			{
 				return _vertexLowerOffsetEven;
 			}
@@ -709,7 +709,7 @@ namespace Experilous.Topological
 			{
 				return _vertexUpperOffsetLast;
 			}
-			else if (MathUtility.IsEven(row))
+			else if (MathTools.IsEven(row))
 			{
 				return _vertexUpperOffsetEven;
 			}

@@ -17,7 +17,7 @@ namespace Experilous.Generation
 
 		public static TGenerator CreateInstance<TGenerator>(GeneratorExecutive executive) where TGenerator : Generator
 		{
-			var assetGeneratorAttribute = Utility.GetAttribute<GeneratorAttribute>(typeof(TGenerator));
+			var assetGeneratorAttribute = MiscTools.GetAttribute<GeneratorAttribute>(typeof(TGenerator));
 			if (assetGeneratorAttribute != null)
 			{
 				return CreateInstance<TGenerator>(executive, assetGeneratorAttribute.name);

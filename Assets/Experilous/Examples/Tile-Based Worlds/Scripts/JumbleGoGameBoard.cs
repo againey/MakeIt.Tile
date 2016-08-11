@@ -163,18 +163,18 @@ namespace Experilous.Examples.Topological
 
 			if (squaresToggle.isOn)
 			{
-				Index2D boardSize;
+				IntVector2 boardSize;
 				if (smallToggle.isOn)
 				{
-					boardSize = new Index2D(9, 9);
+					boardSize = new IntVector2(9, 9);
 				}
 				else if (mediumToggle.isOn)
 				{
-					boardSize = new Index2D(13, 13);
+					boardSize = new IntVector2(13, 13);
 				}
 				else
 				{
-					boardSize = new Index2D(19, 19);
+					boardSize = new IntVector2(19, 19);
 				}
 				_surface = RectangularQuadGrid.Create(
 					new PlanarDescriptor(Vector3.right, Vector3.up),
@@ -184,18 +184,18 @@ namespace Experilous.Examples.Topological
 			}
 			else if (hexesToggle.isOn)
 			{
-				Index2D boardSize;
+				IntVector2 boardSize;
 				if (smallToggle.isOn)
 				{
-					boardSize = new Index2D(9, 9);
+					boardSize = new IntVector2(9, 9);
 				}
 				else if (mediumToggle.isOn)
 				{
-					boardSize = new Index2D(13, 13);
+					boardSize = new IntVector2(13, 13);
 				}
 				else
 				{
-					boardSize = new Index2D(19, 19);
+					boardSize = new IntVector2(19, 19);
 				}
 				_surface = RectangularHexGrid.Create(
 					HexGridDescriptor.CreateCornerUp(true, HexGridAxisStyles.StaggeredSymmetric),
@@ -207,18 +207,18 @@ namespace Experilous.Examples.Topological
 			}
 			else
 			{
-				Index2D boardSize;
+				IntVector2 boardSize;
 				if (smallToggle.isOn)
 				{
-					boardSize = new Index2D(9, 9);
+					boardSize = new IntVector2(9, 9);
 				}
 				else if (mediumToggle.isOn)
 				{
-					boardSize = new Index2D(13, 13);
+					boardSize = new IntVector2(13, 13);
 				}
 				else
 				{
-					boardSize = new Index2D(19, 19);
+					boardSize = new IntVector2(19, 19);
 				}
 				_surface = RectangularHexGrid.Create(
 					HexGridDescriptor.CreateCornerUp(true, HexGridAxisStyles.StaggeredSymmetric),

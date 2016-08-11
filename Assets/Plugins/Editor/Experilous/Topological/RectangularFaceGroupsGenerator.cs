@@ -12,7 +12,7 @@ namespace Experilous.Topological
 	[Generator(typeof(TopologyGeneratorCollection), "Face Group/Rectangular")]
 	public class RectangularFaceGroupsGenerator : Generator
 	{
-		public Index2D axisDivisions;
+		public IntVector2 axisDivisions;
 
 		[AutoSelect] public InputSlot surfaceInputSlot;
 		[AutoSelect] public InputSlot topologyInputSlot;
@@ -30,7 +30,7 @@ namespace Experilous.Topological
 			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref facePositionsInputSlot, this);
 
 			// Fields
-			axisDivisions = new Index2D(1, 1);
+			axisDivisions = new IntVector2(1, 1);
 
 			// Outputs
 			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionOutputSlot, this, "Rectangular Face Groups", "Face Groups");
