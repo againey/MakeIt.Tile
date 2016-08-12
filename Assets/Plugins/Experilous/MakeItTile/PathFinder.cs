@@ -728,13 +728,13 @@ namespace Experilous.MakeIt.Tile
 				{
 					var sourcePosition = vertexPositions[s];
 					var targetPosition = vertexPositions[t];
-					return GeometryTools.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return MIGeometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				(Topology.VertexEdge edge, int pathLength) =>
 				{
 					var sourcePosition = vertexPositions[edge.nearVertex];
 					var targetPosition = vertexPositions[edge.farVertex];
-					return GeometryTools.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return MIGeometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				path);
 		}
@@ -746,14 +746,14 @@ namespace Experilous.MakeIt.Tile
 				{
 					var sourcePosition = facePositions[s];
 					var targetPosition = facePositions[t];
-					return GeometryTools.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return MIGeometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				(Topology.FaceEdge edge, int pathLength) =>
 				{
 					if (edge.isOuterBoundary) return float.PositiveInfinity;
 					var sourcePosition = facePositions[edge.nearFace];
 					var targetPosition = facePositions[edge.farFace];
-					return GeometryTools.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return MIGeometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				path);
 		}

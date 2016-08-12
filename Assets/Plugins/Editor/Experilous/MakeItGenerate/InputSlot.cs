@@ -166,7 +166,7 @@ namespace Experilous.MakeIt.Generate
 
 		public static bool ShouldAutoSelect(System.Reflection.FieldInfo field)
 		{
-			return MiscTools.GetAttribute<AutoSelectAttribute>(field) != null;
+			return MIUtilities.GetAttribute<AutoSelectAttribute>(field) != null;
 		}
 	}
 

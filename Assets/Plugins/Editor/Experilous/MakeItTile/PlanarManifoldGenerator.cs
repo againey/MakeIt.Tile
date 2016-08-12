@@ -345,8 +345,8 @@ namespace Experilous.MakeIt.Tile
 			Vector3 finalVerticalAxis;
 			//HexGridAxisStyles finalHorizontalAxisStyle;
 			//HexGridAxisStyles finalVerticalAxisStyle;
-			bool finalOriginIsObtuse;
-			bool finalVariableRowLength;
+			//bool finalOriginIsObtuse;
+			//bool finalVariableRowLength;
 
 			switch (hexGridHorizontalAxisOptions)
 			{
@@ -371,8 +371,8 @@ namespace Experilous.MakeIt.Tile
 				case HexGridAxisStyleOptions.ObliqueAcute:
 					//finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
 					//finalVerticalAxisStyle = HexGridAxisStyles.Straight;
-					finalOriginIsObtuse = false;
-					finalVariableRowLength = false;
+					//finalOriginIsObtuse = false;
+					//finalVariableRowLength = false;
 
 					if (hexGridAxisOptions != HexGridAxisOptions.Custom)
 					{
@@ -404,8 +404,8 @@ namespace Experilous.MakeIt.Tile
 				case HexGridAxisStyleOptions.ObliqueObtuse:
 					//finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
 					//finalVerticalAxisStyle = HexGridAxisStyles.Straight;
-					finalOriginIsObtuse = true;
-					finalVariableRowLength = false;
+					//finalOriginIsObtuse = true;
+					//finalVariableRowLength = false;
 
 					if (hexGridAxisOptions != HexGridAxisOptions.Custom)
 					{
@@ -438,8 +438,8 @@ namespace Experilous.MakeIt.Tile
 				case HexGridAxisStyleOptions.StaggeredVerticallyObtuse:
 					//finalHorizontalAxisStyle = HexGridAxisStyles.Straight;
 					//finalVerticalAxisStyle = HexGridAxisStyles.Staggered;
-					finalOriginIsObtuse = (hexGridAxisStyleOptions != HexGridAxisStyleOptions.StaggeredVerticallyAcute);
-					finalVariableRowLength = variableRowLength;
+					//finalOriginIsObtuse = (hexGridAxisStyleOptions != HexGridAxisStyleOptions.StaggeredVerticallyAcute);
+					//finalVariableRowLength = variableRowLength;
 					finalHorizontalAxis = basicHorizontalAxis;
 					finalVerticalAxis = basicVerticalAxis;
 					break;
@@ -447,15 +447,15 @@ namespace Experilous.MakeIt.Tile
 				case HexGridAxisStyleOptions.StaggeredHorizontallyObtuse:
 					//finalHorizontalAxisStyle = HexGridAxisStyles.Staggered;
 					//finalVerticalAxisStyle = HexGridAxisStyles.Straight;
-					finalOriginIsObtuse = (hexGridAxisStyleOptions != HexGridAxisStyleOptions.StaggeredHorizontallyAcute);
-					finalVariableRowLength = variableRowLength;
+					//finalOriginIsObtuse = (hexGridAxisStyleOptions != HexGridAxisStyleOptions.StaggeredHorizontallyAcute);
+					//finalVariableRowLength = variableRowLength;
 					finalHorizontalAxis = basicHorizontalAxis;
 					finalVerticalAxis = basicVerticalAxis;
 					break;
 				default: throw new System.NotImplementedException();
 			}
 
-			Vector3 finalNormal;
+			/*Vector3 finalNormal;
 			switch (normalOptions)
 			{
 				case NormalOptions.Automatic: finalNormal = Vector3.Cross(finalVerticalAxis, finalHorizontalAxis).normalized; break;
@@ -465,7 +465,7 @@ namespace Experilous.MakeIt.Tile
 				case NormalOptions.Down: finalNormal = Vector3.down; break;
 				case NormalOptions.Custom: finalNormal = normal.normalized; break;
 				default: throw new System.NotImplementedException();
-			}
+			}*/
 
 			if (size.x > 0 && size.y > 0)
 			{

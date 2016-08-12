@@ -23,7 +23,7 @@ namespace Experilous.MakeIt.Tile
 				var p0 = vertexPositions[vertexEdge.next.farVertex];
 				var p1 = vertexPositions[vertexEdge.nearVertex];
 				var p2 = vertexPositions[vertexEdge.farVertex];
-				vertexAngles[vertexEdge] = GeometryTools.AngleBetweenVectors(p1 - p0, p2 - p0);
+				vertexAngles[vertexEdge] = MIGeometry.AngleBetweenVectors(p1 - p0, p2 - p0);
 			}
 
 			return vertexAngles;
@@ -75,7 +75,7 @@ namespace Experilous.MakeIt.Tile
 				var p0 = vertexPositions[faceEdge.prev.prevVertex];
 				var p1 = vertexPositions[faceEdge.prevVertex];
 				var p2 = vertexPositions[faceEdge.nextVertex];
-				faceAngles[faceEdge] = GeometryTools.AngleBetweenVectors(p1 - p0, p2 - p0);
+				faceAngles[faceEdge] = MIGeometry.AngleBetweenVectors(p1 - p0, p2 - p0);
 			}
 
 			return faceAngles;
@@ -93,7 +93,7 @@ namespace Experilous.MakeIt.Tile
 				var p0 = faceCentroids[faceEdge.prev.farFace];
 				var p1 = faceCentroids[faceEdge.nearFace];
 				var p2 = faceCentroids[faceEdge.farFace];
-				faceAngles[faceEdge] = GeometryTools.AngleBetweenVectors(p0 - p1, p2 - p1);
+				faceAngles[faceEdge] = MIGeometry.AngleBetweenVectors(p0 - p1, p2 - p1);
 			}
 
 			return faceAngles;
@@ -175,7 +175,7 @@ namespace Experilous.MakeIt.Tile
 				var v10 = Vector3.Cross(Vector3.Cross(p0 - p1, p1), p1);
 				var v12 = Vector3.Cross(Vector3.Cross(p2 - p1, p1), p1);
 
-				faceAngles[faceEdge] = GeometryTools.AngleBetweenVectors(v10, v12);
+				faceAngles[faceEdge] = MIGeometry.AngleBetweenVectors(v10, v12);
 			}
 
 			return faceAngles;
@@ -300,8 +300,8 @@ namespace Experilous.MakeIt.Tile
 				var vertexPosition = vertexPositions[edge];
 
 				uvs[edge] = new Vector2(
-					GeometryTools.GetIntersectionParameter(vPlane, new ScaledRay(vertexPosition, uAxisNeg)),
-					GeometryTools.GetIntersectionParameter(uPlane, new ScaledRay(vertexPosition, vAxisNeg)));
+					MIGeometry.GetIntersectionParameter(vPlane, new ScaledRay(vertexPosition, uAxisNeg)),
+					MIGeometry.GetIntersectionParameter(uPlane, new ScaledRay(vertexPosition, vAxisNeg)));
 			}
 
 			return uvs;
@@ -321,8 +321,8 @@ namespace Experilous.MakeIt.Tile
 
 			foreach (var edge in faceEdges)
 			{
-				uvMin = GeometryTools.AxisAlignedMin(uvMin, uvs[edge]);
-				uvMax = GeometryTools.AxisAlignedMax(uvMax, uvs[edge]);
+				uvMin = MIGeometry.AxisAlignedMin(uvMin, uvs[edge]);
+				uvMax = MIGeometry.AxisAlignedMax(uvMax, uvs[edge]);
 			}
 
 			var uvRange = uvMax - uvMin;
@@ -387,7 +387,7 @@ namespace Experilous.MakeIt.Tile
 
 			FaceAttributeUtility.CalculateFaceEdgeMinAndRangeValues(faces, unnormalizedUVs, faceMinUVs, faceRangeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioTools.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = MIAspectRatio.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -420,7 +420,7 @@ namespace Experilous.MakeIt.Tile
 
 			FaceAttributeUtility.CalculateCenteredFaceEdgeMinAndRangeValues(faces, unnormalizedEdgeUVs, unnormalizedFaceUVs, faceMinUVs, faceRangeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioTools.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = MIAspectRatio.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -443,8 +443,8 @@ namespace Experilous.MakeIt.Tile
 
 				foreach (var edge in face.edges)
 				{
-					uvMin = GeometryTools.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
-					uvMax = GeometryTools.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
+					uvMin = MIGeometry.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
+					uvMax = MIGeometry.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
 				}
 
 				var uvRange = uvMax - uvMin;
@@ -463,7 +463,7 @@ namespace Experilous.MakeIt.Tile
 		{
 			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedUVs, uvs);
 
-			var aspectRatioPreservationDelegate = AspectRatioTools.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = MIAspectRatio.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -472,8 +472,8 @@ namespace Experilous.MakeIt.Tile
 
 				foreach (var edge in face.edges)
 				{
-					uvMin = GeometryTools.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
-					uvMax = GeometryTools.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
+					uvMin = MIGeometry.AxisAlignedMin(uvMin, unnormalizedUVs[edge]);
+					uvMax = MIGeometry.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
 				}
 
 				var uvRange = uvMax - uvMin;
@@ -498,12 +498,12 @@ namespace Experilous.MakeIt.Tile
 
 				foreach (var edge in face.edges)
 				{
-					uvMin = GeometryTools.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
-					uvMax = GeometryTools.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
+					uvMin = MIGeometry.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
+					uvMax = MIGeometry.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
 				}
 
 				var center = unnormalizedFaceUVs[face];
-				var extent = GeometryTools.AxisAlignedMax(uvMax - center, center - uvMin);
+				var extent = MIGeometry.AxisAlignedMax(uvMax - center, center - uvMin);
 				uvMin = center - extent;
 				var uvRange = extent * 2f;
 				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
@@ -521,7 +521,7 @@ namespace Experilous.MakeIt.Tile
 		{
 			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedEdgeUVs, edgeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioTools.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = MIAspectRatio.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -530,12 +530,12 @@ namespace Experilous.MakeIt.Tile
 
 				foreach (var edge in face.edges)
 				{
-					uvMin = GeometryTools.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
-					uvMax = GeometryTools.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
+					uvMin = MIGeometry.AxisAlignedMin(uvMin, unnormalizedEdgeUVs[edge]);
+					uvMax = MIGeometry.AxisAlignedMax(uvMax, unnormalizedEdgeUVs[edge]);
 				}
 
 				var center = unnormalizedFaceUVs[face];
-				var extent = GeometryTools.AxisAlignedMax(uvMax - center, center - uvMin);
+				var extent = MIGeometry.AxisAlignedMax(uvMax - center, center - uvMin);
 				uvMin = center - extent;
 				var uvRange = extent * 2f;
 				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
@@ -560,7 +560,7 @@ namespace Experilous.MakeIt.Tile
 
 			foreach (var face in faces)
 			{
-				faceMaxUVRange = GeometryTools.AxisAlignedMax(faceMaxUVRange, faceRangeUVs[face]);
+				faceMaxUVRange = MIGeometry.AxisAlignedMax(faceMaxUVRange, faceRangeUVs[face]);
 			}
 
 			var faceMaxUVExtent = faceMaxUVRange * 0.5f;

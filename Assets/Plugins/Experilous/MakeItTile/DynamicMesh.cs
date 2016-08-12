@@ -187,7 +187,7 @@ namespace Experilous.MakeIt.Tile
 
 		private IndexedVertexAttributeArrays GetIndexedVertexAttributeArrays(Submesh submesh, int index)
 		{
-			if (ThreadTools.isMainThread)
+			if (MIThreading.isMainThread)
 			{
 				return _cachedIndexedVertexAttributeArrays.MoveTo(submesh, index);
 			}

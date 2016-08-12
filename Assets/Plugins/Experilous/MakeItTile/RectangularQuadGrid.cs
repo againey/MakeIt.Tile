@@ -184,12 +184,12 @@ namespace Experilous.MakeIt.Tile
 
 		public int FaceWrapX(int x)
 		{
-			return axis0.isWrapped ? MathTools.Modulo(x, _faceAxis0Count) : x;
+			return axis0.isWrapped ? MIMath.Modulo(x, _faceAxis0Count) : x;
 		}
 
 		public int FaceWrapY(int y)
 		{
-			return axis1.isWrapped ? MathTools.Modulo(y, _faceAxis1Count) : y;
+			return axis1.isWrapped ? MIMath.Modulo(y, _faceAxis1Count) : y;
 		}
 
 		public Topology.Face GetFace(IntVector2 index) { return topology.faces[GetFaceIndex(index.x, index.y)]; }
@@ -224,12 +224,12 @@ namespace Experilous.MakeIt.Tile
 
 		public int VertexWrapX(int x)
 		{
-			return axis0.isWrapped ? MathTools.Modulo(x, _vertexAxis0Count) : x;
+			return axis0.isWrapped ? MIMath.Modulo(x, _vertexAxis0Count) : x;
 		}
 
 		public int VertexWrapY(int y)
 		{
-			return axis1.isWrapped ? MathTools.Modulo(y, _vertexAxis1Count) : y;
+			return axis1.isWrapped ? MIMath.Modulo(y, _vertexAxis1Count) : y;
 		}
 
 		public Topology.Vertex GetVertex(IntVector2 index) { return topology.vertices[GetVertexIndex(index.x, index.y)]; }

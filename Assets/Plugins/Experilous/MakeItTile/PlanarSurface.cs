@@ -71,28 +71,28 @@ namespace Experilous.MakeIt.Tile
 
 		public override Vector3 Intersect(Ray ray)
 		{
-			return GeometryTools.Intersect(plane, ray);
+			return MIGeometry.Intersect(plane, ray);
 		}
 
 		public override Vector3 Intersect(ScaledRay ray)
 		{
-			return GeometryTools.Intersect(plane, ray);
+			return MIGeometry.Intersect(plane, ray);
 		}
 
 		public override bool Intersect(Ray ray, out Vector3 intersection)
 		{
-			return GeometryTools.Intersect(plane, ray, out intersection);
+			return MIGeometry.Intersect(plane, ray, out intersection);
 		}
 
 		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
 		{
-			return GeometryTools.Intersect(plane, ray, out intersection);
+			return MIGeometry.Intersect(plane, ray, out intersection);
 		}
 
 		public override Vector3 Project(Vector3 position)
 		{
 			var line = new Ray(position, plane.normal);
-			return GeometryTools.Intersect(plane, line);
+			return MIGeometry.Intersect(plane, line);
 		}
 
 		public override Vector3 GetNormal(Vector3 position)

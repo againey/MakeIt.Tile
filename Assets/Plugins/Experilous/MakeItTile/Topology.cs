@@ -130,8 +130,8 @@ namespace Experilous.MakeIt.Tile
 		{
 			if (firstExternalFaceIndex < faceFirstEdgeIndices.Length) throw new InvalidOperationException("A dual topology cannot be derived from a topology with external faces.");
 
-			MiscTools.Swap(ref vertexNeighborCounts, ref faceNeighborCounts);
-			MiscTools.Swap(ref vertexFirstEdgeIndices, ref faceFirstEdgeIndices);
+			MIUtilities.Swap(ref vertexNeighborCounts, ref faceNeighborCounts);
+			MIUtilities.Swap(ref vertexFirstEdgeIndices, ref faceFirstEdgeIndices);
 
 			firstExternalFaceIndex = faceFirstEdgeIndices.Length;
 
