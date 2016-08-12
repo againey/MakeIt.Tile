@@ -4,7 +4,7 @@
 
 using UnityEngine;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	public class PositionalEdgeAttribute : EdgeArrayAttribute<Vector3>
 	{

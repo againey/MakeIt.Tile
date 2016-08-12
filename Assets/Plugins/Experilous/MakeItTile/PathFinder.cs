@@ -6,9 +6,9 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Collections;
-using Experilous.Containers;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	public interface IPath
 	{

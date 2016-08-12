@@ -3,8 +3,9 @@
 \******************************************************************************/
 
 using UnityEngine;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	public interface ISurface
 	{

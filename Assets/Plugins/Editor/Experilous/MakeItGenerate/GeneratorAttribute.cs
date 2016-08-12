@@ -5,7 +5,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = true)]
 	public class GeneratorAttribute : Attribute

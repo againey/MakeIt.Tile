@@ -5,8 +5,9 @@
 #if UNITY_5_3
 using UnityEngine;
 using NUnit.Framework;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Topological.Tests
+namespace Experilous.MakeIt.Tile.Tests
 {
 	public class RectangularQuadGridTests
 	{

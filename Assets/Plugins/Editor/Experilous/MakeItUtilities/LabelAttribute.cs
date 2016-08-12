@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Experilous
+namespace Experilous.MakeIt.Utilities
 {
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
 	public class LabelAttribute : Attribute

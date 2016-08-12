@@ -4,9 +4,10 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Experilous.Randomization;
+using Experilous.MakeIt.Random;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	[Generator(typeof(GeneratorExecutive), "Utility/Random Engine")]
 	public class RandomEngineGenerator : Generator

@@ -5,7 +5,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Experilous
+namespace Experilous.MakeIt.Utilities
 {
 	[InitializeOnLoad]
 	public static class EditorGUILayoutExtensions

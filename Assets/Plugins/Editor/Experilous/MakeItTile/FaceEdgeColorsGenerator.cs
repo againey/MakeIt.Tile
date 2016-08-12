@@ -5,9 +5,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Experilous.Generation;
+using Experilous.MakeIt.Generate;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face Edge/Colors")]
 	public class FaceEdgeColorsGenerator : Generator

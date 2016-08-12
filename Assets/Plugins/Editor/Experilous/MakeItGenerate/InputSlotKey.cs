@@ -5,7 +5,7 @@
 using UnityEngine;
 using System;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	public class InputSlotKey : ScriptableObject
 	{

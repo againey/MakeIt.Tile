@@ -6,8 +6,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using System;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	[AddComponentMenu("Tile-Based Worlds/Face Spatial Partitioning Picker")]
 	public class FaceSpatialPartitioningPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler

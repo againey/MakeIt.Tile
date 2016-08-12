@@ -5,7 +5,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	public static class RandomnessDescriptorEditor
 	{

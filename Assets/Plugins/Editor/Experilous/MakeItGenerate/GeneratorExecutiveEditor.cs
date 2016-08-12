@@ -7,8 +7,9 @@ using UnityEditor;
 using UnityEditor.AnimatedValues;
 using System.Collections.Generic;
 using System.Reflection;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	[System.Serializable]
 	[CustomEditor(typeof(GeneratorExecutive), true)]

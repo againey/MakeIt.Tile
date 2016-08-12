@@ -3,11 +3,12 @@
 \******************************************************************************/
 
 using UnityEngine;
-using Experilous.Randomization;
-using Experilous.Topological;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.MakeIt.Random;
+using Experilous.MakeIt.Tile;
+using Experilous.MakeIt.Utilities;
 
 namespace Experilous.Examples.Topological
 {

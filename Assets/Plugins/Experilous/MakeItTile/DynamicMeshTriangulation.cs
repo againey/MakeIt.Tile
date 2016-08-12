@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	/// <summary>
 	/// Triangulates a topology face using a triangle strip pattern, not sharing vertices among other faces.

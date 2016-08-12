@@ -2,7 +2,7 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	public class FloatVertexAttribute : VertexArrayAttribute<float>
 	{

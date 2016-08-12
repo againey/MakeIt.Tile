@@ -4,9 +4,10 @@
 
 using UnityEngine;
 using UnityEngine.UI;
-using Experilous.Randomization;
-using Experilous.Topological;
 using System;
+using Experilous.MakeIt.Random;
+using Experilous.MakeIt.Tile;
+using Experilous.MakeIt.Utilities;
 
 namespace Experilous.Examples.Topological
 {

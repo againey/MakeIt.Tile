@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	/// <summary>
 	/// Static utility class providing functions for creating and validating topologies.

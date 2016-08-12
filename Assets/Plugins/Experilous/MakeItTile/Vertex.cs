@@ -6,7 +6,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	public partial class Topology
 	{

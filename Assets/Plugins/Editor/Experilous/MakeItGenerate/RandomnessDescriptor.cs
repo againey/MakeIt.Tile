@@ -3,9 +3,9 @@
 \******************************************************************************/
 
 using System;
-using Experilous.Randomization;
+using Experilous.MakeIt.Random;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	[Serializable]
 	public struct RandomnessDescriptor

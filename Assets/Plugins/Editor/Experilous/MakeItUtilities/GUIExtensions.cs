@@ -5,7 +5,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Experilous
+namespace Experilous.MakeIt.Utilities
 {
 	public static class GUIExtensions
 	{

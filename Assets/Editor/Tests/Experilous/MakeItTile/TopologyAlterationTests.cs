@@ -3,13 +3,10 @@
 \******************************************************************************/
 
 #if UNITY_5_3
-using UnityEngine;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using Experilous.Topological;
 
-namespace Experilous.Topological.Tests
+namespace Experilous.MakeIt.Tile.Tests
 {
 	public class TopologyAlterationTests
 	{

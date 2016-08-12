@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	/// <summary>
 	/// Compactly stores the wrapping relations between an edge and it's various neighbors.

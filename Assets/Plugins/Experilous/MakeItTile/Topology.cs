@@ -4,8 +4,9 @@
 
 using UnityEngine;
 using System;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	/// <summary>
 	/// A basic representation of a topology of vertices, connected by edges, delimiting the corners of faces.

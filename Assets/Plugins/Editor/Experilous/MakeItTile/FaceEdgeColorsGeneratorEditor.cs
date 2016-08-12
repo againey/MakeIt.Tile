@@ -3,9 +3,9 @@
 \******************************************************************************/
 
 using UnityEditor;
-using Experilous.Generation;
+using Experilous.MakeIt.Generate;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	[CustomEditor(typeof(FaceEdgeColorsGenerator))]
 	public class FaceEdgeColorsGeneratorEditor : GeneratorEditor

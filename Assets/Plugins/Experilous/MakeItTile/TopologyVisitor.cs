@@ -2,14 +2,13 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
-using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Experilous.Containers;
-using Experilous.Randomization;
+using Experilous.MakeIt.Random;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	public abstract class TopologyVisitor
 	{

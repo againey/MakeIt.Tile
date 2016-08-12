@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System;
 using System.Collections;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	public class FaceGroupCollection : ScriptableObject, IEnumerable<IEnumerable<Topology.Face>>
 	{

@@ -5,7 +5,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	public class AssetCollection : ScriptableObject
 	{

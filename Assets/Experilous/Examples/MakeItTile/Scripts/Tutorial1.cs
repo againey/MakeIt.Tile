@@ -3,8 +3,8 @@
 \******************************************************************************/
 
 using UnityEngine;
-using Experilous.Topological;
-using System.Collections.Generic;
+using Experilous.MakeIt.Tile;
+using Experilous.MakeIt.Utilities;
 
 namespace Experilous.Examples.Topological
 {

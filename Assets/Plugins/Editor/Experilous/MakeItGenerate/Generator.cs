@@ -6,8 +6,9 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	public abstract class Generator : ScriptableObject
 	{

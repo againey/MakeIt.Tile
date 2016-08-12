@@ -8,8 +8,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	public abstract class GeneratorExecutive : ScriptableObject
 	{

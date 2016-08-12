@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	public static class InputSlotEditor
 	{

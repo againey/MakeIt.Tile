@@ -8,8 +8,9 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Generation
+namespace Experilous.MakeIt.Generate
 {
 	[CustomEditor(typeof(Generator), true)]
 	public class GeneratorEditor : Editor

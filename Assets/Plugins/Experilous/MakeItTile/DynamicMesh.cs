@@ -5,8 +5,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Experilous.MakeIt.Utilities;
 
-namespace Experilous.Topological
+namespace Experilous.MakeIt.Tile
 {
 	/// <summary>
 	/// Manages the creation and modification of a topology-based mesh which may need to be split into several smaller submeshes.
