@@ -8,7 +8,8 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Experilous.MakeIt.Utilities;
+using Experilous.Containers;
+using Experilous.Core;
 
 namespace Experilous.MakeIt.Generate
 {
@@ -79,7 +80,7 @@ namespace Experilous.MakeIt.Generate
 					if (field.FieldType == typeof(List<OutputSlot>)) continue;
 					if (!IsInAssetGeneratorSubclass(field)) continue;
 
-					var labelAttribute = MIUtilities.GetAttribute<LabelAttribute>(field);
+					var labelAttribute = Utilities.GetAttribute<LabelAttribute>(field);
 					var labelContent = new GUIContent(
 						labelAttribute != null ? labelAttribute.text : property.displayName,
 						property.tooltip);

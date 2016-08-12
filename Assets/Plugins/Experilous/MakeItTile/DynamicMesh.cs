@@ -5,7 +5,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Experilous.MakeIt.Utilities;
+using ThreadUtility = Experilous.Core.ThreadUtility;
 
 namespace Experilous.MakeIt.Tile
 {
@@ -187,7 +187,7 @@ namespace Experilous.MakeIt.Tile
 
 		private IndexedVertexAttributeArrays GetIndexedVertexAttributeArrays(Submesh submesh, int index)
 		{
-			if (MIThreading.isMainThread)
+			if (ThreadUtility.isMainThread)
 			{
 				return _cachedIndexedVertexAttributeArrays.MoveTo(submesh, index);
 			}

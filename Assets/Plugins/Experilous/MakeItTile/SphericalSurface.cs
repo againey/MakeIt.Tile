@@ -3,7 +3,7 @@
 \******************************************************************************/
 
 using UnityEngine;
-using Experilous.MakeIt.Utilities;
+using Experilous.Numerics;
 
 namespace Experilous.MakeIt.Tile
 {
@@ -69,7 +69,7 @@ namespace Experilous.MakeIt.Tile
 
 		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
 		{
-			return MIGeometry.IntersectForwardExternal(new Sphere(Vector3.zero, radius), ray, out intersection);
+			return Geometry.IntersectForwardExternal(new Sphere(Vector3.zero, radius), ray, out intersection);
 		}
 
 		public override Vector3 Project(Vector3 position)

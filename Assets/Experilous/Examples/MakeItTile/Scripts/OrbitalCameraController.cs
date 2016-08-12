@@ -3,7 +3,7 @@
 \******************************************************************************/
 
 using UnityEngine;
-using Experilous.MakeIt.Utilities;
+using Experilous.Core;
 
 namespace Experilous.Examples.Topological
 {

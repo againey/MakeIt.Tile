@@ -6,7 +6,8 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Collections;
-using Experilous.MakeIt.Utilities;
+using Experilous.Containers;
+using Geometry = Experilous.Numerics.Geometry;
 
 namespace Experilous.MakeIt.Tile
 {
@@ -728,13 +729,13 @@ namespace Experilous.MakeIt.Tile
 				{
 					var sourcePosition = vertexPositions[s];
 					var targetPosition = vertexPositions[t];
-					return MIGeometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return Geometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				(Topology.VertexEdge edge, int pathLength) =>
 				{
 					var sourcePosition = vertexPositions[edge.nearVertex];
 					var targetPosition = vertexPositions[edge.farVertex];
-					return MIGeometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return Geometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				path);
 		}
@@ -746,14 +747,14 @@ namespace Experilous.MakeIt.Tile
 				{
 					var sourcePosition = facePositions[s];
 					var targetPosition = facePositions[t];
-					return MIGeometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return Geometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				(Topology.FaceEdge edge, int pathLength) =>
 				{
 					if (edge.isOuterBoundary) return float.PositiveInfinity;
 					var sourcePosition = facePositions[edge.nearFace];
 					var targetPosition = facePositions[edge.farFace];
-					return MIGeometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return Geometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
 				},
 				path);
 		}

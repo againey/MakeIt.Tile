@@ -7,7 +7,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using Experilous.MakeIt.Generate;
-using Experilous.MakeIt.Utilities;
+using Experilous.Core;
 
 namespace Experilous.MakeIt.Tile
 {

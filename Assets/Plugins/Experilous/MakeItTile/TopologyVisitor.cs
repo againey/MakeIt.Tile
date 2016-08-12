@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Experilous.MakeIt.Random;
-using Experilous.MakeIt.Utilities;
+using Experilous.Containers;
 
 namespace Experilous.MakeIt.Tile
 {

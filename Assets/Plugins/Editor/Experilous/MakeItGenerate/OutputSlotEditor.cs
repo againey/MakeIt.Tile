@@ -5,7 +5,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
-using Experilous.MakeIt.Utilities;
+using Experilous.Core;
 
 namespace Experilous.MakeIt.Generate
 {

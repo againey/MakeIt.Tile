@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using System;
 using Experilous.MakeIt.Random;
 using Experilous.MakeIt.Tile;
-using Experilous.MakeIt.Utilities;
+using Experilous.Numerics;
 
 namespace Experilous.Examples.Topological
 {

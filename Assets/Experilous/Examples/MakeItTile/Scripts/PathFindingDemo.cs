@@ -8,7 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Experilous.MakeIt.Random;
 using Experilous.MakeIt.Tile;
-using Experilous.MakeIt.Utilities;
+using Experilous.Numerics;
 
 namespace Experilous.Examples.Topological
 {
@@ -170,7 +170,7 @@ namespace Experilous.Examples.Topological
 			_maximumFaceDistance = 0f;
 			foreach (var edge in _topology.faceEdges)
 			{
-				var distance = MIGeometry.AngleBetweenVectors(_facePositions[edge.nearFace], _facePositions[edge.farFace]) * _surface.radius;
+				var distance = Geometry.AngleBetweenVectors(_facePositions[edge.nearFace], _facePositions[edge.farFace]) * _surface.radius;
 				_maximumFaceDistance = Mathf.Max(_maximumFaceDistance, distance);
 			}
 
@@ -197,7 +197,7 @@ namespace Experilous.Examples.Topological
 			{
 				Vector2 uvMin = faceMinUVs[face];
 				Vector2 uvRange = faceRangeUVs[face];
-				MIAspectRatio.Expand(ref uvMin, ref uvRange, 1f);
+				AspectRatioUtility.Expand(ref uvMin, ref uvRange, 1f);
 				faceMinUVs[face] = uvMin;
 				faceRangeUVs[face] = uvRange;
 			}
@@ -432,7 +432,7 @@ namespace Experilous.Examples.Topological
 
 		private float CostHeuristic(Topology.Face source, Topology.Face target, int pathLength)
 		{
-			var distance = MIGeometry.AngleBetweenVectors(_facePositions[source], _facePositions[target]) * _surface.radius;
+			var distance = Geometry.AngleBetweenVectors(_facePositions[source], _facePositions[target]) * _surface.radius;
 			var minimumTileCount = Mathf.Floor(distance / _maximumFaceDistance);
 			return minimumTileCount * 1f;
 		}

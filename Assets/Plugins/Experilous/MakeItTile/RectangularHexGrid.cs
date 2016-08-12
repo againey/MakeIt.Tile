@@ -4,7 +4,8 @@
 
 using UnityEngine;
 using System;
-using Experilous.MakeIt.Utilities;
+using Experilous.Numerics;
+using Utilities = Experilous.Core.Utilities;
 
 namespace Experilous.MakeIt.Tile
 {
@@ -110,7 +111,7 @@ namespace Experilous.MakeIt.Tile
 
 			if (!midpointIsFirstAxis)
 			{
-				MIUtilities.Swap(ref _faceAxis0, ref _faceAxis1);
+				Utilities.Swap(ref _faceAxis0, ref _faceAxis1);
 			}
 
 			Reset(new PlanarDescriptor(_faceAxis0 * size.x, isAxisWrapped0, _faceAxis1 * size.y, isAxisWrapped1, origin, rotation * Vector3.back));
@@ -149,9 +150,9 @@ namespace Experilous.MakeIt.Tile
 			if (Vector3.Cross(axis0.vector, axis1.vector).sqrMagnitude < 0.001f)
 				throw new InvalidTopologyException("A planar surface cannot have nearly colinear axes.");
 
-			if (Mathf.Abs(MIGeometry.SinMagnitude(midpoint, majorCorner)) < 0.001f ||
-				Mathf.Abs(MIGeometry.SinMagnitude(midpoint, minorCorner)) < 0.001f ||
-				Mathf.Abs(MIGeometry.SinMagnitude(minorCorner, majorCorner)) < 0.001f)
+			if (Mathf.Abs(Geometry.SinMagnitude(midpoint, majorCorner)) < 0.001f ||
+				Mathf.Abs(Geometry.SinMagnitude(midpoint, minorCorner)) < 0.001f ||
+				Mathf.Abs(Geometry.SinMagnitude(minorCorner, majorCorner)) < 0.001f)
 				throw new InvalidTopologyException("A hexagonal grid cell shape cannot have nearly colinear defining vectors.");
 		}
 
@@ -217,7 +218,7 @@ namespace Experilous.MakeIt.Tile
 			}
 
 			_vertexRowFirstIndentNextFront = _vertexRowEvenIndentNextFront;
-			_vertexRowLastIndentNextFront = MIMath.IsEven(_faceRowCount) ? _vertexRowEvenIndentNextFront : _vertexRowOddIndentNextFront;
+			_vertexRowLastIndentNextFront = Numerics.Math.IsEven(_faceRowCount) ? _vertexRowEvenIndentNextFront : _vertexRowOddIndentNextFront;
 
 			// If row lengths are variable so that there's a symmetry on both ends of the rows, then
 			// the indentation on the back end is identical to that on the front end.
@@ -244,12 +245,12 @@ namespace Experilous.MakeIt.Tile
 			_faceColumnCountEven = (axisStyle == HexGridAxisStyles.StaggeredSymmetric && _vertexRowEvenIndentNextFront && !_vertexRowOddIndentNextFront) ? _faceColumnCount - 1 : _faceColumnCount;
 			_faceColumnCountOdd = (axisStyle == HexGridAxisStyles.StaggeredSymmetric && _vertexRowOddIndentNextFront && !_vertexRowEvenIndentNextFront) ? _faceColumnCount - 1 : _faceColumnCount;
 			_faceColumnCountFirst = _faceColumnCountEven;
-			_faceColumnCountLast = MIMath.IsEven(_faceRowCount) ? _faceColumnCountOdd : _faceColumnCountEven;
+			_faceColumnCountLast = Numerics.Math.IsEven(_faceRowCount) ? _faceColumnCountOdd : _faceColumnCountEven;
 			_faceColumnCountPair = _faceColumnCountEven + _faceColumnCountOdd;
 
 			_faceOffset = _faceColumnCount - _faceColumnCountEven;
 
-			_internalFaceCount = _faceColumnCountPair * (_faceRowCount / 2) + (MIMath.IsEven(_faceRowCount) ? 0 : _faceColumnCountLast);
+			_internalFaceCount = _faceColumnCountPair * (_faceRowCount / 2) + (Numerics.Math.IsEven(_faceRowCount) ? 0 : _faceColumnCountLast);
 
 			if (axis0.isWrapped && axis1.isWrapped)
 			{
@@ -331,8 +332,8 @@ namespace Experilous.MakeIt.Tile
 			// wrapping around column ends, while the intercept offset is instead based on the number of vertex
 			// rows, thus taking into account wrapping around column ends.  This is due to how each of these is
 			// used in various functions.
-			_vertexUpperOffsetLast = MIMath.IsEven(_faceRowCount) ? _vertexUpperOffsetOdd : _vertexUpperOffsetEven;
-			_vertexInterceptOffsetLast = MIMath.IsEven(_vertexRowCount) ? _vertexInterceptOffsetOdd : _vertexInterceptOffsetEven;
+			_vertexUpperOffsetLast = Numerics.Math.IsEven(_faceRowCount) ? _vertexUpperOffsetOdd : _vertexUpperOffsetEven;
+			_vertexInterceptOffsetLast = Numerics.Math.IsEven(_vertexRowCount) ? _vertexInterceptOffsetOdd : _vertexInterceptOffsetEven;
 
 			// If not wrapping at all, then the first and last row offsets might need adjustment,
 			// since the first and last rows might have a different arrangement of verticies than
@@ -425,8 +426,8 @@ namespace Experilous.MakeIt.Tile
 			{
 				int col, row;
 				GetVertexColRow(i, out col, out row);
-				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble + (MIMath.IsOdd(col) ? oddCorner : evenCorner);
-				if (MIMath.IsOdd(row)) vertexPosition += oddRowOffset;
+				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble + (Numerics.Math.IsOdd(col) ? oddCorner : evenCorner);
+				if (Numerics.Math.IsOdd(row)) vertexPosition += oddRowOffset;
 				vertexPositions[i] = vertexPosition;
 			}
 
@@ -587,7 +588,7 @@ namespace Experilous.MakeIt.Tile
 			else if (vertexIndex < _vertexCount - _vertexColumnCountLast)
 			{
 				row = (vertexIndex - _vertexColumnCountFirst) / _vertexColumnCount + 1;
-				col = vertexIndex - (_vertexColumnCount * row + (MIMath.IsEven(row) ? _vertexInterceptOffsetEven : _vertexInterceptOffsetOdd));
+				col = vertexIndex - (_vertexColumnCount * row + (Numerics.Math.IsEven(row) ? _vertexInterceptOffsetEven : _vertexInterceptOffsetOdd));
 			}
 			else
 			{
@@ -694,7 +695,7 @@ namespace Experilous.MakeIt.Tile
 			{
 				return _vertexLowerOffsetFirst;
 			}
-			else if (MIMath.IsEven(row))
+			else if (Numerics.Math.IsEven(row))
 			{
 				return _vertexLowerOffsetEven;
 			}
@@ -710,7 +711,7 @@ namespace Experilous.MakeIt.Tile
 			{
 				return _vertexUpperOffsetLast;
 			}
-			else if (MIMath.IsEven(row))
+			else if (Numerics.Math.IsEven(row))
 			{
 				return _vertexUpperOffsetEven;
 			}

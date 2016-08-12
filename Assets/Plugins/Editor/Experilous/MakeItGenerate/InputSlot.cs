@@ -4,7 +4,7 @@
 
 using UnityEngine;
 using System;
-using Experilous.MakeIt.Utilities;
+using Experilous.Core;
 
 namespace Experilous.MakeIt.Generate
 {
@@ -166,7 +166,7 @@ namespace Experilous.MakeIt.Generate
 
 		public static bool ShouldAutoSelect(System.Reflection.FieldInfo field)
 		{
-			return MIUtilities.GetAttribute<AutoSelectAttribute>(field) != null;
+			return Utilities.GetAttribute<AutoSelectAttribute>(field) != null;
 		}
 	}
 

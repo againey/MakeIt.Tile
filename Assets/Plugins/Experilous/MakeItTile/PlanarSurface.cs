@@ -4,7 +4,7 @@
 
 using UnityEngine;
 using System;
-using Experilous.MakeIt.Utilities;
+using Experilous.Numerics;
 
 namespace Experilous.MakeIt.Tile
 {
@@ -71,28 +71,28 @@ namespace Experilous.MakeIt.Tile
 
 		public override Vector3 Intersect(Ray ray)
 		{
-			return MIGeometry.Intersect(plane, ray);
+			return Geometry.Intersect(plane, ray);
 		}
 
 		public override Vector3 Intersect(ScaledRay ray)
 		{
-			return MIGeometry.Intersect(plane, ray);
+			return Geometry.Intersect(plane, ray);
 		}
 
 		public override bool Intersect(Ray ray, out Vector3 intersection)
 		{
-			return MIGeometry.Intersect(plane, ray, out intersection);
+			return Geometry.Intersect(plane, ray, out intersection);
 		}
 
 		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
 		{
-			return MIGeometry.Intersect(plane, ray, out intersection);
+			return Geometry.Intersect(plane, ray, out intersection);
 		}
 
 		public override Vector3 Project(Vector3 position)
 		{
 			var line = new Ray(position, plane.normal);
-			return MIGeometry.Intersect(plane, line);
+			return Geometry.Intersect(plane, line);
 		}
 
 		public override Vector3 GetNormal(Vector3 position)

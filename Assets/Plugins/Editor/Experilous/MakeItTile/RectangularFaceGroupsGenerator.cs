@@ -6,7 +6,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Experilous.MakeIt.Generate;
-using Experilous.MakeIt.Utilities;
+using Experilous.Numerics;
+using Experilous.Core;
 
 namespace Experilous.MakeIt.Tile
 {

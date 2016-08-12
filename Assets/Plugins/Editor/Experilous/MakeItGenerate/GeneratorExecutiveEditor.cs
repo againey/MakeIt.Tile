@@ -7,7 +7,8 @@ using UnityEditor;
 using UnityEditor.AnimatedValues;
 using System.Collections.Generic;
 using System.Reflection;
-using Experilous.MakeIt.Utilities;
+using Experilous.Containers;
+using Experilous.Core;
 
 namespace Experilous.MakeIt.Generate
 {

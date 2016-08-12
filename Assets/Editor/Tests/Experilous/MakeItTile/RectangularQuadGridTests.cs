@@ -5,7 +5,7 @@
 #if UNITY_5_3
 using UnityEngine;
 using NUnit.Framework;
-using Experilous.MakeIt.Utilities;
+using Experilous.Numerics;
 
 namespace Experilous.MakeIt.Tile.Tests
 {

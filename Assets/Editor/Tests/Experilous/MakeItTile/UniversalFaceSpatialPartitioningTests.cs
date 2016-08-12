@@ -6,7 +6,7 @@
 using UnityEngine;
 using NUnit.Framework;
 using Experilous.MakeIt.Random;
-using Experilous.MakeIt.Utilities;
+using Experilous.Numerics;
 
 namespace Experilous.MakeIt.Tile.Tests
 {
