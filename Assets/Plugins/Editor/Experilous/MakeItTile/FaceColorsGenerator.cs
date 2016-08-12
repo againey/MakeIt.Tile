@@ -64,7 +64,7 @@ namespace Experilous.MakeIt.Tile
 			}
 			else
 			{
-				randomness.randomEngineSeedInputSlot.isActive = false;
+				randomness.randomSeedInputSlot.isActive = false;
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace Experilous.MakeIt.Tile
 				yield return topologyInputSlot;
 				yield return faceGroupCollectionInputSlot;
 				yield return faceGroupIndicesInputSlot;
-				yield return randomness.randomEngineSeedInputSlot;
+				yield return randomness.randomSeedInputSlot;
 			}
 		}
 
@@ -123,7 +123,7 @@ namespace Experilous.MakeIt.Tile
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var faceColors = ColorFaceAttribute.Create(topology.internalFaces.Count);
 
-			var random = randomness.GetRandomEngine();
+			var random = randomness.GetRandom();
 
 			foreach (var face in topology.internalFaces)
 			{
@@ -139,7 +139,7 @@ namespace Experilous.MakeIt.Tile
 			var faceGroups = faceGroupCollection.faceGroups;
 			var faceGroupColorsArray = new Color[faceGroups.Length];
 
-			var random = randomness.GetRandomEngine();
+			var random = randomness.GetRandom();
 
 			for (int i = 0; i < faceGroups.Length; ++i)
 			{

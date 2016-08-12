@@ -9,12 +9,12 @@ using Experilous.Core;
 
 namespace Experilous.MakeIt.Generate
 {
-	[Generator(typeof(GeneratorExecutive), "Utility/Random Engine")]
-	public class RandomEngineGenerator : Generator
+	[Generator(typeof(GeneratorExecutive), "Utility/Randomness")]
+	public class RandomnessGenerator : Generator
 	{
 		[Label(null)] public RandomnessDescriptor randomness;
 
-		public OutputSlot randomEngineOutputSlot;
+		public OutputSlot randomOutputSlot;
 
 		protected override void Initialize()
 		{
@@ -22,7 +22,7 @@ namespace Experilous.MakeIt.Generate
 			randomness.Initialize(this);
 
 			// Outputs
-			OutputSlot.CreateOrResetUnpersisted<IRandomEngine>(ref randomEngineOutputSlot, this, "Random Engine", true);
+			OutputSlot.CreateOrResetUnpersisted<IRandom>(ref randomOutputSlot, this, "Randomness", true);
 		}
 
 		protected override void OnUpdate()
@@ -34,7 +34,7 @@ namespace Experilous.MakeIt.Generate
 		{
 			get
 			{
-				yield return randomness.randomEngineSeedInputSlot;
+				yield return randomness.randomSeedInputSlot;
 			}
 		}
 
@@ -42,13 +42,13 @@ namespace Experilous.MakeIt.Generate
 		{
 			get
 			{
-				yield return randomEngineOutputSlot;
+				yield return randomOutputSlot;
 			}
 		}
 
 		public override IEnumerator BeginGeneration()
 		{
-			randomEngineOutputSlot.SetAsset(randomness.GetRandomEngine());
+			randomOutputSlot.SetAsset(randomness.GetRandom());
 			yield break;
 		}
 	}

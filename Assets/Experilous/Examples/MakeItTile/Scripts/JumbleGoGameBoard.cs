@@ -36,7 +36,7 @@ namespace Experilous.Examples.Topological
 		public Text whiteCountText;
 		public Text blackCountText;
 
-		private IRandomEngine _random;
+		private IRandom _random;
 
 		private int _blackCount;
 		private int _whiteCount;

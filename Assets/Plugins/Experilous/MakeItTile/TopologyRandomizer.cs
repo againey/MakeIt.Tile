@@ -8,7 +8,7 @@ namespace Experilous.MakeIt.Tile
 {
 	public static class TopologyRandomizer
 	{
-		public static void Randomize(Topology topology, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, IRandomEngine random, System.Action relaxFunction)
+		public static void Randomize(Topology topology, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, IRandom random, System.Action relaxFunction)
 		{
 			var perPassRandomizationFrequency = frequency / passCount;
 

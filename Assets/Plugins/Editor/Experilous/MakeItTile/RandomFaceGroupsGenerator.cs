@@ -49,7 +49,7 @@ namespace Experilous.MakeIt.Tile
 			get
 			{
 				yield return topologyInputSlot;
-				yield return randomness.randomEngineSeedInputSlot;
+				yield return randomness.randomSeedInputSlot;
 			}
 		}
 
@@ -92,7 +92,7 @@ namespace Experilous.MakeIt.Tile
 			var faceGroupIndices = new int[topology.internalFaces.Count].AsFaceAttribute();
 			List<int>[] faceGroupFaceIndices;
 
-			var random = randomness.GetRandomEngine();
+			var random = randomness.GetRandom();
 
 			var clampedRootCount = Mathf.Clamp(groupCount, 1, topology.internalFaces.Count);
 

@@ -52,7 +52,7 @@ namespace Experilous.Examples.Topological
 
 		[NonSerialized] private bool _initialized;
 
-		[NonSerialized] private IRandomEngine _random;
+		[NonSerialized] private IRandom _random;
 
 		[NonSerialized] private DynamicMesh.ITriangulation _faceTriangulation;
 		[NonSerialized] private DynamicMesh.ITriangulation _selectedFaceTriangulation;

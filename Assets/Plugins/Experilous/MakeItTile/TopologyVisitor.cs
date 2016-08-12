@@ -1560,82 +1560,82 @@ namespace Experilous.MakeIt.Tile
 
 		#region Vertices
 
-		public static void VisitVerticesInRandomOrder(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			VertexVisitor.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitVerticesInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			VertexVisitor.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitVerticesInRandomOrder<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			VertexVisitor.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitVerticesInRandomOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			VertexVisitor.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitVerticesInRandomOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
 			VertexVisitor<TDistance>.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitVerticesInRandomOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
 			VertexVisitor<TDistance>.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitVerticesInRandomOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			VertexVisitor<TDistance>.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitVerticesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			VertexVisitor<TDistance>.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitVerticesInRandomOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			VertexEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitVerticesInRandomOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			VertexEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitVerticesInRandomOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			VertexEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitVerticesInRandomOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			VertexEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitVerticesInRandomOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
 			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitVerticesInRandomOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
 			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitVerticesInRandomOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitVerticesInRandomOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitVerticesInRandomOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
@@ -1644,82 +1644,82 @@ namespace Experilous.MakeIt.Tile
 
 		#region Faces
 
-		public static void VisitFacesInRandomOrder(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitFacesInRandomOrder(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceVisitor.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitFacesInRandomOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitFacesInRandomOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceVisitor.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitFacesInRandomOrder<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceVisitor.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceVisitor.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitFacesInRandomOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceVisitor<TDistance>.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceVisitor<TDistance>.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceVisitor<TDistance>.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceVisitor<TDistance>.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitFacesInRandomOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitFacesInRandomOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitFacesInRandomOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitFacesInRandomOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitFacesInRandomOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitFacesInRandomOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
-		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
-		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandomEngine random)
+		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}

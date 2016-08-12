@@ -77,7 +77,7 @@ namespace Experilous.MakeIt.Tile
 				yield return surfaceInputSlot;
 				yield return topologyInputSlot;
 				yield return vertexPositionsInputSlot;
-				yield return randomness.randomEngineSeedInputSlot;
+				yield return randomness.randomSeedInputSlot;
 			}
 		}
 
@@ -87,7 +87,7 @@ namespace Experilous.MakeIt.Tile
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexPositions = vertexPositionsInputSlot.source != null ? vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>() : null;
 
-			var random = randomness.GetRandomEngine();
+			var random = randomness.GetRandom();
 
 			System.Func<float> relaxIterationFunction = null;
 			System.Func<bool> repairFunction = null;

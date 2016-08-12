@@ -19,29 +19,29 @@ namespace Experilous.MakeIt.Generate
 				EditorGUI.indentLevel += 1;
 			}
 
-			randomness.randomEngineType = (RandomnessDescriptor.RandomEngineType)EditorGUILayout.EnumPopup("RNG Type", randomness.randomEngineType);
+			randomness.randomType = (RandomnessDescriptor.RandomType)EditorGUILayout.EnumPopup("RNG Type", randomness.randomType);
 
 			var priorSeedSource = randomness.seedSource;
 			randomness.seedSource = (RandomnessDescriptor.SeedSource)EditorGUILayout.EnumPopup("Seed Source", randomness.seedSource);
 
 			switch (priorSeedSource)
 			{
-				case RandomnessDescriptor.SeedSource.RandomEngine:
-				case RandomnessDescriptor.SeedSource.RandomEngineAndSystemTime:
-				case RandomnessDescriptor.SeedSource.RandomEngineAndNumerical:
-				case RandomnessDescriptor.SeedSource.RandomEngineAndTextual:
-					InputSlotEditor.OnInspectorGUI(new GUIContent("Seeder"), randomness.randomEngineSeedInputSlot, InputSlot.ShouldAutoSelect(randomness, "randomEngineSeedInputSlot"));
+				case RandomnessDescriptor.SeedSource.Random:
+				case RandomnessDescriptor.SeedSource.RandomAndSystemTime:
+				case RandomnessDescriptor.SeedSource.RandomAndNumerical:
+				case RandomnessDescriptor.SeedSource.RandomAndTextual:
+					InputSlotEditor.OnInspectorGUI(new GUIContent("Seeder"), randomness.randomSeedInputSlot, InputSlot.ShouldAutoSelect(randomness, "randomSeedInputSlot"));
 					break;
 			}
 
 			switch (priorSeedSource)
 			{
 				case RandomnessDescriptor.SeedSource.Numerical:
-				case RandomnessDescriptor.SeedSource.RandomEngineAndNumerical:
+				case RandomnessDescriptor.SeedSource.RandomAndNumerical:
 					randomness.seedNumber = EditorGUILayout.IntField("Seed Number", randomness.seedNumber);
 					break;
 				case RandomnessDescriptor.SeedSource.Textual:
-				case RandomnessDescriptor.SeedSource.RandomEngineAndTextual:
+				case RandomnessDescriptor.SeedSource.RandomAndTextual:
 					randomness.seedText = EditorGUILayout.TextField("Seed Text", randomness.seedText);
 					break;
 			}

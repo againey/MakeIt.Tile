@@ -38,7 +38,7 @@ namespace Experilous.MakeIt.Tile
 			var collection = TopologyGeneratorCollection.Create("New Spherical Manifold");
 
 			var manifoldGenerator = collection.Add(CreateInstance<SphericalManifoldGenerator>(collection));
-			collection.Add(CreateInstance<RandomEngineGenerator>(collection));
+			collection.Add(CreateInstance<RandomnessGenerator>(collection));
 			var faceCentroidsGenerator = collection.Add(CreateInstance<FaceCentroidsGenerator>(collection));
 			var faceNormalsGenerator = collection.Add(CreateInstance<FaceNormalsGenerator>(collection));
 			var vertexNormalsGenerator = collection.Add(CreateInstance<VertexNormalsGenerator>(collection));
