@@ -6,7 +6,7 @@ using UnityEngine;
 using System;
 using Experilous.Core;
 
-namespace Experilous.MakeIt.Generate
+namespace Experilous.MakeItGenerate
 {
 	[Serializable] public sealed class InputSlot
 	{

@@ -5,7 +5,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public class InvalidTopologyException : ApplicationException
 	{

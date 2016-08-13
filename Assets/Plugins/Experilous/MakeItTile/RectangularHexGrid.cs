@@ -7,7 +7,7 @@ using System;
 using Experilous.Numerics;
 using Utilities = Experilous.Core.Utilities;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public class RectangularHexGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{

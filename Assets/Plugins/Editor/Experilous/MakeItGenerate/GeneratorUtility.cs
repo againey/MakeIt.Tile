@@ -2,7 +2,7 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
-namespace Experilous.MakeIt.Generate
+namespace Experilous.MakeItGenerate
 {
 	public static class GeneratorUtility
 	{

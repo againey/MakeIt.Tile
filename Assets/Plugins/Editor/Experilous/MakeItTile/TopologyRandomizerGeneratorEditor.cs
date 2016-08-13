@@ -4,9 +4,9 @@
 
 using UnityEngine;
 using UnityEditor;
-using Experilous.MakeIt.Generate;
+using Experilous.MakeItGenerate;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	[CustomEditor(typeof(TopologyRandomizerGenerator))]
 	public class TopologyRandomizerGeneratorEditor : GeneratorEditor

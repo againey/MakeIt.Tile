@@ -3,9 +3,9 @@
 \******************************************************************************/
 
 using UnityEditor;
-using Experilous.MakeIt.Generate;
+using Experilous.MakeItGenerate;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	[CustomEditor(typeof(FaceCentroidsGenerator))]
 	public class FaceCentroidsGeneratorEditor : GeneratorEditor

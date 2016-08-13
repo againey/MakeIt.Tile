@@ -6,11 +6,11 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Experilous.MakeIt.Random;
-using Experilous.MakeIt.Tile;
+using Experilous.MakeItRandom;
+using Experilous.MakeItTile;
 using Experilous.Numerics;
 
-namespace Experilous.Examples.Topological
+namespace Experilous.Examples.MakeItTile
 {
 	[RequireComponent(typeof(FaceSpatialPartitioningPicker))]
 	public class PathFindingDemo : MonoBehaviour

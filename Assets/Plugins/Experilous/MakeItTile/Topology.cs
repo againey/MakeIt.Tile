@@ -6,7 +6,7 @@ using UnityEngine;
 using System;
 using Utilities = Experilous.Core.Utilities;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	/// <summary>
 	/// A basic representation of a topology of vertices, connected by edges, delimiting the corners of faces.

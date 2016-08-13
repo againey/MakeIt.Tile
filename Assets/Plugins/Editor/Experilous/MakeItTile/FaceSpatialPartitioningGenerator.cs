@@ -5,9 +5,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Experilous.MakeIt.Generate;
+using Experilous.MakeItGenerate;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Utility/Face Spatial Partitioning")]
 	public class FaceSpatialPartitioningGenerator : Generator

@@ -11,7 +11,7 @@ using System.Reflection;
 using Experilous.Containers;
 using Experilous.Core;
 
-namespace Experilous.MakeIt.Generate
+namespace Experilous.MakeItGenerate
 {
 	[CustomEditor(typeof(Generator), true)]
 	public class GeneratorEditor : Editor

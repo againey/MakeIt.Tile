@@ -2,7 +2,7 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public class BoolFaceAttribute : FaceArrayAttribute<bool>
 	{

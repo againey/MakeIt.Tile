@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public static class NeighborUtility
 	{

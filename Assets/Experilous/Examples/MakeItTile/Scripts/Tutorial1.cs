@@ -3,10 +3,10 @@
 \******************************************************************************/
 
 using UnityEngine;
-using Experilous.MakeIt.Tile;
+using Experilous.MakeItTile;
 using Experilous.Numerics;
 
-namespace Experilous.Examples.Topological
+namespace Experilous.Examples.MakeItTile
 {
 	public class Tutorial1 : MonoBehaviour
 	{

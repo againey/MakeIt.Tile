@@ -5,11 +5,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using Experilous.MakeIt.Random;
-using Experilous.MakeIt.Tile;
+using Experilous.MakeItRandom;
+using Experilous.MakeItTile;
 using Experilous.Numerics;
 
-namespace Experilous.Examples.Topological
+namespace Experilous.Examples.MakeItTile
 {
 	public class TextureDemo : MonoBehaviour
 	{

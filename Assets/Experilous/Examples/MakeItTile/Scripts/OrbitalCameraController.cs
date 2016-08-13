@@ -5,7 +5,7 @@
 using UnityEngine;
 using Experilous.Core;
 
-namespace Experilous.Examples.Topological
+namespace Experilous.Examples.MakeItTile
 {
 	[ExecuteInEditMode]
 	public class OrbitalCameraController : MonoBehaviour

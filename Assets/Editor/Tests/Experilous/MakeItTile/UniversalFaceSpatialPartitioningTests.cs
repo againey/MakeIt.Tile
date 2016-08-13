@@ -5,12 +5,12 @@
 #if UNITY_5_3
 using UnityEngine;
 using NUnit.Framework;
-using Experilous.MakeIt.Random;
+using Experilous.MakeItRandom;
 using Experilous.Numerics;
 
-namespace Experilous.MakeIt.Tile.Tests
+namespace Experilous.MakeItTile.Tests
 {
-	public class UniversalFaceSpatialPartitioningTests
+	class UniversalFaceSpatialPartitioningTests
 	{
 		Surface surface;
 		Topology topology;

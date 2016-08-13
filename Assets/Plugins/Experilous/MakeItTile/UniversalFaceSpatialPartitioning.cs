@@ -6,7 +6,7 @@ using UnityEngine;
 using System;
 using Experilous.Numerics;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public class UniversalFaceSpatialPartitioning : ScriptableObject, IFaceSpatialPartitioning
 	{

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System;
 using ThreadUtility = Experilous.Core.ThreadUtility;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	/// <summary>
 	/// Manages the creation and modification of a topology-based mesh which may need to be split into several smaller submeshes.

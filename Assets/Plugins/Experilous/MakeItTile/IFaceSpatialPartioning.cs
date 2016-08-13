@@ -5,7 +5,7 @@
 using UnityEngine;
 using ScaledRay = Experilous.Numerics.ScaledRay;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public interface IFaceSpatialPartitioning
 	{

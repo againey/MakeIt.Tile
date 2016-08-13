@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Experilous.Core;
 
-namespace Experilous.MakeIt.Generate
+namespace Experilous.MakeItGenerate
 {
 	[System.Serializable] public sealed class OutputSlot
 	{

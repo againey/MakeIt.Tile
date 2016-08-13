@@ -9,9 +9,9 @@ using System;
 using Utilities = Experilous.Core.Utilities;
 using Geometry = Experilous.Numerics.Geometry;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
-	[AddComponentMenu("Tile-Based Worlds/Face Spatial Partitioning Picker")]
+	[AddComponentMenu("Make It Tile/Face Spatial Partitioning Picker")]
 	public class FaceSpatialPartitioningPicker : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
 		public new Camera camera;

@@ -10,7 +10,7 @@ using System.Reflection;
 using Experilous.Containers;
 using Experilous.Core;
 
-namespace Experilous.MakeIt.Generate
+namespace Experilous.MakeItGenerate
 {
 	[System.Serializable]
 	[CustomEditor(typeof(GeneratorExecutive), true)]

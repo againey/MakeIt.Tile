@@ -10,7 +10,7 @@ using System.IO;
 using System.Threading;
 using Experilous.Core;
 
-namespace Experilous.MakeIt.Generate
+namespace Experilous.MakeItGenerate
 {
 	public abstract class GeneratorExecutive : ScriptableObject
 	{

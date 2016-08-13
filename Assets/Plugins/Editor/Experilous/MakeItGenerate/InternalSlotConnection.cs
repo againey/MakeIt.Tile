@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Experilous.MakeIt.Generate
+namespace Experilous.MakeItGenerate
 {
 	public struct InternalSlotConnection
 	{

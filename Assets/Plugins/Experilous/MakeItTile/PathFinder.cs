@@ -9,7 +9,7 @@ using System.Collections;
 using Experilous.Containers;
 using Geometry = Experilous.Numerics.Geometry;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public interface IPath
 	{

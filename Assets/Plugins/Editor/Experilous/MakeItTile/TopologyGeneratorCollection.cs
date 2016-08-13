@@ -2,9 +2,9 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
-using Experilous.MakeIt.Generate;
+using Experilous.MakeItGenerate;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public class TopologyGeneratorCollection : GeneratorExecutive
 	{

@@ -6,10 +6,10 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
-using Experilous.MakeIt.Generate;
+using Experilous.MakeItGenerate;
 using Experilous.Core;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Topology/Spherical Manifold")]
 	public class SphericalManifoldGenerator : Generator

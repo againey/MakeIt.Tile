@@ -6,9 +6,9 @@
 using NUnit.Framework;
 using System;
 
-namespace Experilous.MakeIt.Tile.Tests
+namespace Experilous.MakeItTile.Tests
 {
-	public class TopologyAlterationTests
+	class TopologyAlterationTests
 	{
 		[Test]
 		public void SpinEdgeForwardThrowsOnBoundaryVerticesWithTwoNeighbors()

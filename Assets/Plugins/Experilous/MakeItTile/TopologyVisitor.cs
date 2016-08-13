@@ -5,10 +5,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Experilous.MakeIt.Random;
+using Experilous.MakeItRandom;
 using Experilous.Containers;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public abstract class TopologyVisitor
 	{

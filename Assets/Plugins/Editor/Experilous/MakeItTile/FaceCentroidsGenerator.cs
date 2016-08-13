@@ -5,10 +5,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Experilous.MakeIt.Generate;
+using Experilous.MakeItGenerate;
 using Experilous.Core;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face/Centroids")]
 	public class FaceCentroidsGenerator : Generator

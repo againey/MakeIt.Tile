@@ -7,9 +7,9 @@ using UnityEngine;
 using NUnit.Framework;
 using Experilous.Numerics;
 
-namespace Experilous.MakeIt.Tile.Tests
+namespace Experilous.MakeItTile.Tests
 {
-	public class TopologyNavigationTests
+	class TopologyNavigationTests
 	{
 		[Test]
 		public void FaceNeighborFaces()

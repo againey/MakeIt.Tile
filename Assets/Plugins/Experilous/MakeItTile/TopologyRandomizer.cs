@@ -2,9 +2,9 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
-using Experilous.MakeIt.Random;
+using Experilous.MakeItRandom;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public static class TopologyRandomizer
 	{

@@ -4,7 +4,7 @@
 
 using UnityEngine;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public class ColorFaceGroupAttribute : FaceGroupArrayAttribute<Color>
 	{

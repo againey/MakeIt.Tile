@@ -5,7 +5,7 @@
 using UnityEngine;
 using Experilous.Numerics;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	public interface ISurface
 	{

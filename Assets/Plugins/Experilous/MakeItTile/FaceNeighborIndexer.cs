@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Experilous.MakeIt.Tile
+namespace Experilous.MakeItTile
 {
 	/// <summary>
 	/// An interface for providing a fairly minimal and simple description of a topology

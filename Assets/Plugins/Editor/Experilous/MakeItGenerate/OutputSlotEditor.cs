@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEditor.AnimatedValues;
 using Experilous.Core;
 
-namespace Experilous.MakeIt.Generate
+namespace Experilous.MakeItGenerate
 {
 	public static class OutputSlotEditor
 	{
