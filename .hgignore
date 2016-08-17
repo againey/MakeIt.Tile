@@ -29,4 +29,5 @@ syntax: regexp
 ^Miscellaneous/C\+\+/.*/[^/]*\.obj$
 ^Miscellaneous/C\+\+/.*/[^/]*\.idb$
 ^Miscellaneous/C\+\+/.*/[^/]*\.sdf$
+^Miscellaneous/C\+\+/.*/[^/]*\.user$
 ^Help/.*/
