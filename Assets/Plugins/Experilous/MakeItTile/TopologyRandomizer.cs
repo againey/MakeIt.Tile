@@ -39,7 +39,7 @@ namespace Experilous.MakeItTile
 
 					if (verticesCanChange && facesCanChange)
 					{
-						var randomValue = random.HalfOpenFloatUnit();
+						var randomValue = random.FloatCO();
 						if (randomValue < perPassRandomizationFrequency)
 						{
 							if (randomValue < perPassRandomizationFrequency * 0.5f)
@@ -54,7 +54,7 @@ namespace Experilous.MakeItTile
 					}
 					else if (verticesCanChange || facesCanChange)
 					{
-						if (random.HalfOpenFloatUnit() < perPassRandomizationFrequency)
+						if (random.FloatCO() < perPassRandomizationFrequency)
 						{
 							if (verticesCanChange)
 							{
