@@ -2,7 +2,7 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
-#if UNITY_5_3
+#if UNITY_5_3_OR_NEWER
 using NUnit.Framework;
 using System;
 
