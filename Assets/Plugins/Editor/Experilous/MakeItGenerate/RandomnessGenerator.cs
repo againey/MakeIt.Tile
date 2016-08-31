@@ -48,7 +48,7 @@ namespace Experilous.MakeItGenerate
 
 		public override IEnumerator BeginGeneration()
 		{
-			randomOutputSlot.SetAsset(randomness.GetRandom());
+			randomOutputSlot.SetAsset(ScriptableObjectRandom.CreateInstance(randomness.GetRandom()));
 			yield break;
 		}
 	}
