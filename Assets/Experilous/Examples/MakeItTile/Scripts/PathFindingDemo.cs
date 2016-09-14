@@ -25,6 +25,17 @@ namespace Experilous.Examples.MakeItTile
 
 		public float movementDuration = 0.1f;
 
+		[Space(20)]
+		public int topologySubdivision = 20;
+		public int geographicalRegionCount = 500;
+		public int grassWeight = 5;
+		public int waterWeight = 8;
+		public int desertWeight = 2;
+		public int mountainWeight = 1;
+		public int fullSightDistance = 3;
+		public int limitedSightDistance = 5;
+		public int unitCount = 20;
+
 		private SphericalSurface _surface;
 		private Topology _topology;
 		private PositionalVertexAttribute _vertexPositions;
@@ -115,7 +126,7 @@ namespace Experilous.Examples.MakeItTile
 			SphericalManifoldUtility.CreateIcosahedron(_surface.radius, out baseTopology, out baseVertexPositionsArray);
 
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.Subdivide(baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 20, _surface.radius, out _topology, out vertexPositionsArray);
+			SphericalManifoldUtility.Subdivide(baseTopology, baseVertexPositionsArray.AsVertexAttribute(), topologySubdivision, _surface.radius, out _topology, out vertexPositionsArray);
 
 			_vertexPositions = PositionalVertexAttribute.Create(_surface, vertexPositionsArray);
 
@@ -210,15 +221,14 @@ namespace Experilous.Examples.MakeItTile
 			_picker.partitioning = _partitioning;
 			_picker.enabled = true;
 
-			var regionCount = 500;
 			_faceTerrainIndices = new int[_topology.faces.Count].AsFaceAttribute();
-			var terrainWeights = new int[] { 5, 8, 2, 1 };
+			var terrainWeights = new int[] { grassWeight, waterWeight, desertWeight, mountainWeight };
 			int terrainWeightSum = 0;
 			foreach (var weight in terrainWeights) terrainWeightSum += weight;
 
 			var rootFaces = new List<Topology.Face>();
 			var rootFaceEdges = new List<Topology.FaceEdge>();
-			for (int regionIndex = 0; regionIndex < regionCount; ++regionIndex)
+			for (int regionIndex = 0; regionIndex < geographicalRegionCount; ++regionIndex)
 			{
 				Topology.Face face;
 				do
@@ -294,7 +304,6 @@ namespace Experilous.Examples.MakeItTile
 			}
 
 			_faceUnits = new Transform[_topology.faces.Count].AsFaceAttribute();
-			int unitCount = 20;
 			for (int i = 0; i < unitCount; ++i)
 			{
 				Topology.Face face;
@@ -343,12 +352,12 @@ namespace Experilous.Examples.MakeItTile
 			TopologyVisitor.VisitFacesInBreadthFirstOrder(face, (FaceVisitor visitor) =>
 			{
 				_faceSeenStates[visitor.face] = true;
-				if (visitor.depth < 4)
+				if (visitor.depth <= fullSightDistance)
 				{
 					_faceSightCounts[visitor.face] += 1;
 				}
 				_dynamicMesh.RebuildFace(visitor.face, _faceTriangulation);
-				if (visitor.depth < 5)
+				if (visitor.depth < limitedSightDistance)
 				{
 					foreach (var edge in visitor.face.edges)
 					{

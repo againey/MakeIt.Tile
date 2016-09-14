@@ -146,7 +146,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickStartEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickStartEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   OnPickChange:
     m_PersistentCalls:
@@ -163,7 +163,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 0
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickChangeEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickChangeEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   OnPickEnd:
     m_PersistentCalls:
@@ -180,7 +180,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 0
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickEndEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickEndEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &231023082
 MonoBehaviour:
@@ -199,6 +199,15 @@ MonoBehaviour:
   units: {fileID: 2034001220}
   controlsPanel: {fileID: 421629268}
   movementDuration: .100000001
+  topologySubdivision: 20
+  geographicalRegionCount: 500
+  grassWeight: 5
+  waterWeight: 8
+  desertWeight: 2
+  mountainWeight: 1
+  fullSightDistance: 3
+  limitedSightDistance: 5
+  unitCount: 20
 --- !u!1 &421629268
 GameObject:
   m_ObjectHideFlags: 0
