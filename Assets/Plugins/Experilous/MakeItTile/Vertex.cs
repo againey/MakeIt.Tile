@@ -295,27 +295,6 @@ namespace Experilous.MakeItTile
 		/// <param name="v">The vertex whose attribute value is desired.</param>
 		/// <returns>The attribute value for the vertex indicated.</returns>
 		T this[Topology.Vertex v] { get; set; }
-
-		/// <summary>
-		/// Lookup the attribute value for a vertex relative to an edge.
-		/// </summary>
-		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
-		/// <returns>The attribute value for the far vertex of the indicated edge, relative to that edge.</returns>
-		//T this[Topology.HalfEdge e] { get; set; }
-
-		/// <summary>
-		/// Lookup the attribute value for a vertex relative to a neighboring vertex.
-		/// </summary>
-		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
-		/// <returns>The attribute value for the far vertex of the indicated edge, relative to that edge's near vertex.</returns>
-		//T this[Topology.VertexEdge e] { get; set; }
-
-		/// <summary>
-		/// Lookup the attribute value for a vertex relative to a neighboring face.
-		/// </summary>
-		/// <param name="e">The edge that points at the vertex whose attribute value is desired.</param>
-		/// <returns>The attribute value for the next vertex of the indicated edge, relative to that edge's near face.</returns>
-		//T this[Topology.FaceEdge e] { get; set; }
 	}
 
 	public struct VertexAttributeArrayWrapper<T> : IVertexAttribute<T>

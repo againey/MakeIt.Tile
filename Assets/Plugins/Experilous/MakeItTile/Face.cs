@@ -332,27 +332,6 @@ namespace Experilous.MakeItTile
 		/// <param name="f">The face whose attribute value is desired.</param>
 		/// <returns>The attribute value for the face indicated.</returns>
 		T this[Topology.Face f] { get; set; }
-
-		/// <summary>
-		/// Lookup the attribute value for a face relative to an edge.
-		/// </summary>
-		/// <param name="e">The edge that points at the face whose attribute value is desired.</param>
-		/// <returns>The attribute value for the far face of the indicated edge, relative to that edge.</returns>
-		//T this[Topology.HalfEdge e] { get; set; }
-
-		/// <summary>
-		/// Lookup the attribute value for a face relative to a neighboring vertex.
-		/// </summary>
-		/// <param name="e">The edge that points at the face whose attribute value is desired.</param>
-		/// <returns>The attribute value for the prev face of the indicated edge, relative to that edge's near vertex.</returns>
-		//T this[Topology.VertexEdge e] { get; set; }
-
-		/// <summary>
-		/// Lookup the attribute value for a face relative to a neighboring face.
-		/// </summary>
-		/// <param name="e">The edge that points at the face whose attribute value is desired.</param>
-		/// <returns>The attribute value for the far face of the indicated edge, relative to that edge's near face.</returns>
-		//T this[Topology.FaceEdge e] { get; set; }
 	}
 
 	public struct FaceAttributeArrayWrapper<T> : IFaceAttribute<T>

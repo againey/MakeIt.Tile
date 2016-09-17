@@ -45,8 +45,8 @@ namespace Experilous.MakeItTile
 	/// suffice.  Since edges are divided into half-edges, some edge data will inevitably be duplicated, such as pre-
 	/// computed edge lengths, since this value would be the same for each half-edge.  However, other data such as path
 	/// finding costs benefits naturally from the fact that half-edges are inherently directional.  For even better
-	/// utility, use a type that implements <see cref="IVertexAttribute`1{T}"/>, <see cref="IEdgeAttribute`1{T}"/>, or
-	/// <see cref="IFaceAttribute`1{T}"/>.</para>
+	/// utility, use a type that implements <see cref="IVertexAttribute{T}"/>, <see cref="IEdgeAttribute{T}"/>, or
+	/// <see cref="IFaceAttribute{T}"/>.</para>
 	/// 
 	/// <para>Faces have a special distinction of being either internal or external.  Internal faces are the ordinary
 	/// kind of face.  External faces, however, represent the areas outside of a topology, and the primary reason for
@@ -78,9 +78,9 @@ namespace Experilous.MakeItTile
 	/// <seealso cref="HalfEdge"/>
 	/// <seealso cref="VertexEdge"/>
 	/// <seealso cref="FaceEdge"/>
-	/// <seealso cref="IVertexAttribute`1{T}"/>
-	/// <seealso cref="IEdgeAttribute`1{T}"/>
-	/// <seealso cref="IFaceAttribute`1{T}"/>
+	/// <seealso cref="IVertexAttribute{T}"/>
+	/// <seealso cref="IEdgeAttribute{T}"/>
+	/// <seealso cref="IFaceAttribute{T}"/>
 	/// <seealso cref="EdgeWrap"/>
 	/// <seealso cref="TopologyUtility"/>
 	public partial class Topology : ScriptableObject, ICloneable
