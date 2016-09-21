@@ -127,7 +127,7 @@ namespace Experilous.MakeItTile
 
 			foreach (var face in topology.internalFaces)
 			{
-				faceColors[face] = RandomColor.RGB(random);
+				faceColors[face] = random.ColorRGB();
 			}
 
 			faceColorsOutputSlot.SetAsset(faceColors);
@@ -143,7 +143,7 @@ namespace Experilous.MakeItTile
 
 			for (int i = 0; i < faceGroups.Length; ++i)
 			{
-				faceGroupColorsArray[i] = RandomColor.RGB(random);
+				faceGroupColorsArray[i] = random.ColorRGB();
 			}
 
 			faceGroupColorsOutputSlot.SetAsset(ColorFaceGroupAttribute.Create(faceGroupColorsArray).SetName((faceGroupCollection.name + " Colors").TrimStart()));
