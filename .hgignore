@@ -30,4 +30,5 @@ syntax: regexp
 ^Miscellaneous/C\+\+/.*/[^/]*\.idb$
 ^Miscellaneous/C\+\+/.*/[^/]*\.sdf$
 ^Miscellaneous/C\+\+/.*/[^/]*\.user$
+^Miscellaneous/Archive
 ^Help/.*/Build
