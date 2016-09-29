@@ -4,6 +4,7 @@ syntax: regexp
 ^Assets/UnityVS.meta
 ^Assets/AssetStoreTools/
 ^Assets/AssetStoreTools.meta$
+^Assets/Experilous/Documentation/.*\.(7z|zip)$
 ^Assets/UnityVS\.meta$
 ^Miscellaneous/Screenshots/
 ^Miscellaneous/Videos/
