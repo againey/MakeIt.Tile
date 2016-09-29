@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using System;
-using Utilities = Experilous.Core.Utilities;
+using GeneralUtility = Experilous.Core.GeneralUtility;
 using Geometry = Experilous.Numerics.Geometry;
 
 namespace Experilous.MakeItTile
@@ -36,7 +36,7 @@ namespace Experilous.MakeItTile
 
 		void Start()
 		{
-			Utilities.DisableAndThrowOnUnassignedReference(this, camera, "The FaceSpatialPartitioningPicker component requires a reference to a Camera component.");
+			GeneralUtility.DisableAndThrowOnUnassignedReference(this, camera, "The FaceSpatialPartitioningPicker component requires a reference to a Camera component.");
 			_collider = GetComponent<Collider>();
 		}
 
@@ -100,7 +100,7 @@ namespace Experilous.MakeItTile
 
 		private void PickStart(Vector2 mousePosition, int button)
 		{
-			Utilities.DisableAndThrowOnUnassignedReference(this, partitioning, "The FaceSpatialPartitioningPicker component requires a reference to a UniversalFaceSpatialPartitioning scriptable object.  Either create a saved asset using generators available in the Assets/Create/Topology menu, or create and assign one at runtime before the picker's Start() event runs.");
+			GeneralUtility.DisableAndThrowOnUnassignedReference(this, partitioning, "The FaceSpatialPartitioningPicker component requires a reference to a UniversalFaceSpatialPartitioning scriptable object.  Either create a saved asset using generators available in the Assets/Create/Topology menu, or create and assign one at runtime before the picker's Start() event runs.");
 
 			var ray = Geometry.InverseTransformRay(transform, camera.ScreenPointToRay(mousePosition));
 			var startFace = partitioning.FindFace(ray);
@@ -119,7 +119,7 @@ namespace Experilous.MakeItTile
 
 		private void PickChange(Vector2 mousePosition)
 		{
-			Utilities.DisableAndThrowOnUnassignedReference(this, partitioning, "The FaceSpatialPartitioningPicker component requires a reference to a UniversalFaceSpatialPartitioning scriptable object.  Either create a saved asset using generators available in the Assets/Create/Topology menu, or create and assign one at runtime before the picker's Start() event runs.");
+			GeneralUtility.DisableAndThrowOnUnassignedReference(this, partitioning, "The FaceSpatialPartitioningPicker component requires a reference to a UniversalFaceSpatialPartitioning scriptable object.  Either create a saved asset using generators available in the Assets/Create/Topology menu, or create and assign one at runtime before the picker's Start() event runs.");
 
 			var ray = Geometry.InverseTransformRay(transform, camera.ScreenPointToRay(mousePosition));
 			var face = partitioning.FindFace(ray);

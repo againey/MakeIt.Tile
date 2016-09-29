@@ -5,7 +5,7 @@
 using UnityEngine;
 using System;
 using Experilous.Numerics;
-using Utilities = Experilous.Core.Utilities;
+using GeneralUtility = Experilous.Core.GeneralUtility;
 
 namespace Experilous.MakeItTile
 {
@@ -111,7 +111,7 @@ namespace Experilous.MakeItTile
 
 			if (!midpointIsFirstAxis)
 			{
-				Utilities.Swap(ref _faceAxis0, ref _faceAxis1);
+				GeneralUtility.Swap(ref _faceAxis0, ref _faceAxis1);
 			}
 
 			Reset(new PlanarDescriptor(_faceAxis0 * size.x, isAxisWrapped0, _faceAxis1 * size.y, isAxisWrapped1, origin, rotation * Vector3.back));

@@ -4,7 +4,7 @@
 
 using UnityEngine;
 using System;
-using Utilities = Experilous.Core.Utilities;
+using GeneralUtility = Experilous.Core.GeneralUtility;
 
 namespace Experilous.MakeItTile
 {
@@ -130,8 +130,8 @@ namespace Experilous.MakeItTile
 		{
 			if (firstExternalFaceIndex < faceFirstEdgeIndices.Length) throw new InvalidOperationException("A dual topology cannot be derived from a topology with external faces.");
 
-			Utilities.Swap(ref vertexNeighborCounts, ref faceNeighborCounts);
-			Utilities.Swap(ref vertexFirstEdgeIndices, ref faceFirstEdgeIndices);
+			GeneralUtility.Swap(ref vertexNeighborCounts, ref faceNeighborCounts);
+			GeneralUtility.Swap(ref vertexFirstEdgeIndices, ref faceFirstEdgeIndices);
 
 			firstExternalFaceIndex = faceFirstEdgeIndices.Length;
 
