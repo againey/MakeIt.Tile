@@ -10,6 +10,7 @@ syntax: regexp
 ^Miscellaneous/Videos/
 ^Miscellaneous/Export Test/
 ^Miscellaneous/.*\.(7z|zip)$
+^Miscellaneous/.*\.pov\.bak$
 ^Library/
 ^Temp/
 ^Build/
