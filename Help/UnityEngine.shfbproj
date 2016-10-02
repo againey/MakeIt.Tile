@@ -19,19 +19,44 @@
     <Language>en-US</Language>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Temp\UnityVS_bin\Debug\UnityEngine.dll" />
-    </DocumentationSources>
+<DocumentationSource sourceFile="..\Temp\UnityVS_bin\Debug\UnityEditor.dll" /></DocumentationSources>
     <ApiFilter>
-      <Filter entryType="Namespace" fullName="AOT" isExposed="False" />
+      <Filter entryType="Namespace" fullName="" isExposed="False" />
+<Filter entryType="Namespace" fullName="AOT" isExposed="False" />
 <Filter entryType="Namespace" fullName="JetBrains.Annotations" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor" isExposed="False">
+  <Filter entryType="Class" fullName="UnityEditor.GUIDrawer" filterName="GUIDrawer" isExposed="True" />
+  <Filter entryType="Class" fullName="UnityEditor.PropertyDrawer" filterName="PropertyDrawer" isExposed="True" />
+  <Filter entryType="Class" fullName="UnityEditor.SerializedProperty" filterName="SerializedProperty" isExposed="True" />
+</Filter>
 <Filter entryType="Namespace" fullName="UnityEditor.Advertisements" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.AnimatedValues" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.Animations" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.Audio" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.Callbacks" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.Events" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.Hardware" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.Macros" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.MemoryProfiler" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.ProjectWindowCallback" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.Rendering" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.SceneManagement" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.Sprites" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.VersionControl" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditor.VisualStudioIntegration" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditorInternal" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditorInternal.VersionControl" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEditorInternal.VR" isExposed="False" />
 <Filter entryType="Namespace" fullName="UnityEngine" isExposed="False">
   <Filter entryType="Structure" fullName="UnityEngine.Bounds" filterName="Bounds" isExposed="True" />
   <Filter entryType="Structure" fullName="UnityEngine.Color" filterName="Color" isExposed="True" />
+  <Filter entryType="Class" fullName="UnityEngine.GUIContent" filterName="GUIContent" isExposed="True" />
   <Filter entryType="Interface" fullName="UnityEngine.ISerializationCallbackReceiver" filterName="ISerializationCallbackReceiver" isExposed="True" />
   <Filter entryType="Class" fullName="UnityEngine.Object" filterName="Object" isExposed="True" />
   <Filter entryType="Structure" fullName="UnityEngine.Quaternion" filterName="Quaternion" isExposed="True" />
   <Filter entryType="Class" fullName="UnityEngine.Random" filterName="Random" isExposed="True" />
   <Filter entryType="Structure" fullName="UnityEngine.Random.State" filterName="Random.State" isExposed="True" />
+  <Filter entryType="Structure" fullName="UnityEngine.Rect" filterName="Rect" isExposed="True" />
   <Filter entryType="Class" fullName="UnityEngine.ScriptableObject" filterName="ScriptableObject" isExposed="True" />
   <Filter entryType="Structure" fullName="UnityEngine.Vector2" filterName="Vector2" isExposed="True" />
   <Filter entryType="Structure" fullName="UnityEngine.Vector3" filterName="Vector3" isExposed="True" />
@@ -124,4 +149,21 @@
     </PostBuildEvent>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\..\..\..\..\Software\Applications\Unity 5.4\Editor\Data\Managed\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\..\..\..\..\..\Software\Applications\Unity 5.4\Editor\Data\Managed\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.DataContract">
+      <HintPath>..\..\..\..\..\..\..\Software\Applications\Unity 5.4\Editor\Data\Managed\Unity.DataContract.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.SerializationLogic">
+      <HintPath>..\..\..\..\..\..\..\Software\Applications\Unity 5.4\Editor\Data\Managed\Unity.SerializationLogic.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityScript">
+      <HintPath>..\..\..\..\..\..\..\Software\Applications\Unity 5.4\Editor\Data\Mono\lib\mono\unity\UnityScript.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
