@@ -194,44 +194,70 @@ namespace Experilous.MakeItTile
 
 			public FaceEdge FindEdge(Vertex vertex)
 			{
-				FaceEdge neighbor;
-				if (!TryFindEdge(vertex, out neighbor)) throw new InvalidOperationException("The specified vertex is not a neighbor of this face.");
-				return neighbor;
-			}
-
-			public FaceEdge FindEdge(Face face)
-			{
-				FaceEdge edge;
-				if (!TryFindEdge(face, out edge)) throw new InvalidOperationException("The specified face is not a neighbor of this face.");
-				return edge;
-			}
-
-			public bool TryFindEdge(Vertex vertex, out FaceEdge edge)
-			{
 				foreach (var faceEdge in edges)
 				{
 					if (faceEdge.nextVertex == vertex)
 					{
-						edge = faceEdge;
-						return true;
+						return faceEdge;
 					}
 				}
-				edge = new FaceEdge();
-				return false;
+				return FaceEdge.none;
 			}
 
-			public bool TryFindEdge(Face face, out FaceEdge edge)
+			public FaceEdge FindEdge(Face face)
 			{
 				foreach (var faceEdge in edges)
 				{
 					if (faceEdge.farFace == face)
 					{
-						edge = faceEdge;
-						return true;
+						return faceEdge;
 					}
 				}
-				edge = new FaceEdge();
-				return false;
+				return FaceEdge.none;
+			}
+
+			public bool TryFindEdge(Vertex vertex, out FaceEdge edge)
+			{
+				return edge = FindEdge(vertex);
+			}
+
+			public bool TryFindEdge(Face face, out FaceEdge edge)
+			{
+				return edge = FindEdge(face);
+			}
+
+			public VertexEdge FindOuterVertexEdge(Vertex vertex)
+			{
+				foreach (var vertexEdge in outerVertexEdges)
+				{
+					if (vertexEdge.farVertex == vertex)
+					{
+						return vertexEdge;
+					}
+				}
+				return VertexEdge.none;
+			}
+
+			public VertexEdge FindOuterVertexEdge(Face face)
+			{
+				foreach (var vertexEdge in outerVertexEdges)
+				{
+					if (vertexEdge.prevFace == face)
+					{
+						return vertexEdge;
+					}
+				}
+				return VertexEdge.none;
+			}
+
+			public bool TryFindOuterVertexEdge(Vertex vertex, out VertexEdge edge)
+			{
+				return edge = FindOuterVertexEdge(vertex);
+			}
+
+			public bool TryFindOuterVertexEdge(Face face, out VertexEdge edge)
+			{
+				return edge = FindOuterVertexEdge(face);
 			}
 
 			public override bool Equals(object other) { return other is Face && _index == ((Face)other)._index; }
