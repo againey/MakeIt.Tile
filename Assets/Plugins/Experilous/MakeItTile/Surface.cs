@@ -34,7 +34,7 @@ namespace Experilous.MakeItTile
 		Vector3 ReverseOffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
 	}
 
-	public abstract class Surface : ScriptableObject
+	public abstract class Surface : ScriptableObject, ISurface
 	{
 		public abstract bool isFlat { get; }
 		public abstract bool isCurved { get; }
