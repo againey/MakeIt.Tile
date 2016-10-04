@@ -265,6 +265,36 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		public static IEdgeAttribute<Vector3> CalculateEdgeNormalsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceNormals)
+		{
+			return CalculateEdgeNormalsFromVertexPositions(faceEdges, vertexPositions, faceNormals, new Vector3[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector3> CalculateEdgeNormalsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceNormals, IEdgeAttribute<Vector3> edgeNormals)
+		{
+			foreach (var edge in faceEdges)
+			{
+				edgeNormals[edge] = Vector3.Cross(vertexPositions[edge] - vertexPositions[edge.prev], faceNormals[edge.nearFace]).normalized;
+			}
+
+			return edgeNormals;
+		}
+
+		public static IEdgeAttribute<Vector3> CalculatePlanarEdgeNormalsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 planeNormal)
+		{
+			return CalculatePlanarEdgeNormalsFromVertexPositions(faceEdges, vertexPositions, planeNormal, new Vector3[faceEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector3> CalculatePlanarEdgeNormalsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 planeNormal, IEdgeAttribute<Vector3> edgeNormals)
+		{
+			foreach (var edge in faceEdges)
+			{
+				edgeNormals[edge] = Vector3.Cross(vertexPositions[edge] - vertexPositions[edge.prev], planeNormal).normalized;
+			}
+
+			return edgeNormals;
+		}
+
 		#region CalculateUVs...(...)
 
 		#region CalculateGlobalUVs...(...)

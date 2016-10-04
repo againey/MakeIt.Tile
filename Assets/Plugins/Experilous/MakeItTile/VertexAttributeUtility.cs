@@ -3,6 +3,7 @@
 \******************************************************************************/
 
 using UnityEngine;
+using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
@@ -213,6 +214,46 @@ namespace Experilous.MakeItTile
 		#region CalculateUVs...(...)
 
 		#region CalculateGlobalUVs...(...)
+
+		#region CacluateGlobalPlanarUVs...(...)
+
+		public static IVertexAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
+		{
+			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(vertices, vertexPositions, Vector3.zero, uAxis, vAxis, new Vector2[vertices.Count].AsVertexAttribute());
+		}
+
+		public static IVertexAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis)
+		{
+			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(vertices, vertexPositions, origin, uAxis, vAxis, new Vector2[vertices.Count].AsVertexAttribute());
+		}
+
+		public static IVertexAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IVertexAttribute<Vector2> uvs)
+		{
+			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(vertices, vertexPositions, Vector3.zero, uAxis, vAxis, uvs);
+		}
+
+		public static IVertexAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis, IVertexAttribute<Vector2> uvs)
+		{
+			var normal = Vector3.Cross(vAxis, uAxis).normalized;
+			var uPlane = new Plane(origin, uAxis + origin, normal + origin);
+			var vPlane = new Plane(origin, normal + origin, vAxis + origin);
+
+			var uAxisNeg = -uAxis;
+			var vAxisNeg = -vAxis;
+
+			foreach (var vertex in vertices)
+			{
+				var vertexPosition = vertexPositions[vertex];
+
+				uvs[vertex] = new Vector2(
+					Geometry.GetIntersectionParameter(vPlane, new ScaledRay(vertexPosition, uAxisNeg)),
+					Geometry.GetIntersectionParameter(uPlane, new ScaledRay(vertexPosition, vAxisNeg)));
+			}
+
+			return uvs;
+		}
+
+		#endregion
 
 		#region CalculateGlobalSphericalUVs...(...)
 
