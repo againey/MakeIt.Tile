@@ -269,6 +269,33 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		public override string canGenerateMessage
+		{
+			get
+			{
+				if (_pregenerationFailed)
+				{
+					return "Invalid tiling configuration.";
+				}
+				else if (size.x <= 0 || size.y <= 0)
+				{
+					return "Size dimensions must be greater than zero.";
+				}
+				else if (horizontalAxis == Vector3.zero || verticalAxis == Vector3.zero)
+				{
+					return "Axes must not be zero-length vectors.";
+				}
+				else if (Mathf.Abs(Vector3.Dot(horizontalAxis, verticalAxis)) >= 0.99f)
+				{
+					return "Axes cannot be parallel to each other.";
+				}
+				else
+				{
+					return base.canGenerateMessage;
+				}
+			}
+		}
+
 		public override float estimatedGenerationTime
 		{
 			get

@@ -204,6 +204,21 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		public override string canGenerateMessage
+		{
+			get
+			{
+				if (axisDivisions.x < 1 || axisDivisions.y < 1)
+				{
+					return "Axis divisions must be greater than or equal to one.";
+				}
+				else
+				{
+					return base.canGenerateMessage;
+				}
+			}
+		}
+
 		public override float estimatedGenerationTime
 		{
 			get

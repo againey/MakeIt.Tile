@@ -196,6 +196,21 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		public override string canGenerateMessage
+		{
+			get
+			{
+				if (groupCount < 1)
+				{
+					return "Must generate at least one face group.";
+				}
+				else
+				{
+					return base.canGenerateMessage;
+				}
+			}
+		}
+
 		public override float estimatedGenerationTime
 		{
 			get

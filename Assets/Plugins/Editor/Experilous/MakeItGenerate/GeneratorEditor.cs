@@ -52,6 +52,8 @@ namespace Experilous.MakeItGenerate
 				outputEditorState.foldoutAnimation = new AnimBool(outputEditorState.foldout);
 				outputEditorState.foldoutAnimation.valueChanged.AddListener(Repaint);
 			}
+
+			_generator.Update();
 		}
 
 		private static bool IsInAssetGeneratorSubclass(FieldInfo field)
