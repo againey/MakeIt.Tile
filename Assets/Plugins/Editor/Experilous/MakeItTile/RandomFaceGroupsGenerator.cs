@@ -12,7 +12,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face Group/Random")]
-	public class RandomFaceGroupsGenerator : Generator
+	public class RandomFaceGroupsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		[AutoSelect] public InputSlot topologyInputSlot;
 
@@ -37,6 +37,20 @@ namespace Experilous.MakeItTile
 			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionOutputSlot, this, "Random Face Groups", "Face Groups");
 			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesOutputSlot, this, "Random Face Group Indices", "Attributes");
 			faceGroupOutputSlots = new OutputSlot[0];
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			randomness.ResetIfBroken(this);
+
+			OutputSlot.ResetAssetTypeIfNull<FaceGroupCollection>(faceGroupCollectionOutputSlot);
+			OutputSlot.ResetAssetTypeIfNull<IFaceAttribute<int>>(faceGroupIndicesOutputSlot);
+			foreach (var outputSlot in faceGroupOutputSlots) OutputSlot.ResetAssetTypeIfNull<FaceGroup>(outputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		protected override void OnUpdate()

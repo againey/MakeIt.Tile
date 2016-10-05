@@ -11,7 +11,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face/Centroids")]
-	public class FaceCentroidsGenerator : Generator
+	public class FaceCentroidsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public bool flatten;
 
@@ -33,6 +33,19 @@ namespace Experilous.MakeItTile
 
 			// Outputs
 			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Vector3>>(ref faceCentroidsOutputSlot, this, "Face Centroids", "Attributes");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(faceCentroidsOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<InputSlot> inputs

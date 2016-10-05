@@ -10,7 +10,7 @@ using Experilous.MakeItGenerate;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face Edge/Bisectors")]
-	public class FaceEdgeBisectorsGenerator : Generator
+	public class FaceEdgeBisectorsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		[AutoSelect] public InputSlot topologyInputSlot;
 		public InputSlot vertexPositionsInputSlot;
@@ -27,6 +27,19 @@ namespace Experilous.MakeItTile
 
 			// Outputs
 			OutputSlot.CreateOrResetGrouped<IEdgeAttribute<Vector3>>(ref bisectorsOutputSlot, this, "Face Edge Bisectors", "Attributes");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector3>>(vertexPositionsInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(facePositionsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector3>>(bisectorsOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<InputSlot> inputs

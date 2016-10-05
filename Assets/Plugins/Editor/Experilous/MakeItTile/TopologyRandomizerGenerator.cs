@@ -12,7 +12,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Topology/Randomizer")]
-	public class TopologyRandomizerGenerator : Generator
+	public class TopologyRandomizerGenerator : Generator, ISerializationCallbackReceiver
 	{
 		[AutoSelect] public InputSlot surfaceInputSlot;
 		[AutoSelect] public InputSlot topologyInputSlot;
@@ -63,6 +63,18 @@ namespace Experilous.MakeItTile
 			relaxRelativePrecision = 0.95f;
 			maxRepairIterations = 20;
 			repairRate = 0.5f;
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsInputSlot);
+			randomness.ResetIfBroken(this);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		protected override void OnUpdate()

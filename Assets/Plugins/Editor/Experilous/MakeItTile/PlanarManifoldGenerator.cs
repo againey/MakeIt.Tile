@@ -12,7 +12,7 @@ using Experilous.Numerics;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Topology/Planar Manifold")]
-	public class PlanarManifoldGenerator : Generator
+	public class PlanarManifoldGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public enum PlanarTileShapes
 		{
@@ -176,6 +176,17 @@ namespace Experilous.MakeItTile
 			OutputSlot.CreateOrReset<PlanarSurface>(ref surfaceOutputSlot, this, "Surface");
 			OutputSlot.CreateOrReset<Topology>(ref topologyOutputSlot, this, "Topology");
 			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexPositionsOutputSlot, this, "Vertex Positions", "Attributes");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			OutputSlot.ResetAssetTypeIfNull<PlanarSurface>(surfaceOutputSlot);
+			OutputSlot.ResetAssetTypeIfNull<Topology>(topologyOutputSlot);
+			OutputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<OutputSlot> outputs

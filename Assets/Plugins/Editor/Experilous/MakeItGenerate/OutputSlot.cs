@@ -253,5 +253,13 @@ namespace Experilous.MakeItGenerate
 		{
 			_persistedAsset = _asset = _generator.executive.SetAsset(this, _asset);
 		}
+
+		public static void ResetAssetTypeIfNull<TAsset>(OutputSlot outputSlot)
+		{
+			if (outputSlot != null && outputSlot._assetType.type == null)
+			{
+				outputSlot._assetType = typeof(TAsset);
+			}
+		}
 	}
 }

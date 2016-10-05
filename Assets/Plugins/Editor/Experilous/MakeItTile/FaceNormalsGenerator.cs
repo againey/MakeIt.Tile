@@ -11,7 +11,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face/Normals")]
-	public class FaceNormalsGenerator : Generator
+	public class FaceNormalsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public enum CalculationMethod
 		{
@@ -23,8 +23,8 @@ namespace Experilous.MakeItTile
 
 		public CalculationMethod calculationMethod;
 
-		[AutoSelect] public InputSlot topologyInputSlot;
 		[AutoSelect] public InputSlot surfaceInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
 		public InputSlot facePositionsInputSlot;
 		public InputSlot vertexPositionsInputSlot;
 		public InputSlot vertexNormalsInputSlot;
@@ -34,8 +34,8 @@ namespace Experilous.MakeItTile
 		protected override void Initialize()
 		{
 			// Inputs
-			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<Surface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<IVertexAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
 			InputSlot.CreateOrResetRequired<IVertexAttribute<Vector3>>(ref vertexNormalsInputSlot, this);
 			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref facePositionsInputSlot, this);
@@ -45,6 +45,21 @@ namespace Experilous.MakeItTile
 
 			// Outputs
 			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Vector3>>(ref faceNormalsOutputSlot, this, "Face Normals", "Attributes");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexNormalsInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(facePositionsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(faceNormalsOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		protected override void OnUpdate()

@@ -11,7 +11,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Vertex/Normals")]
-	public class VertexNormalsGenerator : Generator
+	public class VertexNormalsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public enum CalculationMethod
 		{
@@ -23,8 +23,8 @@ namespace Experilous.MakeItTile
 
 		public CalculationMethod calculationMethod;
 
-		[AutoSelect] public InputSlot topologyInputSlot;
 		[AutoSelect] public InputSlot surfaceInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
 		public InputSlot vertexPositionsInputSlot;
 		public InputSlot facePositionsInputSlot;
 		public InputSlot faceNormalsInputSlot;
@@ -34,8 +34,8 @@ namespace Experilous.MakeItTile
 		protected override void Initialize()
 		{
 			// Inputs
-			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<Surface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<IVertexAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
 			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref facePositionsInputSlot, this);
 			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref faceNormalsInputSlot, this);
@@ -45,6 +45,21 @@ namespace Experilous.MakeItTile
 
 			// Outputs
 			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexNormalsOutputSlot, this, "Vertex Normals", "Attributes");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(facePositionsInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(faceNormalsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexNormalsOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		protected override void OnUpdate()

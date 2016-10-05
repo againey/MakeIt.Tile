@@ -12,7 +12,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Topology/Spherical Manifold")]
-	public class SphericalManifoldGenerator : Generator
+	public class SphericalManifoldGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public enum SphericalPolyhedrons
 		{
@@ -92,6 +92,17 @@ namespace Experilous.MakeItTile
 			OutputSlot.CreateOrReset<SphericalSurface>(ref surfaceOutputSlot, this, "Surface");
 			OutputSlot.CreateOrReset<Topology>(ref topologyOutputSlot, this, "Topology");
 			OutputSlot.CreateOrResetGrouped<IVertexAttribute<Vector3>>(ref vertexPositionsOutputSlot, this, "Vertex Positions", "Attributes");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			OutputSlot.ResetAssetTypeIfNull<SphericalSurface>(surfaceOutputSlot);
+			OutputSlot.ResetAssetTypeIfNull<Topology>(topologyOutputSlot);
+			OutputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<OutputSlot> outputs

@@ -12,7 +12,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face Group/Rectangular")]
-	public class RectangularFaceGroupsGenerator : Generator
+	public class RectangularFaceGroupsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public IntVector2 axisDivisions;
 
@@ -38,6 +38,21 @@ namespace Experilous.MakeItTile
 			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionOutputSlot, this, "Rectangular Face Groups", "Face Groups");
 			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesOutputSlot, this, "Rectangular Face Group Indices", "Attributes");
 			faceGroupOutputSlots = new OutputSlot[0];
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(facePositionsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<FaceGroupCollection>(faceGroupCollectionOutputSlot);
+			OutputSlot.ResetAssetTypeIfNull<IFaceAttribute<int>>(faceGroupIndicesOutputSlot);
+			foreach (var outputSlot in faceGroupOutputSlots) OutputSlot.ResetAssetTypeIfNull<FaceGroup>(outputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<InputSlot> inputs

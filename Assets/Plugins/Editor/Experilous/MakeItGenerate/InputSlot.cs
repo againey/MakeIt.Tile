@@ -154,6 +154,14 @@ namespace Experilous.MakeItGenerate
 			}
 		}
 
+		public static void ResetAssetTypeIfNull<TAsset>(InputSlot inputSlot)
+		{
+			if (inputSlot != null && inputSlot._assetType.type == null)
+			{
+				inputSlot._assetType = typeof(TAsset);
+			}
+		}
+
 		public static bool ShouldAutoSelect<TObject>(string fieldName)
 		{
 			return ShouldAutoSelect(typeof(TObject).GetField(fieldName));
