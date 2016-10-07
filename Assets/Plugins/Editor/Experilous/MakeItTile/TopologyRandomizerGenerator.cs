@@ -107,7 +107,7 @@ namespace Experilous.MakeItTile
 
 			if (vertexPositions != null)
 			{
-				if (surface is PlanarSurface)
+				if (surface is QuadrilateralSurface)
 				{
 					if (relaxForRegularityWeight >= 1.0f)
 					{

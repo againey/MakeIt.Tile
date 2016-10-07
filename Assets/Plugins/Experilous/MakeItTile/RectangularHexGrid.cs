@@ -9,7 +9,7 @@ using GeneralUtility = Experilous.Core.GeneralUtility;
 
 namespace Experilous.MakeItTile
 {
-	public class RectangularHexGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
+	public class RectangularHexGrid : QuadrilateralSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{
 		public Vector2 midpoint;
 		public Vector2 majorCorner;
@@ -23,8 +23,8 @@ namespace Experilous.MakeItTile
 
 		[SerializeField] private bool _originIsObtuse;
 
-		[SerializeField] private Vector3 _faceAxis0;
-		[SerializeField] private Vector3 _faceAxis1;
+		[SerializeField] private Vector2 _faceAxis0;
+		[SerializeField] private Vector2 _faceAxis1;
 
 		[SerializeField] private int _vertexCount;
 		[SerializeField] private int _edgeCount;
@@ -74,12 +74,12 @@ namespace Experilous.MakeItTile
 		[SerializeField] private int _vertexInterceptOffsetOdd;
 		[SerializeField] private int _vertexInterceptOffsetLast;
 
-		public static RectangularHexGrid Create(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, IntVector2 size)
+		public static RectangularHexGrid Create(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion orientation, bool isAxis0Wrapped, bool isAxis1Wrapped, IntVector2 size)
 		{
-			return CreateInstance<RectangularHexGrid>().Reset(hexDescriptor, origin, rotation, isAxisWrapped0, isAxisWrapped1, size);
+			return CreateInstance<RectangularHexGrid>().Reset(hexDescriptor, origin, orientation, isAxis0Wrapped, isAxis1Wrapped, size);
 		}
 
-		public RectangularHexGrid Reset(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, IntVector2 size)
+		public RectangularHexGrid Reset(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion orientation, bool isAxis0Wrapped, bool isAxis1Wrapped, IntVector2 size)
 		{
 			midpoint = hexDescriptor.midpoint;
 			majorCorner = hexDescriptor.majorCorner;
@@ -114,7 +114,7 @@ namespace Experilous.MakeItTile
 				GeneralUtility.Swap(ref _faceAxis0, ref _faceAxis1);
 			}
 
-			Reset(new PlanarDescriptor(_faceAxis0 * size.x, isAxisWrapped0, _faceAxis1 * size.y, isAxisWrapped1, origin, rotation * Vector3.back));
+			Reset(new WrappableAxis2(_faceAxis0 * size.x, isAxis0Wrapped), new WrappableAxis2(_faceAxis1 * size.y, isAxis1Wrapped), origin, orientation);
 
 			this.size = size;
 			topology = null;
@@ -158,9 +158,6 @@ namespace Experilous.MakeItTile
 
 		private void InitializeCoreMetrics()
 		{
-			axis0.vector *= size.x;
-			axis1.vector *= size.y;
-
 			if (midpointIsFirstAxis)
 			{
 				_faceColumnCount = size.x;
@@ -170,7 +167,7 @@ namespace Experilous.MakeItTile
 				_wrapCols = axis1.isWrapped;
 
 				_reverseColumnsRows = false;
-				_reverseWindingOrder = isInverted;
+				_reverseWindingOrder = false; // false <- isInvertex
 			}
 			else
 			{
@@ -181,7 +178,7 @@ namespace Experilous.MakeItTile
 				_wrapCols = axis0.isWrapped;
 
 				_reverseColumnsRows = true;
-				_reverseWindingOrder = !isInverted;
+				_reverseWindingOrder = !false; // false <- isInvertex
 			}
 		}
 
@@ -396,7 +393,7 @@ namespace Experilous.MakeItTile
 			Vector3 rowAxis;
 			Vector3 columnAxisDouble;
 
-			Vector3 evenCorner = _originIsObtuse ? minorCorner - majorCorner : -minorCorner;
+			Vector3 evenCorner = _originIsObtuse ? -minorCorner - midpoint  * 2f : -minorCorner;
 			Vector3 oddCorner = -majorCorner;
 			Vector3 oddRowOffset;
 
@@ -426,7 +423,8 @@ namespace Experilous.MakeItTile
 			{
 				int col, row;
 				GetVertexColRow(i, out col, out row);
-				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble + (Numerics.Math.IsOdd(col) ? oddCorner : evenCorner);
+				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble;
+				if (Numerics.Math.IsOdd(col)) vertexPosition += oddCorner - evenCorner;
 				if (Numerics.Math.IsOdd(row)) vertexPosition += oddRowOffset;
 				vertexPositions[i] = vertexPosition;
 			}
@@ -531,6 +529,19 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		private int GetFaceIndexFromColRow(int col, int row)
+		{
+			if (axisStyle != HexGridAxisStyles.StaggeredSymmetric)
+			{
+				return col + row * _faceColumnCount;
+			}
+			else
+			{
+				var adjustedIndex = col * 2 + row * _faceColumnCountPair;
+				return (adjustedIndex - _faceOffset) / 2;
+			}
+		}
+
 		public IntVector2 GetFaceIndex2D(int internalFaceIndex)
 		{
 			IntVector2 index2D;
@@ -547,7 +558,14 @@ namespace Experilous.MakeItTile
 
 		public int GetFaceIndex(int x, int y)
 		{
-			throw new NotImplementedException();
+			if (!_reverseColumnsRows)
+			{
+				return GetFaceIndexFromColRow(x, y);
+			}
+			else
+			{
+				return GetFaceIndexFromColRow(y, x);
+			}
 		}
 
 		public int FaceWrapX(int x)
@@ -597,6 +615,22 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		private int GetVertexIndexFromColRow(int col, int row)
+		{
+			if (row == 0)
+			{
+				return col + _vertexInterceptOffsetFirst;
+			}
+			else if (row == _vertexRowCount - 1)
+			{
+				return col + (_vertexColumnCount * row + _vertexInterceptOffsetLast);
+			}
+			else
+			{
+				return col + (_vertexColumnCount * row + (Numerics.Math.IsEven(row) ? _vertexInterceptOffsetEven : _vertexInterceptOffsetOdd));
+			}
+		}
+
 		public IntVector2 GetVertexIndex2D(int vertexIndex)
 		{
 			IntVector2 index2D;
@@ -613,7 +647,14 @@ namespace Experilous.MakeItTile
 
 		public int GetVertexIndex(int x, int y)
 		{
-			throw new NotImplementedException();
+			if (!_reverseColumnsRows)
+			{
+				return GetVertexIndexFromColRow(x, y);
+			}
+			else
+			{
+				return GetVertexIndexFromColRow(y, x);
+			}
 		}
 
 		public int VertexWrapX(int x)

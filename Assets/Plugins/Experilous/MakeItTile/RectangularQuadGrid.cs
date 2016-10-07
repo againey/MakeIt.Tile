@@ -8,13 +8,10 @@ using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
-	public class RectangularQuadGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
+	public class RectangularQuadGrid : QuadrilateralSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{
 		public IntVector2 size;
 		public Topology topology;
-
-		public Vector3 faceAxis0;
-		public Vector3 faceAxis1;
 
 		[SerializeField] private int _faceAxis0Count;
 		[SerializeField] private int _faceAxis1Count;
@@ -27,16 +24,17 @@ namespace Experilous.MakeItTile
 		[SerializeField] private int _internalFaceCount;
 		[SerializeField] private int _externalFaceCount;
 
-		public static RectangularQuadGrid Create(PlanarDescriptor planarDescriptor, IntVector2 size)
+		public static RectangularQuadGrid Create(Vector2 tileAxis0, Vector2 tileAxis1, Vector3 origin, Quaternion orientation, bool isAxis0Wrapped, bool isAxis1Wrapped, IntVector2 size)
 		{
-			return CreateInstance<RectangularQuadGrid>().Reset(planarDescriptor, size);
+			return CreateInstance<RectangularQuadGrid>().Reset(tileAxis0, tileAxis1, origin, orientation, isAxis0Wrapped, isAxis1Wrapped, size);
 		}
 
-		public RectangularQuadGrid Reset(PlanarDescriptor planarDescriptor, IntVector2 size)
+		public RectangularQuadGrid Reset(Vector2 tileAxis0, Vector2 tileAxis1, Vector3 origin, Quaternion orientation, bool isAxis0Wrapped, bool isAxis1Wrapped, IntVector2 size)
 		{
-			Reset(planarDescriptor);
-			faceAxis0 = planarDescriptor.axis0.vector;
-			faceAxis1 = planarDescriptor.axis1.vector;
+			Reset(
+				new WrappableAxis2(tileAxis0 * size.x, isAxis0Wrapped),
+				new WrappableAxis2(tileAxis1 * size.y, isAxis1Wrapped),
+				origin, orientation);
 			this.size = size;
 			topology = null;
 			Initialize();
@@ -47,9 +45,6 @@ namespace Experilous.MakeItTile
 		{
 			if (size.x <= 0 || size.y <= 0)
 				throw new InvalidTopologyException("A rectangular quad grid cannot have an axis size less than or equal to zero.");
-
-			axis0.vector *= size.x;
-			axis1.vector *= size.y;
 
 			_faceAxis0Count = size.x;
 			_faceAxis1Count = size.y;
@@ -88,8 +83,8 @@ namespace Experilous.MakeItTile
 				var index2D = GetVertexIndex2D(i);
 				vertexPositions[i] =
 					origin +
-					index2D.x * faceAxis0 +
-					index2D.y * faceAxis1;
+					index2D.x * _axis0Vector / size.x +
+					index2D.y * _axis1Vector / size.y;
 			}
 
 			return CreateTopology();
@@ -110,7 +105,7 @@ namespace Experilous.MakeItTile
 
 			var index2D = GetFaceIndex2D(faceIndex);
 			var basisIndex = index2D.y * _vertexAxis0Count;
-			switch (ConditionalInvert(neighborIndex, 3, isInverted))
+			switch (ConditionalInvert(neighborIndex, 3, false)) // false <- isInverted
 			{
 				case 0: return basisIndex + index2D.x;
 				case 1: return (basisIndex + _vertexAxis0Count) % vertexCount + index2D.x;
@@ -126,7 +121,7 @@ namespace Experilous.MakeItTile
 
 			if (!axis0.isWrapped && !axis1.isWrapped) return EdgeWrap.None;
 
-			if (!isInverted)
+			if (!false) // false <- isInverted
 			{
 				switch (neighborIndex)
 				{

@@ -27,7 +27,7 @@ namespace Experilous.MakeItTile
 		protected override void Initialize()
 		{
 			// Inputs
-			InputSlot.CreateOrResetRequired<PlanarSurface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequired<QuadrilateralSurface>(ref surfaceInputSlot, this);
 			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref facePositionsInputSlot, this);
 
@@ -92,7 +92,7 @@ namespace Experilous.MakeItTile
 
 		public override IEnumerator BeginGeneration()
 		{
-			var surface = surfaceInputSlot.GetAsset<PlanarSurface>();
+			var surface = surfaceInputSlot.GetAsset<QuadrilateralSurface>();
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var facePositions = facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>();
 

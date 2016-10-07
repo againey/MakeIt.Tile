@@ -75,7 +75,7 @@ namespace Experilous.MakeItTile
 
 			yield return executive.GenerateConcurrently(() =>
 			{
-				if (flatten || surface is PlanarSurface)
+				if (flatten || surface is QuadrilateralSurface)
 				{
 					FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, faceCentroids);
 				}

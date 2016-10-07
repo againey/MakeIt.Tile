@@ -49,7 +49,7 @@ namespace Experilous.Examples.MakeItTile
 			White,
 		}
 
-		private PlanarSurface _surface;
+		private QuadrilateralSurface _surface;
 		private Topology _topology;
 		private PositionalVertexAttribute _vertexPositions;
 		private PositionalFaceAttribute _facePositions;
@@ -85,10 +85,10 @@ namespace Experilous.Examples.MakeItTile
 				_normalFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 					{
-						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 5f - vertexAttributes.position).normalized;
+						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.normal * 5f - vertexAttributes.position).normalized;
 						vertexAttributes.uv = new Vector2(0.25f, 0f);
 						vertexAttributes.Advance();
-						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 5f - vertexAttributes.position).normalized;
+						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.normal * 5f - vertexAttributes.position).normalized;
 						vertexAttributes.uv = new Vector2(0.25f, 0.5f);
 						vertexAttributes.Advance();
 					},
@@ -102,10 +102,10 @@ namespace Experilous.Examples.MakeItTile
 				_selectedFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 					{
-						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 1f - vertexAttributes.position).normalized;
+						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.normal * 1f - vertexAttributes.position).normalized;
 						vertexAttributes.uv = new Vector2(0.75f, 0f);
 						vertexAttributes.Advance();
-						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 1f - vertexAttributes.position).normalized;
+						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.normal * 1f - vertexAttributes.position).normalized;
 						vertexAttributes.uv = new Vector2(0.75f, 0.5f);
 						vertexAttributes.Advance();
 					},
@@ -176,9 +176,7 @@ namespace Experilous.Examples.MakeItTile
 				{
 					boardSize = new IntVector2(19, 19);
 				}
-				_surface = RectangularQuadGrid.Create(
-					new PlanarDescriptor(Vector3.right, Vector3.up),
-					boardSize);
+				_surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, boardSize);
 				_topology = ((RectangularQuadGrid)_surface).CreateManifold(out vertexPositionsArray);
 				_vertexPositions = PositionalVertexAttribute.Create(_surface, vertexPositionsArray);
 			}
@@ -294,18 +292,18 @@ namespace Experilous.Examples.MakeItTile
 			_picker.partitioning = _partitioning;
 			_picker.enabled = true;
 
-			var centerVertexNormal = _surface.surfaceNormal.normalized;
+			var centerVertexNormal = _surface.normal.normalized;
 
 			var triangulation = new SeparatedFacesUmbrellaTriangulation(2,
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = _vertexPositions[edge];
-					vertexAttributes.normal = (_vertexPositions[edge] + _surface.surfaceNormal * 5f - _facePositions[edge.nearFace]).normalized;
+					vertexAttributes.normal = (_vertexPositions[edge] + _surface.normal * 5f - _facePositions[edge.nearFace]).normalized;
 					vertexAttributes.uv = new Vector2(0.25f, 0f);
 					vertexAttributes.Advance();
 
 					vertexAttributes.position = _vertexPositions[edge] + _innerAngleBisectors[edge] * 0.05f;
-					vertexAttributes.normal = (vertexAttributes.position + _surface.surfaceNormal * 5f - _facePositions[edge.nearFace]).normalized;
+					vertexAttributes.normal = (vertexAttributes.position + _surface.normal * 5f - _facePositions[edge.nearFace]).normalized;
 					vertexAttributes.uv = new Vector2(0.25f, 0.5f);
 					vertexAttributes.Advance();
 				},

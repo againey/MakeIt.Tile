@@ -65,9 +65,7 @@ namespace Experilous.Examples.MakeItTile
 		private void CreateSquareGrid(out Topology topology, out IVertexAttribute<Vector3> vertexPositions)
 		{
 			Vector3[] vertexPositionsArray;
-			var surface = RectangularQuadGrid.Create(
-				new PlanarDescriptor(Vector3.right, Vector3.up),
-				new IntVector2(10, 10));
+			var surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, new IntVector2(10, 10));
 			topology = surface.CreateManifold(out vertexPositionsArray);
 			vertexPositions = PositionalVertexAttribute.Create(surface, vertexPositionsArray);
 		}

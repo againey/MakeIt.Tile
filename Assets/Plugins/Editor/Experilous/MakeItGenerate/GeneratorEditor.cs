@@ -39,7 +39,7 @@ namespace Experilous.MakeItGenerate
 
 		[SerializeField] protected OutputEditorStateDictionary _outputEditorStates = new OutputEditorStateDictionary();
 
-		protected void OnEnable()
+		protected virtual void OnEnable()
 		{
 			_generator = (Generator)target;
 			_serializedGenerator = (target != null) ? new SerializedObject(target) : null;

@@ -8,59 +8,50 @@ using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
-	public class PlanarSurface : Surface
+	public class QuadrilateralSurface : Surface, ISerializationCallbackReceiver
 	{
-		public PlanarAxis axis0;
-		public PlanarAxis axis1;
+		public WrappableAxis2 axis0;
+		public WrappableAxis2 axis1;
 		public Vector3 origin;
-		public Vector3 surfaceNormal;
-		public Vector3 axis0Normal;
-		public Vector3 axis1Normal;
-		public SerializablePlane plane;
-		public bool isInverted;
+		public Quaternion orientation;
 
-		public static PlanarSurface Create(PlanarDescriptor descriptor)
+		protected Vector3 _planeNormal;
+		protected Vector3 _axis0Vector;
+		protected Vector3 _axis1Vector;
+		protected Vector3 _axis0Normal;
+		protected Vector3 _axis1Normal;
+
+		public static QuadrilateralSurface Create(WrappableAxis2 axis0, WrappableAxis2 axis1, Vector3 origin, Quaternion orientation)
 		{
-			return CreateInstance<PlanarSurface>().Reset(descriptor);
+			return CreateInstance<QuadrilateralSurface>().Reset(axis0, axis1, origin, orientation);
 		}
 
-		public PlanarSurface Reset(PlanarDescriptor descriptor)
+		public QuadrilateralSurface Reset(WrappableAxis2 axis0, WrappableAxis2 axis1, Vector3 origin, Quaternion orientation)
 		{
-			axis0 = descriptor.axis0;
-			axis1 = descriptor.axis1;
-			origin = descriptor.origin;
-			surfaceNormal = descriptor.normal;
-			isInverted = descriptor.isInverted;
+			this.axis0 = axis0;
+			this.axis1 = axis1;
+			this.origin = origin;
+			this.orientation = orientation;
 
-			axis0Normal = Vector3.Cross(axis0.vector, surfaceNormal);
-			axis1Normal = Vector3.Cross(axis1.vector, surfaceNormal);
-			if (Vector3.Dot(axis0Normal, axis1.vector) < 0f) axis0Normal = -axis0Normal;
-			if (Vector3.Dot(axis1Normal, axis0.vector) < 0f) axis1Normal = -axis1Normal;
-
-			plane = new SerializablePlane(Vector3.Cross(axis1.vector, axis0.vector), origin);
-			if (Vector3.Dot(plane.normal, surfaceNormal) < 0f) plane = plane.Flip();
+			OnAfterDeserialize();
 
 			return this;
 		}
 
-		public PlanarAxis GetAxis(int axisIndex)
+		public void OnAfterDeserialize()
 		{
-			switch (axisIndex)
-			{
-				case 0: return axis0;
-				case 1: return axis1;
-				default: throw new ArgumentOutOfRangeException("axisIndex");
-			}
+			_planeNormal = orientation * Vector3.back;
+			_axis0Vector = orientation * axis0;
+			_axis1Vector = orientation * axis1;
+
+			_axis0Normal = Vector3.Cross(axis0, _planeNormal);
+			_axis1Normal = Vector3.Cross(axis1, _planeNormal);
+			if (Vector3.Dot(_axis0Normal, axis1) < 0f) _axis0Normal = -_axis0Normal;
+			if (Vector3.Dot(_axis1Normal, axis0) < 0f) _axis1Normal = -_axis1Normal;
 		}
 
-		public void SetAxis(int axisIndex, PlanarAxis axis)
+		public void OnBeforeSerialize()
 		{
-			switch (axisIndex)
-			{
-				case 0: axis0 = axis; break;
-				case 1: axis1 = axis; break;
-				default: throw new ArgumentOutOfRangeException("axisIndex");
-			}
 		}
 
 		public override bool isFlat { get { return true; } }
@@ -68,6 +59,9 @@ namespace Experilous.MakeItTile
 
 		public override bool isConvex { get { return true; } }
 		public override bool isConcave { get { return false; } }
+
+		public Plane plane { get { return new Plane(_planeNormal, origin); } }
+		public Vector3 normal { get { return _planeNormal; } }
 
 		public override Vector3 Intersect(Ray ray)
 		{
@@ -91,13 +85,13 @@ namespace Experilous.MakeItTile
 
 		public override Vector3 Project(Vector3 position)
 		{
-			var line = new Ray(position, plane.normal);
+			var line = new Ray(position, _planeNormal);
 			return Geometry.Intersect(plane, line);
 		}
 
 		public override Vector3 GetNormal(Vector3 position)
 		{
-			return surfaceNormal;
+			return _planeNormal;
 		}
 
 		public IntVector2 GetWrapIndex2D(Vector3 position)
@@ -106,14 +100,14 @@ namespace Experilous.MakeItTile
 			var relativePosition = position - origin;
 			if (axis0.isWrapped)
 			{
-				var numerator = Vector3.Dot(axis1Normal, relativePosition);
-				var denominator = Vector3.Dot(axis1Normal, axis0.vector);
+				var numerator = Vector3.Dot(_axis1Normal, relativePosition);
+				var denominator = Vector3.Dot(_axis1Normal, axis0.vector);
 				index2D.x = Mathf.FloorToInt(numerator / -denominator);
 			}
 			if (axis1.isWrapped)
 			{
-				var numerator = Vector3.Dot(axis0Normal, relativePosition);
-				var denominator = Vector3.Dot(axis0Normal, axis1.vector);
+				var numerator = Vector3.Dot(_axis0Normal, relativePosition);
+				var denominator = Vector3.Dot(_axis0Normal, axis1.vector);
 				index2D.y = Mathf.FloorToInt(numerator / -denominator);
 			}
 			return index2D;
@@ -124,15 +118,15 @@ namespace Experilous.MakeItTile
 			var relativePosition = position - origin;
 			if (axis0.isWrapped)
 			{
-				var numerator = Vector3.Dot(axis1Normal, relativePosition);
-				var denominator = Vector3.Dot(axis1Normal, axis0.vector);
-				position += Mathf.Floor(numerator / denominator) * axis0.vector;
+				var numerator = Vector3.Dot(_axis1Normal, relativePosition);
+				var denominator = Vector3.Dot(_axis1Normal, axis0.vector);
+				position += Mathf.Floor(numerator / denominator) * _axis0Vector;
 			}
 			if (axis1.isWrapped)
 			{
-				var numerator = Vector3.Dot(axis0Normal, relativePosition);
-				var denominator = Vector3.Dot(axis0Normal, axis1.vector);
-				position += Mathf.Floor(numerator / denominator) * axis1.vector;
+				var numerator = Vector3.Dot(_axis0Normal, relativePosition);
+				var denominator = Vector3.Dot(_axis0Normal, axis1.vector);
+				position += Mathf.Floor(numerator / denominator) * _axis1Vector;
 			}
 			return position;
 		}
@@ -144,21 +138,21 @@ namespace Experilous.MakeItTile
 				case EdgeWrapUtility.Generic.None:
 					return position;
 				case EdgeWrapUtility.Generic.PosAxis0:
-					return position + axis0.vector;
+					return position + _axis0Vector;
 				case EdgeWrapUtility.Generic.NegAxis0:
-					return position - axis0.vector;
+					return position - _axis0Vector;
 				case EdgeWrapUtility.Generic.PosAxis1:
-					return position + axis1.vector;
+					return position + _axis1Vector;
 				case EdgeWrapUtility.Generic.NegAxis1:
-					return position - axis1.vector;
+					return position - _axis1Vector;
 				case EdgeWrapUtility.Generic.PosAxis0 | EdgeWrapUtility.Generic.PosAxis1:
-					return position + axis0.vector + axis1.vector;
+					return position + _axis0Vector + _axis1Vector;
 				case EdgeWrapUtility.Generic.PosAxis0 | EdgeWrapUtility.Generic.NegAxis1:
-					return position + axis0.vector - axis1.vector;
+					return position + _axis0Vector - _axis1Vector;
 				case EdgeWrapUtility.Generic.NegAxis0 | EdgeWrapUtility.Generic.PosAxis1:
-					return position - axis0.vector + axis1.vector;
+					return position - _axis0Vector + _axis1Vector;
 				case EdgeWrapUtility.Generic.NegAxis0 | EdgeWrapUtility.Generic.NegAxis1:
-					return position - axis0.vector - axis1.vector;
+					return position - _axis0Vector - _axis1Vector;
 				default:
 					throw new ArgumentException("edgeWrap");
 			}
@@ -171,21 +165,21 @@ namespace Experilous.MakeItTile
 				case EdgeWrapUtility.Generic.None:
 					return position;
 				case EdgeWrapUtility.Generic.PosAxis0:
-					return position - axis0.vector;
+					return position - _axis0Vector;
 				case EdgeWrapUtility.Generic.NegAxis0:
-					return position + axis0.vector;
+					return position + _axis0Vector;
 				case EdgeWrapUtility.Generic.PosAxis1:
-					return position - axis1.vector;
+					return position - _axis1Vector;
 				case EdgeWrapUtility.Generic.NegAxis1:
-					return position + axis1.vector;
+					return position + _axis1Vector;
 				case EdgeWrapUtility.Generic.PosAxis0 | EdgeWrapUtility.Generic.PosAxis1:
-					return position - axis0.vector - axis1.vector;
+					return position - _axis0Vector - _axis1Vector;
 				case EdgeWrapUtility.Generic.PosAxis0 | EdgeWrapUtility.Generic.NegAxis1:
-					return position - axis0.vector + axis1.vector;
+					return position - _axis0Vector + _axis1Vector;
 				case EdgeWrapUtility.Generic.NegAxis0 | EdgeWrapUtility.Generic.PosAxis1:
-					return position + axis0.vector - axis1.vector;
+					return position + _axis0Vector - _axis1Vector;
 				case EdgeWrapUtility.Generic.NegAxis0 | EdgeWrapUtility.Generic.NegAxis1:
-					return position + axis0.vector + axis1.vector;
+					return position + _axis0Vector + _axis1Vector;
 				default:
 					throw new ArgumentException("edgeWrap");
 			}
@@ -269,63 +263,6 @@ namespace Experilous.MakeItTile
 		public override Vector3 ReverseOffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap)
 		{
 			return ReverseOffsetAttribute(position, EdgeWrapUtility.FaceToFaceAsGeneric(edgeWrap));
-		}
-	}
-
-	[Serializable] public struct PlanarAxis
-	{
-		public Vector3 vector;
-		public bool isWrapped;
-
-		public PlanarAxis(Vector3 vector, bool isWrapped = false)
-		{
-			this.vector = vector;
-			this.isWrapped = isWrapped;
-		}
-	}
-
-	public struct PlanarDescriptor
-	{
-		public PlanarAxis axis0;
-		public PlanarAxis axis1;
-		public Vector3 origin;
-		public Vector3 normal;
-		public bool isInverted;
-
-		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, bool isInverted = false)
-			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), Vector3.zero, isInverted) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 origin, bool isInverted = false)
-			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), origin, isInverted) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, Vector3 axisVector1, Vector3 origin, Vector3 normal)
-			: this(new PlanarAxis(axisVector0), new PlanarAxis(axisVector1), origin, normal) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, bool isInverted = false)
-			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), Vector3.zero, isInverted) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 origin, bool isInverted = false)
-			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), origin, isInverted) { }
-
-		public PlanarDescriptor(Vector3 axisVector0, bool isAxisWrapped0, Vector3 axisVector1, bool isAxisWrapped1, Vector3 origin, Vector3 normal)
-			: this(new PlanarAxis(axisVector0, isAxisWrapped0), new PlanarAxis(axisVector1, isAxisWrapped1), origin, normal) { }
-
-		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, bool isInverted = false)
-		{
-			this.axis0 = axis0;
-			this.axis1 = axis1;
-			this.origin = origin;
-			normal = Vector3.Cross(axis1.vector, axis0.vector).normalized * (isInverted ? -1f : 1f);
-			this.isInverted = isInverted;
-		}
-
-		public PlanarDescriptor(PlanarAxis axis0, PlanarAxis axis1, Vector3 origin, Vector3 normal)
-		{
-			this.axis0 = axis0;
-			this.axis1 = axis1;
-			this.origin = origin;
-			this.normal = normal.normalized;
-			isInverted = Vector3.Dot(normal, Vector3.Cross(axis1.vector, axis0.vector)) < 0f;
 		}
 	}
 }
