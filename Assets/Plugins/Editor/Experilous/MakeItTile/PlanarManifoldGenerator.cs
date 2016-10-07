@@ -117,6 +117,7 @@ namespace Experilous.MakeItTile
 		public bool isAxis0Wrapped;
 		public bool isAxis1Wrapped;
 
+		[UnityEngine.Serialization.FormerlySerializedAs("originPosition")]
 		public Vector3 origin;
 		public Vector3 rotation;
 
@@ -230,6 +231,11 @@ namespace Experilous.MakeItTile
 			OutputSlot.ResetAssetTypeIfNull<Topology>(topologyOutputSlot);
 			OutputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsOutputSlot);
 
+			if (string.IsNullOrEmpty(_version) || _version == "1.0")
+			{
+				Updgrade_From_1_0_To_1_1();
+			}
+
 			switch (tileType)
 			{
 				case TileTypes.Quadrilateral: SetQuadTileShape(quadTileShape); break;
@@ -240,6 +246,130 @@ namespace Experilous.MakeItTile
 
 		public void OnBeforeSerialize()
 		{
+		}
+
+		private void Updgrade_From_1_0_To_1_1()
+		{
+			Debug.LogFormat("<b>Upgrading \"{0}\" from v1.0 to v1.1.</b>", name);
+			switch (planarTileShape)
+			{
+				case PlanarTileShapes.Quadrilateral:
+				{
+					Vector3 declaredAxis0;
+					switch (quadGridHorizontalAxisOptions)
+					{
+						case HorizontalAxisOptions.LeftToRight: declaredAxis0 = Vector3.right * horizontalAxisLength; break;
+						case HorizontalAxisOptions.RightToLeft: declaredAxis0 = Vector3.left * horizontalAxisLength; break;
+						case HorizontalAxisOptions.Custom: declaredAxis0 = horizontalAxis; break;
+						default: throw new System.NotImplementedException();
+					}
+
+					Vector3 declaredAxis1;
+					switch (quadGridVerticalAxisOptions)
+					{
+						case VerticalAxisOptions.BottomToTop: declaredAxis1 = Vector3.up * verticalAxisLength; break;
+						case VerticalAxisOptions.TopToBottom: declaredAxis1 = Vector3.down * verticalAxisLength; break;
+						case VerticalAxisOptions.NearToFar: declaredAxis1 = Vector3.forward * verticalAxisLength; break;
+						case VerticalAxisOptions.FarToNear: declaredAxis1 = Vector3.back * verticalAxisLength; break;
+						case VerticalAxisOptions.Custom: declaredAxis1 = verticalAxis; break;
+						default: throw new System.NotImplementedException();
+					}
+
+					var computedNormal = Vector3.Cross(declaredAxis1, declaredAxis0);
+
+					Vector3 declaredNormal;
+					switch (normalOptions)
+					{
+						case NormalOptions.Automatic: declaredNormal = computedNormal; break;
+						case NormalOptions.Back: declaredNormal = Vector3.back; break;
+						case NormalOptions.Forward: declaredNormal = Vector3.forward; break;
+						case NormalOptions.Up: declaredNormal = Vector3.up; break;
+						case NormalOptions.Down: declaredNormal = Vector3.down; break;
+						case NormalOptions.Custom: declaredNormal = normal; break;
+						default: throw new System.NotImplementedException();
+					}
+
+					bool isInverted = Vector3.Dot(declaredNormal, computedNormal) < 0f;
+					if (isInverted) computedNormal = -computedNormal;
+
+					Debug.LogFormat("Declared Axis 0 = {0}", declaredAxis0.ToString("F3"));
+					Debug.LogFormat("Declared Axis 1 = {0}", declaredAxis1.ToString("F3"));
+					Debug.LogFormat("Declared Normal = {0}", declaredNormal.ToString("F3"));
+					Debug.LogFormat("Computed Normal = {0}", computedNormal.ToString("F3"));
+					Debug.LogFormat("Is Inverted = {0}", isInverted);
+
+					if (quadGridHorizontalAxisOptions != HorizontalAxisOptions.Custom)
+					{
+						var axis0Normal = Vector3.Cross(Vector3.right, computedNormal);
+						var orientation = Quaternion.LookRotation(-computedNormal, axis0Normal);
+						var invertedOrientation = Quaternion.Inverse(orientation);
+						Debug.LogFormat("Axis 0 Normal = {0}", axis0Normal.ToString("F3"));
+						Debug.LogFormat("Orientation = {0}", orientation.ToString("F3"));
+						axis0 = new Vector2(declaredAxis0.x, 0f);
+						axis1 = invertedOrientation * declaredAxis1;
+						rotation = orientation.eulerAngles;
+					}
+					else if (quadGridVerticalAxisOptions != VerticalAxisOptions.Custom)
+					{
+						var orientation = Quaternion.LookRotation(-computedNormal, declaredAxis1);
+						var invertedOrientation = Quaternion.Inverse(orientation);
+						Debug.LogFormat("Orientation = {0}", orientation.ToString("F3"));
+						axis1 = new Vector2(0f, declaredAxis1.y + declaredAxis1.z);
+						axis0 = invertedOrientation * declaredAxis0;
+						rotation = orientation.eulerAngles;
+					}
+					else
+					{
+						var axis0Normal = Vector3.Cross(declaredAxis0, computedNormal);
+						var orientation = Quaternion.LookRotation(-computedNormal, axis0Normal);
+						var invertedOrientation = Quaternion.Inverse(orientation);
+						Debug.LogFormat("Axis 0 Normal = {0}", axis0Normal.ToString("F3"));
+						Debug.LogFormat("Orientation = {0}", orientation.ToString("F3"));
+						axis0 = new Vector2(declaredAxis0.magnitude, 0f);
+						axis1 = invertedOrientation * declaredAxis1;
+						rotation = orientation.eulerAngles;
+					}
+
+					Debug.LogFormat("Axis 0 = {0}", axis0.ToString("F3"));
+					Debug.LogFormat("Axis 1 = {0}", axis1.ToString("F3"));
+					Debug.LogFormat("Rotation = {0}", rotation.ToString("F3"));
+
+					if (axis0 == Vector2.right && axis1 == Vector2.up)
+					{
+						SetQuadTileShape(QuadTileShapes.Square);
+					}
+					else if (axis0.x == 1f && Mathf.Approximately(axis0.y, -1f / Mathf.Sqrt(3f)) && axis1.x == 1f && Mathf.Approximately(axis0.y, +1f / Mathf.Sqrt(3f)))
+					{
+						SetQuadTileShape(QuadTileShapes.Isometric);
+					}
+					else if (axis0.x == 1f && axis0.y == -0.5f && axis1.x == 1f && axis1.y == +0.5f)
+					{
+						SetQuadTileShape(QuadTileShapes.Diamond2x1);
+					}
+					else
+					{
+						SetQuadTileShape(QuadTileShapes.Custom);
+					}
+
+					break;
+				}
+				case PlanarTileShapes.Hexagonal:
+				{
+					break;
+				}
+				default: throw new System.NotImplementedException();
+			}
+
+			switch (wrapOptions)
+			{
+				case WrapOptions.NoWrap: isAxis0Wrapped = false; isAxis1Wrapped = false; break;
+				case WrapOptions.WrapHorizontally: isAxis0Wrapped = true; isAxis1Wrapped = false; break;
+				case WrapOptions.WrapVertically: isAxis0Wrapped = false; isAxis1Wrapped = true; break;
+				case WrapOptions.WrapBoth: isAxis0Wrapped = true; isAxis1Wrapped = true; break;
+				default: throw new System.NotImplementedException();
+			}
+
+			_version = "1.1";
 		}
 
 		public override IEnumerable<OutputSlot> outputs

@@ -24,6 +24,8 @@ namespace Experilous.MakeItTile
 		[SerializeField] private int _internalFaceCount;
 		[SerializeField] private int _externalFaceCount;
 
+		[SerializeField] private bool _isInverted;
+
 		public static RectangularQuadGrid Create(Vector2 tileAxis0, Vector2 tileAxis1, Vector3 origin, Quaternion orientation, bool isAxis0Wrapped, bool isAxis1Wrapped, IntVector2 size)
 		{
 			return CreateInstance<RectangularQuadGrid>().Reset(tileAxis0, tileAxis1, origin, orientation, isAxis0Wrapped, isAxis1Wrapped, size);
@@ -55,6 +57,8 @@ namespace Experilous.MakeItTile
 			_edgeCount = (_vertexAxis1Count * _faceAxis0Count + vertexAxis0Count * _faceAxis1Count) * 2;
 			_internalFaceCount = _faceAxis0Count * _faceAxis1Count;
 			_externalFaceCount = (axis0.isWrapped && axis1.isWrapped) ? 0 : (axis0.isWrapped || axis1.isWrapped) ? 2 : 1;
+
+			_isInverted = Vector3.Dot(Vector3.Cross(axis1.vector, axis0.vector), Vector3.back) < 0f;
 		}
 
 		public int faceAxis0Count { get { return _faceAxis0Count; } }
@@ -105,7 +109,7 @@ namespace Experilous.MakeItTile
 
 			var index2D = GetFaceIndex2D(faceIndex);
 			var basisIndex = index2D.y * _vertexAxis0Count;
-			switch (ConditionalInvert(neighborIndex, 3, false)) // false <- isInverted
+			switch (ConditionalInvert(neighborIndex, 4, _isInverted))
 			{
 				case 0: return basisIndex + index2D.x;
 				case 1: return (basisIndex + _vertexAxis0Count) % vertexCount + index2D.x;
@@ -121,7 +125,7 @@ namespace Experilous.MakeItTile
 
 			if (!axis0.isWrapped && !axis1.isWrapped) return EdgeWrap.None;
 
-			if (!false) // false <- isInverted
+			if (!_isInverted)
 			{
 				switch (neighborIndex)
 				{
