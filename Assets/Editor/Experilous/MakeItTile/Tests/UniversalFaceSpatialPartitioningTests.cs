@@ -69,7 +69,7 @@ namespace Experilous.MakeItTile.Tests
 
 		public void CreateQuadGrid(int width, int height)
 		{
-			surface = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new IntVector2(width, height));
+			surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, new IntVector2(width, height));
 			Vector3[] vertexPositionsArray;
 			topology = ((RectangularQuadGrid)surface).CreateManifold(out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
@@ -89,7 +89,7 @@ namespace Experilous.MakeItTile.Tests
 
 		public void CreateDistortedQuadGrid(int width, int height, int seed)
 		{
-			var quadGrid = RectangularQuadGrid.Create(new PlanarDescriptor(Vector3.right, Vector3.up), new IntVector2(width, height));
+			var quadGrid = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, new IntVector2(width, height));
 			surface = quadGrid;
 			Vector3[] vertexPositionsArray;
 			topology = quadGrid.CreateManifold(out vertexPositionsArray);
