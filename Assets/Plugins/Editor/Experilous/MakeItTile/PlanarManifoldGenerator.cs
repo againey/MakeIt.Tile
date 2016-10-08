@@ -172,6 +172,273 @@ namespace Experilous.MakeItTile
 		{
 		}
 
+		public override IEnumerable<OutputSlot> outputs
+		{
+			get
+			{
+				yield return surfaceOutputSlot;
+				yield return topologyOutputSlot;
+				yield return vertexPositionsOutputSlot;
+			}
+		}
+
+		public override IEnumerable<InternalSlotConnection> internalConnections
+		{
+			get
+			{
+				yield return surfaceOutputSlot.Uses(topologyOutputSlot);
+			}
+		}
+
+		protected override void OnUpdate()
+		{
+			try
+			{
+				switch (tileType)
+				{
+					case TileTypes.Quadrilateral:
+						CreateQuadGridManifold(false);
+						break;
+					case TileTypes.Hexagonal:
+						CreateHexGridManifold(false);
+						break;
+					default:
+						throw new System.NotImplementedException();
+				}
+
+				_pregenerationFailed = false;
+			}
+			catch (InvalidTopologyException ex)
+			{
+				_pregenerationFailed = true;
+				_pregenerationFailedMessage = ex.Message;
+			}
+		}
+
+		public override IEnumerator BeginGeneration()
+		{
+			try
+			{
+				switch (tileType)
+				{
+					case TileTypes.Quadrilateral:
+						CreateQuadGridManifold();
+						break;
+					case TileTypes.Hexagonal:
+						CreateHexGridManifold();
+						break;
+					default:
+						throw new System.NotImplementedException();
+				}
+			}
+			catch (InvalidTopologyException ex)
+			{
+				_pregenerationFailed = true;
+				_pregenerationFailedMessage = ex.Message;
+			}
+
+			yield break;
+		}
+
+		public override bool canGenerate
+		{
+			get
+			{
+				if (_pregenerationFailed || size.x <= 0 || size.y <= 0) return false;
+
+				switch (tileType)
+				{
+					case TileTypes.Quadrilateral:
+						return
+							axis0 != Vector2.zero &&
+							axis1 != Vector2.zero &&
+							Mathf.Abs(Vector2.Dot(axis0.normalized, axis1.normalized)) < 0.99f; //Axes are not nearly parallel
+					case TileTypes.Hexagonal:
+						return
+							midpoint != Vector2.zero &&
+							majorCorner != Vector2.zero &&
+							minorCorner != Vector2.zero &&
+							Mathf.Abs(Vector2.Dot(midpoint.normalized, majorCorner.normalized)) < 0.99f && //Axes are not nearly parallel
+							Mathf.Abs(Vector2.Dot(midpoint.normalized, minorCorner.normalized)) < 0.99f && //Axes are not nearly parallel
+							Mathf.Abs(Vector2.Dot(majorCorner.normalized, minorCorner.normalized)) < 0.99f; //Axes are not nearly parallel
+					default: throw new System.NotImplementedException();
+				}
+			}
+		}
+
+		public override string canGenerateMessage
+		{
+			get
+			{
+				if (_pregenerationFailed)
+				{
+					return _pregenerationFailedMessage;
+				}
+				else if (size.x <= 0 || size.y <= 0)
+				{
+					return "Size dimensions must be greater than zero.";
+				}
+				else
+				{
+					switch (tileType)
+					{
+						case TileTypes.Quadrilateral:
+							if (axis0 == Vector2.zero || axis1 == Vector2.zero)
+								return "Axes must not be zero-length vectors.";
+							else if (Mathf.Abs(Vector2.Dot(axis0.normalized, axis1.normalized)) >= 0.99f)
+								return "Axes cannot be parallel to each other.";
+							break;
+						case TileTypes.Hexagonal:
+							if (midpoint == Vector2.zero || majorCorner == Vector2.zero || minorCorner == Vector2.zero)
+								return "Axes must not be zero-length vectors.";
+							else if (
+								Mathf.Abs(Vector2.Dot(midpoint.normalized, majorCorner.normalized)) >= 0.99f ||
+								Mathf.Abs(Vector2.Dot(midpoint.normalized, minorCorner.normalized)) >= 0.99f ||
+								Mathf.Abs(Vector2.Dot(majorCorner.normalized, minorCorner.normalized)) >= 0.99f)
+								return "Axes cannot be parallel to each other.";
+							break;
+						default: throw new System.NotImplementedException();
+					}
+					return base.canGenerateMessage;
+				}
+			}
+		}
+
+		public override float estimatedGenerationTime
+		{
+			get
+			{
+				return 0.1f;
+			}
+		}
+
+		public RectangularQuadGrid ResetSurface(RectangularQuadGrid surface, Vector3 origin, Quaternion orientation, bool suppressWrap, IntVector2 size)
+		{
+			return surface.Reset(axis0, axis1, origin, orientation, isAxis0Wrapped && !suppressWrap, isAxis1Wrapped && !suppressWrap, size);
+		}
+
+		public RectangularHexGrid ResetSurface(RectangularHexGrid surface, Vector3 origin, Quaternion orientation, bool suppressWrap, IntVector2 size)
+		{
+			return surface.Reset(new HexGridDescriptor(midpoint, majorCorner, minorCorner, !swapAxes, hexGridAxisStyle), origin, orientation, isAxis0Wrapped && !suppressWrap, isAxis1Wrapped && !suppressWrap, size);
+		}
+
+		private void CreateQuadGridManifold(bool generate = true)
+		{
+			var surface = surfaceOutputSlot.GetAsset<RectangularQuadGrid>();
+			if (surface == null || !generate && ReferenceEquals(surface, surfaceOutputSlot.persistedAsset))
+			{
+				surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularQuadGrid>(), false);
+			}
+
+			ResetSurface(surface, origin, Quaternion.Euler(rotation), false, size);
+
+			if (generate)
+			{
+				Vector3[] vertexPositionsArray;
+
+				var topology = surface.CreateManifold(out vertexPositionsArray);
+				topologyOutputSlot.SetAsset(topology);
+
+				surface.topology = topologyOutputSlot.GetAsset<Topology>();
+				surfaceOutputSlot.Persist();
+
+				vertexPositionsOutputSlot.SetAsset(PositionalVertexAttribute.Create(surfaceOutputSlot.GetAsset<Surface>(), vertexPositionsArray));
+			}
+		}
+
+		private void CreateHexGridManifold(bool generate = true)
+		{
+			var surface = surfaceOutputSlot.GetAsset<RectangularHexGrid>();
+			if (surface == null || !generate && ReferenceEquals(surface, surfaceOutputSlot.persistedAsset))
+			{
+				surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularHexGrid>(), false);
+			}
+
+			ResetSurface(surface, origin, Quaternion.Euler(rotation), false, size);
+
+			if (generate)
+			{
+				Vector3[] vertexPositionsArray;
+
+				var topology = surface.CreateManifold(out vertexPositionsArray);
+				topologyOutputSlot.SetAsset(topology);
+
+				surface.topology = topologyOutputSlot.GetAsset<Topology>();
+				surfaceOutputSlot.Persist();
+
+				vertexPositionsOutputSlot.SetAsset(PositionalVertexAttribute.Create(surfaceOutputSlot.GetAsset<Surface>(), vertexPositionsArray));
+			}
+		}
+
+		public void SetQuadTileShape(QuadTileShapes shape, bool force = false)
+		{
+			if (!force && shape == quadTileShape) return;
+
+			quadTileShape = shape;
+			switch (quadTileShape)
+			{
+				case QuadTileShapes.Square:
+					axis0 = Vector2.right;
+					axis1 = Vector2.up;
+					break;
+				case QuadTileShapes.Isometric:
+					axis0 = new Vector2(1f, -1f / Mathf.Sqrt(3f));
+					axis1 = new Vector2(1f, +1f / Mathf.Sqrt(3f));
+					break;
+				case QuadTileShapes.Diamond2x1:
+					axis0 = new Vector2(1f, -0.5f);
+					axis1 = new Vector2(1f, +0.5f);
+					break;
+			}
+		}
+
+		public void SetHexTileShape(HexTileShapes shape, bool force = false)
+		{
+			if (!force && shape == hexTileShape) return;
+
+			hexTileShape = shape;
+			switch (hexTileShape)
+			{
+				case HexTileShapes.RegularPointUp:
+					midpoint = new Vector2(0.5f, 0f);
+					majorCorner = new Vector2(0f, 1f / Mathf.Sqrt(3f));
+					minorCorner = new Vector2(0.5f, 0.5f / Mathf.Sqrt(3f));
+					break;
+				case HexTileShapes.RegularSideUp:
+					midpoint = new Vector2(0f, 0.5f);
+					majorCorner = new Vector2(1f / Mathf.Sqrt(3f), 0f);
+					minorCorner = new Vector2(0.5f / Mathf.Sqrt(3f), 0.5f);
+					break;
+				case HexTileShapes.SquarePointUp:
+					midpoint = new Vector2(0.5f, 0f);
+					majorCorner = new Vector2(0f, 0.5f);
+					minorCorner = new Vector2(0.5f, 0.25f);
+					break;
+				case HexTileShapes.SquareSideUp:
+					midpoint = new Vector2(0f, 0.5f);
+					majorCorner = new Vector2(0.5f, 0f);
+					minorCorner = new Vector2(0.25f, 0.5f);
+					break;
+				case HexTileShapes.BlockHorizontal:
+					midpoint = new Vector2(0.5f, 0f);
+					majorCorner = new Vector2(0f, 0.5f);
+					minorCorner = new Vector2(0.5f, 0.5f);
+					break;
+				case HexTileShapes.BlockVertical:
+					midpoint = new Vector2(0f, 0.5f);
+					majorCorner = new Vector2(0.5f, 0f);
+					minorCorner = new Vector2(0.5f, 0.5f);
+					break;
+				case HexTileShapes.Brick:
+					midpoint = new Vector2(0.5f, 0f);
+					majorCorner = new Vector2(0f, 0.125f);
+					minorCorner = new Vector2(0.5f, 0.125f);
+					break;
+			}
+		}
+
+		#region Version Upgrades
+
 		private void Updgrade_From_1_0_To_1_1()
 		{
 			switch (planarTileShape)
@@ -456,273 +723,6 @@ namespace Experilous.MakeItTile
 
 			_version = "1.1";
 		}
-
-		public override IEnumerable<OutputSlot> outputs
-		{
-			get
-			{
-				yield return surfaceOutputSlot;
-				yield return topologyOutputSlot;
-				yield return vertexPositionsOutputSlot;
-			}
-		}
-
-		public override IEnumerable<InternalSlotConnection> internalConnections
-		{
-			get
-			{
-				yield return surfaceOutputSlot.Uses(topologyOutputSlot);
-			}
-		}
-
-		protected override void OnUpdate()
-		{
-			try
-			{
-				switch (tileType)
-				{
-					case TileTypes.Quadrilateral:
-						CreateQuadGridManifold(false);
-						break;
-					case TileTypes.Hexagonal:
-						CreateHexGridManifold(false);
-						break;
-					default:
-						throw new System.NotImplementedException();
-				}
-
-				_pregenerationFailed = false;
-			}
-			catch (InvalidTopologyException ex)
-			{
-				_pregenerationFailed = true;
-				_pregenerationFailedMessage = ex.Message;
-			}
-		}
-
-		public override IEnumerator BeginGeneration()
-		{
-			try
-			{
-				switch (tileType)
-				{
-					case TileTypes.Quadrilateral:
-						CreateQuadGridManifold();
-						break;
-					case TileTypes.Hexagonal:
-						CreateHexGridManifold();
-						break;
-					default:
-						throw new System.NotImplementedException();
-				}
-			}
-			catch (InvalidTopologyException ex)
-			{
-				_pregenerationFailed = true;
-				_pregenerationFailedMessage = ex.Message;
-			}
-
-			yield break;
-		}
-
-		public override bool canGenerate
-		{
-			get
-			{
-				if (_pregenerationFailed || size.x <= 0 || size.y <= 0) return false;
-
-				switch (tileType)
-				{
-					case TileTypes.Quadrilateral:
-						return
-							axis0 != Vector2.zero &&
-							axis1 != Vector2.zero &&
-							Mathf.Abs(Vector2.Dot(axis0.normalized, axis1.normalized)) < 0.99f; //Axes are not nearly parallel
-					case TileTypes.Hexagonal:
-						return
-							midpoint != Vector2.zero &&
-							majorCorner != Vector2.zero &&
-							minorCorner != Vector2.zero &&
-							Mathf.Abs(Vector2.Dot(midpoint.normalized, majorCorner.normalized)) < 0.99f && //Axes are not nearly parallel
-							Mathf.Abs(Vector2.Dot(midpoint.normalized, minorCorner.normalized)) < 0.99f && //Axes are not nearly parallel
-							Mathf.Abs(Vector2.Dot(majorCorner.normalized, minorCorner.normalized)) < 0.99f; //Axes are not nearly parallel
-					default: throw new System.NotImplementedException();
-				}
-			}
-		}
-
-		public override string canGenerateMessage
-		{
-			get
-			{
-				if (_pregenerationFailed)
-				{
-					return _pregenerationFailedMessage;
-				}
-				else if (size.x <= 0 || size.y <= 0)
-				{
-					return "Size dimensions must be greater than zero.";
-				}
-				else
-				{
-					switch (tileType)
-					{
-						case TileTypes.Quadrilateral:
-							if (axis0 == Vector2.zero || axis1 == Vector2.zero)
-								return "Axes must not be zero-length vectors.";
-							else if (Mathf.Abs(Vector2.Dot(axis0.normalized, axis1.normalized)) >= 0.99f)
-								return "Axes cannot be parallel to each other.";
-							break;
-						case TileTypes.Hexagonal:
-							if (midpoint == Vector2.zero || majorCorner == Vector2.zero || minorCorner == Vector2.zero)
-								return "Axes must not be zero-length vectors.";
-							else if (
-								Mathf.Abs(Vector2.Dot(midpoint.normalized, majorCorner.normalized)) >= 0.99f ||
-								Mathf.Abs(Vector2.Dot(midpoint.normalized, minorCorner.normalized)) >= 0.99f ||
-								Mathf.Abs(Vector2.Dot(majorCorner.normalized, minorCorner.normalized)) >= 0.99f)
-								return "Axes cannot be parallel to each other.";
-							break;
-						default: throw new System.NotImplementedException();
-					}
-					return base.canGenerateMessage;
-				}
-			}
-		}
-
-		public override float estimatedGenerationTime
-		{
-			get
-			{
-				return 0.1f;
-			}
-		}
-
-		public RectangularQuadGrid ResetSurface(RectangularQuadGrid surface, Vector3 origin, Quaternion orientation, bool suppressWrap, IntVector2 size)
-		{
-			return surface.Reset(axis0, axis1, origin, orientation, isAxis0Wrapped && !suppressWrap, isAxis1Wrapped && !suppressWrap, size);
-		}
-
-		public RectangularHexGrid ResetSurface(RectangularHexGrid surface, Vector3 origin, Quaternion orientation, bool suppressWrap, IntVector2 size)
-		{
-			return surface.Reset(new HexGridDescriptor(midpoint, majorCorner, minorCorner, !swapAxes, hexGridAxisStyle), origin, orientation, isAxis0Wrapped && !suppressWrap, isAxis1Wrapped && !suppressWrap, size);
-		}
-
-		private void CreateQuadGridManifold(bool generate = true)
-		{
-			var surface = surfaceOutputSlot.GetAsset<RectangularQuadGrid>();
-			if (surface == null || !generate && ReferenceEquals(surface, surfaceOutputSlot.persistedAsset))
-			{
-				surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularQuadGrid>(), false);
-			}
-
-			ResetSurface(surface, origin, Quaternion.Euler(rotation), false, size);
-
-			if (generate)
-			{
-				Vector3[] vertexPositionsArray;
-
-				var topology = surface.CreateManifold(out vertexPositionsArray);
-				topologyOutputSlot.SetAsset(topology);
-
-				surface.topology = topologyOutputSlot.GetAsset<Topology>();
-				surfaceOutputSlot.Persist();
-
-				vertexPositionsOutputSlot.SetAsset(PositionalVertexAttribute.Create(surfaceOutputSlot.GetAsset<Surface>(), vertexPositionsArray));
-			}
-		}
-
-		private void CreateHexGridManifold(bool generate = true)
-		{
-			var surface = surfaceOutputSlot.GetAsset<RectangularHexGrid>();
-			if (surface == null || !generate && ReferenceEquals(surface, surfaceOutputSlot.persistedAsset))
-			{
-				surface = surfaceOutputSlot.SetAsset(CreateInstance<RectangularHexGrid>(), false);
-			}
-
-			ResetSurface(surface, origin, Quaternion.Euler(rotation), false, size);
-
-			if (generate)
-			{
-				Vector3[] vertexPositionsArray;
-
-				var topology = surface.CreateManifold(out vertexPositionsArray);
-				topologyOutputSlot.SetAsset(topology);
-
-				surface.topology = topologyOutputSlot.GetAsset<Topology>();
-				surfaceOutputSlot.Persist();
-
-				vertexPositionsOutputSlot.SetAsset(PositionalVertexAttribute.Create(surfaceOutputSlot.GetAsset<Surface>(), vertexPositionsArray));
-			}
-		}
-
-		public void SetQuadTileShape(QuadTileShapes shape, bool force = false)
-		{
-			if (!force && shape == quadTileShape) return;
-
-			quadTileShape = shape;
-			switch (quadTileShape)
-			{
-				case QuadTileShapes.Square:
-					axis0 = Vector2.right;
-					axis1 = Vector2.up;
-					break;
-				case QuadTileShapes.Isometric:
-					axis0 = new Vector2(1f, -1f / Mathf.Sqrt(3f));
-					axis1 = new Vector2(1f, +1f / Mathf.Sqrt(3f));
-					break;
-				case QuadTileShapes.Diamond2x1:
-					axis0 = new Vector2(1f, -0.5f);
-					axis1 = new Vector2(1f, +0.5f);
-					break;
-			}
-		}
-
-		public void SetHexTileShape(HexTileShapes shape, bool force = false)
-		{
-			if (!force && shape == hexTileShape) return;
-
-			hexTileShape = shape;
-			switch (hexTileShape)
-			{
-				case HexTileShapes.RegularPointUp:
-					midpoint = new Vector2(0.5f, 0f);
-					majorCorner = new Vector2(0f, 1f / Mathf.Sqrt(3f));
-					minorCorner = new Vector2(0.5f, 0.5f / Mathf.Sqrt(3f));
-					break;
-				case HexTileShapes.RegularSideUp:
-					midpoint = new Vector2(0f, 0.5f);
-					majorCorner = new Vector2(1f / Mathf.Sqrt(3f), 0f);
-					minorCorner = new Vector2(0.5f / Mathf.Sqrt(3f), 0.5f);
-					break;
-				case HexTileShapes.SquarePointUp:
-					midpoint = new Vector2(0.5f, 0f);
-					majorCorner = new Vector2(0f, 0.5f);
-					minorCorner = new Vector2(0.5f, 0.25f);
-					break;
-				case HexTileShapes.SquareSideUp:
-					midpoint = new Vector2(0f, 0.5f);
-					majorCorner = new Vector2(0.5f, 0f);
-					minorCorner = new Vector2(0.25f, 0.5f);
-					break;
-				case HexTileShapes.BlockHorizontal:
-					midpoint = new Vector2(0.5f, 0f);
-					majorCorner = new Vector2(0f, 0.5f);
-					minorCorner = new Vector2(0.5f, 0.5f);
-					break;
-				case HexTileShapes.BlockVertical:
-					midpoint = new Vector2(0f, 0.5f);
-					majorCorner = new Vector2(0.5f, 0f);
-					minorCorner = new Vector2(0.5f, 0.5f);
-					break;
-				case HexTileShapes.Brick:
-					midpoint = new Vector2(0.5f, 0f);
-					majorCorner = new Vector2(0f, 0.125f);
-					minorCorner = new Vector2(0.5f, 0.125f);
-					break;
-			}
-		}
-
-		#region Version Upgrades
 
 		#endregion
 
