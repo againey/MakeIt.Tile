@@ -41,7 +41,7 @@ MonoBehaviour:
   surfaceInputSlot:
     _generator: {fileID: 11401898}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11454894}
     _isOptional: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11401898}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11431684}
     _isOptional: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
   vertexPositionsInputSlot:
     _generator: {fileID: 11401898}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11480674}
@@ -72,7 +72,7 @@ MonoBehaviour:
   faceCentroidsOutputSlot:
     _generator: {fileID: 11401898}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: 4de8bcca3738cca419eca77732231457, type: 2}
@@ -125,7 +125,7 @@ MonoBehaviour:
   dynamicMeshInputSlot:
     _generator: {fileID: 11408226}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.DynamicMesh, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.DynamicMesh, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11495522}
     _isOptional: 0
@@ -138,8 +138,8 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: UnityEngine.GameObject, UnityEngine, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 149150, guid: 42c3bf50848b0ce459f60051749f754d, type: 2}
-    _persistedAsset: {fileID: 149150, guid: 42c3bf50848b0ce459f60051749f754d, type: 2}
+    _asset: {fileID: 130806, guid: 42c3bf50848b0ce459f60051749f754d, type: 2}
+    _persistedAsset: {fileID: 130806, guid: 42c3bf50848b0ce459f60051749f754d, type: 2}
     _availability: 3
     _persistable: 1
     _connectionTargets: []
@@ -163,7 +163,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11408824}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11431684}
     _isOptional: 0
@@ -173,7 +173,7 @@ MonoBehaviour:
   vertexPositionsInputSlot:
     _generator: {fileID: 11408824}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11480674}
@@ -184,7 +184,7 @@ MonoBehaviour:
   offsetsInputSlot:
     _generator: {fileID: 11408824}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11461620}
@@ -196,7 +196,7 @@ MonoBehaviour:
   offsetVertexPositionsOutputSlot:
     _generator: {fileID: 11408824}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: a68bd0f5a37be7341a132f8c52374ec0, type: 2}
@@ -305,29 +305,28 @@ MonoBehaviour:
   m_Name: Topology/Planar Manifold
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
-  planarTileShape: 1
+  _version: 1.1
+  tileType: 1
+  quadTileShape: 0
+  hexTileShape: 7
   size:
     x: 9
     y: 9
-  quadGridHorizontalAxisOptions: 0
-  quadGridVerticalAxisOptions: 2
-  hexGridAxisStyleOptions: 5
-  hexGridAxisOptions: 0
-  hexGridHorizontalAxisOptions: 0
-  hexGridVerticalAxisOptions: 2
-  horizontalAxis: {x: 1, y: 0, z: 0}
-  verticalAxis: {x: 0, y: 1, z: 0}
-  horizontalAxisLength: 1
-  verticalAxisLength: 1
-  variableRowLength: 1
-  normalOptions: 3
-  normal: {x: 0, y: 0, z: -1}
-  originPosition: {x: 0, y: 0, z: 0}
-  wrapOptions: 0
+  axis0: {x: 0, y: 0}
+  axis1: {x: 0, y: 0}
+  midpoint: {x: 0, y: .5}
+  majorCorner: {x: .577350259, y: 0}
+  minorCorner: {x: .288675129, y: -.5}
+  hexGridAxisStyle: 2
+  swapAxes: 0
+  isAxis0Wrapped: 0
+  isAxis1Wrapped: 0
+  origin: {x: 0, y: 0, z: 0}
+  rotation: {x: 90, y: 0, z: 0}
   surfaceOutputSlot:
     _generator: {fileID: 11426132}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.PlanarSurface, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.QuadrilateralSurface, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: c38f37d2f97433443a1e4819ca356048, type: 2}
     _persistedAsset: {fileID: 11400000, guid: c38f37d2f97433443a1e4819ca356048, type: 2}
@@ -342,7 +341,7 @@ MonoBehaviour:
   topologyOutputSlot:
     _generator: {fileID: 11426132}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: 938dcec72396e2c459be10f1e09dc360, type: 2}
     _persistedAsset: {fileID: 11400000, guid: 938dcec72396e2c459be10f1e09dc360, type: 2}
@@ -358,7 +357,7 @@ MonoBehaviour:
   vertexPositionsOutputSlot:
     _generator: {fileID: 11426132}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: d70f1d93dd19cd3459c302887903cd44, type: 2}
@@ -373,6 +372,22 @@ MonoBehaviour:
     isActive: 1
     isEnabled: 1
   _pregenerationFailed: 0
+  _pregenerationFailedMessage: 
+  planarTileShape: 1
+  quadGridHorizontalAxisOptions: 0
+  quadGridVerticalAxisOptions: 2
+  hexGridAxisStyleOptions: 5
+  hexGridAxisOptions: 0
+  hexGridHorizontalAxisOptions: 0
+  hexGridVerticalAxisOptions: 2
+  horizontalAxis: {x: 1, y: 0, z: 0}
+  verticalAxis: {x: 0, y: 1, z: 0}
+  horizontalAxisLength: 1
+  verticalAxisLength: 1
+  variableRowLength: 1
+  normalOptions: 3
+  normal: {x: 0, y: 0, z: -1}
+  wrapOptions: 0
 --- !u!114 &11427224
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -397,30 +412,30 @@ MonoBehaviour:
   m_Name: Utility/Face Spatial Partitioning
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
-  topologyInputSlot:
-    _generator: {fileID: 11427974}
-    _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _sourceKey: {fileID: 11431684}
-    _isOptional: 0
-    _isMutating: 0
-    _key: {fileID: 11477934}
-    isActive: 1
   surfaceInputSlot:
     _generator: {fileID: 11427974}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11454894}
     _isOptional: 0
     _isMutating: 0
     _key: {fileID: 11458908}
     isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11427974}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11477934}
+    isActive: 1
   vertexPositionsInputSlot:
     _generator: {fileID: 11427974}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11480674}
@@ -431,7 +446,7 @@ MonoBehaviour:
   partitioningOutputSlot:
     _generator: {fileID: 11427974}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.UniversalFaceSpatialPartitioning,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.UniversalFaceSpatialPartitioning,
         Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: 8e36e5e461eaa6e4b95c78e13f901a4a, type: 2}
     _persistedAsset: {fileID: 11400000, guid: 8e36e5e461eaa6e4b95c78e13f901a4a, type: 2}
@@ -459,7 +474,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11430352}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
     _isOptional: 0
@@ -469,7 +484,7 @@ MonoBehaviour:
   faceColorsInputSlot:
     _generator: {fileID: 11430352}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
@@ -482,7 +497,7 @@ MonoBehaviour:
   faceEdgeColorsOutputSlot:
     _generator: {fileID: 11430352}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: 7dacd15e0b5966848ad2e1276497c151, type: 2}
@@ -628,30 +643,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
   calculationMethod: 0
-  topologyInputSlot:
-    _generator: {fileID: 11444684}
-    _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _sourceKey: {fileID: 11431684}
-    _isOptional: 0
-    _isMutating: 0
-    _key: {fileID: 11417968}
-    isActive: 1
   surfaceInputSlot:
     _generator: {fileID: 11444684}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11454894}
     _isOptional: 0
     _isMutating: 0
     _key: {fileID: 11466700}
     isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11444684}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11417968}
+    isActive: 1
   vertexPositionsInputSlot:
     _generator: {fileID: 11444684}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11480674}
@@ -662,7 +677,7 @@ MonoBehaviour:
   facePositionsInputSlot:
     _generator: {fileID: 11444684}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
@@ -673,7 +688,7 @@ MonoBehaviour:
   faceNormalsInputSlot:
     _generator: {fileID: 11444684}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
@@ -684,7 +699,7 @@ MonoBehaviour:
   vertexNormalsOutputSlot:
     _generator: {fileID: 11444684}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: 10007522e9477ce4cb1a77756c83199a, type: 2}
@@ -749,7 +764,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11449852}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11431684}
     _isOptional: 0
@@ -759,7 +774,7 @@ MonoBehaviour:
   faceColorsInputSlot:
     _generator: {fileID: 11449852}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11459418}
@@ -772,7 +787,7 @@ MonoBehaviour:
   faceEdgeColorsOutputSlot:
     _generator: {fileID: 11449852}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: 1c35d37725a33114689f420aa1e6d491, type: 2}
@@ -801,7 +816,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11450086}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
     _isOptional: 0
@@ -812,7 +827,7 @@ MonoBehaviour:
   faceGroupCollectionInputSlot:
     _generator: {fileID: 11450086}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.FaceGroupCollection, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.FaceGroupCollection, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
     _isOptional: 0
@@ -822,7 +837,7 @@ MonoBehaviour:
   faceGroupIndicesInputSlot:
     _generator: {fileID: 11450086}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[System.Int32,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[System.Int32,
         mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],
         Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
@@ -831,14 +846,14 @@ MonoBehaviour:
     _key: {fileID: 0}
     isActive: 0
   randomness:
-    randomEngineType: 0
+    randomType: 0
     seedSource: 3
     seedNumber: 0
     seedText: 
-    randomEngineSeedInputSlot:
+    randomSeedInputSlot:
       _generator: {fileID: 11450086}
       _assetType:
-        _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+        _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       _sourceKey: {fileID: 0}
       _isOptional: 0
@@ -848,7 +863,7 @@ MonoBehaviour:
   faceGroupColorsOutputSlot:
     _generator: {fileID: 11450086}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceGroupAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceGroupAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 0}
@@ -864,7 +879,7 @@ MonoBehaviour:
   faceColorsOutputSlot:
     _generator: {fileID: 11450086}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: 2a4a730a5efb718499cd65423938d3e4, type: 2}
@@ -940,7 +955,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11456446}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11431684}
     _isOptional: 0
@@ -950,7 +965,7 @@ MonoBehaviour:
   vertexPositionsInputSlot:
     _generator: {fileID: 11456446}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11480674}
@@ -961,7 +976,7 @@ MonoBehaviour:
   facePositionsInputSlot:
     _generator: {fileID: 11456446}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11435060}
@@ -972,7 +987,7 @@ MonoBehaviour:
   bisectorsOutputSlot:
     _generator: {fileID: 11456446}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: ed552c1905db33e46ad5bb6ce35fec1a, type: 2}
@@ -1004,7 +1019,7 @@ MonoBehaviour:
   surfaceInputSlot:
     _generator: {fileID: 11457946}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.PlanarSurface, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11454894}
     _isOptional: 0
@@ -1014,7 +1029,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11457946}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11431684}
     _isOptional: 0
@@ -1024,7 +1039,7 @@ MonoBehaviour:
   facePositionsInputSlot:
     _generator: {fileID: 11457946}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11435060}
@@ -1035,7 +1050,7 @@ MonoBehaviour:
   faceGroupCollectionOutputSlot:
     _generator: {fileID: 11457946}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.FaceGroupCollection, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.FaceGroupCollection, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
@@ -1050,7 +1065,7 @@ MonoBehaviour:
   faceGroupIndicesOutputSlot:
     _generator: {fileID: 11457946}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[System.Int32,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[System.Int32,
         mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],
         Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 0}
@@ -1173,30 +1188,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
   calculationMethod: 0
-  topologyInputSlot:
-    _generator: {fileID: 11467994}
-    _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _sourceKey: {fileID: 11431684}
-    _isOptional: 0
-    _isMutating: 0
-    _key: {fileID: 11451626}
-    isActive: 1
   surfaceInputSlot:
     _generator: {fileID: 11467994}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11454894}
     _isOptional: 0
     _isMutating: 0
     _key: {fileID: 11407618}
     isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11467994}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11451626}
+    isActive: 1
   facePositionsInputSlot:
     _generator: {fileID: 11467994}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11435060}
@@ -1207,7 +1222,7 @@ MonoBehaviour:
   vertexPositionsInputSlot:
     _generator: {fileID: 11467994}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
@@ -1218,7 +1233,7 @@ MonoBehaviour:
   vertexNormalsInputSlot:
     _generator: {fileID: 11467994}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
@@ -1229,7 +1244,7 @@ MonoBehaviour:
   faceNormalsOutputSlot:
     _generator: {fileID: 11467994}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: a1e7a3239a6690549a45e726fbf59684, type: 2}
@@ -1353,7 +1368,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11478274}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11431684}
     _isOptional: 0
@@ -1363,7 +1378,7 @@ MonoBehaviour:
   vertexPositionsInputSlot:
     _generator: {fileID: 11478274}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11480674}
@@ -1374,7 +1389,9 @@ MonoBehaviour:
   facePositionsInputSlot:
     _generator: {fileID: 0}
     _assetType:
-      _assemblyQualifiedTypeName: 
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
     _isOptional: 0
     _isMutating: 0
@@ -1383,7 +1400,7 @@ MonoBehaviour:
   bisectorsOutputSlot:
     _generator: {fileID: 11478274}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 0}
@@ -1445,32 +1462,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
   randomness:
-    randomEngineType: 0
+    randomType: 0
     seedSource: 1
     seedNumber: 0
     seedText: 
-    randomEngineSeedInputSlot:
+    randomSeedInputSlot:
       _generator: {fileID: 11482816}
       _assetType:
-        _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+        _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       _sourceKey: {fileID: 0}
       _isOptional: 0
       _isMutating: 1
       _key: {fileID: 0}
-      isActive: 0
-  randomEngineOutputSlot:
+      isActive: 1
+  randomOutputSlot:
     _generator: {fileID: 11482816}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 1
     _persistable: 0
     _connectionTargets: []
-    _key: {fileID: 11424160}
-    name: Random Engine
+    _key: {fileID: 0}
+    name: Randomness
     path: 
     isActive: 1
     isEnabled: 1
@@ -1531,7 +1548,7 @@ MonoBehaviour:
   topologyInputSlot:
     _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11431684}
     _isOptional: 0
@@ -1541,7 +1558,7 @@ MonoBehaviour:
   faceGroupCollectionInputSlot:
     _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.FaceGroupCollection, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.FaceGroupCollection, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
     _isOptional: 0
@@ -1551,7 +1568,7 @@ MonoBehaviour:
   faceGroupInputSlot:
     _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.FaceGroup, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.FaceGroup, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 0}
     _isOptional: 0
@@ -1561,7 +1578,7 @@ MonoBehaviour:
   ringVertexPositionsInputSlots:
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11480674}
@@ -1571,7 +1588,7 @@ MonoBehaviour:
     isActive: 1
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11402908}
@@ -1582,7 +1599,7 @@ MonoBehaviour:
   ringVertexNormalsInputSlots:
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11443596}
@@ -1592,7 +1609,7 @@ MonoBehaviour:
     isActive: 1
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11443596}
@@ -1603,7 +1620,7 @@ MonoBehaviour:
   ringVertexColorsInputSlots:
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11448768}
@@ -1613,7 +1630,7 @@ MonoBehaviour:
     isActive: 1
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11463592}
@@ -1630,7 +1647,7 @@ MonoBehaviour:
   centerVertexPositionsInputSlots:
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11435060}
@@ -1641,7 +1658,7 @@ MonoBehaviour:
   centerVertexNormalsInputSlots:
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11421996}
@@ -1652,7 +1669,7 @@ MonoBehaviour:
   centerVertexColorsInputSlots:
   - _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Color,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _sourceKey: {fileID: 11459418}
@@ -1669,7 +1686,7 @@ MonoBehaviour:
   dynamicMeshOutputSlot:
     _generator: {fileID: 11487102}
     _assetType:
-      _assemblyQualifiedTypeName: Experilous.Topological.DynamicMesh, Assembly-CSharp-firstpass,
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.DynamicMesh, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     _asset: {fileID: 11400000, guid: 04bda972bea5a934ca2695e79a40956a, type: 2}
     _persistedAsset: {fileID: 11400000, guid: 04bda972bea5a934ca2695e79a40956a, type: 2}

@@ -12,31 +12,25 @@ MonoBehaviour:
   m_Name: Surface
   m_EditorClassIdentifier: 
   axis0:
-    vector: {x: 9, y: 0, z: 0}
+    vector: {x: 9, y: 0}
     isWrapped: 0
   axis1:
-    vector: {x: 0, y: 0, z: 9}
+    vector: {x: 2.68220901e-07, y: 9}
     isWrapped: 0
   origin: {x: 0, y: 0, z: 0}
-  surfaceNormal: {x: 0, y: 1, z: 0}
-  axis0Normal: {x: 0, y: 0, z: 1}
-  axis1Normal: {x: 1, y: -0, z: -0}
-  plane:
-    normal: {x: 0, y: 1, z: 0}
-    distance: -0
-  isInverted: 0
-  midpoint: {x: 0, y: 0}
-  majorCorner: {x: 0, y: 0}
-  minorCorner: {x: 0, y: 0}
-  midpointIsFirstAxis: 0
+  orientation: {x: .707106769, y: 0, z: 0, w: .707106769}
+  midpoint: {x: .5, y: 0}
+  majorCorner: {x: .333333343, y: .666666687}
+  minorCorner: {x: -.333333313, y: .333333343}
+  midpointIsFirstAxis: 1
   axisStyle: 0
   size:
     x: 9
     y: 9
   topology: {fileID: 11400000, guid: 2a3e602737a6c414ab5402dce264539f, type: 2}
-  _originIsObtuse: 0
-  _faceAxis0: {x: 0, y: 0, z: 0}
-  _faceAxis1: {x: 0, y: 0, z: 0}
+  _originIsObtuse: 1
+  _faceAxis0: {x: 1, y: 0}
+  _faceAxis1: {x: 2.98023224e-08, y: 1}
   _vertexCount: 198
   _edgeCount: 556
   _internalFaceCount: 81
@@ -74,3 +68,4 @@ MonoBehaviour:
   _vertexInterceptOffsetEven: -1
   _vertexInterceptOffsetOdd: -1
   _vertexInterceptOffsetLast: -2
+  _isInverted: 0

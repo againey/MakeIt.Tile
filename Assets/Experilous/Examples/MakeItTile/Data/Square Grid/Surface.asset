@@ -12,25 +12,17 @@ MonoBehaviour:
   m_Name: Surface
   m_EditorClassIdentifier: 
   axis0:
-    vector: {x: 9, y: 0, z: 0}
+    vector: {x: 9, y: 0}
     isWrapped: 0
   axis1:
-    vector: {x: 0, y: 0, z: 9}
+    vector: {x: 0, y: 9.00000095}
     isWrapped: 0
   origin: {x: 0, y: 0, z: 0}
-  surfaceNormal: {x: 0, y: 1, z: 0}
-  axis0Normal: {x: 0, y: 0, z: 1}
-  axis1Normal: {x: 1, y: -0, z: -0}
-  plane:
-    normal: {x: 0, y: 1, z: 0}
-    distance: -0
-  isInverted: 0
+  orientation: {x: .707106769, y: 0, z: 0, w: .707106769}
   size:
     x: 9
     y: 9
   topology: {fileID: 11400000, guid: ff26275354b978f47b65d45f8ed93cc4, type: 2}
-  faceAxis0: {x: 1, y: 0, z: 0}
-  faceAxis1: {x: 0, y: 0, z: 1}
   _faceAxis0Count: 9
   _faceAxis1Count: 9
   _vertexAxis0Count: 10
@@ -39,3 +31,4 @@ MonoBehaviour:
   _edgeCount: 360
   _internalFaceCount: 81
   _externalFaceCount: 1
+  _isInverted: 0
