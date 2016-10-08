@@ -115,7 +115,7 @@ namespace Experilous.MakeItTile
 			return relaxedVertexPositions;
 		}
 
-		public static bool ValidateAndRepair(Topology topology, IVertexAttribute<Vector3> vertexPositions, float adjustmentWeight, bool lockBoundaryPositions)
+		public static bool ValidateAndRepair(Topology topology, Vector3 surfaceNormal, IVertexAttribute<Vector3> vertexPositions, float adjustmentWeight, bool lockBoundaryPositions)
 		{
 			bool repaired = false;
 			float originalWeight = 1f - adjustmentWeight;
@@ -123,7 +123,7 @@ namespace Experilous.MakeItTile
 			{
 				if (!lockBoundaryPositions || !vertex.hasExternalFaceNeighbor)
 				{
-					var center = vertexPositions[vertex] * 3f; // Multiply by 3 to not have to divide centroid sums by 3 below.
+					var center = vertexPositions[vertex];
 					var edge = vertex.firstEdge;
 					var p0 = vertexPositions[edge];
 					edge = edge.next;
@@ -135,8 +135,8 @@ namespace Experilous.MakeItTile
 					{
 						var p2 = vertexPositions[edge];
 						var centroid1 = (center + p1 + p2);
-						var normal = Vector3.Cross(centroid0 - center, centroid1 - center);
-						if (Vector3.Dot(normal, center) < 0f) goto repair;
+						var localNormal = Vector3.Cross(centroid0 - center, centroid1 - center);
+						if (Vector3.Dot(localNormal, surfaceNormal) < 0f) goto repair;
 						p0 = p1;
 						p1 = p2;
 						centroid0 = centroid1;
@@ -154,6 +154,7 @@ namespace Experilous.MakeItTile
 						edge = edge.next;
 					} while (edge != firstEdge);
 					average /= vertex.neighborCount;
+
 					vertexPositions[vertex] = (center * originalWeight + average * adjustmentWeight);
 				}
 			}

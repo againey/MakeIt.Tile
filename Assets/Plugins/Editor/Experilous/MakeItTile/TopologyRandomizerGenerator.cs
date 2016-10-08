@@ -188,7 +188,7 @@ namespace Experilous.MakeItTile
 
 					repairFunction = () =>
 					{
-						return PlanarManifoldUtility.ValidateAndRepair(topology, vertexPositions, repairRate, lockBoundaryPositions);
+						return PlanarManifoldUtility.ValidateAndRepair(topology, ((QuadrilateralSurface)surface).normal, vertexPositions, repairRate, lockBoundaryPositions);
 					};
 
 					relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(maxRelaxIterations, maxRepairIterations, relaxRelativePrecision, relaxIterationFunction, repairFunction);

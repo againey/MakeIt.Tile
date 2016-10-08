@@ -262,7 +262,7 @@ namespace Experilous.Examples.MakeItTile
 
 				Func<bool> repairFunction = () =>
 				{
-					return PlanarManifoldUtility.ValidateAndRepair(_topology, _vertexPositions, 0.5f, true);
+					return PlanarManifoldUtility.ValidateAndRepair(_topology, _surface.normal, _vertexPositions, 0.5f, true);
 				};
 
 				Action relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(20, 20, 0.95f, relaxIterationFunction, repairFunction);
