@@ -148,7 +148,7 @@ namespace Experilous.MakeItTile
 
 						foreach (var edge in visitor.edge.farFace.edges)
 						{
-							if (edge.farFace.isInternal && edge.twin != visitor.edge)
+							if (edge.twinIndex != visitor.edge.index && !edge.isOuterBoundary && !visitor.HasBeenVisited(edge.farFace))
 							{
 								visitor.VisitNeighbor(edge);
 							}
