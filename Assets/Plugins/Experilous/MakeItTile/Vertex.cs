@@ -146,8 +146,9 @@ namespace Experilous.MakeItTile
 						{
 							do
 							{
-								_currentFaceEdgeIndex = _topology.edgeData[_topology.edgeData[_nextVertexEdgeIndex].twin].fNext;
-								_nextVertexEdgeIndex = _topology.edgeData[_nextVertexEdgeIndex].vNext;
+								var twinIndex = _topology.edgeData[_nextVertexEdgeIndex].twin;
+								_currentFaceEdgeIndex = _topology.edgeData[twinIndex].fNext;
+								_nextVertexEdgeIndex = _topology.edgeData[_topology.edgeData[twinIndex].vNext].twin;
 								if (_currentFaceEdgeIndex == _firstVertexEdgeIndex)
 								{
 									_nextFaceEdgeIndex = _nextVertexEdgeIndex = _firstVertexEdgeIndex;
