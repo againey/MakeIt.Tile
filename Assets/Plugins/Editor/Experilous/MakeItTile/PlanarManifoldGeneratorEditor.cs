@@ -62,7 +62,7 @@ namespace Experilous.MakeItTile
 
 					if (canGenerate && Event.current.type == EventType.Repaint)
 					{
-						surface = generator.ResetSurface(CreateInstance<RectangularQuadGrid>(), Vector3.zero, Quaternion.identity, new Numerics.IntVector2(3, 3));
+						surface = generator.ResetSurface(CreateInstance<RectangularQuadGrid>(), Vector3.zero, Quaternion.identity, true, new Numerics.IntVector2(3, 3));
 						topology = surface.CreateManifold(out vertexPositions);
 					}
 
@@ -109,7 +109,7 @@ namespace Experilous.MakeItTile
 
 					if (canGenerate && Event.current.type == EventType.Repaint)
 					{
-						surface = generator.ResetSurface(CreateInstance<RectangularHexGrid>(), Vector3.zero, Quaternion.identity, new Numerics.IntVector2(3, 3));
+						surface = generator.ResetSurface(CreateInstance<RectangularHexGrid>(), Vector3.zero, Quaternion.identity, true, new Numerics.IntVector2(3, 3));
 						topology = surface.CreateManifold(out vertexPositions);
 					}
 
@@ -153,6 +153,7 @@ namespace Experilous.MakeItTile
 
 			generator.isAxis0Wrapped = EditorGUILayout.Toggle("Axis 0 Wraps", generator.isAxis0Wrapped, GUILayout.ExpandWidth(false));
 			generator.isAxis1Wrapped = EditorGUILayout.Toggle("Axis 1 Wraps", generator.isAxis1Wrapped, GUILayout.ExpandWidth(false));
+
 			EditorGUILayout.Space();
 
 			generator.origin = EditorGUILayout.Vector3Field("Origin", generator.origin);

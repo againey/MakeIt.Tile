@@ -53,7 +53,7 @@ namespace Experilous.MakeItGenerate
 				outputEditorState.foldoutAnimation.valueChanged.AddListener(Repaint);
 			}
 
-			_generator.Update();
+			if (_generator != null) _generator.Update();
 		}
 
 		private static bool IsInAssetGeneratorSubclass(FieldInfo field)

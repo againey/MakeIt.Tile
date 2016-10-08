@@ -74,6 +74,8 @@ namespace Experilous.MakeItTile
 		[SerializeField] private int _vertexInterceptOffsetOdd;
 		[SerializeField] private int _vertexInterceptOffsetLast;
 
+		[SerializeField] private bool _isInverted;
+
 		public static RectangularHexGrid Create(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion orientation, bool isAxis0Wrapped, bool isAxis1Wrapped, IntVector2 size)
 		{
 			return CreateInstance<RectangularHexGrid>().Reset(hexDescriptor, origin, orientation, isAxis0Wrapped, isAxis1Wrapped, size);
@@ -137,15 +139,10 @@ namespace Experilous.MakeItTile
 			if (size.x <= 0 || size.y <= 0)
 				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have an axis size less than or equal to zero.");
 
-			if (axis0.isWrapped && axisStyle == HexGridAxisStyles.StaggeredSymmetric)
-				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a variable row length and a wrapped straight axis when the other axis is staggered.");
-			if (axis0.isWrapped && axisStyle == HexGridAxisStyles.Staggered)
-			{
-				if (midpointIsFirstAxis && (size.y % 2) != 0 || !midpointIsFirstAxis && (size.y % 2) != 0)
-				{
-					throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a wrapped staggered axis with an odd size.");
-				}
-			}
+			if (axisStyle != HexGridAxisStyles.Straight && (axis0.isWrapped && !midpointIsFirstAxis && (size.x % 2) != 0 || axis1.isWrapped && midpointIsFirstAxis && (size.y % 2) != 0))
+				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a wrapped staggered axis with an odd size.");
+			if (axisStyle == HexGridAxisStyles.StaggeredSymmetric && (axis0.isWrapped && midpointIsFirstAxis || axis1.isWrapped && !midpointIsFirstAxis))
+				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a wrapped straight symmetric axis when the other axis is staggered.");
 
 			if (Vector3.Cross(axis0.vector, axis1.vector).sqrMagnitude < 0.001f)
 				throw new InvalidTopologyException("A planar surface cannot have nearly colinear axes.");
@@ -160,6 +157,8 @@ namespace Experilous.MakeItTile
 		{
 			if (midpointIsFirstAxis)
 			{
+				_isInverted = Vector3.Dot(Vector3.Cross(majorCorner, midpoint), Vector3.back) < 0f;
+
 				_faceColumnCount = size.x;
 				_faceRowCount = size.y;
 
@@ -167,10 +166,12 @@ namespace Experilous.MakeItTile
 				_wrapCols = axis1.isWrapped;
 
 				_reverseColumnsRows = false;
-				_reverseWindingOrder = false; // false <- isInvertex
+				_reverseWindingOrder = _isInverted;
 			}
 			else
 			{
+				_isInverted = Vector3.Dot(Vector3.Cross(midpoint, majorCorner), Vector3.back) < 0f;
+
 				_faceColumnCount = size.y;
 				_faceRowCount = size.x;
 
@@ -178,7 +179,7 @@ namespace Experilous.MakeItTile
 				_wrapCols = axis0.isWrapped;
 
 				_reverseColumnsRows = true;
-				_reverseWindingOrder = !false; // false <- isInvertex
+				_reverseWindingOrder = !_isInverted;
 			}
 		}
 
@@ -363,11 +364,11 @@ namespace Experilous.MakeItTile
 			}
 			else if (_wrapRows)
 			{
-				_edgeCount = _internalFaceCount * 6 + _faceRowCount * 4;
+				_edgeCount = _internalFaceCount * 6 + _faceColumnCount * 4;
 			}
 			else if (_wrapCols)
 			{
-				_edgeCount = _internalFaceCount * 6 + _faceColumnCount * 4;
+				_edgeCount = _internalFaceCount * 6 + _faceRowCount * 4;
 			}
 			else
 			{
@@ -418,6 +419,12 @@ namespace Experilous.MakeItTile
 					oddRowOffset = majorCorner + minorCorner;
 				}
 			}
+
+			rowAxis = orientation * rowAxis;
+			columnAxisDouble = orientation * columnAxisDouble;
+			oddCorner = orientation * oddCorner;
+			evenCorner = orientation * evenCorner;
+			oddRowOffset = orientation * oddRowOffset;
 
 			for (int i = 0; i < vertexCount; ++i)
 			{

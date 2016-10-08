@@ -66,6 +66,7 @@ namespace Experilous.MakeItTile
 			meshGenerator.vertexAttributes = DynamicMesh.VertexAttributes.Position | DynamicMesh.VertexAttributes.Normal;
 			meshGenerator.ringDepth = 1;
 			meshGenerator.UpdateVertexAttributeInputSlots();
+			meshGenerator.topologyInputSlot.source = manifoldGenerator.topologyOutputSlot;
 			meshGenerator.ringVertexPositionsInputSlots[0].source = manifoldGenerator.vertexPositionsOutputSlot;
 			meshGenerator.centerVertexPositionsInputSlots[0].source = faceCentroidsGenerator.faceCentroidsOutputSlot;
 			meshGenerator.ringVertexNormalsInputSlots[0].source = vertexNormalsGenerator.vertexNormalsOutputSlot;
