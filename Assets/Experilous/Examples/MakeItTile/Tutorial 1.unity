@@ -164,7 +164,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickStartEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickStartEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   OnPickChange:
     m_PersistentCalls:
@@ -181,7 +181,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickChangeEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickChangeEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   OnPickEnd:
     m_PersistentCalls:
@@ -198,7 +198,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickEndEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickEndEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!1 &1667502092
 GameObject:
