@@ -115,7 +115,7 @@ namespace Experilous.Examples.MakeItTile
 		{
 			var hexGridSurface = RectangularHexGrid.Create(
 				HexGridDescriptor.CreateSideUp(true, HexGridAxisStyles.StaggeredSymmetric),
-				Vector3.zero, Quaternion.identity,
+				Vector3.zero, Quaternion.Euler(90f, 0f, 0f),
 				false, false,
 				new IntVector2(topologyWidth, topologyHeight));
 
@@ -299,7 +299,7 @@ namespace Experilous.Examples.MakeItTile
 
 					if (visitor.depth < clearRadius)
 					{
-						foreach (var edge in face.edges)
+						foreach (var edge in visitor.face.edges)
 						{
 							if (edge.farFace.isInternal)
 							{
