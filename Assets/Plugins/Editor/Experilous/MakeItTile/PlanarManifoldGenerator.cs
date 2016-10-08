@@ -597,8 +597,8 @@ namespace Experilous.MakeItTile
 						if (isOblique && hexGridAxisOptions == HexGridAxisOptions.RightAngleAxes)
 						{
 							midpoint = new Vector2(horizontalAxisLength / 2f * (negateHorizontal ? -1f : +1f), 0f);
-							majorCorner = new Vector2(horizontalAxisLength / 3f * (negateHorizontal ? -1f : +1f), verticalAxisLength * 2f / 3f * (negateVertical ? -1f : +1f));
-							minorCorner = new Vector2(midpoint.x * 2f / 3f * (isObtuse ? 2f : 1f), majorCorner.y / 2f);
+							majorCorner = new Vector2(horizontalAxisLength / 3f * (!isObtuse ^ negateHorizontal ? -1f : +1f), verticalAxisLength * 2f / 3f * (negateVertical ? -1f : +1f));
+							minorCorner = new Vector2(horizontalAxisLength / 3f * (isObtuse ^ negateHorizontal ? -1f: +1f), majorCorner.y / 2f);
 						}
 						else if (pointUp)
 						{
