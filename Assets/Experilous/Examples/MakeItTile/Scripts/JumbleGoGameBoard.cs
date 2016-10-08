@@ -456,7 +456,7 @@ namespace Experilous.Examples.MakeItTile
 				}
 				else if (visitColor == color)
 				{
-					foreach (var edge in face.edges)
+					foreach (var edge in visitor.face.edges)
 					{
 						if (edge.farFace.isInternal)
 						{
@@ -474,9 +474,7 @@ namespace Experilous.Examples.MakeItTile
 			var color = _faceBoardStates[face];
 			if (color == BoardState.Empty) return;
 
-			SetPiece(face, null);
-			_faceBoardStates[face] = BoardState.Empty;
-			int captureCount = 1;
+			int captureCount = 0;
 
 			TopologyVisitor.VisitFaces(face, (FaceVisitor visitor) =>
 			{
@@ -487,7 +485,7 @@ namespace Experilous.Examples.MakeItTile
 					_faceBoardStates[visitor.face] = BoardState.Empty;
 					++captureCount;
 
-					foreach (var edge in face.edges)
+					foreach (var edge in visitor.face.edges)
 					{
 						if (edge.farFace.isInternal)
 						{
