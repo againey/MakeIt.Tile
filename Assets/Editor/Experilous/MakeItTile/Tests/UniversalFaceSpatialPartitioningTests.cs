@@ -131,7 +131,7 @@ namespace Experilous.MakeItTile.Tests
 		{
 			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateTetrahedron(surface, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateTetrahedron((SphericalSurface)surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
@@ -141,7 +141,7 @@ namespace Experilous.MakeItTile.Tests
 		{
 			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateCube(surface, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateCube((SphericalSurface)surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
@@ -151,7 +151,7 @@ namespace Experilous.MakeItTile.Tests
 		{
 			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateOctahedron(surface, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateOctahedron((SphericalSurface)surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
@@ -161,7 +161,7 @@ namespace Experilous.MakeItTile.Tests
 		{
 			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateDodecahedron(surface, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateDodecahedron((SphericalSurface)surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
@@ -171,7 +171,7 @@ namespace Experilous.MakeItTile.Tests
 		{
 			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateIcosahedron(surface, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateIcosahedron((SphericalSurface)surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
@@ -182,10 +182,10 @@ namespace Experilous.MakeItTile.Tests
 			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Topology baseTopology;
 			Vector3[] baseVertexPositionsArray;
-			SphericalManifoldUtility.CreateIcosahedron(surface, out baseTopology, out baseVertexPositionsArray);
+			SphericalManifoldUtility.CreateIcosahedron((SphericalSurface)surface, out baseTopology, out baseVertexPositionsArray);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.Subdivide(surface, baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 5, out topology, out vertexPositionsArray);
-			SphericalManifoldUtility.MakeDual(surface, topology, ref vertexPositionsArray);
+			SphericalManifoldUtility.Subdivide((SphericalSurface)surface, baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 5, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.MakeDual((SphericalSurface)surface, topology, ref vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
@@ -196,9 +196,9 @@ namespace Experilous.MakeItTile.Tests
 			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Topology baseTopology;
 			Vector3[] baseVertexPositionsArray;
-			SphericalManifoldUtility.CreateIcosahedron(surface, out baseTopology, out baseVertexPositionsArray);
+			SphericalManifoldUtility.CreateIcosahedron((SphericalSurface)surface, out baseTopology, out baseVertexPositionsArray);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.Subdivide(surface, baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 5, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.Subdivide((SphericalSurface)surface, baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 5, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
