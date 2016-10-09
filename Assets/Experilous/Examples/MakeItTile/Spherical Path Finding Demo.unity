@@ -205,7 +205,7 @@ MonoBehaviour:
   interiorLight: {fileID: 637379269}
   movementDuration: .100000001
   topologySubdivision: 20
-  isInverted: 1
+  isInverted: 0
   geographicalRegionCount: 500
   grassWeight: 5
   waterWeight: 8
