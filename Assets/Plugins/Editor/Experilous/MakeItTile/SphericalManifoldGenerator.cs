@@ -23,8 +23,11 @@ namespace Experilous.MakeItTile
 			Icosahedron,
 		}
 
-		public SphericalPolyhedrons sphericalPolyhedron;
 		public float radius;
+		public Vector3 primaryPole;
+		public Vector3 equatorialPole;
+		public bool isInverted;
+		public SphericalPolyhedrons sphericalPolyhedron;
 		public int subdivisionDegree;
 		public bool useDualPolyhedron;
 
@@ -84,8 +87,11 @@ namespace Experilous.MakeItTile
 		protected override void Initialize()
 		{
 			// Fields
-			sphericalPolyhedron = SphericalPolyhedrons.Icosahedron;
 			radius = 1f;
+			primaryPole = Vector3.up;
+			equatorialPole = Vector3.right;
+			isInverted = false;
+			sphericalPolyhedron = SphericalPolyhedrons.Icosahedron;
 			subdivisionDegree = 10;
 			useDualPolyhedron = true;
 
@@ -97,6 +103,9 @@ namespace Experilous.MakeItTile
 
 		public void OnAfterDeserialize()
 		{
+			if (primaryPole == Vector3.zero) primaryPole = Vector3.up;
+			if (equatorialPole == Vector3.zero) equatorialPole = Vector3.right;
+
 			OutputSlot.ResetAssetTypeIfNull<SphericalSurface>(surfaceOutputSlot);
 			OutputSlot.ResetAssetTypeIfNull<Topology>(topologyOutputSlot);
 			OutputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsOutputSlot);
@@ -120,14 +129,14 @@ namespace Experilous.MakeItTile
 		{
 			var surface = surfaceOutputSlot.GetAsset<SphericalSurface>();
 			if (surface == null) surface = surfaceOutputSlot.SetAsset(CreateInstance<SphericalSurface>(), false);
-			surface.Reset(new SphericalDescriptor(Vector3.up, 1f));
+			surface.Reset(Vector3.up, Vector3.right, 1f, false);
 		}
 
 		public override IEnumerator BeginGeneration()
 		{
 			var surface = surfaceOutputSlot.GetAsset<SphericalSurface>();
 			if (surface == null) surface = surfaceOutputSlot.SetAsset(CreateInstance<SphericalSurface>(), false);
-			surface.Reset(new SphericalDescriptor(Vector3.up, radius));
+			surface.Reset(primaryPole, equatorialPole, radius, isInverted);
 
 			Topology topology;
 			Vector3[] vertexPositions;
@@ -135,37 +144,37 @@ namespace Experilous.MakeItTile
 			switch (sphericalPolyhedron)
 			{
 				case SphericalPolyhedrons.Tetrahedron:
-					SphericalManifoldUtility.CreateTetrahedron(surface.radius, out topology, out vertexPositions);
+					SphericalManifoldUtility.CreateTetrahedron(surface, out topology, out vertexPositions);
 					break;
 				case SphericalPolyhedrons.Cube:
-					SphericalManifoldUtility.CreateCube(surface.radius, out topology, out vertexPositions);
+					SphericalManifoldUtility.CreateCube(surface, out topology, out vertexPositions);
 					break;
 				case SphericalPolyhedrons.Octahedron:
-					SphericalManifoldUtility.CreateOctahedron(surface.radius, out topology, out vertexPositions);
+					SphericalManifoldUtility.CreateOctahedron(surface, out topology, out vertexPositions);
 					break;
 				case SphericalPolyhedrons.Dodecahedron:
 					if (subdivisionDegree == 0)
 					{
-						SphericalManifoldUtility.CreateDodecahedron(surface.radius, out topology, out vertexPositions);
+						SphericalManifoldUtility.CreateDodecahedron(surface, out topology, out vertexPositions);
 					}
 					else
 					{
-						SphericalManifoldUtility.CreateIcosahedron(surface.radius, out topology, out vertexPositions);
+						SphericalManifoldUtility.CreateIcosahedron(surface, out topology, out vertexPositions);
 					}
 					break;
 				case SphericalPolyhedrons.Icosahedron:
-					SphericalManifoldUtility.CreateIcosahedron(surface.radius, out topology, out vertexPositions);
+					SphericalManifoldUtility.CreateIcosahedron(surface, out topology, out vertexPositions);
 					break;
 				default:
 					throw new System.NotImplementedException();
 			}
 
-			SphericalManifoldUtility.Subdivide(topology, vertexPositions.AsVertexAttribute(), subdivisionDegree, surface.radius, out topology, out vertexPositions);
+			SphericalManifoldUtility.Subdivide(surface, topology, vertexPositions.AsVertexAttribute(), subdivisionDegree, out topology, out vertexPositions);
 
 			var alreadyDual = sphericalPolyhedron == SphericalPolyhedrons.Dodecahedron && subdivisionDegree != 0;
 			if (useDualPolyhedron != alreadyDual)
 			{
-				SphericalManifoldUtility.MakeDual(topology, ref vertexPositions, surface.radius);
+				SphericalManifoldUtility.MakeDual(surface, topology, ref vertexPositions);
 			}
 
 			surfaceOutputSlot.Persist();

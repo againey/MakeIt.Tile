@@ -74,7 +74,7 @@ namespace Experilous.MakeItTile.Tests
 			topology = ((RectangularQuadGrid)surface).CreateManifold(out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateHexGrid(int width, int height)
@@ -84,7 +84,7 @@ namespace Experilous.MakeItTile.Tests
 			topology = ((RectangularHexGrid)surface).CreateManifold(out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateDistortedQuadGrid(int width, int height, int seed)
@@ -104,7 +104,7 @@ namespace Experilous.MakeItTile.Tests
 				}
 			}
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateDistortedHexGrid(int width, int height, int seed)
@@ -124,84 +124,84 @@ namespace Experilous.MakeItTile.Tests
 				}
 			}
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateTetrahedron(float radius)
 		{
-			surface = SphericalSurface.Create(new SphericalDescriptor(Vector3.up, radius));
+			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateTetrahedron(radius, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateTetrahedron(surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateCube(float radius)
 		{
-			surface = SphericalSurface.Create(new SphericalDescriptor(Vector3.up, radius));
+			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateCube(radius, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateCube(surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateOctahedron(float radius)
 		{
-			surface = SphericalSurface.Create(new SphericalDescriptor(Vector3.up, radius));
+			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateOctahedron(radius, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateOctahedron(surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateDodecahedron(float radius)
 		{
-			surface = SphericalSurface.Create(new SphericalDescriptor(Vector3.up, radius));
+			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateDodecahedron(radius, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateDodecahedron(surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateIcosahedron(float radius)
 		{
-			surface = SphericalSurface.Create(new SphericalDescriptor(Vector3.up, radius));
+			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.CreateIcosahedron(radius, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.CreateIcosahedron(surface, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateSubdividedDodecahedron(float radius)
 		{
-			surface = SphericalSurface.Create(new SphericalDescriptor(Vector3.up, radius));
+			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Topology baseTopology;
 			Vector3[] baseVertexPositionsArray;
-			SphericalManifoldUtility.CreateIcosahedron(radius, out baseTopology, out baseVertexPositionsArray);
+			SphericalManifoldUtility.CreateIcosahedron(surface, out baseTopology, out baseVertexPositionsArray);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.Subdivide(baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 5, radius, out topology, out vertexPositionsArray);
-			SphericalManifoldUtility.MakeDual(topology, ref vertexPositionsArray, radius);
+			SphericalManifoldUtility.Subdivide(surface, baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 5, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.MakeDual(surface, topology, ref vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		public void CreateSubdividedIcosahedron(float radius)
 		{
-			surface = SphericalSurface.Create(new SphericalDescriptor(Vector3.up, radius));
+			surface = SphericalSurface.Create(Vector3.up, Vector3.right, radius);
 			Topology baseTopology;
 			Vector3[] baseVertexPositionsArray;
-			SphericalManifoldUtility.CreateIcosahedron(radius, out baseTopology, out baseVertexPositionsArray);
+			SphericalManifoldUtility.CreateIcosahedron(surface, out baseTopology, out baseVertexPositionsArray);
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.Subdivide(baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 5, radius, out topology, out vertexPositionsArray);
+			SphericalManifoldUtility.Subdivide(surface, baseTopology, baseVertexPositionsArray.AsVertexAttribute(), 5, out topology, out vertexPositionsArray);
 			vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
-			partitioning = UniversalFaceSpatialPartitioning.Create(topology, surface, vertexPositions);
+			partitioning = UniversalFaceSpatialPartitioning.Create(surface, topology, vertexPositions);
 		}
 
 		#endregion

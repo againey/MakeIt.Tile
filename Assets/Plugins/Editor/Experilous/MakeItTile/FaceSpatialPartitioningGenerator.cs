@@ -72,8 +72,8 @@ namespace Experilous.MakeItTile
 		public override IEnumerator BeginGeneration()
 		{
 			var partitioning = UniversalFaceSpatialPartitioning.Create(
-				topologyInputSlot.GetAsset<Topology>(),
 				surfaceInputSlot.GetAsset<Surface>(),
+				topologyInputSlot.GetAsset<Topology>(),
 				vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>());
 			partitioningOutputSlot.SetAsset(partitioning);
 			yield break;

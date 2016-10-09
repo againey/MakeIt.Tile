@@ -17,16 +17,25 @@ namespace Experilous.Examples.MakeItTile
 	{
 		public MeshFilter planetMeshPrefab;
 		public Transform unitPrefab;
+		public Cubemap whiteCubeMap;
 
 		public Transform planetMeshes;
 		public Transform units;
 
 		public GameObject controlsPanel;
 
+		public OrbitalCameraController orbitalCamera;
+		public PivotalCameraController pivotalCamera;
+		public Light exteriorLight;
+		public Light interiorLight;
+
 		public float movementDuration = 0.1f;
 
 		[Space(20)]
 		public int topologySubdivision = 20;
+		public bool isInverted = false;
+
+		[Space(20)]
 		public int geographicalRegionCount = 500;
 		public int grassWeight = 5;
 		public int waterWeight = 8;
@@ -34,6 +43,8 @@ namespace Experilous.Examples.MakeItTile
 		public int mountainWeight = 1;
 		public int fullSightDistance = 3;
 		public int limitedSightDistance = 5;
+
+		[Space(20)]
 		public int unitCount = 20;
 
 		private SphericalSurface _surface;
@@ -71,6 +82,9 @@ namespace Experilous.Examples.MakeItTile
 		[NonSerialized] private PathFinder _pathFinder;
 		[NonSerialized] private IFaceEdgePath _path;
 		[NonSerialized] private bool _moving;
+
+		[NonSerialized] private Vector3 _lightAxis;
+		[NonSerialized] private Vector3 _lightVector;
 
 		protected void OnEnable()
 		{
@@ -118,19 +132,34 @@ namespace Experilous.Examples.MakeItTile
 
 		protected void Start()
 		{
+			orbitalCamera.enabled = !isInverted;
+			pivotalCamera.enabled = isInverted;
+
+			exteriorLight.enabled = !isInverted;
+			interiorLight.enabled = isInverted;
+
+			_lightVector = (isInverted ? interiorLight : exteriorLight).transform.position;
+			_lightAxis = Vector3.Cross(Vector3.Cross(Vector3.up, _lightVector), _lightVector);
+
+			RenderSettings.ambientLight = new Color(0.3f, 0.4f, 0.5f);
+			RenderSettings.ambientIntensity = 0.25f;
+			RenderSettings.customReflection = whiteCubeMap;
+			RenderSettings.reflectionIntensity = 0.125f;
+			RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Custom;
+
 			_picker = GetComponent<FaceSpatialPartitioningPicker>();
 
-			_surface = SphericalSurface.Create(new SphericalDescriptor(Vector3.up, 10f));
+			_surface = SphericalSurface.Create(Vector3.up, Vector3.right, 10f, isInverted);
 			Vector3[] baseVertexPositionsArray;
 			Topology baseTopology;
-			SphericalManifoldUtility.CreateIcosahedron(_surface.radius, out baseTopology, out baseVertexPositionsArray);
+			SphericalManifoldUtility.CreateIcosahedron(_surface, out baseTopology, out baseVertexPositionsArray);
 
 			Vector3[] vertexPositionsArray;
-			SphericalManifoldUtility.Subdivide(baseTopology, baseVertexPositionsArray.AsVertexAttribute(), topologySubdivision, _surface.radius, out _topology, out vertexPositionsArray);
+			SphericalManifoldUtility.Subdivide(_surface, baseTopology, baseVertexPositionsArray.AsVertexAttribute(), topologySubdivision, out _topology, out vertexPositionsArray);
 
 			_vertexPositions = PositionalVertexAttribute.Create(_surface, vertexPositionsArray);
 
-			SphericalManifoldUtility.MakeDual(_topology, _vertexPositions, out vertexPositionsArray, _surface.radius);
+			SphericalManifoldUtility.MakeDual(_surface, _topology, _vertexPositions, out vertexPositionsArray);
 			_vertexPositions = PositionalVertexAttribute.Create(_surface, vertexPositionsArray);
 
 			var regularityWeight = 0.5f;
@@ -148,8 +177,8 @@ namespace Experilous.Examples.MakeItTile
 
 			Func<float> relaxIterationFunction = () =>
 			{
-				SphericalManifoldUtility.RelaxVertexPositionsForRegularity(_topology, _vertexPositions, _surface.radius, true, regularityRelaxedVertexPositions);
-				SphericalManifoldUtility.RelaxVertexPositionsForEqualArea(_topology, _vertexPositions, _surface.radius, true, equalAreaRelaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
+				SphericalManifoldUtility.RelaxVertexPositionsForRegularity(_surface, _topology, _vertexPositions, true, regularityRelaxedVertexPositions);
+				SphericalManifoldUtility.RelaxVertexPositionsForEqualArea(_surface, _topology, _vertexPositions, true, equalAreaRelaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
 				for (int i = 0; i < relaxedVertexPositions.Count; ++i)
 				{
 					relaxedVertexPositions[i] = regularityRelaxedVertexPositions[i] * regularityWeight + equalAreaRelaxedVertexPositions[i] * equalAreaWeight;
@@ -164,7 +193,7 @@ namespace Experilous.Examples.MakeItTile
 
 			Func<bool> repairFunction = () =>
 			{
-				return SphericalManifoldUtility.ValidateAndRepair(_topology, _vertexPositions, _surface.radius, 0.5f, true);
+				return SphericalManifoldUtility.ValidateAndRepair(_surface, _topology, _vertexPositions, 0.5f, true);
 			};
 
 			Action relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(20, 20, 0.95f, relaxIterationFunction, repairFunction);
@@ -217,7 +246,7 @@ namespace Experilous.Examples.MakeItTile
 			_faceInnerEdgeUVs = EdgeAttributeUtility.CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(_topology.faces, faceMinUVs, faceRangeUVs, _faceInnerEdgeUVs);
 			_faceCenterUVs = FaceAttributeUtility.CalculateUniformlyNormalizedUVsFromFaceUVMinAndRange(_topology.faces, faceMinUVs, faceRangeUVs, _faceCenterUVs);
 
-			_partitioning = UniversalFaceSpatialPartitioning.Create(_topology, _surface, _vertexPositions);
+			_partitioning = UniversalFaceSpatialPartitioning.Create(_surface, _topology, _vertexPositions);
 			_picker.partitioning = _partitioning;
 			_picker.enabled = true;
 
@@ -393,6 +422,8 @@ namespace Experilous.Examples.MakeItTile
 			{
 				controlsPanel.SetActive(!controlsPanel.activeSelf);
 			}
+
+			exteriorLight.transform.position = interiorLight.transform.position = Quaternion.AngleAxis(Mathf.Repeat(Time.time * 10f, 360f), _lightAxis) * _lightVector;
 		}
 
 		private void Select(Topology.Face face)

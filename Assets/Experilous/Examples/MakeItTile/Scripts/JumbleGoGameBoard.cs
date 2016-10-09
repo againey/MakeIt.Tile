@@ -288,7 +288,7 @@ namespace Experilous.Examples.MakeItTile
 
 			_facePieces = new Transform[_topology.internalFaces.Count].AsFaceAttribute();
 
-			_partitioning = UniversalFaceSpatialPartitioning.Create(_topology, _surface, _vertexPositions);
+			_partitioning = UniversalFaceSpatialPartitioning.Create(_surface, _topology, _vertexPositions);
 			_picker.partitioning = _partitioning;
 			_picker.enabled = true;
 

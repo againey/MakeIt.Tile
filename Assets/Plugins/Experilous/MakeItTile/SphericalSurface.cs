@@ -7,38 +7,66 @@ using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
-	public struct SphericalDescriptor
-	{
-		public Vector3 primaryPoleNormal;
-		public float radius;
-
-		public SphericalDescriptor(Vector3 primaryPole)
-		{
-			radius = primaryPole.magnitude;
-			primaryPoleNormal = primaryPole / radius;
-		}
-
-		public SphericalDescriptor(Vector3 primaryPoleNormal, float radius)
-		{
-			this.primaryPoleNormal = primaryPoleNormal.normalized;
-			this.radius = radius;
-		}
-	}
-
 	public class SphericalSurface : Surface
 	{
 		public Vector3 primaryPoleNormal;
+		public Vector3 equatorialPoleNormal;
 		public float radius;
+		public bool isInverted;
 
-		public static SphericalSurface Create(SphericalDescriptor descriptor)
+		public static SphericalSurface Create(Vector3 primaryPole, Vector3 equatorialPoleNormal)
 		{
-			return CreateInstance<SphericalSurface>().Reset(descriptor);
+			return CreateInstance<SphericalSurface>().Reset(primaryPole, equatorialPoleNormal);
 		}
 
-		public SphericalSurface Reset(SphericalDescriptor descriptor)
+		public static SphericalSurface Create(Vector3 primaryPoleNormal, Vector3 equatorialPoleNormal, float radius)
 		{
-			primaryPoleNormal = descriptor.primaryPoleNormal;
-			radius = descriptor.radius;
+			return CreateInstance<SphericalSurface>().Reset(primaryPoleNormal, equatorialPoleNormal, radius);
+		}
+
+		public static SphericalSurface Create(Vector3 primaryPole, Vector3 equatorialPoleNormal, bool isInverted)
+		{
+			return CreateInstance<SphericalSurface>().Reset(primaryPole, equatorialPoleNormal, isInverted);
+		}
+
+		public static SphericalSurface Create(Vector3 primaryPoleNormal, Vector3 equatorialPoleNormal, float radius, bool isInverted)
+		{
+			return CreateInstance<SphericalSurface>().Reset(primaryPoleNormal, equatorialPoleNormal, radius, isInverted);
+		}
+
+		public SphericalSurface Reset(Vector3 primaryPole, Vector3 equatorialPoleNormal)
+		{
+			radius = primaryPole.magnitude;
+			primaryPoleNormal = primaryPole / radius;
+			this.equatorialPoleNormal = Vector3.Cross(Vector3.Cross(primaryPoleNormal, equatorialPoleNormal), primaryPoleNormal).normalized;
+			isInverted = false;
+			return this;
+		}
+
+		public SphericalSurface Reset(Vector3 primaryPoleNormal, Vector3 equatorialPoleNormal, float radius)
+		{
+			this.primaryPoleNormal = primaryPoleNormal.normalized;
+			this.equatorialPoleNormal = Vector3.Cross(Vector3.Cross(primaryPoleNormal, equatorialPoleNormal), primaryPoleNormal).normalized;
+			this.radius = radius;
+			isInverted = false;
+			return this;
+		}
+
+		public SphericalSurface Reset(Vector3 primaryPole, Vector3 equatorialPoleNormal, bool isInverted)
+		{
+			radius = primaryPole.magnitude;
+			primaryPoleNormal = primaryPole / radius;
+			this.equatorialPoleNormal = Vector3.Cross(Vector3.Cross(primaryPoleNormal, equatorialPoleNormal), primaryPoleNormal).normalized;
+			this.isInverted = isInverted;
+			return this;
+		}
+
+		public SphericalSurface Reset(Vector3 primaryPoleNormal, Vector3 equatorialPoleNormal, float radius, bool isInverted)
+		{
+			this.primaryPoleNormal = primaryPoleNormal.normalized;
+			this.equatorialPoleNormal = Vector3.Cross(Vector3.Cross(primaryPoleNormal, equatorialPoleNormal), primaryPoleNormal).normalized;
+			this.radius = radius;
+			this.isInverted = isInverted;
 			return this;
 		}
 
@@ -47,6 +75,8 @@ namespace Experilous.MakeItTile
 
 		public override bool isConvex { get { return true; } }
 		public override bool isConcave { get { return false; } }
+
+		public Quaternion orientation { get { return Quaternion.LookRotation(Vector3.Cross(equatorialPoleNormal, primaryPoleNormal), primaryPoleNormal); } }
 
 		public override Vector3 Intersect(Ray ray)
 		{
@@ -69,7 +99,14 @@ namespace Experilous.MakeItTile
 
 		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
 		{
-			return Geometry.IntersectForwardExternal(new Sphere(Vector3.zero, radius), ray, out intersection);
+			if (!isInverted)
+			{
+				return Geometry.IntersectForwardExternal(new Sphere(Vector3.zero, radius), ray, out intersection);
+			}
+			else
+			{
+				return Geometry.IntersectForwardInternal(new Sphere(Vector3.zero, radius), ray, out intersection);
+			}
 		}
 
 		public override Vector3 Project(Vector3 position)
@@ -88,11 +125,11 @@ namespace Experilous.MakeItTile
 		{
 			if (position != Vector3.zero)
 			{
-				return position.normalized;
+				return (isInverted ? -position : position).normalized;
 			}
 			else
 			{
-				return primaryPoleNormal;
+				return isInverted ? -primaryPoleNormal : primaryPoleNormal;
 			}
 		}
 	}

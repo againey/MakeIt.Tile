@@ -8,7 +8,7 @@ using Experilous.Core;
 namespace Experilous.Examples.MakeItTile
 {
 	[ExecuteInEditMode]
-	public class OrbitalCameraController : MonoBehaviour
+	public class PivotalCameraController : MonoBehaviour
 	{
 		public Transform origin;
 
@@ -18,8 +18,8 @@ namespace Experilous.Examples.MakeItTile
 		public float maximumLatitude = 80;
 
 		public float surfaceRadius = 1f;
-		public float minimumRadius = 1.1f;
-		public float maximumRadius = 2.2f;
+		public float outerRadius = 0.9f;
+		public float innerRadius = 0f;
 
 		[Range(0f, 90f)]
 		public float minimumRadiusLookAtAngle = 0f;
@@ -51,8 +51,8 @@ namespace Experilous.Examples.MakeItTile
 			if (origin == null ||
 				minimumLatitude > maximumLatitude ||
 				surfaceRadius <= 0f ||
-				surfaceRadius >= minimumRadius ||
-				minimumRadius > maximumRadius ||
+				outerRadius >= surfaceRadius  ||
+				innerRadius > outerRadius ||
 				zoomVelocity <= 0f)
 			{
 				return;
@@ -67,9 +67,9 @@ namespace Experilous.Examples.MakeItTile
 			}
 #endif
 
-			var radiusUpperRange = maximumRadius - minimumRadius;
-			var radiusLowerRange = minimumRadius - surfaceRadius;
-			var radiusTotalRange = maximumRadius - surfaceRadius;
+			var radiusUpperRange = outerRadius - innerRadius;
+			var radiusLowerRange = surfaceRadius - outerRadius;
+			var radiusTotalRange = surfaceRadius - innerRadius;
 			var radiusUpperOverTotal = radiusUpperRange / radiusTotalRange;
 			var radiusLowerOverTotal = radiusLowerRange / radiusTotalRange;
 			var zoomScale = 1f / (0.5f * radiusUpperOverTotal + radiusLowerOverTotal);
@@ -83,11 +83,11 @@ namespace Experilous.Examples.MakeItTile
 			if (scaleInputRate)
 			{
 				var scaledZoom = invertedZoom * radiusUpperRange * zoomScale;
-				cameraElevation = (0.5f * invertedZoom * radiusUpperOverTotal + radiusLowerOverTotal) * scaledZoom + minimumRadius;
+				cameraElevation = outerRadius - (0.5f * invertedZoom * radiusUpperOverTotal + radiusLowerOverTotal) * scaledZoom;
 			}
 			else
 			{
-				cameraElevation = radiusUpperRange * invertedZoom + minimumRadius;
+				cameraElevation = outerRadius - radiusUpperRange * invertedZoom;
 			}
 
 			var cameraDirection = new Vector3(
@@ -107,7 +107,7 @@ namespace Experilous.Examples.MakeItTile
 			}
 			else
 			{
-				var adjustedUpVector = Vector3.Cross(sideVector, cameraDirection);
+				var adjustedUpVector = Vector3.Cross(cameraDirection, sideVector);
 				var angledCameraPosition = cameraLookAt + Vector3.Slerp(cameraPosition - cameraLookAt, adjustedUpVector * (surfaceRadius - cameraElevation), cameraAngle / 90f);
 
 				transform.position = origin.position + angledCameraPosition;
@@ -133,9 +133,9 @@ namespace Experilous.Examples.MakeItTile
 				zoom = Mathf.Max(zoom - zoomVelocity * Time.deltaTime, _zoomTarget);
 			}
 
-			var radiusUpperRange = maximumRadius - minimumRadius;
-			var radiusLowerRange = minimumRadius - surfaceRadius;
-			var radiusTotalRange = maximumRadius - surfaceRadius;
+			var radiusUpperRange = innerRadius - outerRadius;
+			var radiusLowerRange = outerRadius - surfaceRadius;
+			var radiusTotalRange = innerRadius - surfaceRadius;
 			var radiusUpperOverTotal = radiusUpperRange / radiusTotalRange;
 			var radiusLowerOverTotal = radiusLowerRange / radiusTotalRange;
 			var zoomScale = 1f / (0.5f * radiusUpperOverTotal + radiusLowerOverTotal);
@@ -157,7 +157,7 @@ namespace Experilous.Examples.MakeItTile
 				horizontalInput /= (zoom * latitudeCosine) + invertedZoom;
 			}
 
-			longitude = Mathf.Repeat(longitude + horizontalInput, 360f);
+			longitude = Mathf.Repeat(longitude - horizontalInput, 360f);
 			if (longitude < 0) longitude += 360f;
 		}
 	}

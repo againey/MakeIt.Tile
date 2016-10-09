@@ -163,7 +163,7 @@ namespace Experilous.Examples.MakeItTile
 				meshFilter.transform.SetParent(transform, false);
 			}
 
-			var partioning = UniversalFaceSpatialPartitioning.Create(_topology, _surface, _vertexPositions);
+			var partioning = UniversalFaceSpatialPartitioning.Create(_surface, _topology, _vertexPositions);
 			var picker = GetComponent<FaceSpatialPartitioningPicker>();
 			picker.partitioning = partioning;
 		}

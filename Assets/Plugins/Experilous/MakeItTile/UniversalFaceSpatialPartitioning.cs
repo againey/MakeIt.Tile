@@ -75,19 +75,19 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		[SerializeField] protected Topology _topology;
 		[SerializeField] protected Surface _surface;
+		[SerializeField] protected Topology _topology;
 		[SerializeField] private Partition[] _partitionBinaryTree;
 
-		public static UniversalFaceSpatialPartitioning Create(Topology topology, Surface surface, IVertexAttribute<Vector3> vertexPositions)
+		public static UniversalFaceSpatialPartitioning Create(Surface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CreateInstance<UniversalFaceSpatialPartitioning>().Initialize(topology, surface, vertexPositions);
+			return CreateInstance<UniversalFaceSpatialPartitioning>().Initialize(surface, topology, vertexPositions);
 		}
 
-		private UniversalFaceSpatialPartitioning Initialize(Topology topology, Surface surface, IVertexAttribute<Vector3> vertexPositions)
+		private UniversalFaceSpatialPartitioning Initialize(Surface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions)
 		{
-			_topology = topology;
 			_surface = surface;
+			_topology = topology;
 
 			var edges = _topology.faceEdges;
 			_partitionBinaryTree = new Partition[edges.Count];
