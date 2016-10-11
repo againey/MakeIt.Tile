@@ -421,7 +421,9 @@ namespace Experilous.MakeItTile
 
 			foreach (var face in faces)
 			{
-				Rect adjusted = aspectRatioPreservationDelegate(new Rect(faceMinUVs[face], faceRangeUVs[face]));
+				Vector2 uvMin = faceMinUVs[face];
+				Vector2 uvRange = faceRangeUVs[face];
+				Rect adjusted = aspectRatioPreservationDelegate(new Rect(uvMin.x, uvMin.y, uvRange.x, uvRange.y));
 				faceMinUVs[face] = adjusted.min;
 				faceRangeUVs[face] = adjusted.size;
 			}
@@ -452,7 +454,9 @@ namespace Experilous.MakeItTile
 
 			foreach (var face in faces)
 			{
-				var adjusted = aspectRatioPreservationDelegate(new Rect(faceMinUVs[face], faceRangeUVs[face]));
+				Vector2 uvMin = faceMinUVs[face];
+				Vector2 uvRange = faceRangeUVs[face];
+				var adjusted = aspectRatioPreservationDelegate(new Rect(uvMin.x, uvMin.y, uvRange.x, uvRange.y));
 				faceMinUVs[face] = adjusted.min;
 				faceRangeUVs[face] = adjusted.size;
 			}
@@ -502,7 +506,7 @@ namespace Experilous.MakeItTile
 					uvMax = Geometry.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
 				}
 
-				var adjusted = aspectRatioPreservationDelegate(new Rect(uvMin, uvMax - uvMin));
+				var adjusted = aspectRatioPreservationDelegate(new Rect(uvMin.x, uvMin.y, uvMax.x - uvMin.x, uvMax.y - uvMin.y));
 				var uvRangeReciprocal = new Vector2(1f / adjusted.width, 1f / adjusted.height);
 
 				foreach (var edge in face.edges)
@@ -561,7 +565,7 @@ namespace Experilous.MakeItTile
 
 				var center = unnormalizedFaceUVs[face];
 				var extent = Geometry.AxisAlignedMax(uvMax - center, center - uvMin);
-				var adjusted = aspectRatioPreservationDelegate(new Rect(center - extent, extent * 2f));
+				var adjusted = aspectRatioPreservationDelegate(new Rect(center.x - extent.x, center.y - extent.y, extent.x * 2f, extent.y * 2f));
 				var uvRangeReciprocal = new Vector2(1f / adjusted.width, 1f / adjusted.height);
 
 				foreach (var edge in face.edges)

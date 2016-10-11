@@ -235,7 +235,9 @@ namespace Experilous.Examples.MakeItTile
 
 			foreach (var face in _topology.faces)
 			{
-				var adjusted = AspectRatioUtility.Expand(new Rect(faceMinUVs[face], faceRangeUVs[face]), 1f);
+				var uvMin = faceMinUVs[face];
+				var uvRange = faceRangeUVs[face];
+				var adjusted = AspectRatioUtility.Expand(new Rect(uvMin.x, uvMin.y, uvRange.x, uvRange.y), 1f);
 				faceMinUVs[face] = adjusted.min;
 				faceRangeUVs[face] = adjusted.size;
 			}
