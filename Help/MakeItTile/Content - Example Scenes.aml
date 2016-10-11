@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="0c879b33-6cff-4557-98d1-0794eeb719c8" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				Make It Random includes example scenes to let you explore some of the
+				features provided by the library.  These scenes are summarized below.
+			</para>
+		</summary>
+		<introduction>
+			<autoOutline />
+		</introduction>
+		<section address="geometry">
+			<title>Geometry</title>
+			<content>
+				<para>
+					A web demo of this example can be found
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Random Geometry Online WebGL Demo</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/example/geometry/</linkUri>
+					</externalLink>.
+				</para>
+				<mediaLink>
+					<caption placement="after">The "Geometry.unity" demo scene.</caption>
+					<image placement="center" xlink:href="geometry-demo-scene"/>
+				</mediaLink>
+				<para>
+					The geometry scene demonstrates generating random vectors and quaternions
+					with different spatial distributions, using the functions available in
+					<codeEntityReference>T:Experilous.MakeItRandom.RandomGeometry</codeEntityReference>.
+					Simply select any button on the left, and particles will be
+					generated with the corresponding spatial arrangement.
+				</para>
+			</content>
+		</section>
+		<section address="colors">
+			<title>Colors</title>
+			<content>
+				<para>
+					A web demo of this example can be found
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Random Colors Online WebGL Demo</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/example/colors/</linkUri>
+					</externalLink>.
+				</para>
+				<mediaLink>
+					<caption placement="after">The "Colors.unity" demo scene.</caption>
+					<image placement="center" xlink:href="colors-demo-scene"/>
+				</mediaLink>
+				<para>
+					The colors scene demostrate generating random colors, either
+					from scratch or by modifying color components by varying
+					degrees from an initial color, using the functions available in
+					<codeEntityReference>T:Experilous.MakeItRandom.RandomColor</codeEntityReference>.
+					In addition to supporting 
+					<codeEntityReference>T:UnityEngine.Color</codeEntityReference>,
+					the Make It Colorful library is included, offering further
+					color spaces beyond just RGB.
+				</para>
+				<para>
+					The available color space are enumerated as toggle buttons
+					at the top of the demo.  Depending on which one is selected,
+					controls below will be adjusted, as will their behavior.
+					For example, the distribution of colors produced by the
+					Generate Random Colors button will be different for each
+					color space.
+				</para>
+				<para>
+					Once colors are generated, you can select any color on the
+					right and see its individual components at the top.  You
+					may also now use the controls in the third and fourth boxes
+					on the left, treating the selected color as the basis for
+					further modifications.
+				</para>
+				<para>
+					The third box of controls lets you shift the individual
+					color components by random amounts, with the maximum amount
+					of change dictated by the slider values.  The selected color
+					will remain the same, but all other colors in the grid
+					will be regenerated using the random component ranges
+					specified.
+				</para>
+				<para>
+					The fourth box of controls is similar, but it scales individual
+					properties of colors in a particular color space toward
+					their minimum or maximum value, by random amounts.  
+				</para>
+			</content>
+		</section>
+		<section address="shuffle">
+			<title>Shuffle</title>
+			<content>
+				<para>
+					A web demo of this example can be found
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Random Shuffle Online WebGL Demo</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/example/shuffle/</linkUri>
+					</externalLink>.
+				</para>
+				<mediaLink>
+					<caption placement="after">The "Shuffle.unity" demo scene.</caption>
+					<image placement="center" xlink:href="shuffle-demo-scene"/>
+				</mediaLink>
+				<para>
+					The shuffle scene demonstrates shuffling elements in a list, using the functions available in
+					<codeEntityReference>T:Experilous.MakeItRandom.RandomShuffle</codeEntityReference>,
+					as well as randomly selecting items from a list using the functions available in
+					<codeEntityReference>T:Experilous.MakeItRandom.RandomListAccess</codeEntityReference>.
+				</para>
+				<para>
+					To use this demo, choose the number of items you want in the
+					list, and then press one of the buttons in the first group
+					to gerate the list of items.  The list will be visualized
+					on the right, with the upper blue bars simply indicating
+					the value of the items in the list, while the lower red
+					bars indicate the weight values of each one (see below).
+				</para>
+				<para>
+					Press the shuffle button, and you should see all the items
+					completely shuffled, taking on random indexes.
+				</para>
+				<para>
+					If you press the Select Random Item button, then an item
+					will be selected and highlighted with yellow, completely
+					at random.  The Select Weighted Random Item, on the other
+					hand, will favor items with larger weights, selecting those
+					more often than the items with smaller weights.  This
+					effect is more obvious if the items have not been shuffled,
+					but remains true even after a thorough jumbling.
+				</para>
+			</content>
+		</section>
+		<section address="dice">
+			<title>Dice</title>
+			<content>
+				<para>
+					A web demo of this example can be found
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Random Dice Online WebGL Demo</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/example/dice/</linkUri>
+					</externalLink>.
+				</para>
+				<mediaLink>
+					<caption placement="after">The "Dice.unity" demo scene.</caption>
+					<image placement="center" xlink:href="dice-demo-scene"/>
+				</mediaLink>
+				<para>
+					The dice scene demonstrates rolling a collection of dice of various sizes,
+					and optionally keeping or dropping some of them, using the functions available in
+					<codeEntityReference>T:Experilous.MakeItRandom.RandomDice</codeEntityReference>.
+				</para>
+				<para>
+					If you choose to roll more than just one die, then the toggle
+					buttons for keeping or dropping dice will be enabled.  Note that
+					keeping the highest or lowest is essentially the same as dropping
+					the the lowest or highest, respectively, with the number to drop
+					properly adjusted.
+				</para>
+				<para>
+					When you press the Roll Dice button, the dice will show up
+					on the right.  If you chose to keep some and drop others, then
+					those that are kept will be listed first, while those that are
+					dropped will be listed last and shaded red.
+				</para>
+			</content>
+		</section>
+		<section address="strings">
+			<title>Strings</title>
+			<content>
+				<para>
+					A web demo of this example can be found
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Random Strings Online WebGL Demo</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/example/strings/</linkUri>
+					</externalLink>.
+				</para>
+				<mediaLink>
+					<caption placement="after">The "Strings.unity" demo scene.</caption>
+					<image placement="center" xlink:href="strings-demo-scene"/>
+				</mediaLink>
+				<para>
+					The strings scene demonstrates generating random strings based
+					on various character sets and other patterns, using the functions available in
+					<codeEntityReference>T:Experilous.MakeItRandom.RandomString</codeEntityReference>.
+				</para>
+				<para>
+					The buttons at the bottom let you generate random strings,
+					and represent the various built-in character sets and
+					patterns (though you may supply your own character sets also).
+				</para>
+				<para>
+					For any character set that includes Latin alphabetic characters
+					use the upper and lower case toggles if you wish to force only
+					one type of casing.
+				</para>
+				<para>
+					Spacing represents the ability to insert a particular separator
+					character into the random string with a certain probability,
+					but never with two separators in a row, or at the beginning or
+					end.  (Note that identifiers use underscores instead, and
+					alter the rules a bit at the beginning of each string.)
+				</para>
+			</content>
+		</section>
+		<section address="performance">
+			<title>Performance</title>
+			<content>
+				<para>
+					A web demo of this example can be found
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Random Performance Online WebGL Demo</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/example/performance/</linkUri>
+					</externalLink>.
+				</para>
+				<mediaLink>
+					<caption placement="after">The "Performance.unity" demo scene.</caption>
+					<image placement="center" xlink:href="performance-demo-scene"/>
+				</mediaLink>
+				<para>
+					The performance scene demonstrates the speed of various core functions
+					of Make It Random, and offers comparisons to equivalent functions in
+					<codeEntityReference qualifyHint="true">T:UnityEngine.Random</codeEntityReference> and
+					<codeEntityReference qualifyHint="true">T:System.Random</codeEntityReference> when
+					available.
+				</para>
+				<para>
+					To run performance tests, select the random engines you would like
+					to test, and the operations which will be executed using each
+					selected engine.  If you select three engines and eight operations,
+					then when you press the Measure Performance button, the program
+					will do a total of 3 &#215; 8 or 24 tests.
+				</para>
+				<para>
+					Each test will spend as much time as is specified by the Measurement
+					Duration slider, attempting to execute as many iterations of the
+					operation being tested as possible before that duration of time is
+					used up.  Before each actual measured test, it will also go through
+					the same process for the amount of time specified by the Warmup
+					Duration slider, but without actually measuring time.  This helps
+					to avoid any inaccuracies caused by cold caches.
+				</para>
+				<para>
+					Results will be listed on the right, indicating the name of the
+					random engine, the operation that was performed, and the average
+					number of operations per second that were able to be executed.
+					You may cancel at any time by hitting the same button that
+					started the testing.  A progress bar below the button will
+					show overall progress.
+					<alert class="note">
+					  	<para>
+					  		Note that when executing tests of Unity's random engine,
+					  		the progress bar will not update, and the user interface
+					  		will not be responsive.  This is because Unity's random
+					  		functions must be called on the main thread, and for
+					  		accuracy reasons, the test cannot be distributed over
+					  		multiple frames.  All other random engines are free to
+					  		execute on any thread, and so performance tests are done
+					  		in a background thread to keep things responsive.
+					  	</para>
+					</alert>
+				</para>
+				<alert class="note">
+					<para>
+						Keep the toggle to Use Native Calls When Available checked if
+						you want to compare performance of Make It Random engines to
+						<codeEntityReference qualifyHint="true">T:UnityEngine.Random</codeEntityReference> and
+						<codeEntityReference qualifyHint="true">T:System.Random</codeEntityReference>.
+						The performance results on the right will indicate in parentheses
+						what actual method or property was used to generate the results.
+						If this toggle button is unchecked, then these two engines
+						will simply be used to (inefficiently) generate random bits
+						which are fed to all the advanced functions to generate the final
+						data, just like with any other random engine, and their performance
+						will inevitably be worse.
+					</para>
+				</alert>
+				<alert class="important">
+				  	<para>
+				  		Running this scene from the editor can be mildly informative,
+				  		but be sure to create a full build for your target platform
+				  		to get solid information, if you're looking to evaluate which
+				  		random engine is best for your particular circumstances.
+				  	</para>
+				</alert>
+			</content>
+		</section>
+	</developerConceptualDocument>
+</topic>

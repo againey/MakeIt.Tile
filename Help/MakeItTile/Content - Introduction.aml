@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="327c9325-40d7-4d24-a5d2-99da4936d7e0" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				Welcome to the Make It Random User's Manual.  This document will
+				assist in integrating this collection of random number generation
+				utilities into your Unity project.
+			</para>
+			<alert type="note">
+				<para>
+					An online version of this documentation is available
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Make It Random Online User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/documentation/html/cb0daf55-236d-4175-aedc-48751c1d0964.htm</linkUri>
+					</externalLink>,
+					and a downloadable archive for offline use can be acquired
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Make It Random Downloadable User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/documentation/archive</linkUri>
+					</externalLink>.
+				</para>
+			</alert>
+		</summary>
+		<introduction>
+			<autoOutline />
+		</introduction>
+		<section address="offer">
+			<title>What does Make It Random offer?</title>
+			<content>
+				<para>
+					Make It Random is a fast, flexible, extensible, and feature rich
+					random number generation library for Unity.  It provides classes
+					and functions, accessible from scripts, for generating random
+					data of various sorts, including:
+				</para>
+				<list class="bullet">
+					<listItem><codeEntityReference linkText="bits">T:Experilous.MakeItRandom.RandomBits</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="integers">T:Experilous.MakeItRandom.RandomInteger</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="floating point numbers">T:Experilous.MakeItRandom.RandomFloatingPoint</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="angles">T:Experilous.MakeItRandom.RandomAngle</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="vectors and quaternions">T:Experilous.MakeItRandom.RandomGeometry</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="strings">T:Experilous.MakeItRandom.RandomString</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="dice rolls">T:Experilous.MakeItRandom.RandomDice</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="colors">T:Experilous.MakeItRandom.RandomColor</codeEntityReference> (includes the full Make It Colorful library!)</listItem>
+				</list>
+				<para>
+					In addition to simply generating random data, it also includes
+					utilities for the following (with support for non-uniform weights,
+					where applicable):
+				</para>
+				<list class="bullet">
+					<listItem><codeEntityReference linkText="evaluating probabilities">T:Experilous.MakeItRandom.RandomChance</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="selecting elements from a list">T:Experilous.MakeItRandom.RandomListAccess</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="selecting values from an enumeration">T:Experilous.MakeItRandom.RandomEnum</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="selecting values from the set {-1, 0, +1}">T:Experilous.MakeItRandom.RandomSignOrZero</codeEntityReference></listItem>
+					<listItem><codeEntityReference linkText="shuffling a list">T:Experilous.MakeItRandom.RandomShuffle</codeEntityReference></listItem>
+				</list>
+				<alert type="note">
+					<para>
+						A basic version of Make It Random is available if you only need
+						the core generation features. Documentation can be found online
+						<externalLink>
+							<linkText>here</linkText>
+							<linkAlternateText>Make It Random Basic Online User's Manual at experilous.com</linkAlternateText>
+							<linkUri>http://experilous.com/1/product/make-it-random-basic/1.0/documentation/html/cb0daf55-236d-4175-aedc-48751c1d0964.htm</linkUri>
+						</externalLink>,
+						and the library can be acquired on the
+						<externalLink>
+							<linkText>Unity Asset Store</linkText>
+							<linkAlternateText>Make It Random Basic on the Unity Asset Store</linkAlternateText>
+							<linkUri>https://www.assetstore.unity3d.com/#!/content/72589</linkUri>
+						</externalLink>.
+					</para>
+				</alert>
+			</content>
+		</section>
+		<section address="organized">
+			<title>How is Make It Random organized?</title>
+			<content>
+				<para>
+					The foundation of Make It Random is the concept of a
+					<link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#global-instance">Random Engine</link>,
+					an object providing the basic services of a pseudo-random number
+					generator (PRGN), responsible for generating a deterministic
+					sequence of seemingly random bits initialized by a seed value.
+					Unlike <codeEntityReference qualifyHint="true">T:UnityEngine.Random</codeEntityReference>, Make It Random
+					engines are standard non-static classes which can be passed around,
+					copied, and serialized.  Multiple instances can exist simultaneously
+					and independently, making it easier to control deterministic behavior
+					when it is needed.  (A <link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#global-instance">static global instance</link>
+					does exist for convenience, however.)
+				</para>
+				<para>
+					On top of random engines, a wide variety of extension methods
+					are available for using the random bits they generate to produce
+					all of the more structured and complex data typically required
+					by games.  Because they are extension methods which apply to the
+					<codeEntityReference qualifyHint="true">T:Experilous.MakeItRandom.IRandom</codeEntityReference>
+					interface which all Make It Random engines implement, it is easy
+					to add further extension methods that will immediately become
+					usable by any random engine type.  Similarly, if for some reason
+					none of the <link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#implementations">random engines</link>
+					supplied by Make It Random are suitable and you need to create your own,
+					just make sure it implements <codeEntityReference qualifyHint="false">T:Experilous.MakeItRandom.IRandom</codeEntityReference>
+					and your new engine will automatically support all of the already existing utilities.
+					(See <link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#making-your-own">Making Your Own Random Engine</link> for more information.)
+				</para>
+			</content>
+		</section>
+		<section address="using">
+			<title>Using Make It Random</title>
+			<content>
+				<para>
+					The first step in using Make It Random is to select a
+					<link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#implementations">random engine</link>
+					and create an instance of it.  <codeEntityReference>T:Experilous.MakeItRandom.XorShift128Plus</codeEntityReference>
+					is recommended as an excellent default choice.  A simple call to
+					<codeEntityReference>M:Experilous.MakeItRandom.XorShift128Plus.Create</codeEntityReference> will return
+					a fully initialized instance, already randomized based on the
+					system time and other dynamic factors.
+				</para>
+				<para>
+					Using that created instance, you can now call any of the numerous
+					extension methods, depending on your needs.  Here are some examples:
+				</para>
+				<code language="C#" title="Make It Random Usage Examples">
+					<![CDATA[
+						// Initialize random engine
+						var random = XorShift128Plus.Create();
+						
+						// Generate an integer where 1 <= n <= 10
+						int num1to10 = random.RangeCC(1, 10);
+						
+						// Generate a number where 0 <= n < 1
+						float num0to1 = random.FloatCO();
+						
+						// Flip a coin
+						bool heads = random.Chance();
+						
+						// Check a 3 in 10 probability
+						bool criticalHit = random.Probability(3, 10);
+						
+						// Generate an angle in degrees where -90 < n < +90
+						float angleNeg90toPos90 = random.SignedHalfAngleDegOO();
+						
+						// Generate +1, -1, or 0 where +1 is twice as likely as -1, and 0 is rare
+						int numPNZ = random.SignOrZero(200, 100, 1);
+						
+						// Roll 43 20-sided dice
+						int[] diceRolls = random.RollDice(43, 20);
+						
+						// Roll 5 4-sided dice and just keep the sum
+						int diceRollSum = random.SumRollDice(5, 4);
+						
+						// Shuffle the array of earlier dice rolls
+						random.Shuffle(diceRolls);
+						
+						// Select a random die roll from the array
+						int dieRoll = random.Element(diceRolls);
+						
+						// Select index where higher die rolls are more likely to be picked
+						int dieRollIndex = random.WeightedIndex(diceRolls);
+						
+						// Generate a random 3D unit vector
+						Vector3 direction = random.UnitVector3();
+						
+						// Generate a position within a cirle of radius = 5
+						Vector2 point = random.PointWithinCircle(5f);
+						
+						// Generate a 32-character string with only alpha-numeric characters.
+						string str = random.AlphaNumericString(32);
+						
+						// Make a generator which will produce random font styles.
+						var fontStyleGen = random.MakeEnumGenerator<UnityEngine.FontStyles>();
+						// Generate a font style
+						var style = fontStyleGen.Next();
+						
+						// Pick a random color from the HCY color space
+						var color = random.ColorHCY();
+						// Alter the color's hue randomly by no more than 1/10.
+						color = random.HueShift(color, 0.1f);
+					]]>
+				</code>
+			</content>
+		</section>
+		<relatedTopics>
+			<link xlink:href="0c879b33-6cff-4557-98d1-0794eeb719c8" /> <!-- Example Scenes -->
+			<codeEntityReference linkText="API Reference">R:Project_API_Reference</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>
