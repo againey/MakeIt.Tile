@@ -417,15 +417,13 @@ namespace Experilous.MakeItTile
 
 			FaceAttributeUtility.CalculateFaceEdgeMinAndRangeValues(faces, unnormalizedUVs, faceMinUVs, faceRangeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = AspectRatioUtility.GetFixedRatioRectAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
-				Vector2 uvMin = faceMinUVs[face];
-				Vector2 uvRange = faceRangeUVs[face];
-				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
-				faceMinUVs[face] = uvMin;
-				faceRangeUVs[face] = uvRange;
+				Rect adjusted = aspectRatioPreservationDelegate(new Rect(faceMinUVs[face], faceRangeUVs[face]));
+				faceMinUVs[face] = adjusted.min;
+				faceRangeUVs[face] = adjusted.size;
 			}
 
 			return CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, uvs);
@@ -450,15 +448,13 @@ namespace Experilous.MakeItTile
 
 			FaceAttributeUtility.CalculateCenteredFaceEdgeMinAndRangeValues(faces, unnormalizedEdgeUVs, unnormalizedFaceUVs, faceMinUVs, faceRangeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = AspectRatioUtility.GetFixedRatioRectAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
-				Vector2 uvMin = faceMinUVs[face];
-				Vector2 uvRange = faceRangeUVs[face];
-				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
-				faceMinUVs[face] = uvMin;
-				faceRangeUVs[face] = uvRange;
+				var adjusted = aspectRatioPreservationDelegate(new Rect(faceMinUVs[face], faceRangeUVs[face]));
+				faceMinUVs[face] = adjusted.min;
+				faceRangeUVs[face] = adjusted.size;
 			}
 
 			return CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(faces, faceMinUVs, faceRangeUVs, edgeUVs);
@@ -493,7 +489,7 @@ namespace Experilous.MakeItTile
 		{
 			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedUVs, uvs);
 
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = AspectRatioUtility.GetFixedRatioRectAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -506,13 +502,12 @@ namespace Experilous.MakeItTile
 					uvMax = Geometry.AxisAlignedMax(uvMax, unnormalizedUVs[edge]);
 				}
 
-				var uvRange = uvMax - uvMin;
-				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
-				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+				var adjusted = aspectRatioPreservationDelegate(new Rect(uvMin, uvMax - uvMin));
+				var uvRangeReciprocal = new Vector2(1f / adjusted.width, 1f / adjusted.height);
 
 				foreach (var edge in face.edges)
 				{
-					uvs[edge] = Vector2.Scale(unnormalizedUVs[edge] - uvMin, uvRangeReciprocal);
+					uvs[edge] = Vector2.Scale(unnormalizedUVs[edge] - adjusted.min, uvRangeReciprocal);
 				}
 			}
 
@@ -551,7 +546,7 @@ namespace Experilous.MakeItTile
 		{
 			if (aspectRatioPreservation == AspectRatioPreservation.None) return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, unnormalizedEdgeUVs, edgeUVs);
 
-			var aspectRatioPreservationDelegate = AspectRatioUtility.GetMinAndSizeAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
+			var aspectRatioPreservationDelegate = AspectRatioUtility.GetFixedRatioRectAdjustmentDelegate(aspectRatioPreservation, targetAspectRatio);
 
 			foreach (var face in faces)
 			{
@@ -566,14 +561,12 @@ namespace Experilous.MakeItTile
 
 				var center = unnormalizedFaceUVs[face];
 				var extent = Geometry.AxisAlignedMax(uvMax - center, center - uvMin);
-				uvMin = center - extent;
-				var uvRange = extent * 2f;
-				aspectRatioPreservationDelegate(ref uvMin, ref uvRange);
-				var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+				var adjusted = aspectRatioPreservationDelegate(new Rect(center - extent, extent * 2f));
+				var uvRangeReciprocal = new Vector2(1f / adjusted.width, 1f / adjusted.height);
 
 				foreach (var edge in face.edges)
 				{
-					edgeUVs[edge] = Vector2.Scale(unnormalizedEdgeUVs[edge] - uvMin, uvRangeReciprocal);
+					edgeUVs[edge] = Vector2.Scale(unnormalizedEdgeUVs[edge] - adjusted.min, uvRangeReciprocal);
 				}
 			}
 

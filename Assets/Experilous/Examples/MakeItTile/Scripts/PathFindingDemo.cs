@@ -235,11 +235,9 @@ namespace Experilous.Examples.MakeItTile
 
 			foreach (var face in _topology.faces)
 			{
-				Vector2 uvMin = faceMinUVs[face];
-				Vector2 uvRange = faceRangeUVs[face];
-				AspectRatioUtility.Expand(ref uvMin, ref uvRange, 1f);
-				faceMinUVs[face] = uvMin;
-				faceRangeUVs[face] = uvRange;
+				var adjusted = AspectRatioUtility.Expand(new Rect(faceMinUVs[face], faceRangeUVs[face]), 1f);
+				faceMinUVs[face] = adjusted.min;
+				faceRangeUVs[face] = adjusted.size;
 			}
 
 			_faceOuterEdgeUVs = EdgeAttributeUtility.CalculatePerFaceUniformlyNormalizedUVsFromFaceUVMinAndRange(_topology.faces, faceMinUVs, faceRangeUVs, _faceOuterEdgeUVs);
