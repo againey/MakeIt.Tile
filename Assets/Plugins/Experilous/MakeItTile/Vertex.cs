@@ -458,11 +458,24 @@ namespace Experilous.MakeItTile
 			public override string ToString()
 			{
 				var sb = new System.Text.StringBuilder();
-				sb.AppendFormat("Vertex {0} (", _index);
-				foreach (var edge in edges)
-					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0}), (", edge.farVertex.index);
-				foreach (var edge in edges)
-					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0})", edge.prevFace.index);
+				sb.AppendFormat("Vertex {0}", _index);
+
+				var edge = firstEdge;
+				sb.AppendFormat("; Neighbor Vertices = {{ {0}", edge.farVertex.index);
+				for (int i = 1; i < neighborCount; ++i)
+				{
+					edge = edge.next;
+					sb.AppendFormat(", {0}", edge.farVertex.index);
+				}
+
+				edge = firstEdge;
+				sb.AppendFormat("; Neighbor Faces = {{ {0}", edge.prevFace.index);
+				for (int i = 1; i < neighborCount; ++i)
+				{
+					edge = edge.next;
+					sb.AppendFormat(", {0}", edge.prevFace.index);
+				}
+
 				return sb.ToString();
 			}
 		}
@@ -524,7 +537,12 @@ namespace Experilous.MakeItTile
 				/// </summary>
 				/// <returns>True if it moved to the next valid vertex, or false if there are no more vertices to be enumerated.</returns>
 				public bool MoveNext() { return ++_current < _topology.vertexFirstEdgeIndices.Length; }
-				public void Reset() { throw new NotSupportedException(); }
+
+				/// <summary>
+				/// Resets the enumerator back to its original state, so that another call to <see cref="MoveNext"/>
+				/// have <see cref="Current"/> return the first vertex of the enumerated sequence.
+				/// </summary>
+				public void Reset() { _current = -1; }
 			}
 		}
 
@@ -569,7 +587,10 @@ namespace Experilous.MakeItTile
 	/// <typeparam name="T">The type of the attribute values.</typeparam>
 	public struct VertexAttributeArrayWrapper<T> : IVertexAttribute<T>
 	{
-		public T[] array;
+		/// <summary>
+		/// The array of vertex attribute values that is being wrapped.
+		/// </summary>
+		public readonly T[] array;
 
 		/// <summary>
 		/// Constructs a vertex attribute array wrapper around the given array.
