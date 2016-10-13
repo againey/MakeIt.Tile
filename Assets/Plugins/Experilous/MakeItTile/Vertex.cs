@@ -466,7 +466,7 @@ namespace Experilous.MakeItTile
 			/// Compares the current vertex to the specified vertex to find if they are wrappers around the same vertex.
 			/// </summary>
 			/// <param name="other">The vertex to be compared to the current vertex.</param>
-			/// <returns>Returns true if the specified vertex and the current vertex are both wrapers around the same vertex, and false otherwise.</returns>
+			/// <returns>Returns true if the specified vertex and the current vertex are both wrappers around the same vertex, and false otherwise.</returns>
 			public bool Equals(Vertex other) { return _index == other._index && _topology == other._topology; }
 
 			/// <summary>
@@ -645,7 +645,25 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Returns an indexer of all the vertices in the current topology.  Can be used in <c>foreach</c> loops.
 		/// </summary>
+		/// <seealso cref="enumerableVertices"/>
 		public VerticesIndexer vertices { get { return new VerticesIndexer(this); } }
+
+		/// <summary>
+		/// Returns an enumerable sequence of all the vertices in the current topology.
+		/// Implements <see cref="IEnumerable{Vertex}"/>, for circumstances where
+		/// the actual interface and not just the concept is needed.
+		/// </summary>
+		/// <seealso cref="vertices"/>
+		public IEnumerable<Vertex> enumerableVertices
+		{
+			get
+			{
+				foreach (var vertex in vertices)
+				{
+					yield return vertex;
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -1113,7 +1131,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the array.</typeparam>
 		/// <param name="array">The array to be wrapped.</param>
-		/// <returns>A vertex attribute wrapper around array.</returns>
+		/// <returns>A vertex attribute wrapper around the array.</returns>
 		public static VertexAttributeArrayWrapper<T> AsVertexAttribute<T>(this T[] array)
 		{
 			return new VertexAttributeArrayWrapper<T>(array);

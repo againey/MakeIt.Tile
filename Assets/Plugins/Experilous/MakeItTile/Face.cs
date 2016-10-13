@@ -476,7 +476,7 @@ namespace Experilous.MakeItTile
 			/// Compares the current face to the specified face to find if they are wrappers around the same face.
 			/// </summary>
 			/// <param name="other">The face to be compared to the current face.</param>
-			/// <returns>Returns true if the specified face and the current face are both wrapers around the same face, and false otherwise.</returns>
+			/// <returns>Returns true if the specified face and the current face are both wrappers around the same face, and false otherwise.</returns>
 			public bool Equals(Face other) { return _index == other._index && _topology == other._topology; }
 
 			/// <summary>
@@ -485,7 +485,7 @@ namespace Experilous.MakeItTile
 			/// <param name="other">The other face to compare to the current face.</param>
 			/// <returns>Returns a negative value if the current face is ordered before the specified face, a positive
 			/// value if it is ordered after the specified face, and zero if they are wrappers around the same face.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// <remarks><para>It is assumed that both faces belong to the same topology.
 			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public int CompareTo(Face other) { return _index - other._index; }
 
@@ -494,8 +494,8 @@ namespace Experilous.MakeItTile
 			/// </summary>
 			/// <param name="lhs">The first face to compare.</param>
 			/// <param name="rhs">The second face to compare.</param>
-			/// <returns>Returns true if the two vertices are wrappers around the same face, and false otherwise.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// <returns>Returns true if the two faces are wrappers around the same face, and false otherwise.</returns>
+			/// <remarks><para>It is assumed that both faces belong to the same topology.
 			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator ==(Face lhs, Face rhs) { return lhs._index == rhs._index; }
 
@@ -504,50 +504,50 @@ namespace Experilous.MakeItTile
 			/// </summary>
 			/// <param name="lhs">The first face to compare.</param>
 			/// <param name="rhs">The second face to compare.</param>
-			/// <returns>Returns true if the two vertices are wrappers around two different vertices, and false if they are wrappers around the same face.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// <returns>Returns true if the two faces are wrappers around two different faces, and false if they are wrappers around the same face.</returns>
+			/// <remarks><para>It is assumed that both faces belong to the same topology.
 			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator !=(Face lhs, Face rhs) { return lhs._index != rhs._index; }
 
 			/// <summary>
-			/// Compares the two vertices to determine if the first is ordered before the second.
+			/// Compares the two faces to determine if the first is ordered before the second.
 			/// </summary>
 			/// <param name="lhs">The first face to compare.</param>
 			/// <param name="rhs">The second face to compare.</param>
 			/// <returns>True if the current face is ordered before the specified face, and false otherwise.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// <remarks><para>It is assumed that both faces belong to the same topology.
 			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator < (Face lhs, Face rhs) { return lhs._index <  rhs._index; }
 
 			/// <summary>
-			/// Compares the two vertices to determine if the first is ordered before the second or if they both are wrappers around the same face.
+			/// Compares the two faces to determine if the first is ordered before the second or if they both are wrappers around the same face.
 			/// </summary>
 			/// <param name="lhs">The first face to compare.</param>
 			/// <param name="rhs">The second face to compare.</param>
 			/// <returns>True if the current face is ordered before the specified face or if
 			/// they are both wrappers around the same face, and false otherwise.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// <remarks><para>It is assumed that both faces belong to the same topology.
 			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator <=(Face lhs, Face rhs) { return lhs._index <= rhs._index; }
 
 			/// <summary>
-			/// Compares the two vertices to determine if the first is ordered after the second.
+			/// Compares the two faces to determine if the first is ordered after the second.
 			/// </summary>
 			/// <param name="lhs">The first face to compare.</param>
 			/// <param name="rhs">The second face to compare.</param>
 			/// <returns>True if the current face is ordered after the specified face, and false otherwise.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// <remarks><para>It is assumed that both faces belong to the same topology.
 			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator > (Face lhs, Face rhs) { return lhs._index >  rhs._index; }
 
 			/// <summary>
-			/// Compares the two vertices to determine if the first is ordered after the second or if they both are wrappers around the same face.
+			/// Compares the two faces to determine if the first is ordered after the second or if they both are wrappers around the same face.
 			/// </summary>
 			/// <param name="lhs">The first face to compare.</param>
 			/// <param name="rhs">The second face to compare.</param>
 			/// <returns>True if the current face is ordered after the specified face or if
 			/// they are both wrappers around the same face, and false otherwise.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// <remarks><para>It is assumed that both faces belong to the same topology.
 			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator >=(Face lhs, Face rhs) { return lhs._index >= rhs._index; }
 
@@ -558,7 +558,7 @@ namespace Experilous.MakeItTile
 			public override int GetHashCode() { return _topology.GetHashCode() ^ _index.GetHashCode(); }
 
 			/// <summary>
-			/// Converts the face to string representation, appropriate for diagnositic display.  Includes the face index, and the indices of all neighbor vertices and faces.
+			/// Converts the face to string representation, appropriate for diagnositic display.  Includes the face index, and the indices of all neighbor faces and vertices.
 			/// </summary>
 			/// <returns>A string representation of the face.</returns>
 			public override string ToString()
@@ -587,7 +587,7 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
-		/// An indexer of the faces in a topology, used for enumerating vertices.  Satisfies the concept
+		/// An indexer of the faces in a topology, used for enumerating faces.  Satisfies the concept
 		/// of <see cref="IEnumerable{Face}"/>, enabling it to be used in <c>foreach</c> loops.
 		/// </summary>
 		public struct FacesIndexer
@@ -646,7 +646,7 @@ namespace Experilous.MakeItTile
 				/// <summary>
 				/// Constructs an instance of a face enumerator, given a topology containing the faces and the range of faces to enumerate.
 				/// </summary>
-				/// <param name="topology">The topology to which the enumerated vertices belong.</param>
+				/// <param name="topology">The topology to which the enumerated faces belong.</param>
 				/// <param name="first">The index of the first face to be enumerated.</param>
 				/// <param name="last">The index one past the last face to be enumerated.</param>
 				public FaceEnumerator(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; _current = _first - 1; }
@@ -1273,7 +1273,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the array.</typeparam>
 		/// <param name="array">The array to be wrapped.</param>
-		/// <returns>A face attribute wrapper around array.</returns>
+		/// <returns>A face attribute wrapper around the array.</returns>
 		public static FaceAttributeArrayWrapper<T> AsFaceAttribute<T>(this T[] array)
 		{
 			return new FaceAttributeArrayWrapper<T>(array);
