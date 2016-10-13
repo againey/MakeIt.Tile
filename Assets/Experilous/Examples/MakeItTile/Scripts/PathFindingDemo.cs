@@ -262,7 +262,7 @@ namespace Experilous.Examples.MakeItTile
 				Topology.Face face;
 				do
 				{
-					face = _topology.internalFaces.RandomElement(_random);
+					face = _topology.internalFaces[_random.Index(_topology.internalFaces.Count)];
 				} while (rootFaces.Contains(face));
 				rootFaces.Add(face);
 				foreach (var edge in face.edges)
@@ -318,7 +318,7 @@ namespace Experilous.Examples.MakeItTile
 				});
 
 			_dynamicMesh = DynamicMesh.Create(
-				_topology.internalFaces,
+				_topology.enumerableInternalFaces,
 				DynamicMesh.VertexAttributes.Position |
 				DynamicMesh.VertexAttributes.Normal |
 				DynamicMesh.VertexAttributes.UV1 |
@@ -338,7 +338,7 @@ namespace Experilous.Examples.MakeItTile
 				Topology.Face face;
 				do
 				{
-					face = _topology.internalFaces.RandomElement(_random);
+					face = _topology.internalFaces[_random.Index(_topology.internalFaces.Count)];
 				} while (_faceTerrainIndices[face] == 1 || _faceUnits[face] != null);
 
 				var unit = Instantiate(unitPrefab);

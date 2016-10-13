@@ -316,7 +316,7 @@ namespace Experilous.Examples.MakeItTile
 				});
 
 			_dynamicMesh = DynamicMesh.Create(
-				_topology.internalFaces,
+				_topology.enumerableInternalFaces,
 				DynamicMesh.VertexAttributes.Position |
 				DynamicMesh.VertexAttributes.Normal |
 				DynamicMesh.VertexAttributes.UV,

@@ -124,7 +124,7 @@ namespace Experilous.MakeItTile
 					Topology.Face face;
 					do
 					{
-						face = topology.internalFaces.RandomElement(random);
+						face = topology.internalFaces[random.Index(topology.internalFaces.Count)];
 					} while (rootFaces.Contains(face));
 					rootFaces.Add(face);
 					foreach (var edge in face.edges)

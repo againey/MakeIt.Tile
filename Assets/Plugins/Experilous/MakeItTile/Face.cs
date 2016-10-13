@@ -649,7 +649,7 @@ namespace Experilous.MakeItTile
 				/// <param name="topology">The topology to which the enumerated vertices belong.</param>
 				/// <param name="first">The index of the first face to be enumerated.</param>
 				/// <param name="last">The index one past the last face to be enumerated.</param>
-				public FaceEnumerator(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; _current = -1; }
+				public FaceEnumerator(Topology topology, int first, int last) { _topology = topology; _first = first; _last = last; _current = _first - 1; }
 
 				/// <summary>
 				/// A face wrapper around the current face being enumerated.
@@ -660,13 +660,13 @@ namespace Experilous.MakeItTile
 				/// Updates the enumerator to the next face in the topology.
 				/// </summary>
 				/// <returns>True if it moved to the next valid face, or false if there are no more faces to be enumerated.</returns>
-				public bool MoveNext() { return ++_current < _topology.vertexFirstEdgeIndices.Length; }
+				public bool MoveNext() { return ++_current < _last; }
 
 				/// <summary>
 				/// Resets the enumerator back to its original state, so that another call to <see cref="MoveNext"/>
 				/// will have <see cref="Current"/> return the first face of the enumerated sequence.
 				/// </summary>
-				public void Reset() { _current = -1; }
+				public void Reset() { _current = _first - 1; }
 			}
 		}
 

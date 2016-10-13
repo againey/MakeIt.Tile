@@ -392,7 +392,7 @@ namespace Experilous.MakeItTile
 			switch (sourceType)
 			{
 				case SourceType.InternalFaces:
-					dynamicMesh = DynamicMesh.Create(topology.internalFaces, vertexAttributes, triangulationInstance, maxVerticesPerSubmesh);
+					dynamicMesh = DynamicMesh.Create(topology.enumerableInternalFaces, vertexAttributes, triangulationInstance, maxVerticesPerSubmesh);
 					break;
 				case SourceType.FaceGroupCollection:
 					dynamicMesh = DynamicMesh.Create(faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>(), vertexAttributes, triangulationInstance, maxVerticesPerSubmesh);
