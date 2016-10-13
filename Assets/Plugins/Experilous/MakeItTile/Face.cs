@@ -260,8 +260,8 @@ namespace Experilous.MakeItTile
 				return edge = FindOuterFaceEdge(face);
 			}
 
-			public override bool Equals(object other) { return other is Face && _index == ((Face)other)._index; }
-			public bool Equals(Face other) { return _index == other._index; }
+			public override bool Equals(object other) { return other is Face && _index == ((Face)other)._index && _topology == ((Face)other)._topology; }
+			public bool Equals(Face other) { return _index == other._index && _topology == other._topology; }
 			public int CompareTo(Face other) { return _index - other._index; }
 			public static bool operator ==(Face lhs, Face rhs) { return lhs._index == rhs._index; }
 			public static bool operator !=(Face lhs, Face rhs) { return lhs._index != rhs._index; }
@@ -269,7 +269,7 @@ namespace Experilous.MakeItTile
 			public static bool operator > (Face lhs, Face rhs) { return lhs._index >  rhs._index; }
 			public static bool operator <=(Face lhs, Face rhs) { return lhs._index <= rhs._index; }
 			public static bool operator >=(Face lhs, Face rhs) { return lhs._index >= rhs._index; }
-			public override int GetHashCode() { return _index.GetHashCode(); }
+			public override int GetHashCode() { return _topology.GetHashCode() ^ _index.GetHashCode(); }
 
 			public override string ToString()
 			{

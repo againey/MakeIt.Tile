@@ -420,18 +420,14 @@ namespace Experilous.MakeItTile
 			/// </summary>
 			/// <param name="other">The object to be compared to the current vertex.</param>
 			/// <returns>Returns true if the specified object is an instance of <see cref="Vertex"/>, and both it and the current vertex are wrappers around the same vertex, and false otherwise.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
-			/// If they do not, then the behavior of this function is undefined.</para></remarks>
-			public override bool Equals(object other) { return other is Vertex && _index == ((Vertex)other)._index; }
+			public override bool Equals(object other) { return other is Vertex && _index == ((Vertex)other)._index && _topology == ((Vertex)other)._topology; }
 
 			/// <summary>
 			/// Compares the current vertex to the specified vertex to find if they are wrappers around the same vertex.
 			/// </summary>
 			/// <param name="other">The vertex to be compared to the current vertex.</param>
 			/// <returns>Returns true if the specified vertex and the current vertex are both wrapers around the same vertex, and false otherwise.</returns>
-			/// <remarks><para>It is assumed that both vertices belong to the same topology.
-			/// If they do not, then the behavior of this function is undefined.</para></remarks>
-			public bool Equals(Vertex other) { return _index == other._index; }
+			public bool Equals(Vertex other) { return _index == other._index && _topology == other._topology; }
 
 			/// <summary>
 			/// Compares the current vertex to the specified vertex.
@@ -508,11 +504,8 @@ namespace Experilous.MakeItTile
 			/// <summary>
 			/// Calculates a 32-bit integer hash code for the current vertex.
 			/// </summary>
-			/// <returns>A 32-bit signed integer hash code based on the index of the current vertex.</returns>
-			/// <remarks><para>This hash code does not take into account the topology to which the vertex
-			/// belongs.  Therefore, it is not intended to be used in any situation that involves vertices
-			/// from multiple topologies.</para></remarks>
-			public override int GetHashCode() { return _index.GetHashCode(); }
+			/// <returns>A 32-bit signed integer hash code based on the owning topology and index of the current vertex.</returns>
+			public override int GetHashCode() { return _topology.GetHashCode() ^ _index.GetHashCode(); }
 
 			/// <summary>
 			/// Converts the vertex to string representation, appropriate for diagnositic display.  Includes the vertex index, and the indices of all neighbor vertices and faces.

@@ -133,14 +133,14 @@ namespace Experilous.MakeItTile
 			public override bool Equals(object other)
 			{
 				return
-					other is HalfEdge && _index == ((HalfEdge)other)._index ||
-					other is VertexEdge && _index == ((VertexEdge)other).index ||
-					other is FaceEdge && _index == ((FaceEdge)other).index;
+					other is HalfEdge && _index == ((HalfEdge)other)._index && _topology == ((HalfEdge)other)._topology ||
+					other is VertexEdge && _index == ((VertexEdge)other).index && _topology == ((VertexEdge)other).topology ||
+					other is FaceEdge && _index == ((FaceEdge)other).index && _topology == ((FaceEdge)other).topology;
 			}
 
-			public override int GetHashCode() { return _index.GetHashCode(); }
+			public override int GetHashCode() { return _topology.GetHashCode() ^ _index.GetHashCode(); }
 
-			public bool Equals(HalfEdge other) { return _index == other._index; }
+			public bool Equals(HalfEdge other) { return _index == other._index && _topology == other._topology; }
 			public int CompareTo(HalfEdge other) { return _index - other._index; }
 			public static bool operator ==(HalfEdge lhs, HalfEdge rhs) { return lhs._index == rhs._index; }
 			public static bool operator !=(HalfEdge lhs, HalfEdge rhs) { return lhs._index != rhs._index; }
@@ -149,7 +149,7 @@ namespace Experilous.MakeItTile
 			public static bool operator <=(HalfEdge lhs, HalfEdge rhs) { return lhs._index <= rhs._index; }
 			public static bool operator >=(HalfEdge lhs, HalfEdge rhs) { return lhs._index >= rhs._index; }
 
-			public bool Equals(VertexEdge other) { return _index == other.index; }
+			public bool Equals(VertexEdge other) { return _index == other.index && _topology == other.topology; }
 			public int CompareTo(VertexEdge other) { return _index - other.index; }
 			public static bool operator ==(HalfEdge lhs, VertexEdge rhs) { return lhs._index == rhs.index; }
 			public static bool operator !=(HalfEdge lhs, VertexEdge rhs) { return lhs._index != rhs.index; }
@@ -158,7 +158,7 @@ namespace Experilous.MakeItTile
 			public static bool operator <=(HalfEdge lhs, VertexEdge rhs) { return lhs._index <= rhs.index; }
 			public static bool operator >=(HalfEdge lhs, VertexEdge rhs) { return lhs._index >= rhs.index; }
 
-			public bool Equals(FaceEdge other) { return _index == other.index; }
+			public bool Equals(FaceEdge other) { return _index == other.index && _topology == other.topology; }
 			public int CompareTo(FaceEdge other) { return _index - other.index; }
 			public static bool operator ==(HalfEdge lhs, FaceEdge rhs) { return lhs._index == rhs.index; }
 			public static bool operator !=(HalfEdge lhs, FaceEdge rhs) { return lhs._index != rhs.index; }
@@ -244,14 +244,7 @@ namespace Experilous.MakeItTile
 
 			public static implicit operator bool(VertexEdge edge) { return edge._halfEdge; }
 
-			public override bool Equals(object other)
-			{
-				return
-					other is HalfEdge && index == ((HalfEdge)other).index ||
-					other is VertexEdge && index == ((VertexEdge)other).index ||
-					other is FaceEdge && index == ((FaceEdge)other).index;
-			}
-
+			public override bool Equals(object other) { return _halfEdge.Equals(other); }
 			public override int GetHashCode() { return _halfEdge.GetHashCode(); }
 
 			public bool Equals(HalfEdge other) { return _halfEdge.Equals(other); }
@@ -358,14 +351,7 @@ namespace Experilous.MakeItTile
 
 			public static implicit operator bool(FaceEdge edge) { return edge._halfEdge; }
 
-			public override bool Equals(object other)
-			{
-				return
-					other is HalfEdge && index == ((HalfEdge)other).index ||
-					other is VertexEdge && index == ((VertexEdge)other).index ||
-					other is FaceEdge && index == ((FaceEdge)other).index;
-			}
-
+			public override bool Equals(object other) { return _halfEdge.Equals(other); }
 			public override int GetHashCode() { return _halfEdge.GetHashCode(); }
 
 			public bool Equals(HalfEdge other) { return _halfEdge.Equals(other); }
