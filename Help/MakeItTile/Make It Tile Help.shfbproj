@@ -80,8 +80,10 @@
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />
 <Filter entryType="Namespace" fullName="Experilous" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Containers" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Core" isExposed="False" />
+<Filter entryType="Namespace" fullName="Experilous.Core" isExposed="True">
+  <Filter entryType="Class" fullName="Experilous.Core.GameObjectHierarchy" filterName="GameObjectHierarchy" isExposed="False" />
+  <Filter entryType="Class" fullName="Experilous.Core.RenderTargetFileSaver" filterName="RenderTargetFileSaver" isExposed="False" />
+</Filter>
 <Filter entryType="Namespace" fullName="Experilous.Examples.MakeItColorful" isExposed="False" />
 <Filter entryType="Namespace" fullName="Experilous.Examples.MakeItRandom" isExposed="False" />
 <Filter entryType="Namespace" fullName="Experilous.Examples.MakeItTile" isExposed="False" />
@@ -92,7 +94,6 @@
 <Filter entryType="Namespace" fullName="Experilous.MakeItGenerate" isExposed="False" />
 <Filter entryType="Namespace" fullName="Experilous.MakeItRandom.Detail" isExposed="False" />
 <Filter entryType="Namespace" fullName="Experilous.MakeItWrap" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Numerics" isExposed="False" />
 <Filter entryType="Namespace" fullName="UnityEditor" isExposed="True">
   <Filter entryType="Class" fullName="UnityEditor.Editor" filterName="Editor" isExposed="False" />
   <Filter entryType="Class" fullName="UnityEditor.EditorWindow" filterName="EditorWindow" isExposed="False" />
