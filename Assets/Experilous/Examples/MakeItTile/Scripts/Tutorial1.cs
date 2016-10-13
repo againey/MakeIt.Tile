@@ -264,7 +264,7 @@ namespace Experilous.Examples.MakeItTile
 
 		private float Cost(Topology.FaceEdge edge, int pathLength)
 		{
-			if (edge.farFace.isInternal && _faceBlockedStates[edge.farFace] == false)
+			if (edge.face.isInternal && _faceBlockedStates[edge] == false)
 			{
 				return 1f;
 			}
@@ -301,9 +301,9 @@ namespace Experilous.Examples.MakeItTile
 					{
 						foreach (var edge in visitor.face.edges)
 						{
-							if (edge.farFace.isInternal)
+							if (edge.face.isInternal)
 							{
-								visitor.VisitNeighbor(edge.farFace);
+								visitor.VisitNeighbor(edge.face);
 							}
 						}
 					}

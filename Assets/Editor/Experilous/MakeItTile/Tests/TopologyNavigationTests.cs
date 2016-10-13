@@ -38,24 +38,24 @@ namespace Experilous.MakeItTile.Tests
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var face = topology.faces[surface.GetFaceIndex(1, 1)];
-			var neighborFaceEdges = face.outerVertexEdges.GetEnumerator();
+			var neighborFaceEdges = face.outerFaceEdges.GetEnumerator();
 
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(1, 0), neighborFaceEdges.Current.prevFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(1, 0), neighborFaceEdges.Current.face.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(0, 0), neighborFaceEdges.Current.prevFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(0, 0), neighborFaceEdges.Current.face.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(0, 1), neighborFaceEdges.Current.prevFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(0, 1), neighborFaceEdges.Current.face.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(0, 2), neighborFaceEdges.Current.prevFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(0, 2), neighborFaceEdges.Current.face.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(1, 2), neighborFaceEdges.Current.prevFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(1, 2), neighborFaceEdges.Current.face.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(2, 2), neighborFaceEdges.Current.prevFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(2, 2), neighborFaceEdges.Current.face.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(2, 1), neighborFaceEdges.Current.prevFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(2, 1), neighborFaceEdges.Current.face.index);
 			Assert.True(neighborFaceEdges.MoveNext());
-			Assert.AreEqual(surface.GetFaceIndex(2, 0), neighborFaceEdges.Current.prevFace.index);
+			Assert.AreEqual(surface.GetFaceIndex(2, 0), neighborFaceEdges.Current.face.index);
 			Assert.False(neighborFaceEdges.MoveNext());
 		}
 
@@ -86,24 +86,24 @@ namespace Experilous.MakeItTile.Tests
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var vertex = topology.vertices[surface.GetVertexIndex(1, 1)];
-			var neighborVertexEdges = vertex.outerFaceEdges.GetEnumerator();
+			var neighborVertexEdges = vertex.outerVertexEdges.GetEnumerator();
 
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(0, 0), neighborVertexEdges.Current.nextVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(0, 0), neighborVertexEdges.Current.vertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(0, 1), neighborVertexEdges.Current.nextVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(0, 1), neighborVertexEdges.Current.vertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(0, 2), neighborVertexEdges.Current.nextVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(0, 2), neighborVertexEdges.Current.vertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(1, 2), neighborVertexEdges.Current.nextVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(1, 2), neighborVertexEdges.Current.vertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(2, 2), neighborVertexEdges.Current.nextVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(2, 2), neighborVertexEdges.Current.vertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(2, 1), neighborVertexEdges.Current.nextVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(2, 1), neighborVertexEdges.Current.vertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(2, 0), neighborVertexEdges.Current.nextVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(2, 0), neighborVertexEdges.Current.vertex.index);
 			Assert.True(neighborVertexEdges.MoveNext());
-			Assert.AreEqual(surface.GetVertexIndex(1, 0), neighborVertexEdges.Current.nextVertex.index);
+			Assert.AreEqual(surface.GetVertexIndex(1, 0), neighborVertexEdges.Current.vertex.index);
 			Assert.False(neighborVertexEdges.MoveNext());
 		}
 	}

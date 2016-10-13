@@ -25,20 +25,20 @@ namespace Experilous.MakeItTile
 
 		public override Vector3 this[Topology.HalfEdge e]
 		{
-			get { return surface.OffsetEdgeToVertAttribute(array[e.farVertex.index], e.wrap); }
-			set { array[e.farVertex.index] = surface.ReverseOffsetEdgeToVertAttribute(array[e.farVertex.index], e.wrap); }
+			get { return surface.OffsetEdgeToVertAttribute(array[e.vertex.index], e.wrap); }
+			set { array[e.vertex.index] = surface.ReverseOffsetEdgeToVertAttribute(array[e.vertex.index], e.wrap); }
 		}
 
 		public override Vector3 this[Topology.VertexEdge e]
 		{
-			get { return surface.OffsetVertToVertAttribute(array[e.farVertex.index], e.wrap); }
-			set { array[e.farVertex.index] = surface.ReverseOffsetVertToVertAttribute(array[e.farVertex.index], e.wrap); }
+			get { return surface.OffsetVertToVertAttribute(array[e.vertex.index], e.wrap); }
+			set { array[e.vertex.index] = surface.ReverseOffsetVertToVertAttribute(array[e.vertex.index], e.wrap); }
 		}
 
 		public override Vector3 this[Topology.FaceEdge e]
 		{
-			get { return surface.OffsetFaceToVertAttribute(array[e.nextVertex.index], e.wrap); }
-			set { array[e.nextVertex.index] = surface.ReverseOffsetFaceToVertAttribute(array[e.nextVertex.index], e.wrap); }
+			get { return surface.OffsetFaceToVertAttribute(array[e.vertex.index], e.wrap); }
+			set { array[e.vertex.index] = surface.ReverseOffsetFaceToVertAttribute(array[e.vertex.index], e.wrap); }
 		}
 	}
 }

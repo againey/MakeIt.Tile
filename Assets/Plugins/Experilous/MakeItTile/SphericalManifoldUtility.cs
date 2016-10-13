@@ -327,7 +327,7 @@ namespace Experilous.MakeItTile
 				var multiplier = Mathf.Sqrt(idealArea / vertexAreas[vertex]);
 				foreach (var edge in vertex.edges)
 				{
-					var neighborVertex = edge.farVertex;
+					var neighborVertex = edge.vertex;
 					var neighborRelativeCenter = vertexPositions[edge.twin];
 					relaxedVertexPositions[neighborVertex] += (vertexPositions[neighborVertex] - neighborRelativeCenter) * multiplier + neighborRelativeCenter;
 				}
@@ -369,15 +369,15 @@ namespace Experilous.MakeItTile
 					var center = vertexPositions[vertex];
 					var surfaceNormal = surface.GetNormal(center);
 					var edge = vertex.firstEdge;
-					var p0 = vertexPositions[edge.farVertex];
+					var p0 = vertexPositions[edge];
 					edge = edge.next;
-					var p1 = vertexPositions[edge.farVertex];
+					var p1 = vertexPositions[edge];
 					edge = edge.next;
 					var centroid0 = (center + p0 + p1) / 3f;
 					var firstEdge = edge;
 					do
 					{
-						var p2 = vertexPositions[edge.farVertex];
+						var p2 = vertexPositions[edge];
 						var centroid1 = (center + p1 + p2) / 3f;
 						var normal = Vector3.Cross(centroid0 - center, centroid1 - center);
 						if (Vector3.Dot(normal, surfaceNormal) < 0f) goto repair;
@@ -394,7 +394,7 @@ namespace Experilous.MakeItTile
 					edge = firstEdge;
 					do
 					{
-						average += vertexPositions[edge.farVertex];
+						average += vertexPositions[edge];
 						edge = edge.next;
 					} while (edge != firstEdge);
 					average /= vertex.neighborCount;

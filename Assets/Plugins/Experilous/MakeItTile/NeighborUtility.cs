@@ -13,7 +13,7 @@ namespace Experilous.MakeItTile
 		{
 			foreach (var edge in vertex.edges)
 			{
-				yield return edge.farVertex;
+				yield return edge.vertex;
 			}
 		}
 
@@ -21,15 +21,15 @@ namespace Experilous.MakeItTile
 		{
 			foreach (var edge in vertex.edges)
 			{
-				yield return edge.prevFace;
+				yield return edge.face;
 			}
 		}
 
 		public static IEnumerator<Topology.Vertex> FaceAdjacentVertices(Topology.Vertex vertex)
 		{
-			foreach (var edge in vertex.outerFaceEdges)
+			foreach (var edge in vertex.outerVertexEdges)
 			{
-				yield return edge.nextVertex;
+				yield return edge.vertex;
 			}
 		}
 
@@ -37,7 +37,7 @@ namespace Experilous.MakeItTile
 		{
 			foreach (var edge in face.edges)
 			{
-				yield return edge.farFace;
+				yield return edge.face;
 			}
 		}
 
@@ -45,15 +45,15 @@ namespace Experilous.MakeItTile
 		{
 			foreach (var edge in face.edges)
 			{
-				yield return edge.nextVertex;
+				yield return edge.vertex;
 			}
 		}
 
 		public static IEnumerator<Topology.Face> VertexAdjacentFaces(Topology.Face face)
 		{
-			foreach (var edge in face.outerVertexEdges)
+			foreach (var edge in face.outerFaceEdges)
 			{
-				yield return edge.prevFace;
+				yield return edge.face;
 			}
 		}
 	}

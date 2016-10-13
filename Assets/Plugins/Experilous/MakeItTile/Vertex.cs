@@ -74,7 +74,7 @@ namespace Experilous.MakeItTile
 				get
 				{
 					foreach (var edge in edges)
-						if (edge.prevFace.isExternal)
+						if (edge.face.isExternal)
 							return true;
 					return false;
 				}
@@ -154,7 +154,7 @@ namespace Experilous.MakeItTile
 
 					/// <summary>
 					/// Resets the enumerator back to its original state, so that another call to <see cref="MoveNext"/>
-					/// have <see cref="Current"/> return the first vertex edge of the enumerated sequence.
+					/// will have <see cref="Current"/> return the first vertex edge of the enumerated sequence.
 					/// </summary>
 					public void Reset()
 					{
@@ -180,64 +180,87 @@ namespace Experilous.MakeItTile
 			public VertexEdgesIndexer edges { get { return new VertexEdgesIndexer(_topology, _index); } }
 
 			/// <summary>
-			/// An indexer of a vertex's outer face edges, used for enumerating those edges.  Satisfies the concept
-			/// of <see cref="IEnumerable{FaceEdge}"/>, enabling it to be used in <c>foreach</c> loops.
+			/// An indexer of a vertex's outer vertex edges, used for enumerating those edges.  Satisfies the concept
+			/// of <see cref="IEnumerable{VertexEdge}"/>, enabling it to be used in <c>foreach</c> loops.
 			/// </summary>
-			/// <remarks><para>A vertex's outer face edges provide convenient enumeration of all the edges that
+			/// <remarks><para>A vertex's outer vertex edges provide convenient enumeration of all the edges that
 			/// share a face with the vertex but do not come directly from the vertex.  This is particularly useful
-			/// for enumerating all the vertices that share a face with a particular vertex.</para></remarks>
-			public struct OuterFaceEdgesIndexer
+			/// in the situation where the concept of a vertex's neighbors includes every other  vertex that is
+			/// exactly one face away from the vertex, such as the case with square grids which allow diagonal
+			/// movement, where each vertex is treated as though it has eight neighbors.</para></remarks>
+			public struct OuterVertexEdgesIndexer
 			{
 				private Topology _topology;
 				private int _index;
 
-				public OuterFaceEdgesIndexer(Topology topology, int index)
+				/// <summary>
+				/// Constructs an indexer for the vertex in the given topology and with the given index.
+				/// </summary>
+				/// <param name="topology">The topology to which the vertex belongs.</param>
+				/// <param name="index">The index of the vertex.</param>
+				public OuterVertexEdgesIndexer(Topology topology, int index)
 				{
 					_topology = topology;
 					_index = index;
 				}
 
-				public struct OuterFaceEdgeEnumerator
+				/// <summary>
+				/// An enumerator of a vertex's outer edges.  Satisfies the concept of <see cref="IEnumerator{VertexEdge}"/>,
+				/// enabling it to be used in <c>foreach</c> loops.
+				/// </summary>
+				public struct OuterVertexEdgeEnumerator
 				{
 					private Topology _topology;
 					private int _firstVertexEdgeIndex;
-					private int _currentFaceEdgeIndex;
+					private int _currentVertexEdgeIndex;
 					private int _nextFaceEdgeIndex;
 					private int _nextVertexEdgeIndex;
 
-					public OuterFaceEdgeEnumerator(Topology topology, int firstEdgeIndex)
+					/// <summary>
+					/// Constructs an instance of an outer vertex edge enumerator, given a topology and a vertex's first ordinary (non-outer) edge.
+					/// </summary>
+					/// <param name="topology">The topology to which the enumerated vertex edges belong.</param>
+					/// <param name="firstEdgeIndex">The index of the first ordinary (non-outer) edge within a cycle to enumerate.</param>
+					public OuterVertexEdgeEnumerator(Topology topology, int firstEdgeIndex)
 					{
 						_topology = topology;
 						_firstVertexEdgeIndex = topology.edgeData[firstEdgeIndex].twin;
-						_currentFaceEdgeIndex = -1;
+						_currentVertexEdgeIndex = -1;
 						_nextFaceEdgeIndex = _firstVertexEdgeIndex;
 						_nextVertexEdgeIndex = _firstVertexEdgeIndex;
 					}
 
-					public FaceEdge Current { get { return new FaceEdge(_topology, _currentFaceEdgeIndex); } }
+					/// <summary>
+					/// A vertex edge wrapper around the current outer edge being enumerated.
+					/// </summary>
+					public VertexEdge Current { get { return new VertexEdge(_topology, _currentVertexEdgeIndex); } }
 
+					/// <summary>
+					/// Updates the enumerator to the next outer edge in the cycle around the vertex.
+					/// </summary>
+					/// <returns>True if it moved to the next valid edge, or false if there are no more edges to be enumerated.</returns>
 					public bool MoveNext()
 					{
 						if (_nextFaceEdgeIndex != _nextVertexEdgeIndex)
 						{
-							_currentFaceEdgeIndex = _nextFaceEdgeIndex;
-							_nextFaceEdgeIndex = _topology.edgeData[_currentFaceEdgeIndex].fNext;
+							_currentVertexEdgeIndex = _nextFaceEdgeIndex;
+							_nextFaceEdgeIndex = _topology.edgeData[_currentVertexEdgeIndex].fNext;
 							return true;
 						}
-						else if (_nextVertexEdgeIndex != _firstVertexEdgeIndex || _currentFaceEdgeIndex == -1)
+						else if (_nextVertexEdgeIndex != _firstVertexEdgeIndex || _currentVertexEdgeIndex == -1)
 						{
 							do
 							{
 								var twinIndex = _topology.edgeData[_nextVertexEdgeIndex].twin;
-								_currentFaceEdgeIndex = _topology.edgeData[twinIndex].fNext;
+								_currentVertexEdgeIndex = _topology.edgeData[twinIndex].fNext;
 								_nextVertexEdgeIndex = _topology.edgeData[_topology.edgeData[twinIndex].vNext].twin;
-								if (_currentFaceEdgeIndex == _firstVertexEdgeIndex)
+								if (_currentVertexEdgeIndex == _firstVertexEdgeIndex)
 								{
 									_nextFaceEdgeIndex = _nextVertexEdgeIndex = _firstVertexEdgeIndex;
 									return false;
 								}
-							} while (_currentFaceEdgeIndex == _nextVertexEdgeIndex);
-							_nextFaceEdgeIndex = _topology.edgeData[_currentFaceEdgeIndex].fNext;
+							} while (_currentVertexEdgeIndex == _nextVertexEdgeIndex);
+							_nextFaceEdgeIndex = _topology.edgeData[_currentVertexEdgeIndex].fNext;
 							return true;
 						}
 						else
@@ -246,32 +269,50 @@ namespace Experilous.MakeItTile
 						}
 					}
 
+					/// <summary>
+					/// Resets the enumerator back to its original state, so that another call to <see cref="MoveNext"/>
+					/// will have <see cref="Current"/> return the first outer vertex edge of the enumerated sequence.
+					/// </summary>
 					public void Reset()
 					{
-						_currentFaceEdgeIndex = -1;
+						_currentVertexEdgeIndex = -1;
 						_nextFaceEdgeIndex = -1;
 						_nextVertexEdgeIndex = _firstVertexEdgeIndex;
 					}
 				}
 
-				public OuterFaceEdgeEnumerator GetEnumerator()
+				/// <summary>
+				/// Creates an enumerator for the outer vertex edges of the current indexer.
+				/// </summary>
+				/// <returns>An enumerator for the vertex edges of the current indexer.</returns>
+				public OuterVertexEdgeEnumerator GetEnumerator()
 				{
-					return new OuterFaceEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
+					return new OuterVertexEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
 				}
 			}
 
-			public OuterFaceEdgesIndexer outerFaceEdges { get { return new OuterFaceEdgesIndexer(_topology, _index); } }
+			/// <summary>
+			/// Returns an indexer of all the outer vertex edges around the current vertex, which all share a
+			/// near face with the current vertex, but do not have the current vertex as their near vertex.
+			/// Can be used in <c>foreach</c> loops.
+			/// </summary>
+			/// <remarks><para>A vertex's outer vertex edges provide convenient enumeration of all the edges that
+			/// share a face with the vertex but do not come directly from the vertex.  This is particularly useful
+			/// in the situation where the concept of a vertex's neighbors includes every other  vertex that is
+			/// exactly one face away from the vertex, such as the case with square grids which allow diagonal
+			/// movement, where each vertex is treated as though it has eight neighbors.</para></remarks>
+			public OuterVertexEdgesIndexer outerVertexEdges { get { return new OuterVertexEdgesIndexer(_topology, _index); } }
 
 			/// <summary>
 			/// Finds the vertex edge around the current vertex that corresponds to the given face.
 			/// </summary>
 			/// <param name="face">The face for which the corresponding edge is to be found.</param>
-			/// <returns>The vertex edge whose next face is the given face, or an empty edge if the given face is not a neighbor of the current vertex.</returns>
+			/// <returns>The vertex edge whose face is the given face, or an empty edge if the given face is not a neighbor of the current vertex.</returns>
 			public VertexEdge FindEdge(Face face)
 			{
 				foreach (var vertexEdge in edges)
 				{
-					if (vertexEdge.nextFace == face)
+					if (vertexEdge.face == face)
 					{
 						return vertexEdge;
 					}
@@ -283,12 +324,12 @@ namespace Experilous.MakeItTile
 			/// Finds the vertex edge around the current vertex that points to the given vertex.
 			/// </summary>
 			/// <param name="vertex">The vertex for which the corresponding edge is to be found.</param>
-			/// <returns>The vertex edge whose far vertex is the given vertex, or an empty edge if the given vertex is not a neighbor of the current vertex.</returns>
+			/// <returns>The vertex edge whose vertex is the given vertex, or an empty edge if the given vertex is not a neighbor of the current vertex.</returns>
 			public VertexEdge FindEdge(Vertex vertex)
 			{
 				foreach (var vertexEdge in edges)
 				{
-					if (vertexEdge.farVertex == vertex)
+					if (vertexEdge.vertex == vertex)
 					{
 						return vertexEdge;
 					}
@@ -300,7 +341,7 @@ namespace Experilous.MakeItTile
 			/// Tries to find the vertex edge around the current vertex that corresponds to the given face.
 			/// </summary>
 			/// <param name="face">The face for which the corresponding edge is to be found.</param>
-			/// <param name="edge">The vertex edge whose next face is the given face, or an empty edge if the given face is not a neighbor of the current vertex.</param>
+			/// <param name="edge">The vertex edge whose face is the given face, or an empty edge if the given face is not a neighbor of the current vertex.</param>
 			/// <returns>True if the corresponding edge was found, and false if the given face is not a neighbor of the current vertex.</returns>
 			public bool TryFindEdge(Face face, out VertexEdge edge)
 			{
@@ -311,45 +352,67 @@ namespace Experilous.MakeItTile
 			/// Tries to find the vertex edge around the current vertex that points to the given vertex.
 			/// </summary>
 			/// <param name="vertex">The vertex for which the corresponding edge is to be found.</param>
-			/// <param name="edge">The vertex edge whose far vertex is the given vertex, or an empty edge if the given vertex is not a neighbor of the current vertex.</param>
+			/// <param name="edge">The vertex edge whose vertex is the given vertex, or an empty edge if the given vertex is not a neighbor of the current vertex.</param>
 			/// <returns>True if the corresponding edge was found, and false if the given vertex is not a neighbor of the current vertex.</returns>
 			public bool TryFindEdge(Vertex vertex, out VertexEdge edge)
 			{
 				return edge = FindEdge(vertex);
 			}
 
-			public FaceEdge FindOuterFaceEdge(Face face)
+			/// <summary>
+			/// Finds the outer vertex edge around the current vertex that corresponds to the given face.
+			/// </summary>
+			/// <param name="face">The face for which the corresponding edge is to be found.</param>
+			/// <returns>The outer vertex edge whose face is the given face, or an empty edge if no matching edge is found.</returns>
+			public VertexEdge FindOuterVertexEdge(Face face)
 			{
-				foreach (var faceEdge in outerFaceEdges)
+				foreach (var vertexEdge in outerVertexEdges)
 				{
-					if (faceEdge.farFace == face)
+					if (vertexEdge.face == face)
 					{
-						return faceEdge;
+						return vertexEdge;
 					}
 				}
-				return FaceEdge.none;
+				return VertexEdge.none;
 			}
 
-			public FaceEdge FindOuterFaceEdge(Vertex vertex)
+			/// <summary>
+			/// Finds the outer vertex edge around the current vertex that points to the given vertex.
+			/// </summary>
+			/// <param name="vertex">The vertex for which the corresponding edge is to be found.</param>
+			/// <returns>The outer vertex edge whose vertex is the given vertex, or an empty edge if no matching edge is found.</returns>
+			public VertexEdge FindOuterVertexEdge(Vertex vertex)
 			{
-				foreach (var faceEdge in outerFaceEdges)
+				foreach (var vertexEdge in outerVertexEdges)
 				{
-					if (faceEdge.prevVertex == vertex)
+					if (vertexEdge.vertex == vertex)
 					{
-						return faceEdge;
+						return vertexEdge;
 					}
 				}
-				return FaceEdge.none;
+				return VertexEdge.none;
 			}
 
-			public bool TryFindOuterFaceEdge(Face face, out FaceEdge edge)
+			/// <summary>
+			/// Tries to find the outer vertex edge around the current vertex that corresponds to the given face.
+			/// </summary>
+			/// <param name="face">The face for which the corresponding edge is to be found.</param>
+			/// <param name="edge">The outer vertex edge whose face is the given face, or an empty edge if no matching edge is found.</param>
+			/// <returns>True if the corresponding edge was found, and false if no matching edge is found.</returns>
+			public bool TryFindOuterVertexEdge(Face face, out VertexEdge edge)
 			{
-				return edge = FindOuterFaceEdge(face);
+				return edge = FindOuterVertexEdge(face);
 			}
 
-			public bool TryFindOuterFaceEdge(Vertex vertex, out FaceEdge edge)
+			/// <summary>
+			/// Tries to find the outer vertex edge around the current vertex that points to the given vertex.
+			/// </summary>
+			/// <param name="vertex">The vertex for which the corresponding edge is to be found.</param>
+			/// <param name="edge">The outer vertex edge whose vertex is the given vertex, or an empty edge if no matching edge is found.</param>
+			/// <returns>True if the corresponding edge was found, and false if no matching edge is found.</returns>
+			public bool TryFindOuterVertexEdge(Vertex vertex, out VertexEdge edge)
 			{
-				return edge = FindOuterFaceEdge(vertex);
+				return edge = FindOuterVertexEdge(vertex);
 			}
 
 			/// <summary>
@@ -461,19 +524,19 @@ namespace Experilous.MakeItTile
 				sb.AppendFormat("Vertex {0}", _index);
 
 				var edge = firstEdge;
-				sb.AppendFormat("; Neighbor Vertices = {{ {0}", edge.farVertex.index);
+				sb.AppendFormat("; Neighbor Vertices = {{ {0}", edge.vertex.index);
 				for (int i = 1; i < neighborCount; ++i)
 				{
 					edge = edge.next;
-					sb.AppendFormat(", {0}", edge.farVertex.index);
+					sb.AppendFormat(", {0}", edge.vertex.index);
 				}
 
 				edge = firstEdge;
-				sb.AppendFormat("; Neighbor Faces = {{ {0}", edge.prevFace.index);
+				sb.AppendFormat("; Neighbor Faces = {{ {0}", edge.face.index);
 				for (int i = 1; i < neighborCount; ++i)
 				{
 					edge = edge.next;
-					sb.AppendFormat(", {0}", edge.prevFace.index);
+					sb.AppendFormat(", {0}", edge.face.index);
 				}
 
 				return sb.ToString();
@@ -657,8 +720,8 @@ namespace Experilous.MakeItTile
 		/// <returns>The vertex attribute value corresponding to the far vertex of the given edge.</returns>
 		public T this[Topology.HalfEdge e]
 		{
-			get { return array[e.farVertex.index]; }
-			set { array[e.farVertex.index] = value; }
+			get { return array[e.vertex.index]; }
+			set { array[e.vertex.index] = value; }
 		}
 
 		/// <summary>
@@ -668,8 +731,8 @@ namespace Experilous.MakeItTile
 		/// <returns>The vertex attribute value corresponding to the far vertex of the given edge.</returns>
 		public T this[Topology.VertexEdge e]
 		{
-			get { return array[e.farVertex.index]; }
-			set { array[e.farVertex.index] = value; }
+			get { return array[e.vertex.index]; }
+			set { array[e.vertex.index] = value; }
 		}
 
 		/// <summary>
@@ -679,8 +742,8 @@ namespace Experilous.MakeItTile
 		/// <returns>The vertex attribute value corresponding to the next vertex of the given edge.</returns>
 		public T this[Topology.FaceEdge e]
 		{
-			get { return array[e.nextVertex.index]; }
-			set { array[e.nextVertex.index] = value; }
+			get { return array[e.vertex.index]; }
+			set { array[e.vertex.index] = value; }
 		}
 
 		/// <summary>
@@ -977,22 +1040,22 @@ namespace Experilous.MakeItTile
 		/// <inheritdoc/>
 		public override T this[Topology.HalfEdge e]
 		{
-			get { return array[e.farVertex.index]; }
-			set { array[e.farVertex.index] = value; }
+			get { return array[e.vertex.index]; }
+			set { array[e.vertex.index] = value; }
 		}
 
 		/// <inheritdoc/>
 		public override T this[Topology.VertexEdge e]
 		{
-			get { return array[e.farVertex.index]; }
-			set { array[e.farVertex.index] = value; }
+			get { return array[e.vertex.index]; }
+			set { array[e.vertex.index] = value; }
 		}
 
 		/// <inheritdoc/>
 		public override T this[Topology.FaceEdge e]
 		{
-			get { return array[e.nextVertex.index]; }
-			set { array[e.nextVertex.index] = value; }
+			get { return array[e.vertex.index]; }
+			set { array[e.vertex.index] = value; }
 		}
 
 		/// <inheritdoc/>

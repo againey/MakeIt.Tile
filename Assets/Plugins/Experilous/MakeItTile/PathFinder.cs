@@ -586,25 +586,25 @@ namespace Experilous.MakeItTile
 
 				foreach (var edge in vertex.edges)
 				{
-					if (_closedSet.ContainsKey(edge.farVertex.index)) continue;
+					if (_closedSet.ContainsKey(edge.vertex.index)) continue;
 
 					var g = node._g + cost(edge, node._length);
 
 					if (!float.IsPositiveInfinity(g))
 					{
 						Node neighborNode;
-						if (!_openSet.TryGetValue(edge.farVertex.index, out neighborNode))
+						if (!_openSet.TryGetValue(edge.vertex.index, out neighborNode))
 						{
-							var h = costHeuristic(edge.farVertex, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farVertex.index, edge.index, node._elementIndex, node._length + 1);
+							var h = costHeuristic(edge.vertex, target, node._length);
+							neighborNode = new Node(g + h, g, h, edge.vertex.index, edge.index, node._elementIndex, node._length + 1);
 							_queue.Push(neighborNode);
-							_openSet.Add(edge.farVertex.index, neighborNode);
+							_openSet.Add(edge.vertex.index, neighborNode);
 						}
 						else if (g < neighborNode._g)
 						{
-							var h = costHeuristic(edge.farVertex, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farVertex.index, edge.index, node._elementIndex, node._length + 1);
-							_openSet[edge.farVertex.index] = neighborNode;
+							var h = costHeuristic(edge.vertex, target, node._length);
+							neighborNode = new Node(g + h, g, h, edge.vertex.index, edge.index, node._elementIndex, node._length + 1);
+							_openSet[edge.vertex.index] = neighborNode;
 							_queue.Reprioritize(neighborNode);
 						}
 					}
@@ -661,25 +661,25 @@ namespace Experilous.MakeItTile
 
 				foreach (var edge in face.edges)
 				{
-					if (_closedSet.ContainsKey(edge.farFace.index)) continue;
+					if (_closedSet.ContainsKey(edge.face.index)) continue;
 
 					var g = node._g + cost(edge, node._length);
 
 					if (!float.IsPositiveInfinity(g))
 					{
 						Node neighborNode;
-						if (!_openSet.TryGetValue(edge.farFace.index, out neighborNode))
+						if (!_openSet.TryGetValue(edge.face.index, out neighborNode))
 						{
-							var h = costHeuristic(edge.farFace, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farFace.index, edge.index, node._elementIndex, node._length + 1);
+							var h = costHeuristic(edge.face, target, node._length);
+							neighborNode = new Node(g + h, g, h, edge.face.index, edge.index, node._elementIndex, node._length + 1);
 							_queue.Push(neighborNode);
-							_openSet.Add(edge.farFace.index, neighborNode);
+							_openSet.Add(edge.face.index, neighborNode);
 						}
 						else if (g < neighborNode._g)
 						{
-							var h = costHeuristic(edge.farFace, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farFace.index, edge.index, node._elementIndex, node._length + 1);
-							_openSet[edge.farFace.index] = neighborNode;
+							var h = costHeuristic(edge.face, target, node._length);
+							neighborNode = new Node(g + h, g, h, edge.face.index, edge.index, node._elementIndex, node._length + 1);
+							_openSet[edge.face.index] = neighborNode;
 							_queue.Reprioritize(neighborNode);
 						}
 					}

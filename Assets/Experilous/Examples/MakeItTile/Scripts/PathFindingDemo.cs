@@ -276,9 +276,9 @@ namespace Experilous.Examples.MakeItTile
 			{
 				_faceTerrainIndices[visitor.edge.farFace] = _faceTerrainIndices[visitor.edge.nearFace];
 
-				foreach (var edge in visitor.edge.farFace.edges)
+				foreach (var edge in visitor.edge.face.edges)
 				{
-					if (edge.twinIndex != visitor.edge.index && !edge.isOuterBoundary && !visitor.HasBeenVisited(edge.farFace))
+					if (edge.twinIndex != visitor.edge.index && !edge.isOuterBoundary && !visitor.HasBeenVisited(edge.face))
 					{
 						visitor.VisitNeighbor(edge);
 					}
@@ -390,7 +390,7 @@ namespace Experilous.Examples.MakeItTile
 				{
 					foreach (var edge in visitor.face.edges)
 					{
-						visitor.VisitNeighbor(edge.farFace);
+						visitor.VisitNeighbor(edge.face);
 					}
 				}
 			});
@@ -410,7 +410,7 @@ namespace Experilous.Examples.MakeItTile
 				{
 					foreach (var edge in visitor.face.edges)
 					{
-						visitor.VisitNeighbor(edge.farFace);
+						visitor.VisitNeighbor(edge.face);
 					}
 				}
 			});
@@ -479,9 +479,9 @@ namespace Experilous.Examples.MakeItTile
 
 		private float Cost(Topology.FaceEdge edge, int pathLength)
 		{
-			if (_faceUnits[edge.farFace] != null) return float.PositiveInfinity;
+			if (_faceUnits[edge] != null) return float.PositiveInfinity;
 
-			switch (_faceTerrainIndices[edge.farFace])
+			switch (_faceTerrainIndices[edge])
 			{
 				case 0: return 1f;
 				case 1: return float.PositiveInfinity;

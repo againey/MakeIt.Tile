@@ -319,13 +319,13 @@ namespace Experilous.MakeItTile
 			var adjustedVertexPositions = new Vector3[face.neighborCount].AsVertexAttribute();
 
 			var firstEdge = face.firstEdge;
-			var pos = vertexPositions[firstEdge.nextVertex.index];
+			var pos = vertexPositions[firstEdge.vertex.index];
 			Vector3 min = pos;
 			Vector3 max = pos;
 			var edge = firstEdge.next;
 			while (edge != firstEdge)
 			{
-				pos = vertexPositions[edge.nextVertex.index];
+				pos = vertexPositions[edge.vertex.index];
 				min = Vector3.Min(min, pos);
 				max = Vector3.Max(max, pos);
 				edge = edge.next;
@@ -338,7 +338,7 @@ namespace Experilous.MakeItTile
 
 			for (int i = 0; i < face.neighborCount; ++i)
 			{
-				adjustedVertexPositions[i] = AdjustPosition(vertexPositions[edge.nextVertex.index], offset, root, maxRange, scale);
+				adjustedVertexPositions[i] = AdjustPosition(vertexPositions[edge.vertex.index], offset, root, maxRange, scale);
 				edge = edge.next;
 			}
 
@@ -349,7 +349,7 @@ namespace Experilous.MakeItTile
 			Handles.DrawAAPolyLine(adjustedVertexPositions.array);
 			Handles.DrawAAPolyLine(adjustedVertexPositions[5], adjustedVertexPositions[0]);
 
-			Vector2 pC = (vertexPositions[firstEdge.nextVertex.index] + vertexPositions[firstEdge.next.next.next.nextVertex.index]) * 0.5f;
+			Vector2 pC = (vertexPositions[firstEdge.vertex.index] + vertexPositions[firstEdge.next.next.next.vertex.index]) * 0.5f;
 			Vector3 vC = AdjustPosition(pC, offset, root, maxRange, scale);
 			Vector3 v2 = AdjustPosition(pC + generator.majorCorner, offset, root, maxRange, scale);
 			Vector3 v3 = AdjustPosition(pC + generator.minorCorner, offset, root, maxRange, scale);

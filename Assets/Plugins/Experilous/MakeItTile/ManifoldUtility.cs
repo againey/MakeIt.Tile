@@ -43,9 +43,9 @@ namespace Experilous.MakeItTile
 			var bottomEdge = rightEdge.next;
 			var leftEdge = bottomEdge.next;
 
-			var topVertex = leftEdge.nextVertex;
-			var bottomRightVertex = rightEdge.nextVertex;
-			var bottomLeftVertex = bottomEdge.nextVertex;
+			var topVertex = leftEdge.vertex;
+			var bottomRightVertex = rightEdge.vertex;
+			var bottomLeftVertex = bottomEdge.vertex;
 
 			int rightVertices = rightEdge.index * degree; // Progresses from the top vertex down to the bottom right vertex.
 			int bottomVertices = bottomEdge.twinIndex * degree; // Progresses from the bottom left vertex over to the bottom right vertex.
@@ -153,10 +153,10 @@ namespace Experilous.MakeItTile
 			var bottomEdge = rightEdge.next;
 			var leftEdge = bottomEdge.next;
 
-			var topLeftVertex = leftEdge.nextVertex;
-			var topRightVertex = topEdge.nextVertex;
-			var bottomRightVertex = rightEdge.nextVertex;
-			var bottomLeftVertex = bottomEdge.nextVertex;
+			var topLeftVertex = leftEdge.vertex;
+			var topRightVertex = topEdge.vertex;
+			var bottomRightVertex = rightEdge.vertex;
+			var bottomLeftVertex = bottomEdge.vertex;
 
 			int topVertices = topEdge.index * degree; // Progresses from top left vertex over to top right vertex.
 			int bottomVertices = bottomEdge.twinIndex * degree; // Progresses from bottom left vertex over to bottom right vertex.

@@ -2098,7 +2098,7 @@ namespace Experilous.MakeItTile
 
 		public void RevisitNeighbor(Topology.VertexEdge edge)
 		{
-			_visitedVertices[edge.farVertex.index] = false;
+			_visitedVertices[edge.vertex.index] = false;
 			_queue.Push(new QueueItem(edge.index, _depth + 1));
 		}
 
@@ -2290,7 +2290,7 @@ namespace Experilous.MakeItTile
 
 		public void RevisitNeighbor(Topology.VertexEdge edge, TDistance distance)
 		{
-			_visitedVertices[edge.farVertex.index] = false;
+			_visitedVertices[edge.vertex.index] = false;
 			_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
 		}
 

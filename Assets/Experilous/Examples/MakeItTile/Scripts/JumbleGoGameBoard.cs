@@ -458,9 +458,9 @@ namespace Experilous.Examples.MakeItTile
 				{
 					foreach (var edge in visitor.face.edges)
 					{
-						if (edge.farFace.isInternal)
+						if (edge.face.isInternal)
 						{
-							visitor.VisitNeighbor(edge.farFace);
+							visitor.VisitNeighbor(edge.face);
 						}
 					}
 				}
@@ -487,9 +487,9 @@ namespace Experilous.Examples.MakeItTile
 
 					foreach (var edge in visitor.face.edges)
 					{
-						if (edge.farFace.isInternal)
+						if (edge.face.isInternal)
 						{
-							visitor.VisitNeighbor(edge.farFace);
+							visitor.VisitNeighbor(edge.face);
 						}
 					}
 				}
@@ -523,7 +523,7 @@ namespace Experilous.Examples.MakeItTile
 
 			foreach (var edge in face.edges)
 			{
-				if (edge.isNonBoundary && _faceBoardStates[edge] == opponentColor && !HasLiberties(edge.farFace))
+				if (edge.isNonBoundary && _faceBoardStates[edge] == opponentColor && !HasLiberties(edge.face))
 				{
 					_faceBoardStates[face] = BoardState.Empty;
 					return true;
@@ -559,9 +559,9 @@ namespace Experilous.Examples.MakeItTile
 
 			foreach (var edge in face.edges)
 			{
-				if (edge.isNonBoundary && _faceBoardStates[edge] == opponentColor && !HasLiberties(edge.farFace))
+				if (edge.isNonBoundary && _faceBoardStates[edge] == opponentColor && !HasLiberties(edge.face))
 				{
-					Capture(edge.farFace);
+					Capture(edge.face);
 				}
 			}
 		}

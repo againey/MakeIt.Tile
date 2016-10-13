@@ -39,12 +39,12 @@ namespace Experilous.MakeItTile
 				var vertexPosition = vertexPositions[vertex];
 
 				var edge = vertex.firstEdge;
-				var p0 = vertexPositions[edge.farVertex];
+				var p0 = vertexPositions[edge];
 				edge = edge.next;
 				var firstEdge = edge;
 				do
 				{
-					var p1 = vertexPositions[edge.farVertex];
+					var p1 = vertexPositions[edge];
 					normalSum += Vector3.Cross(p0 - vertexPosition, p1 - vertexPosition);
 					edge = edge.next;
 				} while (edge != firstEdge);
@@ -67,14 +67,14 @@ namespace Experilous.MakeItTile
 				var normalSum = new Vector3(0f, 0f, 0f);
 
 				var edge = vertex.firstEdge;
-				var p0 = facePositions[edge.prevFace];
+				var p0 = facePositions[edge];
 				edge = edge.next;
-				var p1 = facePositions[edge.prevFace];
+				var p1 = facePositions[edge];
 				edge = edge.next;
 				var firstEdge = edge;
 				do
 				{
-					var p2 = facePositions[edge.prevFace];
+					var p2 = facePositions[edge];
 					normalSum += Vector3.Cross(p0 - p1, p2 - p1);
 					edge = edge.next;
 				} while (edge != firstEdge);
@@ -98,7 +98,7 @@ namespace Experilous.MakeItTile
 
 				foreach (var edge in vertex.edges)
 				{
-					normalSum += faceNormals[edge.prevFace];
+					normalSum += faceNormals[edge];
 				}
 
 				vertexNormals[vertex] = normalSum.normalized;
@@ -138,11 +138,11 @@ namespace Experilous.MakeItTile
 				if (vertex.neighborCount == 3)
 				{
 					var edge = vertex.firstEdge;
-					var p0 = faceCentroids[edge.prevFace];
+					var p0 = faceCentroids[edge];
 					edge = edge.next;
-					var p1 = faceCentroids[edge.prevFace];
+					var p1 = faceCentroids[edge];
 					edge = edge.next;
-					var p2 = faceCentroids[edge.prevFace];
+					var p2 = faceCentroids[edge];
 					vertexAreas[vertex] = Vector3.Cross(p1 - p0, p2 - p0).magnitude * 0.5f;
 				}
 				else

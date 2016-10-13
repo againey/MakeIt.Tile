@@ -94,7 +94,7 @@ namespace Experilous.MakeItTile
 				var multiplier = Mathf.Sqrt(idealArea / vertexAreas[vertex]);
 				foreach (var edge in vertex.edges)
 				{
-					var neighborVertex = edge.farVertex;
+					var neighborVertex = edge.vertex;
 					var neighborRelativeCenter = vertexPositions[edge.twin];
 					relaxedVertexPositions[neighborVertex] += (vertexPositions[neighborVertex] - neighborRelativeCenter) * multiplier + neighborRelativeCenter;
 				}

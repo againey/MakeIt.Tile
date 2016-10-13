@@ -284,7 +284,7 @@ namespace Experilous.MakeItTile
 						var edge = _topology.faceEdges[partition._overEdgeIndex];
 						if ((edge.wrap & EdgeWrap.FaceToFace) == EdgeWrap.None || edge.isBoundary)
 						{
-							return _topology.faceEdges[partition._overEdgeIndex].farFace;
+							return _topology.faceEdges[partition._overEdgeIndex].face;
 						}
 						else
 						{
@@ -301,7 +301,7 @@ namespace Experilous.MakeItTile
 					}
 					else
 					{
-						return _topology.faceEdges[partition._underEdgeIndex].farFace;
+						return _topology.faceEdges[partition._underEdgeIndex].face;
 					}
 				}
 			}

@@ -25,14 +25,14 @@ namespace Experilous.MakeItTile
 
 		public override Vector3 this[Topology.VertexEdge e]
 		{
-			get { return surface.OffsetVertToEdgeAttribute(array[e.farVertex.index], e.wrap); }
-			set { array[e.farVertex.index] = surface.ReverseOffsetVertToEdgeAttribute(array[e.farVertex.index], e.wrap); }
+			get { return surface.OffsetVertToEdgeAttribute(array[e.index], e.wrap); }
+			set { array[e.index] = surface.ReverseOffsetVertToEdgeAttribute(array[e.index], e.wrap); }
 		}
 
 		public override Vector3 this[Topology.FaceEdge e]
 		{
-			get { return surface.OffsetFaceToEdgeAttribute(array[e.nextVertex.index], e.wrap); }
-			set { array[e.nextVertex.index] = surface.ReverseOffsetFaceToEdgeAttribute(array[e.nextVertex.index], e.wrap); }
+			get { return surface.OffsetFaceToEdgeAttribute(array[e.index], e.wrap); }
+			set { array[e.index] = surface.ReverseOffsetFaceToEdgeAttribute(array[e.index], e.wrap); }
 		}
 	}
 }

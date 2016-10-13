@@ -129,7 +129,7 @@ namespace Experilous.MakeItTile
 					rootFaces.Add(face);
 					foreach (var edge in face.edges)
 					{
-						if (edge.farFace.isInternal)
+						if (edge.face.isInternal)
 						{
 							rootFaceEdges.Add(edge);
 						}
@@ -143,12 +143,12 @@ namespace Experilous.MakeItTile
 					(FaceEdgeVisitor visitor) =>
 					{
 						var faceGroupIndex = faceGroupIndices[visitor.edge.nearFace];
-						faceGroupIndices[visitor.edge.farFace] = faceGroupIndex;
-						faceGroupFaceIndices[faceGroupIndex].Add(visitor.edge.farFace.index);
+						faceGroupIndices[visitor.edge] = faceGroupIndex;
+						faceGroupFaceIndices[faceGroupIndex].Add(visitor.edge.face.index);
 
-						foreach (var edge in visitor.edge.farFace.edges)
+						foreach (var edge in visitor.edge.face.edges)
 						{
-							if (edge.twinIndex != visitor.edge.index && !edge.isOuterBoundary && !visitor.HasBeenVisited(edge.farFace))
+							if (edge.twinIndex != visitor.edge.index && !edge.isOuterBoundary && !visitor.HasBeenVisited(edge.face))
 							{
 								visitor.VisitNeighbor(edge);
 							}

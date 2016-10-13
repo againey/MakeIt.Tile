@@ -109,8 +109,10 @@ namespace Experilous.MakeItTile
 			public HalfEdge nextAroundVertex { get { return new HalfEdge(_topology, _topology.edgeData[_index].vNext); } }
 			public HalfEdge prevAroundFace { get { return new HalfEdge(_topology, _topology.edgeData[_topology.edgeData[_index].vNext].twin); } }
 			public HalfEdge nextAroundFace { get { return new HalfEdge(_topology, _topology.edgeData[_index].fNext); } }
+			public Vertex vertex { get { return new Vertex(_topology, _topology.edgeData[_index].vertex); } }
 			public Vertex nearVertex { get { return new Vertex(_topology, _topology.edgeData[_topology.edgeData[_index].twin].vertex); } }
 			public Vertex farVertex { get { return new Vertex(_topology, _topology.edgeData[_index].vertex); } }
+			public Face face { get { return new Face(_topology, _topology.edgeData[_index].face); } }
 			public Face nearFace { get { return new Face(_topology, _topology.edgeData[_topology.edgeData[_index].twin].face); } }
 			public Face farFace { get { return new Face(_topology, _topology.edgeData[_index].face); } }
 
@@ -221,8 +223,10 @@ namespace Experilous.MakeItTile
 			public VertexEdge secondTwin { get { return isSecondTwin ? this : twin; } }
 			public VertexEdge prev { get { return new VertexEdge(_halfEdge.prevAroundVertex); } }
 			public VertexEdge next { get { return new VertexEdge(_halfEdge.nextAroundVertex); } }
+			public Vertex vertex { get { return _halfEdge.farVertex; } }
 			public Vertex nearVertex { get { return _halfEdge.nearVertex; } }
 			public Vertex farVertex { get { return _halfEdge.farVertex; } }
+			public Face face { get { return _halfEdge.farFace; } }
 			public Face prevFace { get { return _halfEdge.farFace; } }
 			public Face nextFace { get { return _halfEdge.nearFace; } }
 
@@ -333,8 +337,10 @@ namespace Experilous.MakeItTile
 			public FaceEdge secondTwin { get { return isSecondTwin ? this : twin; } }
 			public FaceEdge prev { get { return new FaceEdge(_halfEdge.prevAroundFace); } }
 			public FaceEdge next { get { return new FaceEdge(_halfEdge.nextAroundFace); } }
+			public Vertex vertex { get { return _halfEdge.farVertex; } }
 			public Vertex prevVertex { get { return _halfEdge.nearVertex; } }
 			public Vertex nextVertex { get { return _halfEdge.farVertex; } }
+			public Face face { get { return _halfEdge.farFace; } }
 			public Face nearFace { get { return _halfEdge.nearFace; } }
 			public Face farFace { get { return _halfEdge.farFace; } }
 

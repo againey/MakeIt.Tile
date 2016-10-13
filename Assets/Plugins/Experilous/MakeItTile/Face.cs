@@ -41,7 +41,7 @@ namespace Experilous.MakeItTile
 				get
 				{
 					foreach (var edge in edges)
-						if (edge.farFace.isExternal)
+						if (edge.face.isExternal)
 							return true;
 					return false;
 				}
@@ -117,57 +117,57 @@ namespace Experilous.MakeItTile
 				}
 			}
 
-			public struct OuterVertexEdgesIndexer
+			public struct OuterFaceEdgesIndexer
 			{
 				private Topology _topology;
 				private int _index;
 
-				public OuterVertexEdgesIndexer(Topology topology, int index)
+				public OuterFaceEdgesIndexer(Topology topology, int index)
 				{
 					_topology = topology;
 					_index = index;
 				}
 
-				public struct OuterVertexEdgesEnumerator
+				public struct OuterFaceEdgesEnumerator
 				{
 					private Topology _topology;
 					private int _firstFaceEdgeIndex;
-					private int _currentVertexEdgeIndex;
+					private int _currentFaceEdgeIndex;
 					private int _nextVertexEdgeIndex;
 					private int _nextFaceEdgeIndex;
 
-					public OuterVertexEdgesEnumerator(Topology topology, int firstFaceEdgeIndex)
+					public OuterFaceEdgesEnumerator(Topology topology, int firstFaceEdgeIndex)
 					{
 						_topology = topology;
 						_firstFaceEdgeIndex = firstFaceEdgeIndex;
-						_currentVertexEdgeIndex = -1;
+						_currentFaceEdgeIndex = -1;
 						_nextVertexEdgeIndex = firstFaceEdgeIndex;
 						_nextFaceEdgeIndex = firstFaceEdgeIndex;
 					}
 
-					public VertexEdge Current { get { return new VertexEdge(_topology, _currentVertexEdgeIndex); } }
+					public FaceEdge Current { get { return new FaceEdge(_topology, _currentFaceEdgeIndex); } }
 
 					public bool MoveNext()
 					{
 						if (_nextVertexEdgeIndex != _nextFaceEdgeIndex)
 						{
-							_currentVertexEdgeIndex = _nextVertexEdgeIndex;
-							_nextVertexEdgeIndex = _topology.edgeData[_currentVertexEdgeIndex].vNext;
+							_currentFaceEdgeIndex = _nextVertexEdgeIndex;
+							_nextVertexEdgeIndex = _topology.edgeData[_currentFaceEdgeIndex].vNext;
 							return true;
 						}
-						else if (_nextFaceEdgeIndex != _firstFaceEdgeIndex || _currentVertexEdgeIndex == -1)
+						else if (_nextFaceEdgeIndex != _firstFaceEdgeIndex || _currentFaceEdgeIndex == -1)
 						{
 							do
 							{
-								_currentVertexEdgeIndex = _topology.edgeData[_topology.edgeData[_nextFaceEdgeIndex].twin].vNext;
+								_currentFaceEdgeIndex = _topology.edgeData[_topology.edgeData[_nextFaceEdgeIndex].twin].vNext;
 								_nextFaceEdgeIndex = _topology.edgeData[_nextFaceEdgeIndex].fNext;
-								if (_currentVertexEdgeIndex == _firstFaceEdgeIndex)
+								if (_currentFaceEdgeIndex == _firstFaceEdgeIndex)
 								{
 									_nextVertexEdgeIndex = _nextFaceEdgeIndex = _firstFaceEdgeIndex;
 									return false;
 								}
-							} while (_currentVertexEdgeIndex == _nextFaceEdgeIndex);
-							_nextVertexEdgeIndex = _topology.edgeData[_currentVertexEdgeIndex].vNext;
+							} while (_currentFaceEdgeIndex == _nextFaceEdgeIndex);
+							_nextVertexEdgeIndex = _topology.edgeData[_currentFaceEdgeIndex].vNext;
 							return true;
 						}
 						else
@@ -178,25 +178,25 @@ namespace Experilous.MakeItTile
 
 					public void Reset()
 					{
-						_currentVertexEdgeIndex = -1;
+						_currentFaceEdgeIndex = -1;
 						_nextVertexEdgeIndex = -1;
 						_nextFaceEdgeIndex = _firstFaceEdgeIndex;
 					}
 				}
 
-				public OuterVertexEdgesEnumerator GetEnumerator()
+				public OuterFaceEdgesEnumerator GetEnumerator()
 				{
-					return new OuterVertexEdgesEnumerator(_topology, _topology.faceFirstEdgeIndices[_index]);
+					return new OuterFaceEdgesEnumerator(_topology, _topology.faceFirstEdgeIndices[_index]);
 				}
 			}
 
-			public OuterVertexEdgesIndexer outerVertexEdges { get { return new OuterVertexEdgesIndexer(_topology, _index); } }
+			public OuterFaceEdgesIndexer outerFaceEdges { get { return new OuterFaceEdgesIndexer(_topology, _index); } }
 
 			public FaceEdge FindEdge(Vertex vertex)
 			{
 				foreach (var faceEdge in edges)
 				{
-					if (faceEdge.nextVertex == vertex)
+					if (faceEdge.vertex == vertex)
 					{
 						return faceEdge;
 					}
@@ -208,7 +208,7 @@ namespace Experilous.MakeItTile
 			{
 				foreach (var faceEdge in edges)
 				{
-					if (faceEdge.farFace == face)
+					if (faceEdge.face == face)
 					{
 						return faceEdge;
 					}
@@ -226,38 +226,38 @@ namespace Experilous.MakeItTile
 				return edge = FindEdge(face);
 			}
 
-			public VertexEdge FindOuterVertexEdge(Vertex vertex)
+			public FaceEdge FindOuterFaceEdge(Vertex vertex)
 			{
-				foreach (var vertexEdge in outerVertexEdges)
+				foreach (var faceEdge in outerFaceEdges)
 				{
-					if (vertexEdge.farVertex == vertex)
+					if (faceEdge.vertex == vertex)
 					{
-						return vertexEdge;
+						return faceEdge;
 					}
 				}
-				return VertexEdge.none;
+				return FaceEdge.none;
 			}
 
-			public VertexEdge FindOuterVertexEdge(Face face)
+			public FaceEdge FindOuterFaceEdge(Face face)
 			{
-				foreach (var vertexEdge in outerVertexEdges)
+				foreach (var faceEdge in outerFaceEdges)
 				{
-					if (vertexEdge.prevFace == face)
+					if (faceEdge.face == face)
 					{
-						return vertexEdge;
+						return faceEdge;
 					}
 				}
-				return VertexEdge.none;
+				return FaceEdge.none;
 			}
 
-			public bool TryFindOuterVertexEdge(Vertex vertex, out VertexEdge edge)
+			public bool TryFindOuterFaceEdge(Vertex vertex, out FaceEdge edge)
 			{
-				return edge = FindOuterVertexEdge(vertex);
+				return edge = FindOuterFaceEdge(vertex);
 			}
 
-			public bool TryFindOuterVertexEdge(Face face, out VertexEdge edge)
+			public bool TryFindOuterFaceEdge(Face face, out FaceEdge edge)
 			{
-				return edge = FindOuterVertexEdge(face);
+				return edge = FindOuterFaceEdge(face);
 			}
 
 			public override bool Equals(object other) { return other is Face && _index == ((Face)other)._index; }
@@ -276,9 +276,9 @@ namespace Experilous.MakeItTile
 				var sb = new System.Text.StringBuilder();
 				sb.AppendFormat("Face {0} (", _index);
 				foreach (var edge in edges)
-					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0}), (", edge.farFace.index);
+					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0}), (", edge.face.index);
 				foreach (var edge in edges)
-					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0})", edge.nextVertex.index);
+					sb.AppendFormat(edge.next != firstEdge ? "{0}, " : "{0})", edge.vertex.index);
 				return sb.ToString();
 			}
 		}
@@ -388,20 +388,20 @@ namespace Experilous.MakeItTile
 
 		public T this[Topology.HalfEdge e]
 		{
-			get { return array[e.farFace.index]; }
-			set { array[e.farFace.index] = value; }
+			get { return array[e.face.index]; }
+			set { array[e.face.index] = value; }
 		}
 
 		public T this[Topology.VertexEdge e]
 		{
-			get { return array[e.prevFace.index]; }
-			set { array[e.prevFace.index] = value; }
+			get { return array[e.face.index]; }
+			set { array[e.face.index] = value; }
 		}
 
 		public T this[Topology.FaceEdge e]
 		{
-			get { return array[e.farFace.index]; }
-			set { array[e.farFace.index] = value; }
+			get { return array[e.face.index]; }
+			set { array[e.face.index] = value; }
 		}
 
 		public int Count { get { return array.Length; } }
@@ -564,20 +564,20 @@ namespace Experilous.MakeItTile
 
 		public override T this[Topology.HalfEdge e]
 		{
-			get { return array[e.farFace.index]; }
-			set { array[e.farFace.index] = value; }
+			get { return array[e.face.index]; }
+			set { array[e.face.index] = value; }
 		}
 
 		public override T this[Topology.VertexEdge e]
 		{
-			get { return array[e.prevFace.index]; }
-			set { array[e.prevFace.index] = value; }
+			get { return array[e.face.index]; }
+			set { array[e.face.index] = value; }
 		}
 
 		public override T this[Topology.FaceEdge e]
 		{
-			get { return array[e.farFace.index]; }
-			set { array[e.farFace.index] = value; }
+			get { return array[e.face.index]; }
+			set { array[e.face.index] = value; }
 		}
 
 		public override int Count { get { return array.Length; } }
@@ -606,19 +606,19 @@ namespace Experilous.MakeItTile
 
 		public override T this[Topology.HalfEdge e]
 		{
-			get { return faceGroupData[faceGroupIndices[e.farFace]]; }
+			get { return faceGroupData[faceGroupIndices[e.face]]; }
 			set { throw new NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 
 		public override T this[Topology.VertexEdge e]
 		{
-			get { return faceGroupData[faceGroupIndices[e.prevFace]]; }
+			get { return faceGroupData[faceGroupIndices[e.face]]; }
 			set { throw new NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 
 		public override T this[Topology.FaceEdge e]
 		{
-			get { return faceGroupData[faceGroupIndices[e.farFace]]; }
+			get { return faceGroupData[faceGroupIndices[e.face]]; }
 			set { throw new NotSupportedException("A face group lookup face attribute is read only and cannot be modified."); }
 		}
 	}
