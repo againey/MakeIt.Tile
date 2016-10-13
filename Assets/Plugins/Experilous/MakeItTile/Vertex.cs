@@ -18,22 +18,57 @@ namespace Experilous.MakeItTile
 			private Topology _topology;
 			private int _index;
 
+			/// <summary>
+			/// Constructs a vertex wrapper for a given topology and vertex index.
+			/// </summary>
+			/// <param name="topology">The topology containing the vertex.</param>
+			/// <param name="index">The index of the vertex.</param>
 			public Vertex(Topology topology, int index)
 			{
 				_topology = topology;
 				_index = index;
 			}
 
+			/// <summary>
+			/// An empty vertex wrapper that does not reference any topology or vertex.
+			/// </summary>
 			public static Vertex none { get { return new Vertex(); } }
 
+			/// <summary>
+			/// The topology to which the current vertex belongs.
+			/// </summary>
 			public Topology topology { get { return _topology; } }
 
+			/// <summary>
+			/// The integer index of the current vertex, used by edge references and access into vertex attribute collections.
+			/// </summary>
 			public int index { get { return _index; } }
+
+			/// <summary>
+			/// The number of neighboring vertices or neighboring faces that a vertex has.
+			/// </summary>
+			/// <remarks><para>A vertex is guaranteed to have an equal number of neighboring vertices and faces.
+			/// So a vertex with three neighbors means that it has three neighboring vertices, and also three 
+			/// neighboring faces.</para></remarks>
 			public int neighborCount { get { return _topology.vertexNeighborCounts[_index]; } }
+
+			/// <summary>
+			/// A vertex edge wrapper around the first edge of this vertex, pointing to the vertex's first vertex/face pair of neighbors.
+			/// </summary>
+			/// <remarks><para>This edge wrapper can be used to manually iterate around the neighbors of the vertex, by
+			/// using <see cref="VertexEdge.next"/> repeatedly until coming back around to the first edge.</para></remarks>
 			public VertexEdge firstEdge { get { return new VertexEdge(_topology, _topology.vertexFirstEdgeIndices[_index]); } }
 
+			/// <summary>
+			/// Checks if this vertex wrapper represents a valid vertex.  Converts to true if so, and false if the vertex wrapper is empty.
+			/// </summary>
+			/// <param name="vertex">The vertex to check.</param>
+			/// <seealso cref="none"/>
 			public static implicit operator bool(Vertex vertex) { return vertex._topology != null; }
 
+			/// <summary>
+			/// Indicates if any of the vertex's neighboring faces are external.
+			/// </summary>
 			public bool hasExternalFaceNeighbor
 			{
 				get
@@ -45,19 +80,35 @@ namespace Experilous.MakeItTile
 				}
 			}
 
+			/// <summary>
+			/// An indexer of a vertex's edges, used for enumerating its vertex edges.  Satisfies the concept
+			/// of <see cref="IEnumerable{VertexEdge}"/>, enabling it to be used in <c>foreach</c> loops.
+			/// </summary>
 			public struct VertexEdgesIndexer
 			{
 				private Topology _topology;
 				private int _index;
 
+				/// <summary>
+				/// Constructs an indexer for the vertex in the given topology and with the given index.
+				/// </summary>
+				/// <param name="topology">The topology to which the vertex belongs.</param>
+				/// <param name="index">The index of the vertex.</param>
 				public VertexEdgesIndexer(Topology topology, int index)
 				{
 					_topology = topology;
 					_index = index;
 				}
 
+				/// <summary>
+				/// The number of edges around the vertex to be enumerated.
+				/// </summary>
 				public int Count { get { return _topology.vertexNeighborCounts[_index]; } }
 				
+				/// <summary>
+				/// An enumerator of a vertex's edges.  Satisfies the concept of <see cref="IEnumerator{VertexEdge}"/>,
+				/// enabling it to be used in <c>foreach</c> loops.
+				/// </summary>
 				public struct VertexEdgeEnumerator
 				{
 					private Topology _topology;
@@ -65,6 +116,11 @@ namespace Experilous.MakeItTile
 					private int _currentEdgeIndex;
 					private int _nextEdgeIndex;
 
+					/// <summary>
+					/// Constructs an instance of a vertex edge enumerator, given a topology and the first edge in the cycle.
+					/// </summary>
+					/// <param name="topology">The topology to which the enumerated vertex edges belong.</param>
+					/// <param name="firstEdgeIndex">The index of the first edge within a cycle to enumerate.</param>
 					public VertexEdgeEnumerator(Topology topology, int firstEdgeIndex)
 					{
 						_topology = topology;
@@ -73,8 +129,15 @@ namespace Experilous.MakeItTile
 						_nextEdgeIndex = firstEdgeIndex;
 					}
 
+					/// <summary>
+					/// A vertex edge wrapper around the current edge being enumerated.
+					/// </summary>
 					public VertexEdge Current { get { return new VertexEdge(_topology, _currentEdgeIndex); } }
 
+					/// <summary>
+					/// Updates the enumerator to the next edge in the cycle around the near vertex.
+					/// </summary>
+					/// <returns>True if it moved to the next valid edge, or false if there are no more edges to be enumerated.</returns>
 					public bool MoveNext()
 					{
 						if (_nextEdgeIndex != _firstEdgeIndex || _currentEdgeIndex == -1)
@@ -89,6 +152,10 @@ namespace Experilous.MakeItTile
 						}
 					}
 
+					/// <summary>
+					/// Resets the enumerator back to its original state, so that another call to <see cref="MoveNext"/>
+					/// have <see cref="Current"/> return the first vertex edge of the enumerated sequence.
+					/// </summary>
 					public void Reset()
 					{
 						_currentEdgeIndex = -1;
@@ -96,14 +163,29 @@ namespace Experilous.MakeItTile
 					}
 				}
 
+				/// <summary>
+				/// Creates an enumerator for the vertex edges of the current indexer.
+				/// </summary>
+				/// <returns>An enumerator for the vertex edges of the current indexer.</returns>
 				public VertexEdgeEnumerator GetEnumerator()
 				{
 					return new VertexEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
 				}
 			}
 
+			/// <summary>
+			/// Returns an indexer of all the vertex edges around the current vertex, which all have the
+			/// current vertex as their near vertex.  Can be used in <c>foreach</c> loops.
+			/// </summary>
 			public VertexEdgesIndexer edges { get { return new VertexEdgesIndexer(_topology, _index); } }
 
+			/// <summary>
+			/// An indexer of a vertex's outer face edges, used for enumerating those edges.  Satisfies the concept
+			/// of <see cref="IEnumerable{FaceEdge}"/>, enabling it to be used in <c>foreach</c> loops.
+			/// </summary>
+			/// <remarks><para>A vertex's outer face edges provide convenient enumeration of all the edges that
+			/// share a face with the vertex but do not come directly from the vertex.  This is particularly useful
+			/// for enumerating all the vertices that share a face with a particular vertex.</para></remarks>
 			public struct OuterFaceEdgesIndexer
 			{
 				private Topology _topology;
@@ -180,6 +262,11 @@ namespace Experilous.MakeItTile
 
 			public OuterFaceEdgesIndexer outerFaceEdges { get { return new OuterFaceEdgesIndexer(_topology, _index); } }
 
+			/// <summary>
+			/// Finds the vertex edge around the current vertex that corresponds to the given face.
+			/// </summary>
+			/// <param name="face">The face for which the corresponding edge is to be found.</param>
+			/// <returns>The vertex edge whose next face is the given face, or an empty edge if the given face is not a neighbor of the current vertex.</returns>
 			public VertexEdge FindEdge(Face face)
 			{
 				foreach (var vertexEdge in edges)
@@ -192,6 +279,11 @@ namespace Experilous.MakeItTile
 				return VertexEdge.none;
 			}
 
+			/// <summary>
+			/// Finds the vertex edge around the current vertex that points to the given vertex.
+			/// </summary>
+			/// <param name="vertex">The vertex for which the corresponding edge is to be found.</param>
+			/// <returns>The vertex edge whose far vertex is the given vertex, or an empty edge if the given vertex is not a neighbor of the current vertex.</returns>
 			public VertexEdge FindEdge(Vertex vertex)
 			{
 				foreach (var vertexEdge in edges)
@@ -204,11 +296,23 @@ namespace Experilous.MakeItTile
 				return VertexEdge.none;
 			}
 
+			/// <summary>
+			/// Tries to find the vertex edge around the current vertex that corresponds to the given face.
+			/// </summary>
+			/// <param name="face">The face for which the corresponding edge is to be found.</param>
+			/// <param name="edge">The vertex edge whose next face is the given face, or an empty edge if the given face is not a neighbor of the current vertex.</param>
+			/// <returns>True if the corresponding edge was found, and false if the given face is not a neighbor of the current vertex.</returns>
 			public bool TryFindEdge(Face face, out VertexEdge edge)
 			{
 				return edge = FindEdge(face);
 			}
 
+			/// <summary>
+			/// Tries to find the vertex edge around the current vertex that points to the given vertex.
+			/// </summary>
+			/// <param name="vertex">The vertex for which the corresponding edge is to be found.</param>
+			/// <param name="edge">The vertex edge whose far vertex is the given vertex, or an empty edge if the given vertex is not a neighbor of the current vertex.</param>
+			/// <returns>True if the corresponding edge was found, and false if the given vertex is not a neighbor of the current vertex.</returns>
 			public bool TryFindEdge(Vertex vertex, out VertexEdge edge)
 			{
 				return edge = FindEdge(vertex);
@@ -248,17 +352,109 @@ namespace Experilous.MakeItTile
 				return edge = FindOuterFaceEdge(vertex);
 			}
 
+			/// <summary>
+			/// Compares the current vertex to the specified object to find if they are wrappers around the same vertex.
+			/// </summary>
+			/// <param name="other">The object to be compared to the current vertex.</param>
+			/// <returns>Returns true if the specified object is an instance of <see cref="Vertex"/>, and both it and the current vertex are wrappers around the same vertex, and false otherwise.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public override bool Equals(object other) { return other is Vertex && _index == ((Vertex)other)._index; }
+
+			/// <summary>
+			/// Compares the current vertex to the specified vertex to find if they are wrappers around the same vertex.
+			/// </summary>
+			/// <param name="other">The vertex to be compared to the current vertex.</param>
+			/// <returns>Returns true if the specified vertex and the current vertex are both wrapers around the same vertex, and false otherwise.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public bool Equals(Vertex other) { return _index == other._index; }
+
+			/// <summary>
+			/// Compares the current vertex to the specified vertex.
+			/// </summary>
+			/// <param name="other">The other vertex to compare to the current vertex.</param>
+			/// <returns>Returns a negative value if the current vertex is ordered before the specified vertex, a positive
+			/// value if it is ordered after the specified vertex, and zero if they are wrappers around the same vertex.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public int CompareTo(Vertex other) { return _index - other._index; }
+
+			/// <summary>
+			/// Compares two vertex wrappers for equality.
+			/// </summary>
+			/// <param name="lhs">The first vertex to compare.</param>
+			/// <param name="rhs">The second vertex to compare.</param>
+			/// <returns>Returns true if the two vertices are wrappers around the same vertex, and false otherwise.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator ==(Vertex lhs, Vertex rhs) { return lhs._index == rhs._index; }
+
+			/// <summary>
+			/// Compares two vertex wrappers for inequality.
+			/// </summary>
+			/// <param name="lhs">The first vertex to compare.</param>
+			/// <param name="rhs">The second vertex to compare.</param>
+			/// <returns>Returns true if the two vertices are wrappers around two different vertices, and false if they are wrappers around the same vertex.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator !=(Vertex lhs, Vertex rhs) { return lhs._index != rhs._index; }
+
+			/// <summary>
+			/// Compares the two vertices to determine if the first is ordered before the second.
+			/// </summary>
+			/// <param name="lhs">The first vertex to compare.</param>
+			/// <param name="rhs">The second vertex to compare.</param>
+			/// <returns>True if the current vertex is ordered before the specified vertex, and false otherwise.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator < (Vertex lhs, Vertex rhs) { return lhs._index <  rhs._index; }
-			public static bool operator > (Vertex lhs, Vertex rhs) { return lhs._index >  rhs._index; }
+
+			/// <summary>
+			/// Compares the two vertices to determine if the first is ordered before the second or if they both are wrappers around the same vertex.
+			/// </summary>
+			/// <param name="lhs">The first vertex to compare.</param>
+			/// <param name="rhs">The second vertex to compare.</param>
+			/// <returns>True if the current vertex is ordered before the specified vertex or if
+			/// they are both wrappers around the same vertex, and false otherwise.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator <=(Vertex lhs, Vertex rhs) { return lhs._index <= rhs._index; }
+
+			/// <summary>
+			/// Compares the two vertices to determine if the first is ordered after the second.
+			/// </summary>
+			/// <param name="lhs">The first vertex to compare.</param>
+			/// <param name="rhs">The second vertex to compare.</param>
+			/// <returns>True if the current vertex is ordered after the specified vertex, and false otherwise.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
+			public static bool operator > (Vertex lhs, Vertex rhs) { return lhs._index >  rhs._index; }
+
+			/// <summary>
+			/// Compares the two vertices to determine if the first is ordered after the second or if they both are wrappers around the same vertex.
+			/// </summary>
+			/// <param name="lhs">The first vertex to compare.</param>
+			/// <param name="rhs">The second vertex to compare.</param>
+			/// <returns>True if the current vertex is ordered after the specified vertex or if
+			/// they are both wrappers around the same vertex, and false otherwise.</returns>
+			/// <remarks><para>It is assumed that both vertices belong to the same topology.
+			/// If they do not, then the behavior of this function is undefined.</para></remarks>
 			public static bool operator >=(Vertex lhs, Vertex rhs) { return lhs._index >= rhs._index; }
+
+			/// <summary>
+			/// Calculates a 32-bit integer hash code for the current vertex.
+			/// </summary>
+			/// <returns>A 32-bit signed integer hash code based on the index of the current vertex.</returns>
+			/// <remarks><para>This hash code does not take into account the topology to which the vertex
+			/// belongs.  Therefore, it is not intended to be used in any situation that involves vertices
+			/// from multiple topologies.</para></remarks>
 			public override int GetHashCode() { return _index.GetHashCode(); }
 
+			/// <summary>
+			/// Converts the vertex to string representation, appropriate for diagnositic display.  Includes the vertex index, and the indices of all neighbor vertices and faces.
+			/// </summary>
+			/// <returns>A string representation of the vertex.</returns>
 			public override string ToString()
 			{
 				var sb = new System.Text.StringBuilder();
@@ -271,27 +467,70 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <summary>
+		/// An indexer of a vertices in a topology, used for enumerating vertices.  Satisfies the concept
+		/// of <see cref="IEnumerable{Vertex}"/>, enabling it to be used in <c>foreach</c> loops.
+		/// </summary>
 		public struct VerticesIndexer
 		{
 			private Topology _topology;
 
+			/// <summary>
+			/// Constructs an indexer for the vertices in the given topology.
+			/// </summary>
+			/// <param name="topology">The topology whose vertices are to be indexed.</param>
 			public VerticesIndexer(Topology topology) { _topology = topology; }
+
+			/// <summary>
+			/// Accesses a vertex by its integer index.
+			/// </summary>
+			/// <param name="i">The index of the vertex to access.</param>
+			/// <returns>The vertex with the given index.</returns>
 			public Vertex this[int i] { get { return new Vertex(_topology, i); } }
+
+			/// <summary>
+			/// The number of vertices accessible by this indexer.
+			/// </summary>
 			public int Count { get { return _topology.vertexFirstEdgeIndices.Length; } }
+
+			/// <summary>
+			/// Creates an enumerator for the vertices of the current indexer.
+			/// </summary>
+			/// <returns></returns>
 			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology); }
 
+			/// <summary>
+			/// An enumerator of a topology's vertices.  Satisfies the concept of <see cref="IEnumerator{Vertex}"/>,
+			/// enabling it to be used in <c>foreach</c> loops.
+			/// </summary>
 			public struct VertexEnumerator
 			{
 				private Topology _topology;
 				private int _current;
 
+				/// <summary>
+				/// Constructs an instance of a vertex enumerator, given a topology containing the vertices.
+				/// </summary>
+				/// <param name="topology">The topology to which the enumerated vertices belong.</param>
 				public VertexEnumerator(Topology topology) { _topology = topology; _current = -1; }
+
+				/// <summary>
+				/// A vertex wrapper around the current vertex being enumerated.
+				/// </summary>
 				public Vertex Current { get { return new Vertex(_topology, _current); } }
+
+				/// <summary>
+				/// Updates the enumerator to the next vertex in the topology.
+				/// </summary>
+				/// <returns>True if it moved to the next valid vertex, or false if there are no more vertices to be enumerated.</returns>
 				public bool MoveNext() { return ++_current < _topology.vertexFirstEdgeIndices.Length; }
 				public void Reset() { throw new NotSupportedException(); }
 			}
 		}
 
+		/// <summary>
+		/// Returns an indexer of all the vertices in the current topology.  Can be used in <c>foreach</c> loops.
+		/// </summary>
 		public VerticesIndexer vertices { get { return new VerticesIndexer(this); } }
 	}
 
@@ -324,61 +563,177 @@ namespace Experilous.MakeItTile
 		T this[Topology.Vertex v] { get; set; }
 	}
 
+	/// <summary>
+	/// A vertex attribute wrapper around a raw array of vertex attributes.
+	/// </summary>
+	/// <typeparam name="T">The type of the attribute values.</typeparam>
 	public struct VertexAttributeArrayWrapper<T> : IVertexAttribute<T>
 	{
 		public T[] array;
 
+		/// <summary>
+		/// Constructs a vertex attribute array wrapper around the given array.
+		/// </summary>
+		/// <param name="array">The array of vertex attribute values to be wrapped.</param>
 		public VertexAttributeArrayWrapper(T[] array)
 		{
 			this.array = array;
 		}
 
+		/// <summary>
+		/// Constructs a vertex attribute array wrapper around an internally created array with the given number of elements.
+		/// </summary>
+		/// <param name="elementCount">The number of elements that the created array will contain.</param>
 		public VertexAttributeArrayWrapper(int elementCount)
 		{
 			array = new T[elementCount];
 		}
 
+		/// <summary>
+		/// Implicitly converts an array wrapper to a raw array by simply returning the wrapped array.
+		/// </summary>
+		/// <param name="arrayWrapper">The array wrapper to convert.</param>
+		public static implicit operator T[](VertexAttributeArrayWrapper<T> arrayWrapper)
+		{
+			return arrayWrapper.array;
+		}
+
+		/// <summary>
+		/// Implicitly converts a raw array to an array wrapper by constructing a wrapper around the array.
+		/// </summary>
+		/// <param name="array">The array to be converted.</param>
+		public static implicit operator VertexAttributeArrayWrapper<T>(T[] array)
+		{
+			return new VertexAttributeArrayWrapper<T>(array);
+		}
+
+		/// <summary>
+		/// Accesses the vertex attribute value in the array corresponding to the vertex with the given index.
+		/// </summary>
+		/// <param name="i">The index of the vertex whose attribute value is to be accessed.</param>
+		/// <returns>The vertex attribute value corresponding to the vertex with the given index.</returns>
 		public T this[int i]
 		{
 			get { return array[i]; }
 			set { array[i] = value; }
 		}
 
+		/// <summary>
+		/// Accesses the vertex attribute value in the array corresponding to the given vertex.
+		/// </summary>
+		/// <param name="v">The vertex whose attribute value is to be accessed.</param>
+		/// <returns>The vertex attribute value corresponding to the given vertex.</returns>
 		public T this[Topology.Vertex v]
 		{
 			get { return array[v.index]; }
 			set { array[v.index] = value; }
 		}
 
+		/// <summary>
+		/// Accesses the vertex attribute value in the array corresponding to the far vertex of the given edge.
+		/// </summary>
+		/// <param name="e">The edge whose far vertex's attribute value is to be accessed.</param>
+		/// <returns>The vertex attribute value corresponding to the far vertex of the given edge.</returns>
 		public T this[Topology.HalfEdge e]
 		{
 			get { return array[e.farVertex.index]; }
 			set { array[e.farVertex.index] = value; }
 		}
 
+		/// <summary>
+		/// Accesses the vertex attribute value in the array corresponding to the far vertex of the given edge.
+		/// </summary>
+		/// <param name="e">The edge whose far vertex's attribute value is to be accessed.</param>
+		/// <returns>The vertex attribute value corresponding to the far vertex of the given edge.</returns>
 		public T this[Topology.VertexEdge e]
 		{
 			get { return array[e.farVertex.index]; }
 			set { array[e.farVertex.index] = value; }
 		}
 
+		/// <summary>
+		/// Accesses the vertex attribute value in the array corresponding to the far vertex of the given edge.
+		/// </summary>
+		/// <param name="e">The edge whose next vertex's attribute value is to be accessed.</param>
+		/// <returns>The vertex attribute value corresponding to the next vertex of the given edge.</returns>
 		public T this[Topology.FaceEdge e]
 		{
 			get { return array[e.nextVertex.index]; }
 			set { array[e.nextVertex.index] = value; }
 		}
 
+		/// <summary>
+		/// The number of vertex attribute values stored in the wrapped array.
+		/// </summary>
 		public int Count { get { return array.Length; } }
+
+		/// <summary>
+		/// Indicates if the collection is read-only and thus cannot have items interted into or removed from it.  Always true.
+		/// </summary>
 		public bool IsReadOnly { get { return true; } }
+
+		/// <summary>
+		/// Not supported.
+		/// </summary>
+		/// <param name="item"></param>
 		public void Add(T item) { throw new NotSupportedException(); }
+
+		/// <summary>
+		/// Not supported.
+		/// </summary>
 		public void Clear() { throw new NotSupportedException(); }
+
+		/// <summary>
+		/// Checks whether the given vertex attribute value is contained within the wrapped array.
+		/// </summary>
+		/// <param name="item">The vertex attribute value to be searched for.</param>
+		/// <returns>True if the given vertex attribute value is stored within the wrapped array, and false if it is not.</returns>
 		public bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+
+		/// <summary>
+		/// Copies the vertex attribute values of the wrapped array into the specified array.
+		/// </summary>
+		/// <param name="array">The target array into which vertex attribute values will be copied.</param>
+		/// <param name="arrayIndex">The starting index at which the copy of values will begin.</param>
 		public void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+
+		/// <summary>
+		/// Gets an enumerator over all the vertex attribute values in the wrapped array.
+		/// </summary>
+		/// <returns>An enumerator over all the vertex attribute values in the wrapped array.</returns>
 		public IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+
+		/// <summary>
+		/// Searches for the specified vertex attribute value and returns the index at which the first occurrence is found.
+		/// </summary>
+		/// <param name="item">The vertex attribute value to be searched for.</param>
+		/// <returns>The index of the first occurrence of the given value, or -1 if no occurrence was found.</returns>
 		public int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
+
+		/// <summary>
+		/// Not supported.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="item"></param>
 		public void Insert(int index, T item) { throw new NotSupportedException(); }
+
+		/// <summary>
+		/// Not supported.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
 		public bool Remove(T item) { throw new NotSupportedException(); }
+
+		/// <summary>
+		/// Not supported.
+		/// </summary>
+		/// <param name="index"></param>
 		public void RemoveAt(int index) { throw new NotSupportedException(); }
+
+		/// <summary>
+		/// Gets an enumerator over all the vertex attribute values in the wrapped array.
+		/// </summary>
+		/// <returns>An enumerator over all the vertex attribute values in the wrapped array.</returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
 		/// <summary>
@@ -408,25 +763,47 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// Abstract base class for vertex attributes that also derive from <see cref="ScriptableObject"/>
+	/// and can therefore be serialized, referenced, and turned into an asset by Unity.
+	/// </summary>
+	/// <typeparam name="T">The type of the attribute values.</typeparam>
 	public abstract class VertexAttribute<T> : ScriptableObject, IVertexAttribute<T>
 	{
+		/// <inheritdoc/>
 		public abstract T this[int i] { get; set; }
+		/// <inheritdoc/>
 		public abstract T this[Topology.Vertex v] { get; set; }
+		/// <inheritdoc/>
 		public abstract T this[Topology.HalfEdge e] { get; set; }
+		/// <inheritdoc/>
 		public abstract T this[Topology.VertexEdge e] { get; set; }
+		/// <inheritdoc/>
 		public abstract T this[Topology.FaceEdge e] { get; set; }
 
+		/// <inheritdoc/>
 		public virtual int Count { get { throw new NotSupportedException(); } }
+		/// <inheritdoc/>
 		public virtual bool IsReadOnly { get { return true; } }
+		/// <inheritdoc/>
 		public virtual void Add(T item) { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		public virtual void Clear() { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		public virtual bool Contains(T item) { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		public virtual void CopyTo(T[] array, int arrayIndex) { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		public virtual IEnumerator<T> GetEnumerator() { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		public virtual int IndexOf(T item) { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		public virtual void Insert(int index, T item) { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		public virtual bool Remove(T item) { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		public virtual void RemoveAt(int index) { throw new NotSupportedException(); }
+		/// <inheritdoc/>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
 		/// <summary>
@@ -456,10 +833,26 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// A simple low-storage vertex attribute class for situations when all vertices have the exact same value for a particular attribute.
+	/// </summary>
+	/// <typeparam name="T">The type of the constant attribute value.</typeparam>
 	public class VertexConstantAttribute<T> : VertexAttribute<T> where T : new()
 	{
+		/// <summary>
+		/// The attribute value shared by all vertices.
+		/// </summary>
 		public T constant;
 
+		/// <summary>
+		/// Creates an instance of a class derived from this one, and assigns it the constant value.
+		/// </summary>
+		/// <typeparam name="TDerived">The type of the derived class.</typeparam>
+		/// <param name="constant">The constant attribute value shared by all vertices.</param>
+		/// <returns>An instance of the derived class using the constant value provided.</returns>
+		/// <remarks><para>This is a convenience function for derived classes to use, which are needed
+		/// because Unity is unable to serialize generic classes directly, but can serialize non-generic
+		/// classes which are derived from generic classes but given a concrete type.</para></remarks>
 		protected static TDerived CreateDerived<TDerived>(T constant) where TDerived : VertexConstantAttribute<T>
 		{
 			var instance = CreateInstance<TDerived>();
@@ -467,30 +860,35 @@ namespace Experilous.MakeItTile
 			return instance;
 		}
 
+		/// <inheritdoc/>
 		public override T this[int i]
 		{
 			get { return constant; }
 			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
 		}
 
+		/// <inheritdoc/>
 		public override T this[Topology.Vertex v]
 		{
 			get { return constant; }
 			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
 		}
 
+		/// <inheritdoc/>
 		public override T this[Topology.HalfEdge e]
 		{
 			get { return constant; }
 			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
 		}
 
+		/// <inheritdoc/>
 		public override T this[Topology.VertexEdge e]
 		{
 			get { return constant; }
 			set { throw new NotSupportedException("Values of a constant vertex attribute cannot be changed."); }
 		}
 
+		/// <inheritdoc/>
 		public override T this[Topology.FaceEdge e]
 		{
 			get { return constant; }
@@ -498,10 +896,28 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// A vertex attribute wrapper around a raw array of vertex attributes, which also derives from
+	/// <see cref="ScriptableObject"/> and can therefore be serialized, referenced, and turned into an asset by Unity.
+	/// </summary>
+	/// <typeparam name="T">The type of the attribute values.</typeparam>
+	/// <seealso cref="VertexAttributeArrayWrapper{T}"/>
 	public class VertexArrayAttribute<T> : VertexAttribute<T> where T : new()
 	{
+		/// <summary>
+		/// The array of vertex attribute values that is being wrapped.
+		/// </summary>
 		public T[] array;
 
+		/// <summary>
+		/// Creates an instance of a class derived from this one, and assigns it the array data provided.
+		/// </summary>
+		/// <typeparam name="TDerived">The type of the derived class.</typeparam>
+		/// <param name="array">The array of vertex attribute values to be wrapped.</param>
+		/// <returns>An instance of the derived class using the array data provided.</returns>
+		/// <remarks><para>This is a convenience function for derived classes to use, which are needed
+		/// because Unity is unable to serialize generic classes directly, but can serialize non-generic
+		/// classes which are derived from generic classes but given a concrete type.</para></remarks>
 		protected static TDerived CreateDerived<TDerived>(T[] array) where TDerived : VertexArrayAttribute<T>
 		{
 			var attribute = CreateInstance<TDerived>();
@@ -509,50 +925,78 @@ namespace Experilous.MakeItTile
 			return attribute;
 		}
 
+		/// <summary>
+		/// Creates an instance of a class derived from this one, and creates an array of the specified size.
+		/// </summary>
+		/// <typeparam name="TDerived">The type of the derived class.</typeparam>
+		/// <param name="vertexCount">The number of elements that the created array will contain.</param>
+		/// <returns>An instance of the derived class using an array created with the specified size.</returns>
+		/// <remarks><para>This is a convenience function for derived classes to use, which are needed
+		/// because Unity is unable to serialize generic classes directly, but can serialize non-generic
+		/// classes which are derived from generic classes but given a concrete type.</para></remarks>
 		protected static TDerived CreateDerived<TDerived>(int vertexCount) where TDerived : VertexArrayAttribute<T>
 		{
 			return CreateDerived<TDerived>(new T[vertexCount]);
 		}
 
+		/// <inheritdoc/>
 		public override T this[int i]
 		{
 			get { return array[i]; }
 			set { array[i] = value; }
 		}
 
+		/// <inheritdoc/>
 		public override T this[Topology.Vertex v]
 		{
 			get { return array[v.index]; }
 			set { array[v.index] = value; }
 		}
 
+		/// <inheritdoc/>
 		public override T this[Topology.HalfEdge e]
 		{
 			get { return array[e.farVertex.index]; }
 			set { array[e.farVertex.index] = value; }
 		}
 
+		/// <inheritdoc/>
 		public override T this[Topology.VertexEdge e]
 		{
 			get { return array[e.farVertex.index]; }
 			set { array[e.farVertex.index] = value; }
 		}
 
+		/// <inheritdoc/>
 		public override T this[Topology.FaceEdge e]
 		{
 			get { return array[e.nextVertex.index]; }
 			set { array[e.nextVertex.index] = value; }
 		}
 
+		/// <inheritdoc/>
 		public override int Count { get { return array.Length; } }
+		/// <inheritdoc/>
 		public override bool Contains(T item) { return ((IList<T>)array).Contains(item); }
+		/// <inheritdoc/>
 		public override void CopyTo(T[] array, int arrayIndex) { this.array.CopyTo(array, arrayIndex); }
+		/// <inheritdoc/>
 		public override IEnumerator<T> GetEnumerator() { return ((IList<T>)array).GetEnumerator(); }
+		/// <inheritdoc/>
 		public override int IndexOf(T item) { return ((IList<T>)array).IndexOf(item); }
 	}
 
+	/// <summary>
+	/// Extension methods involving vertices and vertex attributes.
+	/// </summary>
 	public static class VertexExtensions
 	{
+		/// <summary>
+		/// Creates a vertex attribute wrapper around an array.
+		/// </summary>
+		/// <typeparam name="T">The type of elements in the array.</typeparam>
+		/// <param name="array">The array to be wrapped.</param>
+		/// <returns>A vertex attribute wrapper around array.</returns>
 		public static VertexAttributeArrayWrapper<T> AsVertexAttribute<T>(this T[] array)
 		{
 			return new VertexAttributeArrayWrapper<T>(array);
