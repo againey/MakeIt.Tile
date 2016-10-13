@@ -48,7 +48,7 @@ namespace Experilous.MakeItTile
 			/// The number of neighboring vertices or neighboring faces that a vertex has.
 			/// </summary>
 			/// <remarks><para>A vertex is guaranteed to have an equal number of neighboring vertices and faces.
-			/// So a vertex with three neighbors means that it has three neighboring vertices, and also three 
+			/// So a vertex with three neighbors means that it has three neighboring vertices, and also three
 			/// neighboring faces.</para></remarks>
 			public int neighborCount { get { return _topology.vertexNeighborCounts[_index]; } }
 
@@ -177,18 +177,36 @@ namespace Experilous.MakeItTile
 			/// Returns an indexer of all the vertex edges around the current vertex, which all have the
 			/// current vertex as their near vertex.  Can be used in <c>foreach</c> loops.
 			/// </summary>
+			/// <seealso cref="enumerableEdges"/>
 			public VertexEdgesIndexer edges { get { return new VertexEdgesIndexer(_topology, _index); } }
 
 			/// <summary>
-			/// An indexer of a vertex's outer vertex edges, used for enumerating those edges.  Satisfies the concept
+			/// Returns an enumerable sequence of all the vertex edges around the current vertex, which have
+			/// the current vertex as their near vertex.  Implements <see cref="IEnumerable{VertexEdge}"/>,
+			/// for circumstances where the actual interface and not just the concept is needed.
+			/// </summary>
+			/// <seealso cref="edges"/>
+			public IEnumerable<VertexEdge> enumerableEdges
+			{
+				get
+				{
+					foreach (var edge in edges)
+					{
+						yield return edge;
+					}
+				}
+			}
+
+			/// <summary>
+			/// An indexer of a vertex's outer edges, used for enumerating those edges.  Satisfies the concept
 			/// of <see cref="IEnumerable{VertexEdge}"/>, enabling it to be used in <c>foreach</c> loops.
 			/// </summary>
-			/// <remarks><para>A vertex's outer vertex edges provide convenient enumeration of all the edges that
+			/// <remarks><para>A vertex's outer edges provide convenient enumeration of all the edges that
 			/// share a face with the vertex but do not come directly from the vertex.  This is particularly useful
 			/// in the situation where the concept of a vertex's neighbors includes every other  vertex that is
 			/// exactly one face away from the vertex, such as the case with square grids which allow diagonal
 			/// movement, where each vertex is treated as though it has eight neighbors.</para></remarks>
-			public struct OuterVertexEdgesIndexer
+			public struct OuterEdgesIndexer
 			{
 				private Topology _topology;
 				private int _index;
@@ -198,7 +216,7 @@ namespace Experilous.MakeItTile
 				/// </summary>
 				/// <param name="topology">The topology to which the vertex belongs.</param>
 				/// <param name="index">The index of the vertex.</param>
-				public OuterVertexEdgesIndexer(Topology topology, int index)
+				public OuterEdgesIndexer(Topology topology, int index)
 				{
 					_topology = topology;
 					_index = index;
@@ -208,7 +226,7 @@ namespace Experilous.MakeItTile
 				/// An enumerator of a vertex's outer edges.  Satisfies the concept of <see cref="IEnumerator{VertexEdge}"/>,
 				/// enabling it to be used in <c>foreach</c> loops.
 				/// </summary>
-				public struct OuterVertexEdgeEnumerator
+				public struct OuterEdgeEnumerator
 				{
 					private Topology _topology;
 					private int _firstVertexEdgeIndex;
@@ -217,11 +235,11 @@ namespace Experilous.MakeItTile
 					private int _nextVertexEdgeIndex;
 
 					/// <summary>
-					/// Constructs an instance of an outer vertex edge enumerator, given a topology and a vertex's first ordinary (non-outer) edge.
+					/// Constructs an instance of an outer edge enumerator, given a topology and a vertex's first ordinary (non-outer) edge.
 					/// </summary>
-					/// <param name="topology">The topology to which the enumerated vertex edges belong.</param>
+					/// <param name="topology">The topology to which the enumerated edges belong.</param>
 					/// <param name="firstEdgeIndex">The index of the first ordinary (non-outer) edge within a cycle to enumerate.</param>
-					public OuterVertexEdgeEnumerator(Topology topology, int firstEdgeIndex)
+					public OuterEdgeEnumerator(Topology topology, int firstEdgeIndex)
 					{
 						_topology = topology;
 						_firstVertexEdgeIndex = topology.edgeData[firstEdgeIndex].twin;
@@ -271,7 +289,7 @@ namespace Experilous.MakeItTile
 
 					/// <summary>
 					/// Resets the enumerator back to its original state, so that another call to <see cref="MoveNext"/>
-					/// will have <see cref="Current"/> return the first outer vertex edge of the enumerated sequence.
+					/// will have <see cref="Current"/> return the first outer edge of the enumerated sequence.
 					/// </summary>
 					public void Reset()
 					{
@@ -282,26 +300,48 @@ namespace Experilous.MakeItTile
 				}
 
 				/// <summary>
-				/// Creates an enumerator for the outer vertex edges of the current indexer.
+				/// Creates an enumerator for the outer edges of the current indexer.
 				/// </summary>
-				/// <returns>An enumerator for the vertex edges of the current indexer.</returns>
-				public OuterVertexEdgeEnumerator GetEnumerator()
+				/// <returns>An enumerator for the outer edges of the current indexer.</returns>
+				public OuterEdgeEnumerator GetEnumerator()
 				{
-					return new OuterVertexEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
+					return new OuterEdgeEnumerator(_topology, _topology.vertexFirstEdgeIndices[_index]);
 				}
 			}
 
 			/// <summary>
-			/// Returns an indexer of all the outer vertex edges around the current vertex, which all share a
+			/// Returns an indexer of all the outer edges around the current vertex, which all share a
 			/// near face with the current vertex, but do not have the current vertex as their near vertex.
 			/// Can be used in <c>foreach</c> loops.
 			/// </summary>
-			/// <remarks><para>A vertex's outer vertex edges provide convenient enumeration of all the edges that
+			/// <remarks><para>A vertex's outer edges provide convenient enumeration of all the edges that
 			/// share a face with the vertex but do not come directly from the vertex.  This is particularly useful
 			/// in the situation where the concept of a vertex's neighbors includes every other  vertex that is
 			/// exactly one face away from the vertex, such as the case with square grids which allow diagonal
 			/// movement, where each vertex is treated as though it has eight neighbors.</para></remarks>
-			public OuterVertexEdgesIndexer outerVertexEdges { get { return new OuterVertexEdgesIndexer(_topology, _index); } }
+			public OuterEdgesIndexer outerEdges { get { return new OuterEdgesIndexer(_topology, _index); } }
+
+			/// <summary>
+			/// Returns an enumerable sequence of all the outer edges around the current vertex, which all share
+			/// a near face with the current vertex, but do not have the current vertex as their near vertex.
+			/// Implements <see cref="IEnumerable{FaceEdge}"/>, for circumstances where the actual interface
+			/// and not just the concept is needed.
+			/// </summary>
+			/// <remarks><para>A vertex's outer edges provide convenient enumeration of all the edges that
+			/// share a face with the vertex but do not come directly from the vertex.  This is particularly useful
+			/// in the situation where the concept of a vertex's neighbors includes every other  vertex that is
+			/// exactly one face away from the vertex, such as the case with square grids which allow diagonal
+			/// movement, where each vertex is treated as though it has eight neighbors.</para></remarks>
+			public IEnumerable<VertexEdge> enumerableOuterEdges
+			{
+				get
+				{
+					foreach (var edge in edges)
+					{
+						yield return edge;
+					}
+				}
+			}
 
 			/// <summary>
 			/// Finds the vertex edge around the current vertex that corresponds to the given face.
@@ -360,13 +400,13 @@ namespace Experilous.MakeItTile
 			}
 
 			/// <summary>
-			/// Finds the outer vertex edge around the current vertex that corresponds to the given face.
+			/// Finds the outer edge around the current vertex that corresponds to the given face.
 			/// </summary>
 			/// <param name="face">The face for which the corresponding edge is to be found.</param>
-			/// <returns>The outer vertex edge whose face is the given face, or an empty edge if no matching edge is found.</returns>
-			public VertexEdge FindOuterVertexEdge(Face face)
+			/// <returns>The outer edge whose face is the given face, or an empty edge if no matching edge is found.</returns>
+			public VertexEdge FindOuterEdge(Face face)
 			{
-				foreach (var vertexEdge in outerVertexEdges)
+				foreach (var vertexEdge in outerEdges)
 				{
 					if (vertexEdge.face == face)
 					{
@@ -377,13 +417,13 @@ namespace Experilous.MakeItTile
 			}
 
 			/// <summary>
-			/// Finds the outer vertex edge around the current vertex that points to the given vertex.
+			/// Finds the outer edge around the current vertex that points to the given vertex.
 			/// </summary>
 			/// <param name="vertex">The vertex for which the corresponding edge is to be found.</param>
-			/// <returns>The outer vertex edge whose vertex is the given vertex, or an empty edge if no matching edge is found.</returns>
-			public VertexEdge FindOuterVertexEdge(Vertex vertex)
+			/// <returns>The outer edge whose vertex is the given vertex, or an empty edge if no matching edge is found.</returns>
+			public VertexEdge FindOuterEdge(Vertex vertex)
 			{
-				foreach (var vertexEdge in outerVertexEdges)
+				foreach (var vertexEdge in outerEdges)
 				{
 					if (vertexEdge.vertex == vertex)
 					{
@@ -394,25 +434,25 @@ namespace Experilous.MakeItTile
 			}
 
 			/// <summary>
-			/// Tries to find the outer vertex edge around the current vertex that corresponds to the given face.
+			/// Tries to find the outer edge around the current vertex that corresponds to the given face.
 			/// </summary>
 			/// <param name="face">The face for which the corresponding edge is to be found.</param>
-			/// <param name="edge">The outer vertex edge whose face is the given face, or an empty edge if no matching edge is found.</param>
+			/// <param name="edge">The outer edge whose face is the given face, or an empty edge if no matching edge is found.</param>
 			/// <returns>True if the corresponding edge was found, and false if no matching edge is found.</returns>
-			public bool TryFindOuterVertexEdge(Face face, out VertexEdge edge)
+			public bool TryFindOuterEdge(Face face, out VertexEdge edge)
 			{
-				return edge = FindOuterVertexEdge(face);
+				return edge = FindOuterEdge(face);
 			}
 
 			/// <summary>
-			/// Tries to find the outer vertex edge around the current vertex that points to the given vertex.
+			/// Tries to find the outer edge around the current vertex that points to the given vertex.
 			/// </summary>
 			/// <param name="vertex">The vertex for which the corresponding edge is to be found.</param>
-			/// <param name="edge">The outer vertex edge whose vertex is the given vertex, or an empty edge if no matching edge is found.</param>
+			/// <param name="edge">The outer edge whose vertex is the given vertex, or an empty edge if no matching edge is found.</param>
 			/// <returns>True if the corresponding edge was found, and false if no matching edge is found.</returns>
-			public bool TryFindOuterVertexEdge(Vertex vertex, out VertexEdge edge)
+			public bool TryFindOuterEdge(Vertex vertex, out VertexEdge edge)
 			{
-				return edge = FindOuterVertexEdge(vertex);
+				return edge = FindOuterEdge(vertex);
 			}
 
 			/// <summary>
@@ -537,7 +577,7 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
-		/// An indexer of a vertices in a topology, used for enumerating vertices.  Satisfies the concept
+		/// An indexer of the vertices in a topology, used for enumerating vertices.  Satisfies the concept
 		/// of <see cref="IEnumerable{Vertex}"/>, enabling it to be used in <c>foreach</c> loops.
 		/// </summary>
 		public struct VerticesIndexer
@@ -547,7 +587,7 @@ namespace Experilous.MakeItTile
 			/// <summary>
 			/// Constructs an indexer for the vertices in the given topology.
 			/// </summary>
-			/// <param name="topology">The topology whose vertices are to be indexed.</param>
+			/// <param name="topology">The topology whose vertices are to be enumerated.</param>
 			public VerticesIndexer(Topology topology) { _topology = topology; }
 
 			/// <summary>
@@ -565,7 +605,7 @@ namespace Experilous.MakeItTile
 			/// <summary>
 			/// Creates an enumerator for the vertices of the current indexer.
 			/// </summary>
-			/// <returns></returns>
+			/// <returns>An enumerator for the vertices of the current indexer.</returns>
 			public VertexEnumerator GetEnumerator() { return new VertexEnumerator(_topology); }
 
 			/// <summary>
@@ -596,7 +636,7 @@ namespace Experilous.MakeItTile
 
 				/// <summary>
 				/// Resets the enumerator back to its original state, so that another call to <see cref="MoveNext"/>
-				/// have <see cref="Current"/> return the first vertex of the enumerated sequence.
+				/// will have <see cref="Current"/> return the first vertex of the enumerated sequence.
 				/// </summary>
 				public void Reset() { _current = -1; }
 			}
@@ -707,10 +747,10 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
-		/// Accesses the vertex attribute value in the array corresponding to the far vertex of the given edge.
+		/// Accesses the vertex attribute value in the array corresponding to the vertex of the given edge.
 		/// </summary>
-		/// <param name="e">The edge whose far vertex's attribute value is to be accessed.</param>
-		/// <returns>The vertex attribute value corresponding to the far vertex of the given edge.</returns>
+		/// <param name="e">The edge whose vertex's attribute value is to be accessed.</param>
+		/// <returns>The vertex attribute value corresponding to the vertex of the given edge.</returns>
 		public T this[Topology.HalfEdge e]
 		{
 			get { return array[e.vertex.index]; }
@@ -718,10 +758,10 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
-		/// Accesses the vertex attribute value in the array corresponding to the far vertex of the given edge.
+		/// Accesses the vertex attribute value in the array corresponding to the vertex of the given edge.
 		/// </summary>
-		/// <param name="e">The edge whose far vertex's attribute value is to be accessed.</param>
-		/// <returns>The vertex attribute value corresponding to the far vertex of the given edge.</returns>
+		/// <param name="e">The edge whose vertex's attribute value is to be accessed.</param>
+		/// <returns>The vertex attribute value corresponding to the vertex of the given edge.</returns>
 		public T this[Topology.VertexEdge e]
 		{
 			get { return array[e.vertex.index]; }
@@ -729,10 +769,10 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
-		/// Accesses the vertex attribute value in the array corresponding to the far vertex of the given edge.
+		/// Accesses the vertex attribute value in the array corresponding to the vertex of the given edge.
 		/// </summary>
-		/// <param name="e">The edge whose next vertex's attribute value is to be accessed.</param>
-		/// <returns>The vertex attribute value corresponding to the next vertex of the given edge.</returns>
+		/// <param name="e">The edge whose vertex's attribute value is to be accessed.</param>
+		/// <returns>The vertex attribute value corresponding to the vertex of the given edge.</returns>
 		public T this[Topology.FaceEdge e]
 		{
 			get { return array[e.vertex.index]; }

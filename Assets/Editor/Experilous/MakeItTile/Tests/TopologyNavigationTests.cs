@@ -38,7 +38,7 @@ namespace Experilous.MakeItTile.Tests
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var face = topology.faces[surface.GetFaceIndex(1, 1)];
-			var neighborFaceEdges = face.outerFaceEdges.GetEnumerator();
+			var neighborFaceEdges = face.outerEdges.GetEnumerator();
 
 			Assert.True(neighborFaceEdges.MoveNext());
 			Assert.AreEqual(surface.GetFaceIndex(1, 0), neighborFaceEdges.Current.face.index);
@@ -86,7 +86,7 @@ namespace Experilous.MakeItTile.Tests
 			var topology = TopologyUtility.BuildTopology(surface);
 
 			var vertex = topology.vertices[surface.GetVertexIndex(1, 1)];
-			var neighborVertexEdges = vertex.outerVertexEdges.GetEnumerator();
+			var neighborVertexEdges = vertex.outerEdges.GetEnumerator();
 
 			Assert.True(neighborVertexEdges.MoveNext());
 			Assert.AreEqual(surface.GetVertexIndex(0, 0), neighborVertexEdges.Current.vertex.index);

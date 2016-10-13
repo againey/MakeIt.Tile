@@ -27,7 +27,7 @@ namespace Experilous.MakeItTile
 
 		public static IEnumerator<Topology.Vertex> FaceAdjacentVertices(Topology.Vertex vertex)
 		{
-			foreach (var edge in vertex.outerVertexEdges)
+			foreach (var edge in vertex.outerEdges)
 			{
 				yield return edge.vertex;
 			}
@@ -51,7 +51,7 @@ namespace Experilous.MakeItTile
 
 		public static IEnumerator<Topology.Face> VertexAdjacentFaces(Topology.Face face)
 		{
-			foreach (var edge in face.outerFaceEdges)
+			foreach (var edge in face.outerEdges)
 			{
 				yield return edge.face;
 			}
