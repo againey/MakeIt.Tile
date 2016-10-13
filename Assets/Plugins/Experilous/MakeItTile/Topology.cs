@@ -85,21 +85,62 @@ namespace Experilous.MakeItTile
 	/// <seealso cref="TopologyUtility"/>
 	public partial class Topology : ScriptableObject, ICloneable
 	{
+		/// <summary>
+		/// A parallel array containing the number of neighbors each vertex has.
+		/// </summary>
 		public ushort[] vertexNeighborCounts;
+
+		/// <summary>
+		/// A parallel array containing the index of the first edge of each vertex.
+		/// </summary>
 		public int[] vertexFirstEdgeIndices;
 
+		/// <summary>
+		/// A parallel array containing edge data relating neighbor vertices and faces to one another.
+		/// </summary>
 		public EdgeData[] edgeData;
 
+		/// <summary>
+		/// A parallel array containing the number of neighbors each face has.
+		/// </summary>
 		public ushort[] faceNeighborCounts;
+
+		/// <summary>
+		/// A parallel array containing the index of the first edge of each face.
+		/// </summary>
 		public int[] faceFirstEdgeIndices;
 
+		/// <summary>
+		/// The index of the first face that is not an internal face.
+		/// </summary>
+		/// <remarks><para>Faces are partititioned into two groups.  At the front are all the internal
+		/// faces, and the external faces are all at the end.</para></remarks>
 		public int firstExternalFaceIndex;
 
+		/// <summary>
+		/// Creates a topology using the provided raw vertex/edge/face relation data.
+		/// </summary>
+		/// <param name="vertexNeighborCounts">A parallel array containing the number of neighbors each vertex has.</param>
+		/// <param name="vertexFirstEdgeIndices">A parallel array containing the index of the first edge of each vertex.</param>
+		/// <param name="edgeData">A parallel array containing edge data relating neighbor vertices and faces to one another.</param>
+		/// <param name="faceNeighborCounts">A parallel array containing the number of neighbors each face has.</param>
+		/// <param name="faceFirstEdgeIndices">A parallel array containing the index of the first edge of each face.</param>
+		/// <returns>A topology made from the provided relation data.</returns>
 		public static Topology Create(ushort[] vertexNeighborCounts, int[] vertexFirstEdgeIndices, EdgeData[] edgeData, ushort[] faceNeighborCounts, int[] faceFirstEdgeIndices)
 		{
 			return Create(vertexNeighborCounts, vertexFirstEdgeIndices, edgeData, faceNeighborCounts, faceFirstEdgeIndices, faceNeighborCounts.Length);
 		}
 
+		/// <summary>
+		/// Creates a topology using the provided raw vertex/edge/face relation data.
+		/// </summary>
+		/// <param name="vertexNeighborCounts">A parallel array containing the number of neighbors each vertex has.</param>
+		/// <param name="vertexFirstEdgeIndices">A parallel array containing the index of the first edge of each vertex.</param>
+		/// <param name="edgeData">A parallel array containing edge data relating neighbor vertices and faces to one another.</param>
+		/// <param name="faceNeighborCounts">A parallel array containing the number of neighbors each face has.</param>
+		/// <param name="faceFirstEdgeIndices">A parallel array containing the index of the first edge of each face.</param>
+		/// <param name="firstExternalFaceIndex">The index of the first face that is not an internal face.</param>
+		/// <returns>A topology made from the provided relation data.</returns>
 		public static Topology Create(ushort[] vertexNeighborCounts, int[] vertexFirstEdgeIndices, EdgeData[] edgeData, ushort[] faceNeighborCounts, int[] faceFirstEdgeIndices, int firstExternalFaceIndex)
 		{
 			var instance = CreateInstance<Topology>();
@@ -112,6 +153,10 @@ namespace Experilous.MakeItTile
 			return instance;
 		}
 
+		/// <summary>
+		/// Creates a clone of the current topology.
+		/// </summary>
+		/// <returns>A clone of the current topology.</returns>
 		public virtual object Clone()
 		{
 			var clone = Create(
@@ -126,6 +171,9 @@ namespace Experilous.MakeItTile
 			return clone;
 		}
 
+		/// <summary>
+		/// Reverses the roles of vertices and faces, as when taking the dual of a polyhedron.
+		/// </summary>
 		public virtual void MakeDual()
 		{
 			if (firstExternalFaceIndex < faceFirstEdgeIndices.Length) throw new InvalidOperationException("A dual topology cannot be derived from a topology with external faces.");
@@ -158,6 +206,9 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <summary>
+		/// Creates a copy of the current topology, but with the roles of vertices and faces reversed, as when taking the dual of a polyhedron.
+		/// </summary>
 		public virtual Topology GetDualTopology()
 		{
 			var clone = (Topology)Clone();
@@ -360,6 +411,14 @@ namespace Experilous.MakeItTile
 			PivotVertexEdgeForwardUnchecked(edgeIndex, twinEdgeIndex, outerEdgeIndex1, innerEdgeIndex1);
 		}
 
+		/// <summary>
+		/// Checks if the local topology around the given edge allows it to be pivoted around its near vertex.
+		/// </summary>
+		/// <param name="edge">The edge to be pivoted.</param>
+		/// <returns>True if the edge can be pivoted backward, and false if it cannot.</returns>
+		/// <remarks><para>Pivoting a vertex edge backward will reduce the current far vertex neighbor count by
+		/// one, and the previous face neighbor count by one.  Neither of those neighbor counts are allowed to drop
+		/// below two, so if either of them are already two or less, the pivot should be disallowed.</para></remarks>
 		public bool CanPivotEdgeBackward(VertexEdge edge)
 		{
 			// After pivoting, the edge's old far vertex and previous face will both have their
@@ -367,6 +426,14 @@ namespace Experilous.MakeItTile
 			return edge.farVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2;
 		}
 
+		/// <summary>
+		/// Checks if the local topology around the given edge allows it to be pivoted around its near vertex.
+		/// </summary>
+		/// <param name="edge">The edge to be pivoted.</param>
+		/// <returns>True if the edge can be pivoted forward, and false if it cannot.</returns>
+		/// <remarks><para>Pivoting a vertex edge forward will reduce the current far vertex neighbor count by
+		/// one, and the next face neighbor count by one.  Neither of those neighbor counts are allowed to drop
+		/// below two, so if either of them are already two or less, the pivot should be disallowed.</para></remarks>
 		public bool CanPivotEdgeForward(VertexEdge edge)
 		{
 			// After pivoting, the edge's old far vertex and next face will both have their
@@ -374,18 +441,36 @@ namespace Experilous.MakeItTile
 			return edge.farVertex.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
+		/// <summary>
+		/// Pivots the edge backward around its near vertex, such that it targets the previous far vertex along the previous face.
+		/// </summary>
+		/// <param name="edge">The edge to be pivoted.</param>
 		public void PivotEdgeBackward(VertexEdge edge)
 		{
 			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge backward when either its far vertex or previous face has only two neighbors.");
 			PivotEdgeBackwardUnchecked(edge);
 		}
 
+		/// <summary>
+		/// Pivots the edge forward around its near vertex, such that it targets the next far vertex along the next face.
+		/// </summary>
+		/// <param name="edge">The edge to be pivoted.</param>
 		public void PivotEdgeForward(VertexEdge edge)
 		{
 			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a vertex edge forward when either its far vertex or next face has only two neighbors.");
 			PivotEdgeForwardUnchecked(edge);
 		}
 
+		/// <summary>
+		/// Checks if the local topology around the given edge allows it to spin backward one step.
+		/// </summary>
+		/// <param name="edge">The edge to spin.</param>
+		/// <returns>True if the edge can spin backward one step, and false if it cannot.</returns>
+		/// <remarks><para>Spinning a vertex edge backward will reduce the current near and far vertex neighbor counts
+		/// by one.  Neither of those neighbor counts are allowed to drop below two, so if either of them are already
+		/// two or less, the spin should be disallowed.  Additionally, if the previous or next face neighbor counts are
+		/// two or less (that is, they are degenerate faces), then the spin modification would break down, so these
+		/// neighbor counts must also be greater than two or else the spin is disallowed.</para></remarks>
 		public bool CanSpinEdgeBackward(VertexEdge edge)
 		{
 			// After spinning, the edge's old near and far vertices will both have their
@@ -396,6 +481,16 @@ namespace Experilous.MakeItTile
 			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
+		/// <summary>
+		/// Checks if the local topology around the given edge allows it to spin forward one step.
+		/// </summary>
+		/// <param name="edge">The edge to spin.</param>
+		/// <returns>True if the edge can spin forward one step, and false if it cannot.</returns>
+		/// <remarks><para>Spinning a vertex edge forward will reduce the current near and far vertex neighbor counts
+		/// by one.  Neither of those neighbor counts are allowed to drop below two, so if either of them are already
+		/// two or less, the spin should be disallowed.  Additionally, if the previous or next face neighbor counts are
+		/// two or less (that is, they are degenerate faces), then the spin modification would break down, so these
+		/// neighbor counts must also be greater than two or else the spin is disallowed.</para></remarks>
 		public bool CanSpinEdgeForward(VertexEdge edge)
 		{
 			// After spinning, the edge's old near and far vertices will both have their
@@ -406,6 +501,12 @@ namespace Experilous.MakeItTile
 			return edge.farVertex.neighborCount > 2 && edge.nearVertex.neighborCount > 2 && edge.prevFace.neighborCount > 2 && edge.nextFace.neighborCount > 2;
 		}
 
+		/// <summary>
+		/// Spins the edge backward, such that it targets the previous far vertex along the previous face, and it
+		/// comes from the previous near vertex along the next face.
+		/// </summary>
+		/// <param name="edge">The edge to spin.</param>
+		/// <remarks><para>This is equivalent to pivoting both the specified edge and its twin.</para></remarks>
 		public void SpinEdgeBackward(VertexEdge edge)
 		{
 			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge backward when either its far vertex or near vertex has only two neighbors.");
@@ -413,6 +514,12 @@ namespace Experilous.MakeItTile
 			PivotEdgeBackwardUnchecked(edge.twin);
 		}
 
+		/// <summary>
+		/// Spins the edge forward, such that it targets the next far vertex along the next face, and it
+		/// comes from the next near vertex along the previous face.
+		/// </summary>
+		/// <param name="edge">The edge to spin.</param>
+		/// <remarks><para>This is equivalent to pivoting both the specified edge and its twin.</para></remarks>
 		public void SpinEdgeForward(VertexEdge edge)
 		{
 			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a vertex edge forward when either its far vertex or near vertex has only two neighbors.");
@@ -420,6 +527,14 @@ namespace Experilous.MakeItTile
 			PivotEdgeForwardUnchecked(edge.twin);
 		}
 
+		/// <summary>
+		/// Checks if the local topology around the given edge allows it to be pivoted around its near face.
+		/// </summary>
+		/// <param name="edge">The edge to be pivoted.</param>
+		/// <returns>True if the edge can be pivoted backward, and false if it cannot.</returns>
+		/// <remarks><para>Pivoting a face edge backward will reduce the current far face neighbor count by
+		/// one, and the previous vertex neighbor count by one.  Neither of those neighbor counts are allowed to drop
+		/// below two, so if either of them are already two or less, the pivot should be disallowed.</para></remarks>
 		public bool CanPivotEdgeBackward(FaceEdge edge)
 		{
 			// After pivoting, the edge's old far face and prev vertex will both have their
@@ -427,6 +542,14 @@ namespace Experilous.MakeItTile
 			return edge.farFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2;
 		}
 
+		/// <summary>
+		/// Checks if the local topology around the given edge allows it to be pivoted around its near face.
+		/// </summary>
+		/// <param name="edge">The edge to be pivoted.</param>
+		/// <returns>True if the edge can be pivoted forward, and false if it cannot.</returns>
+		/// <remarks><para>Pivoting a face edge forward will reduce the current far face neighbor count by
+		/// one, and the next vertex neighbor count by one.  Neither of those neighbor counts are allowed to drop
+		/// below two, so if either of them are already two or less, the pivot should be disallowed.</para></remarks>
 		public bool CanPivotEdgeForward(FaceEdge edge)
 		{
 			// After pivoting, the edge's old far face and next vertex will both have their
@@ -434,18 +557,36 @@ namespace Experilous.MakeItTile
 			return edge.farFace.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
+		/// <summary>
+		/// Pivots the edge backward around its near face, such that it targets the previous far face around the previous vertex.
+		/// </summary>
+		/// <param name="edge">The edge to be pivoted.</param>
 		public void PivotEdgeBackward(FaceEdge edge)
 		{
 			if (!CanPivotEdgeBackward(edge)) throw new InvalidOperationException("Cannot pivot a face edge backward when either its far face or previous vertex has only two neighbors.");
 			PivotEdgeBackwardUnchecked(edge);
 		}
 
+		/// <summary>
+		/// Pivots the edge forward around its near face, such that it targets the next far face around the next vertex.
+		/// </summary>
+		/// <param name="edge">The edge to be pivoted.</param>
 		public void PivotEdgeForward(FaceEdge edge)
 		{
 			if (!CanPivotEdgeForward(edge)) throw new InvalidOperationException("Cannot pivot a face edge backward when either its far face or next vertex has only two neighbors.");
 			PivotEdgeForwardUnchecked(edge);
 		}
 
+		/// <summary>
+		/// Checks if the local topology around the given edge allows it to spin backward one step.
+		/// </summary>
+		/// <param name="edge">The edge to spin.</param>
+		/// <returns>True if the edge can spin backward one step, and false if it cannot.</returns>
+		/// <remarks><para>Spinning a face edge backward will reduce the current near and far face neighbor counts by
+		/// one.  Neither of those neighbor counts are allowed to drop below two, so if either of them are already two
+		/// or less, the spin should be disallowed.  Additionally, if the previous or next vertex neighbor counts are
+		/// two or less (that is, they are linear vertices), then the spin modification would break down, so these
+		/// neighbor counts must also be greater than two or else the spin is disallowed.</para></remarks>
 		public bool CanSpinEdgeBackward(FaceEdge edge)
 		{
 			// After spinning, the edge's old near and far faces will both have their
@@ -456,6 +597,16 @@ namespace Experilous.MakeItTile
 			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
+		/// <summary>
+		/// Checks if the local topology around the given edge allows it to spin forward one step.
+		/// </summary>
+		/// <param name="edge">The edge to spin.</param>
+		/// <returns>True if the edge can spin forward one step, and false if it cannot.</returns>
+		/// <remarks><para>Spinning a face edge forward will reduce the current near and far face neighbor counts by
+		/// one.  Neither of those neighbor counts are allowed to drop below two, so if either of them are already two
+		/// or less, the spin should be disallowed.  Additionally, if the previous or next vertex neighbor counts are
+		/// two or less (that is, they are linear vertices), then the spin modification would break down, so these
+		/// neighbor counts must also be greater than two or else the spin is disallowed.</para></remarks>
 		public bool CanSpinEdgeForward(FaceEdge edge)
 		{
 			// After spinning, the edge's old near and far faces will both have their
@@ -466,6 +617,12 @@ namespace Experilous.MakeItTile
 			return edge.farFace.neighborCount > 2 && edge.nearFace.neighborCount > 2 && edge.prevVertex.neighborCount > 2 && edge.nextVertex.neighborCount > 2;
 		}
 
+		/// <summary>
+		/// Spins the edge backward, such that it faces toward the previous far face around the previous vertex, and it
+		/// faces away from the previous near face along the next vertex.
+		/// </summary>
+		/// <param name="edge">The edge to spin.</param>
+		/// <remarks><para>This is equivalent to pivoting both the specified edge and its twin.</para></remarks>
 		public void SpinEdgeBackward(FaceEdge edge)
 		{
 			if (!CanSpinEdgeBackward(edge)) throw new InvalidOperationException("Cannot spin a face edge backward when either its far face or near face has only two neighbors.");
@@ -473,6 +630,12 @@ namespace Experilous.MakeItTile
 			PivotEdgeBackwardUnchecked(edge.twin);
 		}
 
+		/// <summary>
+		/// Spins the edge forward, such that it faces toward the next far face around the next vertex, and it
+		/// faces away from the next near face along the previous vertex.
+		/// </summary>
+		/// <param name="edge">The edge to spin.</param>
+		/// <remarks><para>This is equivalent to pivoting both the specified edge and its twin.</para></remarks>
 		public void SpinEdgeForward(FaceEdge edge)
 		{
 			if (!CanSpinEdgeForward(edge)) throw new InvalidOperationException("Cannot spin a face edge forward when either its far face or near face has only two neighbors.");
