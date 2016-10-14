@@ -1191,14 +1191,14 @@ namespace Experilous.MakeItTile
 			public bool isNonBoundary { get { return _halfEdge.isNonBoundary; } }
 
 			/// <summary>
-			/// Indicates if the current edge is on the boundary between internal and external faces, with the previous face being external.
+			/// Indicates if the current edge is on the boundary between internal and external faces, with the far face being external.
 			/// </summary>
 			/// <seealso cref="Face.isInternal"/>
 			/// <seealso cref="Face.isExternal"/>
 			public bool isOuterBoundary { get { return _halfEdge.isOuterBoundary; } }
 
 			/// <summary>
-			/// Indicates if the current edge is on the boundary between internal and external faces, with the previous face being internal.
+			/// Indicates if the current edge is on the boundary between internal and external faces, with the far face being internal.
 			/// </summary>
 			/// <seealso cref="Face.isInternal"/>
 			/// <seealso cref="Face.isExternal"/>
@@ -1211,7 +1211,7 @@ namespace Experilous.MakeItTile
 			public bool isInternal { get { return _halfEdge.isInternal; } }
 
 			/// <summary>
-			/// Indicates if the current edge is external, which is true if its previous face is external.
+			/// Indicates if the current edge is external, which is true if its far face is external.
 			/// </summary>
 			/// <seealso cref="Face.isExternal"/>
 			public bool isExternal { get { return _halfEdge.isExternal; } }

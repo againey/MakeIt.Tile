@@ -276,13 +276,7 @@ namespace Experilous.Examples.MakeItTile
 			{
 				_faceTerrainIndices[visitor.edge.farFace] = _faceTerrainIndices[visitor.edge.nearFace];
 
-				foreach (var edge in visitor.edge.face.edges)
-				{
-					if (edge.twinIndex != visitor.edge.index && !edge.isOuterBoundary && !visitor.HasBeenVisited(edge.face))
-					{
-						visitor.VisitNeighbor(edge);
-					}
-				}
+				visitor.VisitInternalNeighborsExceptSource();
 			},
 			_random);
 
@@ -388,10 +382,7 @@ namespace Experilous.Examples.MakeItTile
 				_dynamicMesh.RebuildFace(visitor.face, _faceTriangulation);
 				if (visitor.depth < limitedSightDistance)
 				{
-					foreach (var edge in visitor.face.edges)
-					{
-						visitor.VisitNeighbor(edge.face);
-					}
+					visitor.VisitAllNeighbors();
 				}
 			});
 		}
@@ -408,10 +399,7 @@ namespace Experilous.Examples.MakeItTile
 
 				if (visitor.depth < 3)
 				{
-					foreach (var edge in visitor.face.edges)
-					{
-						visitor.VisitNeighbor(edge.face);
-					}
+					visitor.VisitAllNeighbors();
 				}
 			});
 		}

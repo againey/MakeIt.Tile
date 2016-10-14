@@ -10,27 +10,77 @@ using Experilous.Containers;
 
 namespace Experilous.MakeItTile
 {
+	/// <summary>
+	/// Abstract base class for visiting topology elements one at a time in some connected
+	/// order, and which includes static functions to initiate visitations of various forms.
+	/// </summary>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
+	/// <seealso cref="VertexVisitor"/>
+	/// <seealso cref="VertexVisitor{TDistance}"/>
+	/// <seealso cref="VertexEdgeVisitor"/>
+	/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+	/// <seealso cref="FaceVisitor"/>
+	/// <seealso cref="FaceVisitor{TDistance}"/>
+	/// <seealso cref="FaceEdgeVisitor"/>
+	/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 	public abstract class TopologyVisitor
 	{
+		/// <summary>
+		/// The topology containing the elements being visited.
+		/// </summary>
 		protected Topology _topology;
 
+		/// <summary>
+		/// The current depth of visitation, which is the number of edge connections that
+		/// have been traversed from the initial element to reach the current element.
+		/// </summary>
 		protected int _depth;
 
+		/// <summary>
+		/// Indicates if visitation of the current item should be ignored, treating it as
+		/// though it has not yet been visited.
+		/// </summary>
 		protected bool _ignore;
+
+		/// <summary>
+		/// Indicates if visitation of all remaining elements should immediately cease.
+		/// </summary>
 		protected bool _break;
 
+		/// <summary>
+		/// The current depth of visitation, which is the number of edge connections that
+		/// have been traversed from the initial element to reach the current element.
+		/// </summary>
 		public int depth { get { return _depth; } }
 
+		/// <summary>
+		/// Instructs the visitor to treat the currently visited element as though it was
+		/// not just visited.
+		/// </summary>
 		public void Ignore()
 		{
 			_ignore = true;
 		}
 
+		/// <summary>
+		/// Instructs the visitor to cease visitation of any further elements.
+		/// </summary>
 		public void Break()
 		{
 			_break = true;
 		}
 
+		/// <summary>
+		/// Constructs a visitor over elements of the given topology.
+		/// </summary>
+		/// <param name="topology">The topology containing the elements being visited.</param>
 		protected TopologyVisitor(Topology topology)
 		{
 			_topology = topology;
@@ -40,168 +90,440 @@ namespace Experilous.MakeItTile
 
 		#region Vertices
 
+		/// <summary>
+		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertex, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate);
+			VertexVisitor.Visit(rootVertex, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertices, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate);
+			VertexVisitor.Visit(rootVertices, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor.VisitAll(rootVertex, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate, state);
+			VertexVisitor.Visit(rootVertex, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor.VisitAll(rootVertices, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate, state);
+			VertexVisitor.Visit(rootVertices, new LifoQueue<VertexVisitor.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertex, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertex, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertices, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertices, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertex, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertex, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertices, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertices, new LifoQueue<VertexVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in no particular order, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate);
+			VertexEdgeVisitor.Visit(rootEdge, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in no particular order, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate);
+			VertexEdgeVisitor.Visit(rootEdges, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in no particular order, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate, state);
+			VertexEdgeVisitor.Visit(rootEdge, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in no particular order, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate, state);
+			VertexEdgeVisitor.Visit(rootEdges, new LifoQueue<VertexEdgeVisitor.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in no particular order, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in no particular order, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in no particular order, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in no particular order, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitVertices<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Faces
 
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFace, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate);
+			FaceVisitor.Visit(rootFace, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFaces, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate);
+			FaceVisitor.Visit(rootFaces, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor.VisitAll(rootFace, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, state);
+			FaceVisitor.Visit(rootFace, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor.VisitAll(rootFaces, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, state);
+			FaceVisitor.Visit(rootFaces, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFace, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFaces, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFace, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFaces, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in no particular order, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate);
+			FaceEdgeVisitor.Visit(rootEdge, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in no particular order, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate);
+			FaceEdgeVisitor.Visit(rootEdges, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in no particular order, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate, state);
+			FaceEdgeVisitor.Visit(rootEdge, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in no particular order, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate, state);
+			FaceEdgeVisitor.Visit(rootEdges, new LifoQueue<FaceEdgeVisitor.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in no particular order, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in no particular order, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in no particular order, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in no particular order, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="LifoQueue{T}"/>
 		public static void VisitFaces<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
 		#endregion
@@ -212,168 +534,440 @@ namespace Experilous.MakeItTile
 
 		#region Vertices
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate);
+			VertexVisitor.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate);
+			VertexVisitor.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+			VertexVisitor.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+			VertexVisitor.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertices, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertices, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+			VertexEdgeVisitor.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on depth, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+			VertexEdgeVisitor.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+			VertexEdgeVisitor.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on depth, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+			VertexEdgeVisitor.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on depth, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on depth, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Faces
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
+			FaceVisitor.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
+			FaceVisitor.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+			FaceVisitor.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+			FaceVisitor.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+			FaceEdgeVisitor.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
+			FaceEdgeVisitor.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+			FaceEdgeVisitor.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
+			FaceEdgeVisitor.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -384,168 +978,440 @@ namespace Experilous.MakeItTile
 
 		#region Vertices
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate);
+			VertexVisitor.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate)
 		{
-			VertexVisitor.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate);
+			VertexVisitor.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate, state);
+			VertexVisitor.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate, state);
+			VertexVisitor.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor.QueueItem>(VertexVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertices, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertices, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(VertexVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+			VertexEdgeVisitor.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on depth, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+			VertexEdgeVisitor.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
+			VertexEdgeVisitor.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on depth, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
+			VertexEdgeVisitor.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor.QueueItem>(VertexEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on depth, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on depth, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on depth, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on depth, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInDepthFirstOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Faces
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate);
+			FaceVisitor.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate);
+			FaceVisitor.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate, state);
+			FaceVisitor.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate, state);
+			FaceVisitor.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+			FaceEdgeVisitor.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on depth, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
+			FaceEdgeVisitor.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
+			FaceEdgeVisitor.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on depth, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
+			FaceEdgeVisitor.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor.QueueItem>(FaceEdgeVisitor.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on depth, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on depth, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on depth, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on depth, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInDepthFirstOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -650,176 +1516,432 @@ namespace Experilous.MakeItTile
 
 		#region Int32
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<int>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<int>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region UInt32
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Single
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<float>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<float>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Double
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<double>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<double>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInNearestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -830,176 +1952,432 @@ namespace Experilous.MakeItTile
 
 		#region Int32
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<int>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<int>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region UInt32
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<uint>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<uint>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Single
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<float>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<float>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Double
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<double>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<double>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in breadth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInNearestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
+			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByNearestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -1106,176 +2484,432 @@ namespace Experilous.MakeItTile
 
 		#region Int32
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<int>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<int>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region UInt32
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<uint>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Single
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<float>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<float>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Double
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<double>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<double>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInFarthestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -1286,176 +2920,432 @@ namespace Experilous.MakeItTile
 
 		#region Int32
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<int>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<int>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<int>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region UInt32
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<uint>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<uint>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<uint>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Single
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<float>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<float>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<float>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Double
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<double>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<double>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in depth-first order based on distance, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInFarthestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<double>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
+			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByFarthestDistance), visitDelegate, state);
 		}
 
 		#endregion
@@ -1468,88 +3358,248 @@ namespace Experilous.MakeItTile
 
 		#region Vertex
 
+		/// <summary>
+		/// Visits adjacent topology vertices in an order determined by the supplied comparison delegate, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which vertices are visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in an order determined by the supplied comparison delegate, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which vertices are visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in an order determined by the supplied comparison delegate, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which vertices are visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in an order determined by the supplied comparison delegate, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which vertices are visited.</param>
+		/// <seealso cref="VertexVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in an order determined by the supplied comparison delegate, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which vertices are visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in an order determined by the supplied comparison delegate, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which vertices are visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in an order determined by the supplied comparison delegate, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which vertices are visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in an order determined by the supplied comparison delegate, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which vertices are visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitVerticesInOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Face
 
+		/// <summary>
+		/// Visits adjacent topology faces in an order determined by the supplied comparison delegate, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which faces are visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in an order determined by the supplied comparison delegate, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which faces are visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in an order determined by the supplied comparison delegate, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which faces are visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in an order determined by the supplied comparison delegate, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which faces are visited.</param>
+		/// <seealso cref="FaceVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in an order determined by the supplied comparison delegate, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which faces are visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in an order determined by the supplied comparison delegate, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which faces are visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in an order determined by the supplied comparison delegate, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which faces are visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in an order determined by the supplied comparison delegate, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="areOrderedDelegate">The comparison delegate determines the order in which faces are visited.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
 		public static void VisitFacesInOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>.AreOrderedDelegate areOrderedDelegate)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
 		#endregion
@@ -1560,168 +3610,472 @@ namespace Experilous.MakeItTile
 
 		#region Vertices
 
+		/// <summary>
+		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
-			VertexVisitor.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate);
+			VertexVisitor.Visit(rootVertex, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
-			VertexVisitor.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate);
+			VertexVisitor.Visit(rootVertices, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TState>(Topology.Vertex rootVertex, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			VertexVisitor.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate, state);
+			VertexVisitor.Visit(rootVertex, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			VertexVisitor.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate, state);
+			VertexVisitor.Visit(rootVertices, new RandomOrderQueue<VertexVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertex, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TDistance>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertex, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertices, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TDistance>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate);
+			VertexVisitor<TDistance>.Visit(rootVertices, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertex, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TDistance, TState>(Topology.Vertex rootVertex, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertex, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertex, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertices, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			VertexVisitor<TDistance>.VisitAll(rootVertices, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
+			VertexVisitor<TDistance>.Visit(rootVertices, new RandomOrderQueue<VertexVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in a uniformly random order driven by the supplied random engine, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate);
+			VertexEdgeVisitor.Visit(rootEdge, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in a uniformly random order driven by the supplied random engine, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate);
+			VertexEdgeVisitor.Visit(rootEdges, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in a uniformly random order driven by the supplied random engine, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate, state);
+			VertexEdgeVisitor.Visit(rootEdge, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in a uniformly random order driven by the supplied random engine, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexEdgeVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			VertexEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate, state);
+			VertexEdgeVisitor.Visit(rootEdges, new RandomOrderQueue<VertexEdgeVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in a uniformly random order driven by the supplied random engine, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TDistance>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in a uniformly random order driven by the supplied random engine, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TDistance>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in a uniformly random order driven by the supplied random engine, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TDistance, TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdge, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology vertex edges in a uniformly random order driven by the supplied random engine, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which vertices are popped from the queue of vertices to visit.</param>
+		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitVerticesInRandomOrder<TDistance, TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			VertexEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
+			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
 		#endregion
 
 		#region Faces
 
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder(Topology.Face rootFace, FaceVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
-			FaceVisitor.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate);
+			FaceVisitor.Visit(rootFace, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
-			FaceVisitor.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate);
+			FaceVisitor.Visit(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			FaceVisitor.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate, state);
+			FaceVisitor.Visit(rootFace, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			FaceVisitor.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate, state);
+			FaceVisitor.Visit(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate);
+			FaceVisitor<TDistance>.Visit(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			FaceVisitor<TDistance>.VisitAll(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
+			FaceVisitor<TDistance>.Visit(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in a uniformly random order driven by the supplied random engine, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate);
+			FaceEdgeVisitor.Visit(rootEdge, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in a uniformly random order driven by the supplied random engine, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate);
+			FaceEdgeVisitor.Visit(rootEdges, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in a uniformly random order driven by the supplied random engine, starting with the specified root edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate, state);
+			FaceEdgeVisitor.Visit(rootEdge, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in a uniformly random order driven by the supplied random engine, starting with the specified root edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceEdgeVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			FaceEdgeVisitor.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate, state);
+			FaceEdgeVisitor.Visit(rootEdges, new RandomOrderQueue<FaceEdgeVisitor.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in a uniformly random order driven by the supplied random engine, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TDistance>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in a uniformly random order driven by the supplied random engine, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in a uniformly random order driven by the supplied random engine, starting with the specified root edge, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The edge to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdge, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdge, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
+		/// <summary>
+		/// Visits adjacent topology face edges in a uniformly random order driven by the supplied random engine, starting with the specified root edges, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// </summary>
+		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of edges to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
 		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
-			FaceEdgeVisitor<TDistance>.VisitAll(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
+			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
 		#endregion
@@ -1731,26 +4085,71 @@ namespace Experilous.MakeItTile
 
 	#region Vertex Visitors
 
+	/// <summary>
+	/// Class for visiting the vertices of a topology, one at a time in some connected order.
+	/// </summary>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
 	public sealed class VertexVisitor : TopologyVisitor
 	{
+		/// <summary>
+		/// The data that needs to be stored in a queue for the visitor to know which
+		/// vertex to visit next.  It also keeps track of informational data such as
+		/// visit depth even if it does not affect visitation order.
+		/// </summary>
 		public struct QueueItem : IEquatable<QueueItem>
 		{
+			/// <summary>
+			/// The index of the vertex to be visited.
+			/// </summary>
 			public int vertexIndex;
+
+			/// <summary>
+			/// The depth of visitation, which is the number of edges that had to be
+			/// traversed to reach the vertex of this queue item.
+			/// </summary>
 			public int depth;
 
+			/// <summary>
+			/// Constructs a queue item with the given vertex index and visitation depth.
+			/// </summary>
+			/// <param name="vertexIndex">The index of the vertex to be visited.</param>
+			/// <param name="depth">The depth of visitation.</param>
 			public QueueItem(int vertexIndex, int depth)
 			{
 				this.vertexIndex = vertexIndex;
 				this.depth = depth;
 			}
 
+			/// <summary>
+			/// Determines if the current queue item references the same vertex as the specified queue item.
+			/// </summary>
+			/// <param name="other">The other queue item to compare.</param>
+			/// <returns>True if both queue items refer to the same vertex, and false otherwise.</returns>
 			public bool Equals(QueueItem other)
 			{
 				return vertexIndex == other.vertexIndex;
 			}
 		}
 
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each vertex visited.
+		/// </summary>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		public delegate void VisitDelegate(VertexVisitor visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each vertex visited.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
 		public delegate void VisitDelegate<TState>(VertexVisitor visitor, TState state);
 
 		private IQueue<QueueItem> _queue;
@@ -1758,29 +4157,137 @@ namespace Experilous.MakeItTile
 
 		private Topology.Vertex _vertex;
 
+		/// <summary>
+		/// The vertex currently being visited.
+		/// </summary>
 		public Topology.Vertex vertex { get { return _vertex; } }
 
+		/// <summary>
+		/// Checks if the specified vertex has already been visited.
+		/// </summary>
+		/// <param name="vertex">The vertex whose visitation status is to be checked.</param>
+		/// <returns>True if the vertex has already been visited earlier in the visitation process, and false
+		/// if either it has not yet been visited or if the visitor has been told to revisit the it.</returns>
 		public bool HasBeenVisited(Topology.Vertex vertex)
 		{
 			return _visitedVertices[vertex.index];
 		}
 
-		public void VisitNeighbor(Topology.Vertex vertex)
+		/// <summary>
+		/// Addes the specified vertex to the queue of vertices to visit.  Its visitation depth will be one
+		/// greater than the depth of the vertex currently being visited.
+		/// </summary>
+		/// <param name="vertex">The vertex to be visited.</param>
+		/// <param name="includeVisited">Indicates if the vertex should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <remarks><para>If <paramref name="includeVisited"/> is true, the vertex is added to the queue
+		/// even if it has already been visited.  Its visitation status will only be checked once it is
+		/// popped from the queue, and it will only be visited if it has still not yet been visited.
+		/// This can be useful when <see cref="RevisitNeighbor"/> is sometimes called on vertices, but this
+		/// particular visitation could take precedence depending on the queue pop order.</para></remarks>
+		public void VisitNeighbor(Topology.Vertex vertex, bool includeVisited = false)
 		{
-			_queue.Push(new QueueItem(vertex.index, _depth + 1));
+			if (includeVisited || !_visitedVertices[vertex.index])
+			{
+				_queue.Push(new QueueItem(vertex.index, _depth + 1));
+			}
 		}
 
+		/// <summary>
+		/// Addes the specified vertex to the queue of vertices to visit, and marks it as not yet visited.
+		/// Its visitation depth will be one greater than the depth of the vertex currently being visited.
+		/// </summary>
+		/// <param name="vertex">The vertex to be visited.</param>
+		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
+		/// visitation cycle that never exits.</note></remarks>
 		public void RevisitNeighbor(Topology.Vertex vertex)
 		{
 			_visitedVertices[vertex.index] = false;
 			_queue.Push(new QueueItem(vertex.index, _depth + 1));
 		}
 
+		/// <summary>
+		/// Adds all neighbor vertices of the vertex currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the vertex should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.edges"/>
+		public void VisitAllNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _vertex.edges)
+			{
+				if (includeVisited || !_visitedVertices[edge.vertex.index])
+				{
+					VisitNeighbor(edge.vertex);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor vertices of the vertex currently being visited to the visitation queue, except for the vertex specified.
+		/// </summary>
+		/// <param name="excludedVertex">The neighbor vertex that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the vertices should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.edges"/>
+		public void VisitAllNeighborsExcept(Topology.Vertex excludedVertex, bool includeVisited = false)
+		{
+			foreach (var edge in _vertex.edges)
+			{
+				if (edge.vertex != excludedVertex && (includeVisited || !_visitedVertices[edge.vertex.index]))
+				{
+					VisitNeighbor(edge.vertex);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor vertices of the vertex currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the vertices should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.outerEdges"/>
+		public void VisitAllOuterNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _vertex.outerEdges)
+			{
+				if (includeVisited || !_visitedVertices[edge.vertex.index])
+				{
+					VisitNeighbor(edge.vertex);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor vertices of the vertex currently being visited to the visitation queue, except for the vertex specified.
+		/// </summary>
+		/// <param name="excludedVertex">The outer neighbor vertex that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the vertices should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.outerEdges"/>
+		public void VisitAllOuterNeighborsExcept(Topology.Vertex excludedVertex, bool includeVisited = false)
+		{
+			foreach (var edge in _vertex.outerEdges)
+			{
+				if (edge.vertex != excludedVertex && (includeVisited || !_visitedVertices[edge.vertex.index]))
+				{
+					VisitNeighbor(edge.vertex);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a breadth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedBreadthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth <= rhs.depth;
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a depth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedDepthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth >= rhs.depth;
@@ -1793,24 +4300,52 @@ namespace Experilous.MakeItTile
 			_visitedVertices = new BitArray(topology.vertices.Count);
 		}
 
-		public static void VisitAll(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology vertices in the order determined by the provided queue, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertices are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		public static void Visit(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootVertex, queue), queue, visitDelegate);
+			Visit(InitializeQueue(rootVertex, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology vertices in the order determined by the provided queue, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertices are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		public static void Visit(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootVertices, queue), queue, visitDelegate);
+			Visit(InitializeQueue(rootVertices, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll<TState>(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology vertices in the order determined by the provided queue, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertices are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootVertex, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootVertex, queue), queue, visitDelegate, state);
 		}
 
-		public static void VisitAll<TState>(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology vertices in the order determined by the provided queue, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertices are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootVertices, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootVertices, queue), queue, visitDelegate, state);
 		}
 
 		private static Topology InitializeQueue(Topology.Vertex rootVertex, IQueue<QueueItem> queue)
@@ -1834,21 +4369,21 @@ namespace Experilous.MakeItTile
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void Visit(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
 			var visitor = new VertexVisitor(topology, queue);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		private static void Visit<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			if (topology == null) return;
 			var visitor = new VertexVisitor(topology, queue);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
-		private void VisitAll(VisitDelegate visitDelegate)
+		private void Visit(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1869,7 +4404,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -1891,14 +4426,51 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// Class for visiting the vertices of a topology, one at a time in some connected order,
+	/// while keeping track of a custom distance metric along the way.
+	/// </summary>
+	/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
 	public class VertexVisitor<TDistance> : TopologyVisitor
 	{
+		/// <summary>
+		/// The data that needs to be stored in a queue for the visitor to know which
+		/// vertex to visit next.  It also keeps track of informational data such as
+		/// visit depth even if it does not affect visitation order.
+		/// </summary>
 		public struct QueueItem : IEquatable<QueueItem>
 		{
+			/// <summary>
+			/// The index of the vertex to be visited.
+			/// </summary>
 			public int vertexIndex;
+
+			/// <summary>
+			/// The depth of visitation, which is the number of edges that had to be
+			/// traversed to reach the vertex of this queue item.
+			/// </summary>
 			public int depth;
+
+			/// <summary>
+			/// The total distance accumulated during visitation from the root vertex
+			/// to the vertex of this queue item.
+			/// </summary>
 			public TDistance distance;
 
+			/// <summary>
+			/// Constructs a queue item with the given vertex index, visitation depth, and visitation distance.
+			/// </summary>
+			/// <param name="vertexIndex">The index of the vertex to be visited.</param>
+			/// <param name="depth">The depth of visitation.</param>
+			/// <param name="distance">The distance of visitation.</param>
 			public QueueItem(int vertexIndex, int depth, TDistance distance)
 			{
 				this.vertexIndex = vertexIndex;
@@ -1906,13 +4478,29 @@ namespace Experilous.MakeItTile
 				this.distance = distance;
 			}
 
+			/// <summary>
+			/// Determines if the current queue item references the same vertex as the specified queue item.
+			/// </summary>
+			/// <param name="other">The other queue item to compare.</param>
+			/// <returns>True if both queue items refer to the same vertex, and false otherwise.</returns>
 			public bool Equals(QueueItem other)
 			{
 				return vertexIndex == other.vertexIndex;
 			}
 		}
 
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each vertex visited.
+		/// </summary>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		public delegate void VisitDelegate(VertexVisitor<TDistance> visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each vertex visited.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
 		public delegate void VisitDelegate<TState>(VertexVisitor<TDistance> visitor, TState state);
 
 		private IQueue<QueueItem> _queue;
@@ -1921,30 +4509,79 @@ namespace Experilous.MakeItTile
 		private Topology.Vertex _vertex;
 		private TDistance _distance;
 
+		/// <summary>
+		/// The vertex currently being visited.
+		/// </summary>
 		public Topology.Vertex vertex { get { return _vertex; } }
+
+		/// <summary>
+		/// The total distance accumulated during visitation from the root vertex
+		/// to the vertex currently being visited.
+		/// </summary>
 		public TDistance distance { get { return _distance; } }
 
+		/// <summary>
+		/// Checks if the specified vertex has already been visited.
+		/// </summary>
+		/// <param name="vertex">The vertex whose visitation status is to be checked.</param>
+		/// <returns>True if the vertex has already been visited earlier in the visitation process, and false
+		/// if either it has not yet been visited or if the visitor has been told to revisit the it.</returns>
 		public bool HasBeenVisited(Topology.Vertex vertex)
 		{
 			return _visitedVertices[vertex.index];
 		}
 
-		public void VisitNeighbor(Topology.Vertex vertex, TDistance distance)
+		/// <summary>
+		/// Addes the specified vertex to the queue of vertices to visit.  Its visitation depth will be one
+		/// greater than the depth of the vertex currently being visited.
+		/// </summary>
+		/// <param name="vertex">The vertex to be visited.</param>
+		/// <param name="distance">The total visitation distance to the specified vertex, as computed by the visitor consumer.</param>
+		/// <param name="includeVisited">Indicates if the vertex should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <remarks><para>If <paramref name="includeVisited"/> is true, the vertex is added to the queue
+		/// even if it has already been visited.  Its visitation status will only be checked once it is
+		/// popped from the queue, and it will only be visited if it has still not yet been visited.
+		/// This can be useful when <see cref="RevisitNeighbor"/> is sometimes called on vertices, but this
+		/// particular visitation could take precedence depending on the queue pop order.</para></remarks>
+		public void VisitNeighbor(Topology.Vertex vertex, TDistance distance, bool includeVisited = false)
 		{
-			_queue.Push(new QueueItem(vertex.index, _depth + 1, distance));
+			if (includeVisited || !_visitedVertices[vertex.index])
+			{
+				_queue.Push(new QueueItem(vertex.index, _depth + 1, distance));
+			}
 		}
 
+		/// <summary>
+		/// Addes the specified vertex to the queue of vertices to visit, and marks it as not yet visited.
+		/// Its visitation depth will be one greater than the depth of the vertex currently being visited.
+		/// </summary>
+		/// <param name="vertex">The vertex to be visited.</param>
+		/// <param name="distance">The total visitation distance to the specified vertex, as computed by the visitor consumer.</param>
+		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
+		/// visitation cycle that never exits.</note></remarks>
 		public void RevisitNeighbor(Topology.Vertex vertex, TDistance distance)
 		{
 			_visitedVertices[vertex.index] = false;
 			_queue.Push(new QueueItem(vertex.index, _depth + 1, distance));
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a breadth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedBreadthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth <= rhs.depth;
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a depth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedDepthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth >= rhs.depth;
@@ -1957,24 +4594,52 @@ namespace Experilous.MakeItTile
 			_visitedVertices = new BitArray(topology.vertices.Count);
 		}
 
-		public static void VisitAll(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology vertices in the order determined by the provided queue, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertices are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		public static void Visit(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootVertex, queue), queue, visitDelegate);
+			Visit(InitializeQueue(rootVertex, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology vertices in the order determined by the provided queue, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertices are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		public static void Visit(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootVertices, queue), queue, visitDelegate);
+			Visit(InitializeQueue(rootVertices, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll<TState>(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology vertices in the order determined by the provided queue, starting with the specified root vertex, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertex">The vertex to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertices are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(Topology.Vertex rootVertex, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootVertex, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootVertex, queue), queue, visitDelegate, state);
 		}
 
-		public static void VisitAll<TState>(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology vertices in the order determined by the provided queue, starting with the specified root vertices, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootVertices">The collection of vertices to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertices are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(IEnumerable<Topology.Vertex> rootVertices, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootVertices, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootVertices, queue), queue, visitDelegate, state);
 		}
 
 		private static Topology InitializeQueue(Topology.Vertex rootVertex, IQueue<QueueItem> queue)
@@ -1998,21 +4663,21 @@ namespace Experilous.MakeItTile
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void Visit(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
 			var visitor = new VertexVisitor<TDistance>(topology, queue);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		private static void Visit<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			if (topology == null) return;
 			var visitor = new VertexVisitor<TDistance>(topology, queue);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
-		private void VisitAll(VisitDelegate visitDelegate)
+		private void Visit(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2034,7 +4699,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2057,26 +4722,74 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// Class for visiting the vertices of a topology, one at a time in some connected order,
+	/// explicitly indicating the edge that was traversed to reach each one.
+	/// </summary>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
 	public sealed class VertexEdgeVisitor : TopologyVisitor
 	{
+		/// <summary>
+		/// The data that needs to be stored in a queue for the visitor to know which
+		/// vertex to visit next, and through which vertex edge.  It also keeps track
+		/// of informational data such as visit depth even if it does not affect
+		/// visitation order.
+		/// </summary>
 		public struct QueueItem : IEquatable<QueueItem>
 		{
+			/// <summary>
+			/// The index of the vertex edge to be traversed to visit the far vertex.
+			/// </summary>
 			public int edgeIndex;
+
+			/// <summary>
+			/// The depth of visitation, which is the number of edges that had to be
+			/// traversed to reach the vertex edge of this queue item, not counting
+			/// the root edge.
+			/// </summary>
 			public int depth;
 
+			/// <summary>
+			/// Constructs a queue item with the given vertex edge index and visitation depth.
+			/// </summary>
+			/// <param name="edgeIndex">The index of the vertex edge to be visited.</param>
+			/// <param name="depth">The depth of visitation.</param>
 			public QueueItem(int edgeIndex, int depth)
 			{
 				this.edgeIndex = edgeIndex;
 				this.depth = depth;
 			}
 
+			/// <summary>
+			/// Determines if the current queue item references the same vertex edge as the specified queue item.
+			/// </summary>
+			/// <param name="other">The other queue item to compare.</param>
+			/// <returns>True if both queue items refer to the same vertex edge, and false otherwise.</returns>
 			public bool Equals(QueueItem other)
 			{
 				return edgeIndex == other.edgeIndex;
 			}
 		}
 
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each vertex visited.
+		/// </summary>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		public delegate void VisitDelegate(VertexEdgeVisitor visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each vertex visited.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
 		public delegate void VisitDelegate<TState>(VertexEdgeVisitor visitor, TState state);
 
 		private IQueue<QueueItem> _queue;
@@ -2084,29 +4797,219 @@ namespace Experilous.MakeItTile
 
 		private Topology.VertexEdge _edge;
 
+		/// <summary>
+		/// The vertex edge whose far vertex is currently being visited.
+		/// </summary>
 		public Topology.VertexEdge edge { get { return _edge; } }
 
+		/// <summary>
+		/// The vertex currently being visited.
+		/// </summary>
+		public Topology.Vertex vertex { get { return _edge.vertex; } }
+
+		/// <summary>
+		/// Checks if the specified vertex has already been visited.
+		/// </summary>
+		/// <param name="vertex">The vertex whose visitation status is to be checked.</param>
+		/// <returns>True if the vertex has already been visited earlier in the visitation process, and false
+		/// if either it has not yet been visited or if the visitor has been told to revisit the it.</returns>
 		public bool HasBeenVisited(Topology.Vertex vertex)
 		{
 			return _visitedVertices[vertex.index];
 		}
 
-		public void VisitNeighbor(Topology.VertexEdge edge)
+		/// <summary>
+		/// Addes the specified vertex edge to the queue of edges to visit.  Its visitation depth will be one
+		/// greater than the depth of the vertex currently being visited.
+		/// </summary>
+		/// <param name="edge">The edge whose far vertex is to be visited.</param>
+		/// <param name="includeVisited">Indicates if the edge should be added to the queue even if its far vertex has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <remarks><para>If <paramref name="includeVisited"/> is true, the edge is added to the queue
+		/// even if its far vertex has already been visited.  Its far vertex visitation status will only
+		/// be checked once it is popped from the queue, and it will only be visited if it has still not
+		/// yet been visited. This can be useful when <see cref="RevisitNeighbor"/> is sometimes called
+		/// on vertices, but this particular visitation could take precedence depending on the queue pop
+		/// order.</para></remarks>
+		public void VisitNeighbor(Topology.VertexEdge edge, bool includeVisited = false)
 		{
-			_queue.Push(new QueueItem(edge.index, _depth + 1));
+			if (includeVisited || !_visitedVertices[edge.vertex.index])
+			{
+				_queue.Push(new QueueItem(edge.index, _depth + 1));
+			}
 		}
 
+		/// <summary>
+		/// Addes the specified vertex edge to the queue of edges to visit, and marks it as not yet visited.
+		/// Its visitation depth will be one greater than the depth of the vertex currently being visited.
+		/// </summary>
+		/// <param name="edge">The edge whose far vertex is to be visited.</param>
+		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
+		/// visitation cycle that never exits.</note></remarks>
 		public void RevisitNeighbor(Topology.VertexEdge edge)
 		{
 			_visitedVertices[edge.vertex.index] = false;
 			_queue.Push(new QueueItem(edge.index, _depth + 1));
 		}
 
+		/// <summary>
+		/// Adds all neighbor edges of the vertex currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far vertices have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.edges"/>
+		public void VisitAllNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _edge.vertex.edges)
+			{
+				if (includeVisited || !_visitedVertices[edge.vertex.index])
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor edges of the vertex currently being visited to the visitation queue, except for any whose far vertex is the vertex specified.
+		/// </summary>
+		/// <param name="excludedVertex">The neighbor vertex that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far vertices have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.edges"/>
+		public void VisitAllNeighborsExcept(Topology.Vertex excludedVertex, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.vertex.edges)
+			{
+				if (edge.vertex != excludedVertex && (includeVisited || !_visitedVertices[edge.vertex.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor edges of the vertex currently being visited to the visitation queue, except for the edge specified.
+		/// </summary>
+		/// <param name="excludedEdge">The neighbor edge that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far vertices have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.edges"/>
+		public void VisitAllNeighborsExcept(Topology.VertexEdge excludedEdge, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.vertex.edges)
+			{
+				if (edge != excludedEdge && (includeVisited || !_visitedVertices[edge.vertex.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor edges of the vertex currently being visited to the visitation queue, except for the twin of the edge currently being visited that leads back to the source vertex previously visited.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far vertices have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.edges"/>
+		/// <remarks><para>This function is useful in most cases when there is no point in following the
+		/// twin edge back to the vertex that was visited before visting the current vertex.</para>
+		/// <note type="important">When depth is zero, the twin is included anyway, because its source
+		/// vertex was not yet actually visited.</note></remarks>
+		public void VisitAllNeighborsExceptSource(bool includeVisited = false)
+		{
+			if (_depth > 0)
+			{
+				VisitAllNeighborsExcept(_edge.twin, includeVisited);
+			}
+			else
+			{
+				VisitAllNeighbors(includeVisited);
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor edges of the vertex currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far vertices have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.outerEdges"/>
+		public void VisitAllOuterNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _edge.vertex.outerEdges)
+			{
+				if (includeVisited || !_visitedVertices[edge.vertex.index])
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor edges of the vertex currently being visited to the visitation queue, except for any whose far vertex is the vertex specified.
+		/// </summary>
+		/// <param name="excludedVertex">The outer neighbor vertex that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far vertices have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.outerEdges"/>
+		public void VisitAllOuterNeighborsExcept(Topology.Vertex excludedVertex, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.vertex.outerEdges)
+			{
+				if (edge.vertex != excludedVertex && (includeVisited || !_visitedVertices[edge.vertex.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor edges of the vertex currently being visited to the visitation queue, except for the edge specified.
+		/// </summary>
+		/// <param name="excludedEdge">The outer neighbor edge that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far vertices have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.outerEdges"/>
+		public void VisitAllOuterNeighborsExcept(Topology.VertexEdge excludedEdge, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.vertex.outerEdges)
+			{
+				if (edge != excludedEdge && (includeVisited || !_visitedVertices[edge.vertex.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor edges of the vertex currently being visited to the visitation queue, except for the twin of the edge currently being visited that leads back to the source vertex previously visited.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far vertices have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Vertex.outerEdges"/>
+		/// <remarks><para>This function is useful in most cases when there is no point in following the
+		/// twin edge back to the vertex that was visited before visting the current vertex.</para>
+		/// <note type="important">When depth is zero, the twin is included anyway, because its source
+		/// vertex was not yet actually visited.</note></remarks>
+		public void VisitAllOuterNeighborsExceptSource(bool includeVisited = false)
+		{
+			if (_depth > 0)
+			{
+				VisitAllOuterNeighborsExcept(_edge.twin, includeVisited);
+			}
+			else
+			{
+				VisitAllOuterNeighbors();
+			}
+		}
+
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a breadth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedBreadthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth <= rhs.depth;
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a depth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedDepthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth >= rhs.depth;
@@ -2119,40 +5022,68 @@ namespace Experilous.MakeItTile
 			_visitedVertices = visitedVertices;
 		}
 
-		public static void VisitAll(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology vertex edges in the order determined by the provided queue, starting with the specified root vertex edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The vertex edge to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertex edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex edge that is visited.</param>
+		public static void Visit(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			Topology topology;
 			BitArray visitedVertices;
 			if (!Prepare(rootEdge, queue, out topology, out visitedVertices)) return;
 			var visitor = new VertexEdgeVisitor(topology, queue, visitedVertices);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology vertex edges in the order determined by the provided queue, starting with the specified root vertex edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of vertex edges to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertex edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex edge that is visited.</param>
+		public static void Visit(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			Topology topology;
 			BitArray visitedVertices;
 			if (!Prepare(rootEdges, queue, out topology, out visitedVertices)) return;
 			var visitor = new VertexEdgeVisitor(topology, queue, visitedVertices);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		public static void VisitAll<TState>(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology vertex edges in the order determined by the provided queue, starting with the specified root vertex edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The vertex edge to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertex edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			Topology topology;
 			BitArray visitedVertices;
 			if (!Prepare(rootEdge, queue, out topology, out visitedVertices)) return;
 			var visitor = new VertexEdgeVisitor(topology, queue, visitedVertices);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
-		public static void VisitAll<TState>(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology vertex edges in the order determined by the provided queue, starting with the specified root vertex edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of vertex edges to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertex edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			Topology topology;
 			BitArray visitedVertices;
 			if (!Prepare(rootEdges, queue, out topology, out visitedVertices)) return;
 			var visitor = new VertexEdgeVisitor(topology, queue, visitedVertices);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
 		private static bool Prepare(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedVertices)
@@ -2200,7 +5131,7 @@ namespace Experilous.MakeItTile
 			return topology;
 		}
 
-		private void VisitAll(VisitDelegate visitDelegate)
+		private void Visit(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2222,7 +5153,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2245,14 +5176,54 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// Class for visiting the vertices of a topology, one at a time in some connected order,
+	/// explicitly indicating the edge that was traversed to reach each one, while keeping
+	/// track of a custom distance metric along the way.
+	/// </summary>
+	/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
 	public class VertexEdgeVisitor<TDistance> : TopologyVisitor
 	{
+		/// <summary>
+		/// The data that needs to be stored in a queue for the visitor to know which
+		/// vertex to visit next, and through which vertex edge.  It also keeps track
+		/// of informational data such as visit depth even if it does not affect
+		/// visitation order.
+		/// </summary>
 		public struct QueueItem : IEquatable<QueueItem>
 		{
+			/// <summary>
+			/// The index of the vertex edge to be traversed to visit the far vertex.
+			/// </summary>
 			public int edgeIndex;
+
+			/// <summary>
+			/// The depth of visitation, which is the number of edges that had to be
+			/// traversed to reach the vertex edge of this queue item, not counting
+			/// the root edge.
+			/// </summary>
 			public int depth;
+
+			/// <summary>
+			/// The total distance accumulated during visitation from the root vertex
+			/// to the vertex of this queue item.
+			/// </summary>
 			public TDistance distance;
 
+			/// <summary>
+			/// Constructs a queue item with the given vertex edge index, visitation depth, and visitation distance.
+			/// </summary>
+			/// <param name="edgeIndex">The index of the vertex edge to be visited.</param>
+			/// <param name="depth">The depth of visitation.</param>
+			/// <param name="distance">The distance of visitation.</param>
 			public QueueItem(int edgeIndex, int depth, TDistance distance)
 			{
 				this.edgeIndex = edgeIndex;
@@ -2260,13 +5231,29 @@ namespace Experilous.MakeItTile
 				this.distance = distance;
 			}
 
+			/// <summary>
+			/// Determines if the current queue item references the same vertex edge as the specified queue item.
+			/// </summary>
+			/// <param name="other">The other queue item to compare.</param>
+			/// <returns>True if both queue items refer to the same vertex edge, and false otherwise.</returns>
 			public bool Equals(QueueItem other)
 			{
 				return edgeIndex == other.edgeIndex;
 			}
 		}
 
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each vertex visited.
+		/// </summary>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		public delegate void VisitDelegate(VertexEdgeVisitor<TDistance> visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each vertex visited.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
 		public delegate void VisitDelegate<TState>(VertexEdgeVisitor<TDistance> visitor, TState state);
 
 		private IQueue<QueueItem> _queue;
@@ -2275,30 +5262,85 @@ namespace Experilous.MakeItTile
 		private Topology.VertexEdge _edge;
 		private TDistance _distance;
 
+		/// <summary>
+		/// The vertex edge whose far vertex is currently being visited.
+		/// </summary>
 		public Topology.VertexEdge edge { get { return _edge; } }
+
+		/// <summary>
+		/// The vertex currently being visited.
+		/// </summary>
+		public Topology.Vertex vertex { get { return _edge.vertex; } }
+
+		/// <summary>
+		/// The total distance accumulated during visitation from the root vertex
+		/// to the vertex currently being visited.
+		/// </summary>
 		public TDistance distance { get { return _distance; } }
 
+		/// <summary>
+		/// Checks if the specified vertex has already been visited.
+		/// </summary>
+		/// <param name="vertex">The vertex whose visitation status is to be checked.</param>
+		/// <returns>True if the vertex has already been visited earlier in the visitation process, and false
+		/// if either it has not yet been visited or if the visitor has been told to revisit the it.</returns>
 		public bool HasBeenVisited(Topology.Vertex vertex)
 		{
 			return _visitedVertices[vertex.index];
 		}
 
-		public void VisitNeighbor(Topology.VertexEdge edge, TDistance distance)
+		/// <summary>
+		/// Addes the specified vertex edge to the queue of edges to visit.  Its visitation depth will be one
+		/// greater than the depth of the vertex currently being visited.
+		/// </summary>
+		/// <param name="edge">The edge whose far vertex is to be visited.</param>
+		/// <param name="distance">The total visitation distance to the specified vertex, as computed by the visitor consumer.</param>
+		/// <param name="includeVisited">Indicates if the edge should be added to the queue even if its far vertex has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <remarks><para>If <paramref name="includeVisited"/> is true, the edge is added to the queue
+		/// even if its far vertex has already been visited.  Its far vertex visitation status will only
+		/// be checked once it is popped from the queue, and it will only be visited if it has still not
+		/// yet been visited. This can be useful when <see cref="RevisitNeighbor"/> is sometimes called
+		/// on vertices, but this particular visitation could take precedence depending on the queue pop
+		/// order.</para></remarks>
+		public void VisitNeighbor(Topology.VertexEdge edge, TDistance distance, bool includeVisited = false)
 		{
-			_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
+			if (includeVisited || !_visitedVertices[edge.vertex.index])
+			{
+				_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
+			}
 		}
 
+		/// <summary>
+		/// Addes the specified vertex edge to the queue of edges to visit, and marks it as not yet visited.
+		/// Its visitation depth will be one greater than the depth of the vertex currently being visited.
+		/// </summary>
+		/// <param name="edge">The edge whose far vertex is to be visited.</param>
+		/// <param name="distance">The total visitation distance to the specified vertex, as computed by the visitor consumer.</param>
+		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
+		/// visitation cycle that never exits.</note></remarks>
 		public void RevisitNeighbor(Topology.VertexEdge edge, TDistance distance)
 		{
 			_visitedVertices[edge.vertex.index] = false;
 			_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a breadth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedBreadthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth <= rhs.depth;
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a depth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedDepthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth >= rhs.depth;
@@ -2311,40 +5353,68 @@ namespace Experilous.MakeItTile
 			_visitedVertices = visitedVertices;
 		}
 
-		public static void VisitAll(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology vertex edges in the order determined by the provided queue, starting with the specified root vertex edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The vertex edge to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertex edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex edge that is visited.</param>
+		public static void Visit(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			Topology topology;
 			BitArray visitedVertices;
 			if (!Prepare(rootEdge, queue, out topology, out visitedVertices)) return;
 			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitedVertices);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology vertex edges in the order determined by the provided queue, starting with the specified root vertex edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of vertex edges to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertex edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex edge that is visited.</param>
+		public static void Visit(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			Topology topology;
 			BitArray visitedVertices;
 			if (!Prepare(rootEdges, queue, out topology, out visitedVertices)) return;
 			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitedVertices);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		public static void VisitAll<TState>(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology vertex edges in the order determined by the provided queue, starting with the specified root vertex edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The vertex edge to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertex edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			Topology topology;
 			BitArray visitedVertices;
 			if (!Prepare(rootEdge, queue, out topology, out visitedVertices)) return;
 			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitedVertices);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
-		public static void VisitAll<TState>(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology vertex edges in the order determined by the provided queue, starting with the specified root vertex edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of vertex edges to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which vertex edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each vertex edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(IEnumerable<Topology.VertexEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			Topology topology;
 			BitArray visitedVertices;
 			if (!Prepare(rootEdges, queue, out topology, out visitedVertices)) return;
 			var visitor = new VertexEdgeVisitor<TDistance>(topology, queue, visitedVertices);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
 		private static bool Prepare(Topology.VertexEdge rootEdge, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedVertices)
@@ -2392,7 +5462,7 @@ namespace Experilous.MakeItTile
 			return topology;
 		}
 
-		private void VisitAll(VisitDelegate visitDelegate)
+		private void Visit(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2415,7 +5485,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2443,26 +5513,71 @@ namespace Experilous.MakeItTile
 
 	#region Face Visitors
 
+	/// <summary>
+	/// Class for visiting the faces of a topology, one at a time in some connected order.
+	/// </summary>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
 	public sealed class FaceVisitor : TopologyVisitor
 	{
+		/// <summary>
+		/// The data that needs to be stored in a queue for the visitor to know which
+		/// face to visit next.  It also keeps track of informational data such as
+		/// visit depth even if it does not affect visitation order.
+		/// </summary>
 		public struct QueueItem : IEquatable<QueueItem>
 		{
+			/// <summary>
+			/// The index of the face to be visited.
+			/// </summary>
 			public int faceIndex;
+
+			/// <summary>
+			/// The depth of visitation, which is the number of edges that had to be
+			/// traversed to reach the face of this queue item.
+			/// </summary>
 			public int depth;
 
+			/// <summary>
+			/// Constructs a queue item with the given face index and visitation depth.
+			/// </summary>
+			/// <param name="faceIndex">The index of the face to be visited.</param>
+			/// <param name="depth">The depth of visitation.</param>
 			public QueueItem(int faceIndex, int depth)
 			{
 				this.faceIndex = faceIndex;
 				this.depth = depth;
 			}
 
+			/// <summary>
+			/// Determines if the current queue item references the same face as the specified queue item.
+			/// </summary>
+			/// <param name="other">The other queue item to compare.</param>
+			/// <returns>True if both queue items refer to the same face, and false otherwise.</returns>
 			public bool Equals(QueueItem other)
 			{
 				return faceIndex == other.faceIndex;
 			}
 		}
 
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		public delegate void VisitDelegate(FaceVisitor visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
 		public delegate void VisitDelegate<TState>(FaceVisitor visitor, TState state);
 
 		private IQueue<QueueItem> _queue;
@@ -2470,29 +5585,207 @@ namespace Experilous.MakeItTile
 
 		private Topology.Face _face;
 
+		/// <summary>
+		/// The face currently being visited.
+		/// </summary>
 		public Topology.Face face { get { return _face; } }
 
+		/// <summary>
+		/// Checks if the specified face has already been visited.
+		/// </summary>
+		/// <param name="face">The face whose visitation status is to be checked.</param>
+		/// <returns>True if the face has already been visited earlier in the visitation process, and false
+		/// if either it has not yet been visited or if the visitor has been told to revisit the it.</returns>
 		public bool HasBeenVisited(Topology.Face face)
 		{
 			return _visitedFaces[face.index];
 		}
 
-		public void VisitNeighbor(Topology.Face face)
+		/// <summary>
+		/// Addes the specified face to the queue of faces to visit.  Its visitation depth will be one
+		/// greater than the depth of the face currently being visited.
+		/// </summary>
+		/// <param name="face">The face to be visited.</param>
+		/// <param name="includeVisited">Indicates if the face should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <remarks><para>If <paramref name="includeVisited"/> is true, the face is added to the queue
+		/// even if it has already been visited.  Its visitation status will only be checked once it is
+		/// popped from the queue, and it will only be visited if it has still not yet been visited.
+		/// This can be useful when <see cref="RevisitNeighbor"/> is sometimes called on faces, but this
+		/// particular visitation could take precedence depending on the queue pop order.</para></remarks>
+		public void VisitNeighbor(Topology.Face face, bool includeVisited = false)
 		{
-			_queue.Push(new QueueItem(face.index, _depth + 1));
+			if (includeVisited || !_visitedFaces[face.index])
+			{
+				_queue.Push(new QueueItem(face.index, _depth + 1));
+			}
 		}
 
+		/// <summary>
+		/// Addes the specified face to the queue of faces to visit, and marks it as not yet visited.
+		/// Its visitation depth will be one greater than the depth of the face currently being visited.
+		/// </summary>
+		/// <param name="face">The face to be visited.</param>
+		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
+		/// visitation cycle that never exits.</note></remarks>
 		public void RevisitNeighbor(Topology.Face face)
 		{
 			_visitedFaces[face.index] = false;
 			_queue.Push(new QueueItem(face.index, _depth + 1));
 		}
 
+		/// <summary>
+		/// Adds all neighbor faces of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the face should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitAllNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _face.edges)
+			{
+				if (includeVisited || !_visitedFaces[edge.face.index])
+				{
+					VisitNeighbor(edge.face);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor faces of the face currently being visited to the visitation queue, except for the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitAllNeighborsExcept(Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _face.edges)
+			{
+				if (edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal neighbor faces of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the face should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		/// <seealso cref="Topology.Face.isInternal"/>
+		public void VisitInternalNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _face.edges)
+			{
+				if (!edge.isExternal && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal neighbor faces of the face currently being visited to the visitation queue, except for the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		/// <seealso cref="Topology.Face.isInternal"/>
+		public void VisitInternalNeighborsExcept(Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _face.edges)
+			{
+				if (!edge.isExternal && edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor faces of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitAllOuterNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _face.outerEdges)
+			{
+				if (includeVisited || !_visitedFaces[edge.face.index])
+				{
+					VisitNeighbor(edge.face);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor faces of the face currently being visited to the visitation queue, except for the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The outer neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitAllOuterNeighborsExcept(Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _face.outerEdges)
+			{
+				if (edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal outer neighbor faces of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		/// <seealso cref="Topology.Face.isInternal"/>
+		public void VisitInternalOuterNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _face.outerEdges)
+			{
+				if (!edge.isExternal && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal outer neighbor faces of the face currently being visited to the visitation queue, except for the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The outer neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		/// <seealso cref="Topology.Face.isInternal"/>
+		public void VisitInternalOuterNeighbors(Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _face.outerEdges)
+			{
+				if (!edge.isExternal && edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a breadth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedBreadthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth <= rhs.depth;
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a depth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedDepthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth >= rhs.depth;
@@ -2505,24 +5798,52 @@ namespace Experilous.MakeItTile
 			_visitedFaces = new BitArray(topology.faces.Count);
 		}
 
-		public static void VisitAll(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		public static void Visit(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootFace, queue), queue, visitDelegate);
+			Visit(InitializeQueue(rootFace, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		public static void Visit(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootFaces, queue), queue, visitDelegate);
+			Visit(InitializeQueue(rootFaces, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll<TState>(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootFace, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootFace, queue), queue, visitDelegate, state);
 		}
 
-		public static void VisitAll<TState>(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootFaces, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootFaces, queue), queue, visitDelegate, state);
 		}
 
 		private static Topology InitializeQueue(Topology.Face rootFace, IQueue<QueueItem> queue)
@@ -2546,21 +5867,21 @@ namespace Experilous.MakeItTile
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void Visit(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
 			var visitor = new FaceVisitor(topology, queue);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		private static void Visit<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			if (topology == null) return;
 			var visitor = new FaceVisitor(topology, queue);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
-		private void VisitAll(VisitDelegate visitDelegate)
+		private void Visit(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2581,7 +5902,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2603,14 +5924,51 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// Class for visiting the faces of a topology, one at a time in some connected order,
+	/// while keeping track of a custom distance metric along the way.
+	/// </summary>
+	/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
 	public class FaceVisitor<TDistance> : TopologyVisitor
 	{
+		/// <summary>
+		/// The data that needs to be stored in a queue for the visitor to know which
+		/// face to visit next.  It also keeps track of informational data such as
+		/// visit depth even if it does not affect visitation order.
+		/// </summary>
 		public struct QueueItem : IEquatable<QueueItem>
 		{
+			/// <summary>
+			/// The index of the face to be visited.
+			/// </summary>
 			public int faceIndex;
+
+			/// <summary>
+			/// The depth of visitation, which is the number of edges that had to be
+			/// traversed to reach the face of this queue item.
+			/// </summary>
 			public int depth;
+
+			/// <summary>
+			/// The total distance accumulated during visitation from the root face
+			/// to the face of this queue item.
+			/// </summary>
 			public TDistance distance;
 
+			/// <summary>
+			/// Constructs a queue item with the given face index, visitation depth, and visitation distance.
+			/// </summary>
+			/// <param name="faceIndex">The index of the face to be visited.</param>
+			/// <param name="depth">The depth of visitation.</param>
+			/// <param name="distance">The distance of visitation.</param>
 			public QueueItem(int faceIndex, int depth, TDistance distance)
 			{
 				this.faceIndex = faceIndex;
@@ -2618,13 +5976,29 @@ namespace Experilous.MakeItTile
 				this.distance = distance;
 			}
 
+			/// <summary>
+			/// Determines if the current queue item references the same face as the specified queue item.
+			/// </summary>
+			/// <param name="other">The other queue item to compare.</param>
+			/// <returns>True if both queue items refer to the same face, and false otherwise.</returns>
 			public bool Equals(QueueItem other)
 			{
 				return faceIndex == other.faceIndex;
 			}
 		}
 
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		public delegate void VisitDelegate(FaceVisitor<TDistance> visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
 		public delegate void VisitDelegate<TState>(FaceVisitor<TDistance> visitor, TState state);
 
 		private IQueue<QueueItem> _queue;
@@ -2633,30 +6007,79 @@ namespace Experilous.MakeItTile
 		private Topology.Face _face;
 		private TDistance _distance;
 
+		/// <summary>
+		/// The face currently being visited.
+		/// </summary>
 		public Topology.Face face { get { return _face; } }
+
+		/// <summary>
+		/// The total distance accumulated during visitation from the root face
+		/// to the face currently being visited.
+		/// </summary>
 		public TDistance distance { get { return _distance; } }
 
+		/// <summary>
+		/// Checks if the specified face has already been visited.
+		/// </summary>
+		/// <param name="face">The face whose visitation status is to be checked.</param>
+		/// <returns>True if the face has already been visited earlier in the visitation process, and false
+		/// if either it has not yet been visited or if the visitor has been told to revisit the it.</returns>
 		public bool HasBeenVisited(Topology.Face face)
 		{
 			return _visitedFaces[face.index];
 		}
 
-		public void VisitNeighbor(Topology.Face face, TDistance distance)
+		/// <summary>
+		/// Addes the specified face to the queue of faces to visit.  Its visitation depth will be one
+		/// greater than the depth of the face currently being visited.
+		/// </summary>
+		/// <param name="face">The face to be visited.</param>
+		/// <param name="distance">The total visitation distance to the specified face, as computed by the visitor consumer.</param>
+		/// <param name="includeVisited">Indicates if the face should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <remarks><para>If <paramref name="includeVisited"/> is true, the face is added to the queue
+		/// even if it has already been visited.  Its visitation status will only be checked once it is
+		/// popped from the queue, and it will only be visited if it has still not yet been visited.
+		/// This can be useful when <see cref="RevisitNeighbor"/> is sometimes called on faces, but this
+		/// particular visitation could take precedence depending on the queue pop order.</para></remarks>
+		public void VisitNeighbor(Topology.Face face, TDistance distance, bool includeVisited = false)
 		{
-			_queue.Push(new QueueItem(face.index, _depth + 1, distance));
+			if (includeVisited || !_visitedFaces[face.index])
+			{
+				_queue.Push(new QueueItem(face.index, _depth + 1, distance));
+			}
 		}
 
+		/// <summary>
+		/// Addes the specified face to the queue of faces to visit, and marks it as not yet visited.
+		/// Its visitation depth will be one greater than the depth of the face currently being visited.
+		/// </summary>
+		/// <param name="face">The face to be visited.</param>
+		/// <param name="distance">The total visitation distance to the specified face, as computed by the visitor consumer.</param>
+		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
+		/// visitation cycle that never exits.</note></remarks>
 		public void RevisitNeighbor(Topology.Face face, TDistance distance)
 		{
 			_visitedFaces[face.index] = false;
 			_queue.Push(new QueueItem(face.index, _depth + 1, distance));
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a breadth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedBreadthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth <= rhs.depth;
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a depth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedDepthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth >= rhs.depth;
@@ -2669,24 +6092,52 @@ namespace Experilous.MakeItTile
 			_visitedFaces = new BitArray(topology.faces.Count);
 		}
 
-		public static void VisitAll(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		public static void Visit(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootFace, queue), queue, visitDelegate);
+			Visit(InitializeQueue(rootFace, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		public static void Visit(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
-			VisitAll(InitializeQueue(rootFaces, queue), queue, visitDelegate);
+			Visit(InitializeQueue(rootFaces, queue), queue, visitDelegate);
 		}
 
-		public static void VisitAll<TState>(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootFace, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootFace, queue), queue, visitDelegate, state);
 		}
 
-		public static void VisitAll<TState>(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VisitAll(InitializeQueue(rootFaces, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootFaces, queue), queue, visitDelegate, state);
 		}
 
 		private static Topology InitializeQueue(Topology.Face rootFace, IQueue<QueueItem> queue)
@@ -2710,21 +6161,21 @@ namespace Experilous.MakeItTile
 			return topology;
 		}
 
-		private static void VisitAll(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		private static void Visit(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
 			var visitor = new FaceVisitor<TDistance>(topology, queue);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		private static void VisitAll<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		private static void Visit<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			if (topology == null) return;
 			var visitor = new FaceVisitor<TDistance>(topology, queue);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
-		private void VisitAll(VisitDelegate visitDelegate)
+		private void Visit(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2746,7 +6197,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2769,26 +6220,74 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// Class for visiting the faces of a topology, one at a time in some connected order,
+	/// explicitly indicating the edge that was traversed to reach each one.
+	/// </summary>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
 	public sealed class FaceEdgeVisitor : TopologyVisitor
 	{
+		/// <summary>
+		/// The data that needs to be stored in a queue for the visitor to know which
+		/// face to visit next, and through which face edge.  It also keeps track
+		/// of informational data such as visit depth even if it does not affect
+		/// visitation order.
+		/// </summary>
 		public struct QueueItem : IEquatable<QueueItem>
 		{
+			/// <summary>
+			/// The index of the face edge to be traversed to visit the far face.
+			/// </summary>
 			public int edgeIndex;
+
+			/// <summary>
+			/// The depth of visitation, which is the number of edges that had to be
+			/// traversed to reach the face edge of this queue item, not counting
+			/// the root edge.
+			/// </summary>
 			public int depth;
 
+			/// <summary>
+			/// Constructs a queue item with the given face edge index and visitation depth.
+			/// </summary>
+			/// <param name="edgeIndex">The index of the face edge to be visited.</param>
+			/// <param name="depth">The depth of visitation.</param>
 			public QueueItem(int edgeIndex, int depth)
 			{
 				this.edgeIndex = edgeIndex;
 				this.depth = depth;
 			}
 
+			/// <summary>
+			/// Determines if the current queue item references the same face edge as the specified queue item.
+			/// </summary>
+			/// <param name="other">The other queue item to compare.</param>
+			/// <returns>True if both queue items refer to the same face edge, and false otherwise.</returns>
 			public bool Equals(QueueItem other)
 			{
 				return edgeIndex == other.edgeIndex;
 			}
 		}
 
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		public delegate void VisitDelegate(FaceEdgeVisitor visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
 		public delegate void VisitDelegate<TState>(FaceEdgeVisitor visitor, TState state);
 
 		private IQueue<QueueItem> _queue;
@@ -2796,29 +6295,361 @@ namespace Experilous.MakeItTile
 
 		private Topology.FaceEdge _edge;
 
+		/// <summary>
+		/// The face edge whose far face is currently being visited.
+		/// </summary>
 		public Topology.FaceEdge edge { get { return _edge; } }
 
+		/// <summary>
+		/// The face currently being visited.
+		/// </summary>
+		public Topology.Face face { get { return _edge.face; } }
+
+		/// <summary>
+		/// Checks if the specified face has already been visited.
+		/// </summary>
+		/// <param name="face">The face whose visitation status is to be checked.</param>
+		/// <returns>True if the face has already been visited earlier in the visitation process, and false
+		/// if either it has not yet been visited or if the visitor has been told to revisit the it.</returns>
 		public bool HasBeenVisited(Topology.Face face)
 		{
 			return _visitedFaces[face.index];
 		}
 
-		public void VisitNeighbor(Topology.FaceEdge edge)
+		/// <summary>
+		/// Addes the specified face edge to the queue of edges to visit.  Its visitation depth will be one
+		/// greater than the depth of the face currently being visited.
+		/// </summary>
+		/// <param name="edge">The edge whose far face is to be visited.</param>
+		/// <param name="includeVisited">Indicates if the edge should be added to the queue even if its far face has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <remarks><para>If <paramref name="includeVisited"/> is true, the edge is added to the queue
+		/// even if its far face has already been visited.  Its far face visitation status will only
+		/// be checked once it is popped from the queue, and it will only be visited if it has still not
+		/// yet been visited. This can be useful when <see cref="RevisitNeighbor"/> is sometimes called
+		/// on faces, but this particular visitation could take precedence depending on the queue pop
+		/// order.</para></remarks>
+		public void VisitNeighbor(Topology.FaceEdge edge, bool includeVisited = false)
 		{
-			_queue.Push(new QueueItem(edge.index, _depth + 1));
+			if (includeVisited || !_visitedFaces[edge.face.index])
+			{
+				_queue.Push(new QueueItem(edge.index, _depth + 1));
+			}
 		}
 
+		/// <summary>
+		/// Addes the specified face edge to the queue of edges to visit, and marks it as not yet visited.
+		/// Its visitation depth will be one greater than the depth of the face currently being visited.
+		/// </summary>
+		/// <param name="edge">The edge whose far face is to be visited.</param>
+		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
+		/// visitation cycle that never exits.</note></remarks>
 		public void RevisitNeighbor(Topology.FaceEdge edge)
 		{
 			_visitedFaces[edge.farFace.index] = false;
 			_queue.Push(new QueueItem(edge.index, _depth + 1));
 		}
 
+		/// <summary>
+		/// Adds all neighbor edges of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitAllNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.edges)
+			{
+				if (includeVisited || !_visitedFaces[edge.face.index])
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor edges of the face currently being visited to the visitation queue, except for any whose far face is the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitAllNeighborsExcept(Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.edges)
+			{
+				if (edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor edges of the face currently being visited to the visitation queue, except for the edge specified.
+		/// </summary>
+		/// <param name="excludedEdge">The neighbor edge that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitAllNeighborsExcept(Topology.FaceEdge excludedEdge, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.edges)
+			{
+				if (edge != excludedEdge && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor edges of the face currently being visited to the visitation queue, except for the twin of the edge currently being visited that leads back to the source face previously visited.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		/// <remarks><para>This function is useful in most cases when there is no point in following the
+		/// twin edge back to the face that was visited before visting the current face.</para>
+		/// <note type="important">When depth is zero, the twin is included anyway, because its source
+		/// face was not yet actually visited.</note></remarks>
+		public void VisitAllNeighborsExceptSource(bool includeVisited = false)
+		{
+			if (_depth > 0)
+			{
+				VisitAllNeighborsExcept(_edge.twin, includeVisited);
+			}
+			else
+			{
+				VisitAllNeighbors();
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal neighbor edges of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitInternalNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.edges)
+			{
+				if (!edge.isExternal && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal neighbor edges of the face currently being visited to the visitation queue, except for any whose far face is the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitInternalNeighborsExcept(Topology.Face excludedFace, bool includeVisited = true)
+		{
+			foreach (var edge in _edge.face.edges)
+			{
+				if (!edge.isExternal && edge.face != excludedFace)
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal neighbor edges of the face currently being visited to the visitation queue, except for the edge specified.
+		/// </summary>
+		/// <param name="excludedEdge">The neighbor edge that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitInternalNeighborsExcept(Topology.FaceEdge excludedEdge, bool includeVisited = true)
+		{
+			foreach (var edge in _edge.face.edges)
+			{
+				if (!edge.isExternal && edge != excludedEdge && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal neighbor edges of the face currently being visited to the visitation queue, except for the twin of the edge currently being visited that leads back to the source face previously visited.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		/// <remarks><para>This function is useful in most cases when there is no point in following the
+		/// twin edge back to the face that was visited before visting the current face.</para>
+		/// <note type="important">When depth is zero, the twin is included anyway, because its source
+		/// face was not yet actually visited.</note></remarks>
+		public void VisitInternalNeighborsExceptSource(bool includeVisited = false)
+		{
+			if (_depth > 0)
+			{
+				VisitInternalNeighborsExcept(_edge.twin, includeVisited);
+			}
+			else
+			{
+				VisitInternalNeighbors();
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor edges of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitAllOuterNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.outerEdges)
+			{
+				if (includeVisited || !_visitedFaces[edge.face.index])
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor edges of the face currently being visited to the visitation queue, except for any whose far face is the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The outer neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitAllOuterNeighborsExcept(Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.outerEdges)
+			{
+				if (edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor edges of the face currently being visited to the visitation queue, except for the edge specified.
+		/// </summary>
+		/// <param name="excludedEdge">The outer neighbor edge that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitAllOuterNeighborsExcept(Topology.FaceEdge excludedEdge, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.outerEdges)
+			{
+				if (edge != excludedEdge && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor edges of the face currently being visited to the visitation queue, except for the twin of the edge currently being visited that leads back to the source face previously visited.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		/// <remarks><para>This function is useful in most cases when there is no point in following the
+		/// twin edge back to the face that was visited before visting the current face.</para>
+		/// <note type="important">When depth is zero, the twin is included anyway, because its source
+		/// face was not yet actually visited.</note></remarks>
+		public void VisitAllOuterNeighborsExceptSource(bool includeVisited = false)
+		{
+			if (_depth > 0)
+			{
+				VisitAllOuterNeighborsExcept(_edge.twin, includeVisited);
+			}
+			else
+			{
+				VisitAllOuterNeighbors();
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal outer neighbor edges of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitInternalOuterNeighbors(bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.outerEdges)
+			{
+				if (!edge.isExternal && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal outer neighbor edges of the face currently being visited to the visitation queue, except for any whose far face is the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The outer neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitInternalOuterNeighborsExcept(Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.outerEdges)
+			{
+				if (!edge.isExternal && edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal outer neighbor edges of the face currently being visited to the visitation queue, except for the edge specified.
+		/// </summary>
+		/// <param name="excludedEdge">The outer neighbor edge that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitInternalOuterNeighborsExcept(Topology.FaceEdge excludedEdge, bool includeVisited = false)
+		{
+			foreach (var edge in _edge.face.outerEdges)
+			{
+				if (!edge.isExternal && edge != excludedEdge && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal outer neighbor edges of the face currently being visited to the visitation queue, except for the twin of the edge currently being visited that leads back to the source face previously visited.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the edges should be added to the queue even if their far faces have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		/// <remarks><para>This function is useful in most cases when there is no point in following the
+		/// twin edge back to the face that was visited before visting the current face.</para>
+		/// <note type="important">When depth is zero, the twin is included anyway, because its source
+		/// face was not yet actually visited.</note></remarks>
+		public void VisitInternalOuterNeighborsExceptSource(bool includeVisited = false)
+		{
+			if (_depth > 0)
+			{
+				VisitInternalOuterNeighborsExcept(_edge.twin, includeVisited);
+			}
+			else
+			{
+				VisitInternalOuterNeighbors();
+			}
+		}
+
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a breadth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedBreadthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth <= rhs.depth;
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a depth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedDepthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth >= rhs.depth;
@@ -2831,40 +6662,68 @@ namespace Experilous.MakeItTile
 			_visitedFaces = visitedFaces;
 		}
 
-		public static void VisitAll(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology face edges in the order determined by the provided queue, starting with the specified root face edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The face edge to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which face edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face edge that is visited.</param>
+		public static void Visit(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			Topology topology;
 			BitArray visitedFaces;
 			if (!Prepare(rootEdge, queue, out topology, out visitedFaces)) return;
 			var visitor = new FaceEdgeVisitor(topology, queue, visitedFaces);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology face edges in the order determined by the provided queue, starting with the specified root face edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of face edges to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which face edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face edge that is visited.</param>
+		public static void Visit(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			Topology topology;
 			BitArray visitedFaces;
 			if (!Prepare(rootEdges, queue, out topology, out visitedFaces)) return;
 			var visitor = new FaceEdgeVisitor(topology, queue, visitedFaces);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		public static void VisitAll<TState>(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology face edges in the order determined by the provided queue, starting with the specified root face edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The face edge to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which face edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			Topology topology;
 			BitArray visitedFaces;
 			if (!Prepare(rootEdge, queue, out topology, out visitedFaces)) return;
 			var visitor = new FaceEdgeVisitor(topology, queue, visitedFaces);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
-		public static void VisitAll<TState>(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology face edges in the order determined by the provided queue, starting with the specified root face edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of face edges to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which face edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			Topology topology;
 			BitArray visitedFaces;
 			if (!Prepare(rootEdges, queue, out topology, out visitedFaces)) return;
 			var visitor = new FaceEdgeVisitor(topology, queue, visitedFaces);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
 		private static bool Prepare(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedFaces)
@@ -2912,7 +6771,7 @@ namespace Experilous.MakeItTile
 			return topology;
 		}
 
-		private void VisitAll(VisitDelegate visitDelegate)
+		private void Visit(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2934,7 +6793,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -2957,14 +6816,54 @@ namespace Experilous.MakeItTile
 		}
 	}
 
+	/// <summary>
+	/// Class for visiting the faces of a topology, one at a time in some connected order,
+	/// explicitly indicating the edge that was traversed to reach each one, while keeping
+	/// track of a custom distance metric along the way.
+	/// </summary>
+	/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
+	/// be visited, and a memory of which elements have already been visited.  When a
+	/// visitation process is executed, the visitor repeatedly pops one element at a time
+	/// and calls a supplied visit delegate with itself as a parameter.  The element just
+	/// popped is then accessible through the visitor within the visit delegate.  It is
+	/// then up to the visit delegate to push any new elements into the visitors queue,
+	/// typically all or some of the immediate neighbors of the element currently being
+	/// visited.</para></remarks>
 	public class FaceEdgeVisitor<TDistance> : TopologyVisitor
 	{
+		/// <summary>
+		/// The data that needs to be stored in a queue for the visitor to know which
+		/// face to visit next, and through which face edge.  It also keeps track
+		/// of informational data such as visit depth even if it does not affect
+		/// visitation order.
+		/// </summary>
 		public struct QueueItem : IEquatable<QueueItem>
 		{
+			/// <summary>
+			/// The index of the face edge to be traversed to visit the far face.
+			/// </summary>
 			public int edgeIndex;
+
+			/// <summary>
+			/// The depth of visitation, which is the number of edges that had to be
+			/// traversed to reach the face edge of this queue item, not counting
+			/// the root edge.
+			/// </summary>
 			public int depth;
+
+			/// <summary>
+			/// The total distance accumulated during visitation from the root face
+			/// to the face of this queue item.
+			/// </summary>
 			public TDistance distance;
 
+			/// <summary>
+			/// Constructs a queue item with the given face edge index, visitation depth, and visitation distance.
+			/// </summary>
+			/// <param name="edgeIndex">The index of the face edge to be visited.</param>
+			/// <param name="depth">The depth of visitation.</param>
+			/// <param name="distance">The distance of visitation.</param>
 			public QueueItem(int edgeIndex, int depth, TDistance distance)
 			{
 				this.edgeIndex = edgeIndex;
@@ -2972,13 +6871,29 @@ namespace Experilous.MakeItTile
 				this.distance = distance;
 			}
 
+			/// <summary>
+			/// Determines if the current queue item references the same face edge as the specified queue item.
+			/// </summary>
+			/// <param name="other">The other queue item to compare.</param>
+			/// <returns>True if both queue items refer to the same face edge, and false otherwise.</returns>
 			public bool Equals(QueueItem other)
 			{
 				return edgeIndex == other.edgeIndex;
 			}
 		}
 
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		public delegate void VisitDelegate(FaceEdgeVisitor<TDistance> visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
 		public delegate void VisitDelegate<TState>(FaceEdgeVisitor<TDistance> visitor, TState state);
 
 		private IQueue<QueueItem> _queue;
@@ -2987,30 +6902,85 @@ namespace Experilous.MakeItTile
 		private Topology.FaceEdge _edge;
 		private TDistance _distance;
 
+		/// <summary>
+		/// The face edge whose far face is currently being visited.
+		/// </summary>
 		public Topology.FaceEdge edge { get { return _edge; } }
+
+		/// <summary>
+		/// The face currently being visited.
+		/// </summary>
+		public Topology.Face face { get { return _edge.face; } }
+
+		/// <summary>
+		/// The total distance accumulated during visitation from the root face
+		/// to the face currently being visited.
+		/// </summary>
 		public TDistance distance { get { return _distance; } }
 
+		/// <summary>
+		/// Checks if the specified face has already been visited.
+		/// </summary>
+		/// <param name="face">The face whose visitation status is to be checked.</param>
+		/// <returns>True if the face has already been visited earlier in the visitation process, and false
+		/// if either it has not yet been visited or if the visitor has been told to revisit the it.</returns>
 		public bool HasBeenVisited(Topology.Face face)
 		{
 			return _visitedFaces[face.index];
 		}
 
-		public void VisitNeighbor(Topology.FaceEdge edge, TDistance distance)
+		/// <summary>
+		/// Addes the specified face edge to the queue of edges to visit.  Its visitation depth will be one
+		/// greater than the depth of the face currently being visited.
+		/// </summary>
+		/// <param name="edge">The edge whose far face is to be visited.</param>
+		/// <param name="distance">The total visitation distance to the specified face, as computed by the visitor consumer.</param>
+		/// <param name="includeVisited">Indicates if the edge should be added to the queue even if its far face has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <remarks><para>If <paramref name="includeVisited"/> is true, the edge is added to the queue
+		/// even if its far face has already been visited.  Its far face visitation status will only
+		/// be checked once it is popped from the queue, and it will only be visited if it has still not
+		/// yet been visited. This can be useful when <see cref="RevisitNeighbor"/> is sometimes called
+		/// on faces, but this particular visitation could take precedence depending on the queue pop
+		/// order.</para></remarks>
+		public void VisitNeighbor(Topology.FaceEdge edge, TDistance distance, bool includeVisited = false)
 		{
-			_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
+			if (includeVisited || !_visitedFaces[edge.face.index])
+			{
+				_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
+			}
 		}
 
+		/// <summary>
+		/// Addes the specified face edge to the queue of edges to visit, and marks it as not yet visited.
+		/// Its visitation depth will be one greater than the depth of the face currently being visited.
+		/// </summary>
+		/// <param name="edge">The edge whose far face is to be visited.</param>
+		/// <param name="distance">The total visitation distance to the specified face, as computed by the visitor consumer.</param>
+		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
+		/// visitation cycle that never exits.</note></remarks>
 		public void RevisitNeighbor(Topology.FaceEdge edge, TDistance distance)
 		{
 			_visitedFaces[edge.farFace.index] = false;
 			_queue.Push(new QueueItem(edge.index, _depth + 1, distance));
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a breadth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedBreadthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth <= rhs.depth;
 		}
 
+		/// <summary>
+		/// Checks whether the two queue items are in the proper order for a depth-first visitation order, based on visitation depth.
+		/// </summary>
+		/// <param name="lhs">The first queue item to compare.</param>
+		/// <param name="rhs">The second queue item to compare.</param>
+		/// <returns>True if the first queue item should indeed be visited first, and false if the second queue item should instead be visited first.</returns>
 		public static bool AreOrderedDepthFirst(QueueItem lhs, QueueItem rhs)
 		{
 			return lhs.depth >= rhs.depth;
@@ -3023,40 +6993,68 @@ namespace Experilous.MakeItTile
 			_visitedFaces = visitedFaces;
 		}
 
-		public static void VisitAll(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology face edges in the order determined by the provided queue, starting with the specified root face edge, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdge">The face edge to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which face edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face edge that is visited.</param>
+		public static void Visit(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			Topology topology;
 			BitArray visitedFaces;
 			if (!Prepare(rootEdge, queue, out topology, out visitedFaces)) return;
 			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitedFaces);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		public static void VisitAll(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		/// <summary>
+		/// Visits adjacent topology face edges in the order determined by the provided queue, starting with the specified root face edges, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootEdges">The collection of face edges to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which face edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face edge that is visited.</param>
+		public static void Visit(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			Topology topology;
 			BitArray visitedFaces;
 			if (!Prepare(rootEdges, queue, out topology, out visitedFaces)) return;
 			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitedFaces);
-			visitor.VisitAll(visitDelegate);
+			visitor.Visit(visitDelegate);
 		}
 
-		public static void VisitAll<TState>(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology face edges in the order determined by the provided queue, starting with the specified root face edge, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdge">The face edge to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which face edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			Topology topology;
 			BitArray visitedFaces;
 			if (!Prepare(rootEdge, queue, out topology, out visitedFaces)) return;
 			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitedFaces);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
-		public static void VisitAll<TState>(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		/// <summary>
+		/// Visits adjacent topology face edges in the order determined by the provided queue, starting with the specified root face edges, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootEdges">The collection of face edges to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which face edges are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face edge that is visited.</param>
+		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
+		public static void Visit<TState>(IEnumerable<Topology.FaceEdge> rootEdges, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
 		{
 			Topology topology;
 			BitArray visitedFaces;
 			if (!Prepare(rootEdges, queue, out topology, out visitedFaces)) return;
 			var visitor = new FaceEdgeVisitor<TDistance>(topology, queue, visitedFaces);
-			visitor.VisitAll(visitDelegate, state);
+			visitor.Visit(visitDelegate, state);
 		}
 
 		private static bool Prepare(Topology.FaceEdge rootEdge, IQueue<QueueItem> queue, out Topology topology, out BitArray visitedFaces)
@@ -3104,7 +7102,7 @@ namespace Experilous.MakeItTile
 			return topology;
 		}
 
-		private void VisitAll(VisitDelegate visitDelegate)
+		private void Visit(VisitDelegate visitDelegate)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -3127,7 +7125,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void VisitAll<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
 		{
 			while (_queue.isEmpty == false)
 			{

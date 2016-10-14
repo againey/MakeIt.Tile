@@ -146,13 +146,7 @@ namespace Experilous.MakeItTile
 						faceGroupIndices[visitor.edge] = faceGroupIndex;
 						faceGroupFaceIndices[faceGroupIndex].Add(visitor.edge.face.index);
 
-						foreach (var edge in visitor.edge.face.edges)
-						{
-							if (edge.twinIndex != visitor.edge.index && !edge.isOuterBoundary && !visitor.HasBeenVisited(edge.face))
-							{
-								visitor.VisitNeighbor(edge);
-							}
-						}
+						visitor.VisitInternalNeighborsExceptSource();
 					},
 					random);
 			});

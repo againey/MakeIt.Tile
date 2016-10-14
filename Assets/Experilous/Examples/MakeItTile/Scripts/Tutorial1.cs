@@ -299,13 +299,7 @@ namespace Experilous.Examples.MakeItTile
 
 					if (visitor.depth < clearRadius)
 					{
-						foreach (var edge in visitor.face.edges)
-						{
-							if (edge.face.isInternal)
-							{
-								visitor.VisitNeighbor(edge.face);
-							}
-						}
+						visitor.VisitInternalNeighbors();
 					}
 				});
 		}
