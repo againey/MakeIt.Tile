@@ -456,13 +456,7 @@ namespace Experilous.Examples.MakeItTile
 				}
 				else if (visitColor == color)
 				{
-					foreach (var edge in visitor.face.edges)
-					{
-						if (edge.face.isInternal)
-						{
-							visitor.VisitNeighbor(edge.face);
-						}
-					}
+					visitor.VisitInternalNeighbors();
 				}
 			});
 
@@ -485,13 +479,7 @@ namespace Experilous.Examples.MakeItTile
 					_faceBoardStates[visitor.face] = BoardState.Empty;
 					++captureCount;
 
-					foreach (var edge in visitor.face.edges)
-					{
-						if (edge.face.isInternal)
-						{
-							visitor.VisitNeighbor(edge.face);
-						}
-					}
+					visitor.VisitInternalNeighbors();
 				}
 			});
 
