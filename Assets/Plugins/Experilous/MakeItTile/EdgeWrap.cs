@@ -49,7 +49,7 @@ namespace Experilous.MakeItTile
 	/// relations are represented in this enum.</para>
 	/// 
 	/// <para>For examples of this enum in use, see the positional attributes for vertices, edges, and faces, along
-	/// with the various offset functions implemented in <see cref="PlanarSurface"/>.  For utilities to transform
+	/// with the various offset functions implemented in <see cref="QuadrilateralSurface"/>.  For utilities to transform
 	/// and otherwise manipulate edge wrap values, see the static <see cref="EdgeWrapUtility"/> class.</para>
 	/// </remarks>
 	/// <seealso cref="Topology.EdgeData"/>
@@ -57,125 +57,212 @@ namespace Experilous.MakeItTile
 	/// <seealso cref="PositionalVertexAttribute"/>
 	/// <seealso cref="PositionalEdgeAttribute"/>
 	/// <seealso cref="PositionalFaceAttribute"/>
-	/// <seealso cref="PlanarSurface"/>
+	/// <seealso cref="QuadrilateralSurface"/>
 	[Serializable, Flags]
 	public enum EdgeWrap : int
 	{
-		// Default state of no bits set, and therefore no wrapping relations of any kind.
+		/// <summary>Default state of no bits set, and therefore no wrapping relations of any kind.</summary>
 		None = 0,
 
 		// Single bit enum items:
 
+		/// <summary>Wrap in the positive direction during the transition from vertex to edge along the first axis.</summary>
 		PosVertToEdgeAxis0 = 0x00000001,
+		/// <summary>Wrap in the negative direction during the transition from vertex to edge along the first axis.</summary>
 		NegVertToEdgeAxis0 = 0x00000002,
+		/// <summary>Wrap in the positive direction during the transition from vertex to edge along the second axis.</summary>
 		PosVertToEdgeAxis1 = 0x00000004,
+		/// <summary>Wrap in the negative direction during the transition from vertex to edge along the second axis.</summary>
 		NegVertToEdgeAxis1 = 0x00000008,
 
+		/// <summary>Wrap in the positive direction during the transition from face to edge along the first axis.</summary>
 		PosFaceToEdgeAxis0 = 0x00000010,
+		/// <summary>Wrap in the negative direction during the transition from face to edge along the first axis.</summary>
 		NegFaceToEdgeAxis0 = 0x00000020,
+		/// <summary>Wrap in the positive direction during the transition from face to edge along the second axis.</summary>
 		PosFaceToEdgeAxis1 = 0x00000040,
+		/// <summary>Wrap in the negative direction during the transition from face to edge along the second axis.</summary>
 		NegFaceToEdgeAxis1 = 0x00000080,
 
+		/// <summary>Wrap in the positive direction during the transition from edge to vertex along the first axis.</summary>
 		PosEdgeToVertAxis0 = 0x00000100,
+		/// <summary>Wrap in the negative direction during the transition from edge to vertex along the first axis.</summary>
 		NegEdgeToVertAxis0 = 0x00000200,
+		/// <summary>Wrap in the positive direction during the transition from edge to vertex along the second axis.</summary>
 		PosEdgeToVertAxis1 = 0x00000400,
+		/// <summary>Wrap in the negative direction during the transition from edge to vertex along the second axis.</summary>
 		NegEdgeToVertAxis1 = 0x00000800,
 
+		/// <summary>Wrap in the positive direction during the transition from edge to face along the first axis.</summary>
 		PosEdgeToFaceAxis0 = 0x00001000,
+		/// <summary>Wrap in the negative direction during the transition from edge to face along the first axis.</summary>
 		NegEdgeToFaceAxis0 = 0x00002000,
+		/// <summary>Wrap in the positive direction during the transition from edge to face along the second axis.</summary>
 		PosEdgeToFaceAxis1 = 0x00004000,
+		/// <summary>Wrap in the negative direction during the transition from edge to face along the second axis.</summary>
 		NegEdgeToFaceAxis1 = 0x00008000,
 
+		/// <summary>Wrap in the positive direction during the transition from vertex to vertex along the first axis.</summary>
 		PosVertToVertAxis0 = 0x00010000,
+		/// <summary>Wrap in the negative direction during the transition from vertex to vertex along the first axis.</summary>
 		NegVertToVertAxis0 = 0x00020000,
+		/// <summary>Wrap in the positive direction during the transition from vertex to vertex along the second axis.</summary>
 		PosVertToVertAxis1 = 0x00040000,
+		/// <summary>Wrap in the negative direction during the transition from vertex to vertex along the second axis.</summary>
 		NegVertToVertAxis1 = 0x00080000,
 
+		/// <summary>Wrap in the positive direction during the transition from vertex to face along the first axis.</summary>
 		PosVertToFaceAxis0 = 0x00100000,
+		/// <summary>Wrap in the negative direction during the transition from vertex to face along the first axis.</summary>
 		NegVertToFaceAxis0 = 0x00200000,
+		/// <summary>Wrap in the positive direction during the transition from vertex to face along the second axis.</summary>
 		PosVertToFaceAxis1 = 0x00400000,
+		/// <summary>Wrap in the negative direction during the transition from vertex to face along the second axis.</summary>
 		NegVertToFaceAxis1 = 0x00800000,
 
+		/// <summary>Wrap in the positive direction during the transition from face to vertex along the first axis.</summary>
 		PosFaceToVertAxis0 = 0x01000000,
+		/// <summary>Wrap in the negative direction during the transition from face to vertex along the first axis.</summary>
 		NegFaceToVertAxis0 = 0x02000000,
+		/// <summary>Wrap in the positive direction during the transition from face to vertex along the second axis.</summary>
 		PosFaceToVertAxis1 = 0x04000000,
+		/// <summary>Wrap in the negative direction during the transition from face to vertex along the second axis.</summary>
 		NegFaceToVertAxis1 = 0x08000000,
 
+		/// <summary>Wrap in the positive direction during the transition from face to face along the first axis.</summary>
 		PosFaceToFaceAxis0 = 0x10000000,
+		/// <summary>Wrap in the negative direction during the transition from face to face along the first axis.</summary>
 		NegFaceToFaceAxis0 = 0x20000000,
+		/// <summary>Wrap in the positive direction during the transition from face to face along the second axis.</summary>
 		PosFaceToFaceAxis1 = 0x40000000,
+		/// <summary>Wrap in the negative direction during the transition from face to face along the second axis.</summary>
 		NegFaceToFaceAxis1 = ~0x7FFFFFFF, //0x80000000, except I need the enum type to be int to keep Unity sane.
 
 		// Aggregated multi-bit enum items for convenience:
 
+		/// <summary>Wrap during the transition from vertex to edge along the first axis.</summary>
 		VertToEdgeAxis0 = PosVertToEdgeAxis0 | NegVertToEdgeAxis0,
+		/// <summary>Wrap during the transition from vertex to edge along the second axis.</summary>
 		VertToEdgeAxis1 = PosVertToEdgeAxis1 | NegVertToEdgeAxis1,
+		/// <summary>Wrap during the transition from face to edge along the first axis.</summary>
 		FaceToEdgeAxis0 = PosFaceToEdgeAxis0 | NegFaceToEdgeAxis0,
+		/// <summary>Wrap during the transition from face to edge along the second axis.</summary>
 		FaceToEdgeAxis1 = PosFaceToEdgeAxis1 | NegFaceToEdgeAxis1,
+		/// <summary>Wrap during the transition from edge to vertex along the first axis.</summary>
 		EdgeToVertAxis0 = PosEdgeToVertAxis0 | NegEdgeToVertAxis0,
+		/// <summary>Wrap during the transition from edge to vertex along the second axis.</summary>
 		EdgeToVertAxis1 = PosEdgeToVertAxis1 | NegEdgeToVertAxis1,
+		/// <summary>Wrap during the transition from edge to face along the first axis.</summary>
 		EdgeToFaceAxis0 = PosEdgeToFaceAxis0 | NegEdgeToFaceAxis0,
+		/// <summary>Wrap during the transition from edge to face along the second axis.</summary>
 		EdgeToFaceAxis1 = PosEdgeToFaceAxis1 | NegEdgeToFaceAxis1,
 
+		/// <summary>Wrap during the transition from vertex to vertex along the first axis.</summary>
 		VertToVertAxis0 = PosVertToVertAxis0 | NegVertToVertAxis0,
+		/// <summary>Wrap during the transition from vertex to vertex along the second axis.</summary>
 		VertToVertAxis1 = PosVertToVertAxis1 | NegVertToVertAxis1,
+		/// <summary>Wrap during the transition from vertex to face along the first axis.</summary>
 		VertToFaceAxis0 = PosVertToFaceAxis0 | NegVertToFaceAxis0,
+		/// <summary>Wrap during the transition from vertex to face along the second axis.</summary>
 		VertToFaceAxis1 = PosVertToFaceAxis1 | NegVertToFaceAxis1,
+		/// <summary>Wrap during the transition from face to vertex along the first axis.</summary>
 		FaceToVertAxis0 = PosFaceToVertAxis0 | NegFaceToVertAxis0,
+		/// <summary>Wrap during the transition from face to vertex along the second axis.</summary>
 		FaceToVertAxis1 = PosFaceToVertAxis1 | NegFaceToVertAxis1,
+		/// <summary>Wrap during the transition from face to face along the first axis.</summary>
 		FaceToFaceAxis0 = PosFaceToFaceAxis0 | NegFaceToFaceAxis0,
+		/// <summary>Wrap during the transition from face to face along the second axis.</summary>
 		FaceToFaceAxis1 = PosFaceToFaceAxis1 | NegFaceToFaceAxis1,
 
+		/// <summary>Wrap during the transition from vertex to vertex along either axis.</summary>
 		VertToVert = VertToVertAxis0 | VertToVertAxis1,
+		/// <summary>Wrap during the transition from vertex to face along either axis.</summary>
 		VertToFace = VertToFaceAxis0 | VertToFaceAxis1,
+		/// <summary>Wrap during the transition from face to vertex along either axis.</summary>
 		FaceToVert = FaceToVertAxis0 | FaceToVertAxis1,
+		/// <summary>Wrap during the transition from face to face along either axis.</summary>
 		FaceToFace = FaceToFaceAxis0 | FaceToFaceAxis1,
 
+		/// <summary>Wrap during the transition from vertex to edge along either axis.</summary>
 		VertToEdge = VertToEdgeAxis0 | VertToEdgeAxis1,
+		/// <summary>Wrap during the transition from face to edge along either axis.</summary>
 		FaceToEdge = FaceToEdgeAxis0 | FaceToEdgeAxis1,
+		/// <summary>Wrap during the transition from edge to vert along either axis.</summary>
 		EdgeToVert = EdgeToVertAxis0 | EdgeToVertAxis1,
+		/// <summary>Wrap during the transition from edge to face along either axis.</summary>
 		EdgeToFace = EdgeToFaceAxis0 | EdgeToFaceAxis1,
 
+		/// <summary>Wrap during the transition from edge to vertex or face along either axis.</summary>
 		EdgeTo = EdgeToVert | EdgeToFace,
+		/// <summary>Wrap during the transition from vertex or face to edge along either axis.</summary>
 		ToEdge = VertToEdge | FaceToEdge,
 
+		/// <summary>Wrap during the transition between vertex and edge along either axis.</summary>
 		VertToEdgeToVert = VertToEdge | EdgeToVert,
+		/// <summary>Wrap during the transition between face and edge along either axis.</summary>
 		FaceToEdgeToFace = FaceToEdge | EdgeToFace,
 
+		/// <summary>Wrap during the transition from vertex to vertex or face along either axis.</summary>
 		VertToNonEdge = VertToVert | VertToFace,
+		/// <summary>Wrap during the transition from face to vertex or face along either axis.</summary>
 		FaceToNonEdge = FaceToVert | FaceToFace,
 
+		/// <summary>Wrap during the transition from vertex or face to vertex along either axis.</summary>
 		NonEdgeToVert = VertToVert | FaceToVert,
+		/// <summary>Wrap during the transition from vertex or face to face along either axis.</summary>
 		NonEdgeToFace = VertToFace | FaceToFace,
 
+		/// <summary>Wrap during the transition from vertex along either axis.</summary>
 		VertTo = VertToNonEdge | VertToEdge,
+		/// <summary>Wrap during the transition from face along either axis.</summary>
 		FaceTo = FaceToNonEdge | FaceToEdge,
 
+		/// <summary>Wrap during the transition to vertex along either axis.</summary>
 		ToVert = NonEdgeToVert | EdgeToVert,
+		/// <summary>Wrap during the transition to face along either axis.</summary>
 		ToFace = NonEdgeToFace | EdgeToFace,
 
+		/// <summary>Wrap during the transition to or from edge along either axis.</summary>
 		Edge = EdgeTo | ToEdge,
+		/// <summary>Wrap during the transition from vertex or face to vertex or face along either axis.</summary>
 		NonEdge = NonEdgeToVert | NonEdgeToFace,
 
+		/// <summary>Wrap in the positive direction during the transition from vertex or face to vertex or face along the first axis.</summary>
 		NonEdgePosAxis0 = PosVertToVertAxis0 | PosVertToFaceAxis0 | PosFaceToVertAxis0 | PosFaceToFaceAxis0,
+		/// <summary>Wrap in the positive direction during the transition from vertex or face to vertex or face along the second axis.</summary>
 		NonEdgePosAxis1 = PosVertToVertAxis1 | PosVertToFaceAxis1 | PosFaceToVertAxis1 | PosFaceToFaceAxis1,
+		/// <summary>Wrap in the positive direction during the transition to or from edge along the first axis.</summary>
 		EdgePosAxis0 = PosVertToEdgeAxis0 | PosFaceToEdgeAxis0 | PosEdgeToVertAxis0 | PosEdgeToFaceAxis0,
+		/// <summary>Wrap in the positive direction during the transition to or from edge along the second axis.</summary>
 		EdgePosAxis1 = PosVertToEdgeAxis1 | PosFaceToEdgeAxis1 | PosEdgeToVertAxis1 | PosEdgeToFaceAxis1,
+		/// <summary>Wrap in the positive direction during any transition along the first axis.</summary>
 		PosAxis0 = NonEdgePosAxis0 | EdgePosAxis0,
+		/// <summary>Wrap in the positive direction during any transition along the second axis.</summary>
 		PosAxis1 = NonEdgePosAxis1 | EdgePosAxis1,
+		/// <summary>Wrap in the positive direction during any transition along either axis.</summary>
 		Pos = PosAxis0 | PosAxis1,
 
+		/// <summary>Wrap in the negative direction during the transition from vertex or face to vertex or face along the first axis.</summary>
 		NonEdgeNegAxis0 = NegVertToVertAxis0 | NegVertToFaceAxis0 | NegFaceToVertAxis0 | NegFaceToFaceAxis0,
+		/// <summary>Wrap in the negative direction during the transition from vertex or face to vertex or face along the second axis.</summary>
 		NonEdgeNegAxis1 = NegVertToVertAxis1 | NegVertToFaceAxis1 | NegFaceToVertAxis1 | NegFaceToFaceAxis1,
+		/// <summary>Wrap in the negative direction during the transition to or from edge along the first axis.</summary>
 		EdgeNegAxis0 = NegVertToEdgeAxis0 | NegFaceToEdgeAxis0 | NegEdgeToVertAxis0 | NegEdgeToFaceAxis0,
+		/// <summary>Wrap in the negative direction during the transition to or from edge along the second axis.</summary>
 		EdgeNegAxis1 = NegVertToEdgeAxis1 | NegFaceToEdgeAxis1 | NegEdgeToVertAxis1 | NegEdgeToFaceAxis1,
+		/// <summary>Wrap in the negative direction during any transition along the first axis.</summary>
 		NegAxis0 = NonEdgeNegAxis0 | EdgeNegAxis0,
+		/// <summary>Wrap in the negative direction during any transition along the second axis.</summary>
 		NegAxis1 = NonEdgeNegAxis1 | EdgeNegAxis1,
+		/// <summary>Wrap in the negative direction during any transition along either axis.</summary>
 		Neg = NegAxis0 | NegAxis1,
 
+		/// <summary>Wrap during any transition along the first axis.</summary>
 		Axis0 = PosAxis0 | NegAxis0,
+		/// <summary>Wrap during any transition along the second axis.</summary>
 		Axis1 = PosAxis1 | NegAxis1,
 
+		/// <summary>Wrap during any transition along either axis.</summary>
 		All = Pos | Neg,
 	}
 }
