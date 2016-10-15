@@ -63,11 +63,13 @@ namespace Experilous.MakeItTile
 			_addRingVertices = addRingVertices;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexCount(Topology.Face face)
 		{
 			return face.neighborCount * _ringDepth;
 		}
 
+		/// <inheritdoc/>
 		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
 		{
 			int neighborCount = face.neighborCount;
@@ -136,6 +138,7 @@ namespace Experilous.MakeItTile
 			RebuildFace(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
 		{
 			foreach (var edge in face.edges)
@@ -144,6 +147,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <inheritdoc/>
 		public void FinalizeSubmesh(int index)
 		{
 		}
@@ -203,11 +207,13 @@ namespace Experilous.MakeItTile
 			_addRingVertices = addRingVertices;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexCount(Topology.Face face)
 		{
 			return face.neighborCount * _ringDepth;
 		}
 
+		/// <inheritdoc/>
 		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
 		{
 			int neighborCount = face.neighborCount;
@@ -265,6 +271,7 @@ namespace Experilous.MakeItTile
 			RebuildFace(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
 		{
 			foreach (var edge in face.edges)
@@ -273,6 +280,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <inheritdoc/>
 		public void FinalizeSubmesh(int index)
 		{
 		}
@@ -345,11 +353,13 @@ namespace Experilous.MakeItTile
 			_addCenterVertex = addCenterVertex;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexCount(Topology.Face face)
 		{
 			return face.neighborCount * _ringDepth + 1;
 		}
 
+		/// <inheritdoc/>
 		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
 		{
 			int neighborCount = face.neighborCount;
@@ -402,6 +412,7 @@ namespace Experilous.MakeItTile
 			RebuildFace(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
 		{
 			foreach (var edge in face.edges)
@@ -412,6 +423,7 @@ namespace Experilous.MakeItTile
 			_addCenterVertex(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void FinalizeSubmesh(int index)
 		{
 		}
@@ -436,11 +448,13 @@ namespace Experilous.MakeItTile
 			_addCornerVertices = addCornerVertices;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexCount(Topology.Face face)
 		{
 			return face.neighborCount * 4;
 		}
 
+		/// <inheritdoc/>
 		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
 		{
 			int neighborCount = face.neighborCount;
@@ -513,6 +527,7 @@ namespace Experilous.MakeItTile
 			RebuildFace(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
 		{
 			foreach (var edge in face.edges)
@@ -521,6 +536,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <inheritdoc/>
 		public void FinalizeSubmesh(int index)
 		{
 		}

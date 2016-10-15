@@ -54,6 +54,14 @@ namespace Experilous.MakeItTile
 
 		private IndexedVertexAttributeArrays _cachedIndexedVertexAttributeArrays;
 
+		/// <summary>
+		/// Creates a dynamic mesh instance for the given face groups and faces, using the specified vertex attributes and triangulation object to construct the vertex data and triangles.
+		/// </summary>
+		/// <param name="faceGroups">The face groups for which to generate triangle meshes.  Each group will map to at least one submesh.</param>
+		/// <param name="vertexAttributes">The types of vertex data to include in the meshes, such as position, color, and normal.</param>
+		/// <param name="triangulation">The object which is responsible for turning each individual face into triangles with a mesh.</param>
+		/// <param name="maxVerticesPerSubmesh">The maximum number of vertices allowed per submesh.  Defaults to Unity's built-in maximum of 65534.</param>
+		/// <returns>A dynamic mesh instance created from the given face groups and triangulation.</returns>
 		public static DynamicMesh Create(IEnumerable<IEnumerable<Topology.Face>> faceGroups, VertexAttributes vertexAttributes, ITriangulation triangulation, int maxVerticesPerSubmesh = 65534)
 		{
 			var dynamicMesh = CreateInstance<DynamicMesh>();
@@ -63,6 +71,14 @@ namespace Experilous.MakeItTile
 			return dynamicMesh;
 		}
 
+		/// <summary>
+		/// Creates a dynamic mesh instance for the given faces, using the specified vertex attributes and triangulation object to construct the vertex data and triangles.
+		/// </summary>
+		/// <param name="faces">The faces for which to generate triangle meshes.</param>
+		/// <param name="vertexAttributes">The types of vertex data to include in the meshes, such as position, color, and normal.</param>
+		/// <param name="triangulation">The object which is responsible for turning each individual face into triangles with a mesh.</param>
+		/// <param name="maxVerticesPerSubmesh">The maximum number of vertices allowed per submesh.  Defaults to Unity's built-in maximum of 65534.</param>
+		/// <returns>A dynamic mesh instance created from the given faces and triangulation.</returns>
 		public static DynamicMesh Create(IEnumerable<Topology.Face> faces, VertexAttributes vertexAttributes, ITriangulation triangulation, int maxVerticesPerSubmesh = 65534)
 		{
 			var dynamicMesh = CreateInstance<DynamicMesh>();
@@ -183,6 +199,9 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <summary>
+		/// The number of submeshes contained within the current dynamic mesh.
+		/// </summary>
 		public int submeshCount { get { return _submeshes.Length; } }
 
 		private IndexedVertexAttributeArrays GetIndexedVertexAttributeArrays(Submesh submesh, int index)
@@ -197,12 +216,22 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <summary>
+		/// Returns the submesh with the given index.
+		/// </summary>
+		/// <param name="index">The zero-based index of the submesh to return.  Must a non-negative integer less than <see cref="submeshCount"/>.</param>
+		/// <returns></returns>
 		public Mesh GetSubmesh(int index)
 		{
 			if (index < 0 || index >= _submeshes.Length) throw new ArgumentOutOfRangeException("index");
 			return _submeshes[index].mesh;
 		}
 
+		/// <summary>
+		/// Replaces an internally stored submesh with the given submesh.  Necessary in some asset management and serialization scenarios.
+		/// </summary>
+		/// <param name="index">The index of the submesh to replace.</param>
+		/// <param name="replacementSubmesh">The new mesh to replace an existing mesh.  Ideally it is an exact copy, different only by identity.</param>
 		public void ReplaceSubmesh(int index, Mesh replacementSubmesh)
 		{
 			if (index < 0 || index >= _submeshes.Length) throw new ArgumentOutOfRangeException("index");
@@ -211,6 +240,9 @@ namespace Experilous.MakeItTile
 			_submeshes[index].mesh = replacementSubmesh;
 		}
 
+		/// <summary>
+		/// An enumerable collection of all the submeshes.
+		/// </summary>
 		public IEnumerable<Mesh> submeshes
 		{
 			get
@@ -224,47 +256,111 @@ namespace Experilous.MakeItTile
 
 		#region Public Types
 
+		/// <summary>
+		/// Flags for all the vertex attributes that can be used with a <see cref="UnityEngine.Mesh"/>.
+		/// </summary>
 		[Flags] public enum VertexAttributes
 		{
+			/// <summary>A value representing the selection of no vertex attributes.</summary>
 			None = 0x000,
+			/// <summary>A flag representing the position of a vertex.</summary>
 			Position = 0x001,
+			/// <summary>A flag representing the surface normal of a vertex.</summary>
 			Normal = 0x002,
+			/// <summary>A flag representing the color of a vertex.</summary>
 			Color = 0x004,
+			/// <summary>A flag representing the 32-bit color of a vertex.</summary>
 			Color32 = 0x008,
+			/// <summary>A flag representing the first UV coordinate of a vertex.</summary>
 			UV = 0x010,
+			/// <summary>A flag representing the first UV coordinate of a vertex.</summary>
 			UV1 = 0x010,
+			/// <summary>A flag representing the second UV coordinate of a vertex.</summary>
 			UV2 = 0x020,
+			/// <summary>A flag representing the third UV coordinate of a vertex.</summary>
 			UV3 = 0x040,
+			/// <summary>A flag representing the fourth UV coordinate of a vertex.</summary>
 			UV4 = 0x080,
+			/// <summary>A flag representing the tangent of a vertex.</summary>
 			Tangent = 0x100,
+			/// <summary>A value representing the selection of all the vertex attributes.</summary>
 			All = Position | Normal | Color | Color32 | UV1 | UV2 | UV3 | UV4 | Tangent,
 		}
 
+		/// <summary>
+		/// Interface for accessing the vertex attributes of a single vertex.
+		/// </summary>
 		public interface IVertexAttributes
 		{
+			/// <summary>The position of the current vertex.</summary>
 			Vector3 position { get; set; }
+			/// <summary>The surface normal of the current vertex.</summary>
 			Vector3 normal { get; set; }
+			/// <summary>The color of the current vertex.</summary>
 			Color color { get; set; }
+			/// <summary>The 32-bit color of the current vertex.</summary>
 			Color32 color32 { get; set; }
+			/// <summary>The first UV coordinate of the current vertex.</summary>
 			Vector2 uv { get; set; }
+			/// <summary>The first UV coordinate of the current vertex.</summary>
 			Vector2 uv1 { get; set; }
+			/// <summary>The second UV coordinate of the current vertex.</summary>
 			Vector2 uv2 { get; set; }
+			/// <summary>The third UV coordinate of the current vertex.</summary>
 			Vector2 uv3 { get; set; }
+			/// <summary>The fourth UV coordinate of the current vertex.</summary>
 			Vector2 uv4 { get; set; }
+			/// <summary>The tangent of the current vertex.</summary>
 			Vector4 tangent { get; set; }
 		}
 
+		/// <summary>
+		/// Interface for accessing the vertex attributes and index of a single vertex, as well advancing to the next vertex.
+		/// </summary>
 		public interface IIndexedVertexAttributes : IVertexAttributes
 		{
+			/// <summary>
+			/// The index of the current vertex.
+			/// </summary>
 			int index { get; }
+
+			/// <summary>
+			/// Move this instance to the next vertex of the mesh, so that any access to vertex attributes affect that next vertex instead of the previous one.
+			/// </summary>
 			void Advance();
 		}
 
+		/// <summary>
+		/// Interface for converting faces into collections of triangles.
+		/// </summary>
 		public interface ITriangulation
 		{
+			/// <summary>
+			/// Returns the number of vertices needed for triangulating the face.
+			/// </summary>
+			/// <param name="face">The face whose vertex count is requested.</param>
+			/// <returns>The number of vertices needed for triangulating the face.</returns>
 			int GetVertexCount(Topology.Face face);
+
+			/// <summary>
+			/// Builds triangulation data for the given face, assigning it to the vertex attributes and triangle indices provided.
+			/// </summary>
+			/// <param name="face">The face to be triangulated.</param>
+			/// <param name="vertexAttributes">The vertex attributes that will receive the values for the vertices triangulated for the face.</param>
+			/// <param name="triangleIndices">The triangle indices list that will have the face's triangle indices appended to it.</param>
 			void BuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices);
+
+			/// <summary>
+			/// Rebuilds vertex attribute triangulation data for the given face, for when some or all of the vertex attributes have changed.
+			/// </summary>
+			/// <param name="face">The face to be re-triangulated.</param>
+			/// <param name="vertexAttributes">The vertex attributes that will receive the new values for the vertices triangulated for the face.</param>
 			void RebuildFace(Topology.Face face, IIndexedVertexAttributes vertexAttributes);
+
+			/// <summary>
+			/// Performs any final actions necessary when all the faces that will be triangulated to a submesh have been processed.
+			/// </summary>
+			/// <param name="index">The index of the submesh being finalized.</param>
 			void FinalizeSubmesh(int index);
 		}
 
