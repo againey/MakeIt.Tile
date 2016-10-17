@@ -8,14 +8,11 @@ using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
-	public class QuadrilateralSurface : Surface, ISerializationCallbackReceiver
+	public class QuadrilateralSurface : PlanarSurface, ISerializationCallbackReceiver
 	{
 		public WrappableAxis2 axis0;
 		public WrappableAxis2 axis1;
-		public Vector3 origin;
-		public Quaternion orientation;
 
-		protected Vector3 _planeNormal;
 		protected Vector3 _axis0Vector;
 		protected Vector3 _axis1Vector;
 		protected Vector3 _axis0Normal;
@@ -28,19 +25,19 @@ namespace Experilous.MakeItTile
 
 		public QuadrilateralSurface Reset(WrappableAxis2 axis0, WrappableAxis2 axis1, Vector3 origin, Quaternion orientation)
 		{
+			Reset(origin, orientation);
 			this.axis0 = axis0;
 			this.axis1 = axis1;
-			this.origin = origin;
-			this.orientation = orientation;
 
 			OnAfterDeserialize();
 
 			return this;
 		}
 
-		public void OnAfterDeserialize()
+		public override void OnAfterDeserialize()
 		{
-			_planeNormal = orientation * Vector3.back;
+			base.OnAfterDeserialize();
+
 			_axis0Vector = orientation * axis0;
 			_axis1Vector = orientation * axis1;
 
@@ -50,48 +47,9 @@ namespace Experilous.MakeItTile
 			if (Vector3.Dot(_axis1Normal, axis0) < 0f) _axis1Normal = -_axis1Normal;
 		}
 
-		public void OnBeforeSerialize()
+		public override void OnBeforeSerialize()
 		{
-		}
-
-		public override bool isFlat { get { return true; } }
-		public override bool isCurved { get { return false; } }
-
-		public override bool isConvex { get { return true; } }
-		public override bool isConcave { get { return false; } }
-
-		public Plane plane { get { return new Plane(_planeNormal, origin); } }
-		public Vector3 normal { get { return _planeNormal; } }
-
-		public override Vector3 Intersect(Ray ray)
-		{
-			return Geometry.Intersect(plane, ray);
-		}
-
-		public override Vector3 Intersect(ScaledRay ray)
-		{
-			return Geometry.Intersect(plane, ray);
-		}
-
-		public override bool Intersect(Ray ray, out Vector3 intersection)
-		{
-			return Geometry.Intersect(plane, ray, out intersection);
-		}
-
-		public override bool Intersect(ScaledRay ray, out Vector3 intersection)
-		{
-			return Geometry.Intersect(plane, ray, out intersection);
-		}
-
-		public override Vector3 Project(Vector3 position)
-		{
-			var line = new Ray(position, _planeNormal);
-			return Geometry.Intersect(plane, line);
-		}
-
-		public override Vector3 GetNormal(Vector3 position)
-		{
-			return _planeNormal;
+			base.OnBeforeSerialize();
 		}
 
 		public IntVector2 GetWrapIndex2D(Vector3 position)

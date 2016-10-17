@@ -125,7 +125,7 @@ namespace Experilous.Examples.MakeItTile
 			_topology = hexGridSurface.CreateManifold(out vertexPositionsArray);
 			_vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			_facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(_topology.internalFaces, _vertexPositions);
-			_faceCornerBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.faceEdges, _topology.internalFaces, _vertexPositions, _facePositions);
+			_faceCornerBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.internalFaces, _vertexPositions, _facePositions);
 			_faceBlockedStates = new bool[_topology.internalFaces.Count].AsFaceAttribute();
 
 			var triangulation = new SeparatedFacesUmbrellaTriangulation(2,

@@ -240,12 +240,12 @@ namespace Experilous.MakeItTile
 
 		public static void MakeDual(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, out Vector3[] dualVertexPositions)
 		{
-			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, vertexPositions, surface.radius), out dualVertexPositions);
+			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, surface, vertexPositions), out dualVertexPositions);
 		}
 
 		public static void MakeDual(SphericalSurface surface, Topology topology, ref Vector3[] vertexPositions)
 		{
-			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, vertexPositions.AsVertexAttribute(), surface.radius), out vertexPositions);
+			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, surface, vertexPositions.AsVertexAttribute()), out vertexPositions);
 		}
 
 		public static void GetDualManifold(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, out Topology dualTopology, out Vector3[] dualVertexPositions)
@@ -313,9 +313,9 @@ namespace Experilous.MakeItTile
 		{
 			var idealArea = surface.radius * surface.radius * 4f * Mathf.PI / topology.vertices.Count;
 
-			FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, surface.radius, faceCentroids);
-			EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids(topology.faceEdges, faceCentroids, faceCentroidAngles);
-			VertexAttributeUtility.CalculateSphericalVertexAreasFromFaceCentroidAngles(topology.vertices, faceCentroidAngles, surface.radius, vertexAreas);
+			FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, surface, vertexPositions, faceCentroids);
+			EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids(topology.faceEdges, surface, faceCentroids, faceCentroidAngles);
+			VertexAttributeUtility.CalculateSphericalVertexAreasFromFaceCentroidAngles(topology.vertices, surface, faceCentroidAngles, vertexAreas);
 
 			for (int i = 0; i < topology.vertices.Count; ++i)
 			{

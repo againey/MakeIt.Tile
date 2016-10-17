@@ -214,7 +214,7 @@ namespace Experilous.Examples.MakeItTile
 				_maximumFaceDistance = Mathf.Max(_maximumFaceDistance, distance);
 			}
 
-			_innerAngleBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.faceEdges, _topology.internalFaces, _vertexPositions, _facePositions);
+			_innerAngleBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.internalFaces, _vertexPositions, _facePositions);
 
 			_innerVertexPositions = new Vector3[_topology.faceEdges.Count].AsEdgeAttribute();
 			foreach (var edge in _topology.faceEdges)
@@ -224,8 +224,8 @@ namespace Experilous.Examples.MakeItTile
 
 			_faceNormals = FaceAttributeUtility.CalculateFaceNormalsFromSurface(_topology.faces, _surface, _facePositions);
 			_faceUVFrames = FaceAttributeUtility.CalculatePerFaceSphericalUVFramesFromFaceNormals(_topology.faces, _faceNormals, Quaternion.identity);
-			_faceOuterEdgeUVs = EdgeAttributeUtility.CalculatePerFaceUnnormalizedUVsFromVertexPositions(_topology.faceEdges, _topology.faces, _vertexPositions, _faceUVFrames);
-			_faceInnerEdgeUVs = EdgeAttributeUtility.CalculatePerFaceUnnormalizedUVsFromVertexPositions(_topology.faceEdges, _topology.faces, _innerVertexPositions, _faceUVFrames);
+			_faceOuterEdgeUVs = EdgeAttributeUtility.CalculatePerFaceUnnormalizedUVsFromVertexPositions(_topology.faces, _vertexPositions, _faceUVFrames);
+			_faceInnerEdgeUVs = EdgeAttributeUtility.CalculatePerFaceUnnormalizedUVsFromVertexPositions(_topology.faces, _innerVertexPositions, _faceUVFrames);
 			_faceCenterUVs = FaceAttributeUtility.CalculateUnnormalizedUVsFromFacePositions(_topology.faces, _facePositions, _faceUVFrames);
 
 			var faceMinUVs = new Vector2[_topology.faces.Count].AsFaceAttribute();

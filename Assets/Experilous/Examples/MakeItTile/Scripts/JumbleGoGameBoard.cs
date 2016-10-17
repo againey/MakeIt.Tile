@@ -277,7 +277,7 @@ namespace Experilous.Examples.MakeItTile
 			_facePositions = PositionalFaceAttribute.Create(_surface, _topology.internalFaces.Count);
 			FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(_topology.internalFaces, _vertexPositions, _facePositions);
 
-			_innerAngleBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.faceEdges, _topology.internalFaces, _vertexPositions, _facePositions);
+			_innerAngleBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.internalFaces, PlanarSurface.Create(Vector3.zero, Quaternion.identity), _vertexPositions);
 
 			_faceBoardStates = new BoardState[_topology.internalFaces.Count].AsFaceAttribute();
 

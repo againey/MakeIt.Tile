@@ -7,15 +7,33 @@ using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
+	/// <summary>
+	/// A static utility class for calculating various per-vertex attributes.
+	/// </summary>
 	public static class VertexAttributeUtility
 	{
-		#region IList<Vector3> CalculateVertexNormals...(...)
+		#region IVertexAttribute<Vector3> CalculateVertexNormals...(...)
 
+		/// <summary>
+		/// Calculates vertex normals using the surface normal reported by the given surface based on the position of each vertex.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="surface">The surface descriptor that will provide surface normal information.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <returns>The surface normals of the vertices.</returns>
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromSurface(Topology.VerticesIndexer vertices, Surface surface, IVertexAttribute<Vector3> vertexPositions)
 		{
 			return CalculateVertexNormalsFromSurface(vertices, surface, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Calculates vertex normals using the surface normal reported by the given surface based on the position of each vertex.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="surface">The surface descriptor that will provide surface normal information.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="vertexNormals">A pre-allocated collection in which the vertex normals will be stored.</param>
+		/// <returns>The surface normals of the vertices.</returns>
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromSurface(Topology.VerticesIndexer vertices, Surface surface, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
@@ -26,11 +44,24 @@ namespace Experilous.MakeItTile
 			return vertexNormals;
 		}
 
+		/// <summary>
+		/// Calculates vertex normals based on their positions and the positions of their neighbors.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <returns>The surface normals of the vertices.</returns>
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions)
 		{
 			return CalculateVertexNormalsFromVertexPositions(vertices, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Calculates vertex normals based on their positions and the positions of their neighbors.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="vertexNormals">A pre-allocated collection in which the vertex normals will be stored.</param>
+		/// <returns>The surface normals of the vertices.</returns>
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
@@ -55,11 +86,24 @@ namespace Experilous.MakeItTile
 			return vertexNormals;
 		}
 
+		/// <summary>
+		/// Calculates vertex normals based on the positions of their neighboring faces.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="facePositions">The positions of the faces.</param>
+		/// <returns>The surface normals of the vertices.</returns>
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromFacePositions(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> facePositions)
 		{
 			return CalculateVertexNormalsFromFacePositions(vertices, facePositions, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Calculates vertex normals based on the positions of their neighboring faces.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="facePositions">The positions of the faces.</param>
+		/// <param name="vertexNormals">A pre-allocated collection in which the vertex normals will be stored.</param>
+		/// <returns>The surface normals of the vertices.</returns>
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromFacePositions(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> facePositions, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
@@ -85,11 +129,24 @@ namespace Experilous.MakeItTile
 			return vertexNormals;
 		}
 
+		/// <summary>
+		/// Calculates vertex normals based on the surface normals of their neighboring faces.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="faceNormals">The surface normals of the faces.</param>
+		/// <returns>The surface normals of the vertices.</returns>
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromFaceNormals(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> faceNormals)
 		{
 			return CalculateVertexNormalsFromFaceNormals(vertices, faceNormals, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Calculates vertex normals based on the surface normals of their neighboring faces.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="faceNormals">The surface normals of the faces.</param>
+		/// <param name="vertexNormals">A pre-allocated collection in which the vertex normals will be stored.</param>
+		/// <returns>The surface normals of the vertices.</returns>
 		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromFaceNormals(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> faceNormals, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
@@ -107,16 +164,41 @@ namespace Experilous.MakeItTile
 			return vertexNormals;
 		}
 
-		public static IVertexAttribute<Vector3> CalculateSphericalVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions)
+		/// <summary>
+		/// Calculates vertex normals based on their positions and the fact that they are part of a spherical surface centered at the origin.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <returns>The surface normals of the vertices.</returns>
+		public static IVertexAttribute<Vector3> CalculateSphericalVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CalculateSphericalVertexNormalsFromVertexPositions(vertices, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());
+			return CalculateSphericalVertexNormalsFromVertexPositions(vertices, surface, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IVertexAttribute<Vector3> CalculateSphericalVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
+		/// <summary>
+		/// Calculates vertex normals based on their positions and the fact that they are part of a spherical surface centered at the origin.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose normals are to be calculated.</param>
+		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="vertexNormals">A pre-allocated collection in which the vertex normals will be stored.</param>
+		/// <returns>The surface normals of the vertices.</returns>
+		public static IVertexAttribute<Vector3> CalculateSphericalVertexNormalsFromVertexPositions(Topology.VerticesIndexer vertices, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
 		{
-			foreach (var vertex in vertices)
+			if (!surface.isInverted)
 			{
-				vertexNormals[vertex] = vertexPositions[vertex].normalized;
+				foreach (var vertex in vertices)
+				{
+					vertexNormals[vertex] = vertexPositions[vertex].normalized;
+				}
+			}
+			else
+			{
+				foreach (var vertex in vertices)
+				{
+					vertexNormals[vertex] = -vertexPositions[vertex].normalized;
+				}
 			}
 
 			return vertexNormals;
@@ -124,13 +206,26 @@ namespace Experilous.MakeItTile
 
 		#endregion
 
-		#region IList<float> CalculateVertexAreas...(...)
+		#region IVertexAttribute<float> CalculateVertexAreas...(...)
 
+		/// <summary>
+		/// Calculates the planar surface area around each vertex that is closest to that vertex, based on the centroid positions of their neighboring faces.  For non-flat surfaces, the calculated areas are only approximate.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose areas are to be calculated.</param>
+		/// <param name="faceCentroids">The centroids of the faces.</param>
+		/// <returns>The surrounding surface areas of the vertices.</returns>
 		public static IVertexAttribute<float> CalculatePlanarVertexAreasFromFaceCentroids(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return CalculatePlanarVertexAreasFromFaceCentroids(vertices, faceCentroids, new float[vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Calculates the planar surface area around each vertex that is closest to that vertex, based on the centroid positions of their neighboring faces.  For non-flat surfaces, the calculated areas are only approximate.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose areas are to be calculated.</param>
+		/// <param name="faceCentroids">The centroids of the faces.</param>
+		/// <param name="vertexAreas">A pre-allocated collection in which the surrounding surface areas will be stored.</param>
+		/// <returns>The surrounding surface areas of the vertices.</returns>
 		public static IVertexAttribute<float> CalculatePlanarVertexAreasFromFaceCentroids(Topology.VerticesIndexer vertices, IFaceAttribute<Vector3> faceCentroids, IVertexAttribute<float> vertexAreas)
 		{
 			foreach (var vertex in vertices)
@@ -154,11 +249,26 @@ namespace Experilous.MakeItTile
 			return vertexAreas;
 		}
 
+		/// <summary>
+		/// Calculates the surface area around each vertex that is closest to that vertex, based on the positions of the vertices and the centroid positions of their neighboring faces.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose areas are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="faceCentroids">The centroids of the faces.</param>
+		/// <returns>The surrounding surface areas of the vertices.</returns>
 		public static IVertexAttribute<float> CalculateVertexAreasFromVertexPositionsAndFaceCentroids(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceCentroids)
 		{
 			return CalculateVertexAreasFromVertexPositionsAndFaceCentroids(vertices, vertexPositions, faceCentroids, new float[vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Calculates the surface area around each vertex that is closest to that vertex, based on the positions of the vertices and the centroid positions of their neighboring faces.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose areas are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="faceCentroids">The centroids of the faces.</param>
+		/// <param name="vertexAreas">A pre-allocated collection in which the surrounding surface areas will be stored.</param>
+		/// <returns>The surrounding surface areas of the vertices.</returns>
 		public static IVertexAttribute<float> CalculateVertexAreasFromVertexPositionsAndFaceCentroids(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceCentroids, IVertexAttribute<float> vertexAreas)
 		{
 			foreach (var vertex in vertices)
@@ -187,14 +297,31 @@ namespace Experilous.MakeItTile
 			return vertexAreas;
 		}
 
-		public static IVertexAttribute<float> CalculateSphericalVertexAreasFromFaceCentroidAngles(Topology.VerticesIndexer vertices, IEdgeAttribute<float> faceCentroidAngles, float sphereRadius = 1f)
+		/// <summary>
+		/// Calculates the spherical surface area around each vertex that is closest to that vertex, based on face centroid angles of each edge.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose areas are to be calculated.</param>
+		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
+		/// <param name="faceCentroidAngles">The centroid angles, in radians, of the face edges.</param>
+		/// <returns>The surrounding spherical surface areas of the vertices.</returns>
+		/// <seealso cref="O:EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids"/>
+		public static IVertexAttribute<float> CalculateSphericalVertexAreasFromFaceCentroidAngles(Topology.VerticesIndexer vertices, SphericalSurface surface, IEdgeAttribute<float> faceCentroidAngles)
 		{
-			return CalculateSphericalVertexAreasFromFaceCentroidAngles(vertices, faceCentroidAngles, sphereRadius, new float[vertices.Count].AsVertexAttribute());
+			return CalculateSphericalVertexAreasFromFaceCentroidAngles(vertices, surface, faceCentroidAngles, new float[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IVertexAttribute<float> CalculateSphericalVertexAreasFromFaceCentroidAngles(Topology.VerticesIndexer vertices, IEdgeAttribute<float> faceCentroidAngles, float sphereRadius, IVertexAttribute<float> vertexAreas)
+		/// <summary>
+		/// Calculates the spherical surface area around each vertex that is closest to that vertex, based on face centroid angles of each edge.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose areas are to be calculated.</param>
+		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
+		/// <param name="faceCentroidAngles">The centroid angles, in radians, of the face edges.</param>
+		/// <param name="vertexAreas">A pre-allocated collection in which the surrounding surface areas will be stored.</param>
+		/// <returns>The surrounding spherical surface areas of the vertices.</returns>
+		/// <seealso cref="O:EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids"/>
+		public static IVertexAttribute<float> CalculateSphericalVertexAreasFromFaceCentroidAngles(Topology.VerticesIndexer vertices, SphericalSurface surface, IEdgeAttribute<float> faceCentroidAngles, IVertexAttribute<float> vertexAreas)
 		{
-			var radiusSquared = sphereRadius * sphereRadius;
+			var radiusSquared = surface.radius * surface.radius;
 
 			foreach (var vertex in vertices)
 			{
@@ -217,21 +344,61 @@ namespace Experilous.MakeItTile
 
 		#region CacluateGlobalPlanarUVs...(...)
 
+		/// <summary>
+		/// Calculates the UV coordinates of each vertex, based on the planar UV space indicated.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose UV coordinates are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <returns>The UV coordinates of the vertices.</returns>
+		/// <seealso cref="O:EdgeAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IVertexAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(vertices, vertexPositions, Vector3.zero, uAxis, vAxis, new Vector2[vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Calculates the UV coordinates of each vertex, based on the planar UV space indicated.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose UV coordinates are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="origin">The world space origin of the UV space, where the UV coordinate will be (0, 0).</param>
+		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <returns>The UV coordinates of the vertices.</returns>
+		/// <seealso cref="O:EdgeAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IVertexAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(vertices, vertexPositions, origin, uAxis, vAxis, new Vector2[vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Calculates the UV coordinates of each vertex, based on the planar UV space indicated.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose UV coordinates are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="uvs">A pre-allocated collection in which the UV coordinates will be stored.</param>
+		/// <returns>The UV coordinates of the vertices.</returns>
+		/// <seealso cref="O:EdgeAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IVertexAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IVertexAttribute<Vector2> uvs)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(vertices, vertexPositions, Vector3.zero, uAxis, vAxis, uvs);
 		}
 
+		/// <summary>
+		/// Calculates the UV coordinates of each vertex, based on the planar UV space indicated.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose UV coordinates are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="origin">The world space origin of the UV space, where the UV coordinate will be (0, 0).</param>
+		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="uvs">A pre-allocated collection in which the UV coordinates will be stored.</param>
+		/// <returns>The UV coordinates of the vertices.</returns>
+		/// <seealso cref="O:EdgeAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IVertexAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis, IVertexAttribute<Vector2> uvs)
 		{
 			var normal = Vector3.Cross(vAxis, uAxis).normalized;
@@ -253,16 +420,84 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
+		/// <summary>
+		/// Calculates the UV coordinates of each vertex, based on the planar UV space indicated, renormalized afterward over the entire manifold so that UVs are bound to the unit square from (0, 0) to (1, 1).
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose UV coordinates are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <returns>The UV coordinates of the vertices.</returns>
+		/// <remarks><para>Unlike <see cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
+		/// this function accesses vertex positions within the context of a face edge, allowing for additional behavior such as
+		/// per-face vertex positions or wrapped vertex positions in a topology with wrapping boundaries.</para></remarks>
+		/// <seealso cref="O:EdgeAttributeUtility.CalculateGlobalPlanarNormalizedUVsFromVertexPositions"/>
+		public static IVertexAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
+		{
+			return CalculateGlobalPlanarNormalizedUVsFromVertexPositions(vertices, vertexPositions, uAxis, vAxis, new Vector2[vertices.Count].AsVertexAttribute());
+		}
+
+		/// <summary>
+		/// Calculates the UV coordinates of each vertex, based on the planar UV space indicated, renormalized afterward over the entire manifold so that UVs are bound to the unit square from (0, 0) to (1, 1).
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose UV coordinates are to be calculated.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
+		/// <param name="uvs">A pre-allocated collection in which the UV coordinates will be stored.</param>
+		/// <returns>The UV coordinates of the vertices.</returns>
+		/// <seealso cref="O:EdgeAttributeUtility.CalculateGlobalPlanarNormalizedUVsFromVertexPositions"/>
+		public static IVertexAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IVertexAttribute<Vector2> uvs)
+		{
+			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(vertices, vertexPositions, uAxis, vAxis, uvs);
+
+			Vector2 uvMin = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+			Vector2 uvMax = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+
+			foreach (var vertex in vertices)
+			{
+				uvMin = Geometry.AxisAlignedMin(uvMin, uvs[vertex]);
+				uvMax = Geometry.AxisAlignedMax(uvMax, uvs[vertex]);
+			}
+
+			var uvRange = uvMax - uvMin;
+			var uvRangeReciprocal = new Vector2(1f / uvRange.x, 1f / uvRange.y);
+
+			foreach (var vertex in vertices)
+			{
+				uvs[vertex] = Vector2.Scale(uvs[vertex] - uvMin, uvRangeReciprocal);
+			}
+
+			return uvs;
+		}
+
 		#endregion
 
 		#region CalculateGlobalSphericalUVs...(...)
 
-		public static IVertexAttribute<Vector2> CalculateGlobalSphericalUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Quaternion orientation)
+		/// <summary>
+		/// Calculates the UV coordinates of each vertex, based on the spherical longitude/latitude UV space indicated.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose UV coordinates are to be calculated.</param>
+		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="orientation">The world space orientation of the UV space.</param>
+		/// <returns>The UV coordinates of the vertices.</returns>
+		public static IVertexAttribute<Vector2> CalculateGlobalSphericalUVsFromVertexPositions(Topology.VerticesIndexer vertices, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions, Quaternion orientation)
 		{
-			return CalculateGlobalSphericalUVsFromVertexPositions(vertices, vertexPositions, orientation, new Vector2[vertices.Count].AsVertexAttribute());
+			return CalculateGlobalSphericalUVsFromVertexPositions(vertices, surface, vertexPositions, orientation, new Vector2[vertices.Count].AsVertexAttribute());
 		}
 
-		public static IVertexAttribute<Vector2> CalculateGlobalSphericalUVsFromVertexPositions(Topology.VerticesIndexer vertices, IVertexAttribute<Vector3> vertexPositions, Quaternion orientation, IVertexAttribute<Vector2> uvs)
+		/// <summary>
+		/// Calculates the UV coordinates of each vertex, based on the spherical longitude/latitude UV space indicated.
+		/// </summary>
+		/// <param name="vertices">The collection of vertices whose UV coordinates are to be calculated.</param>
+		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
+		/// <param name="vertexPositions">The positions of the vertices.</param>
+		/// <param name="orientation">The world space orientation of the UV space.</param>
+		/// <param name="uvs">A pre-allocated collection in which the UV coordinates will be stored.</param>
+		/// <returns>The UV coordinates of the vertices.</returns>
+		public static IVertexAttribute<Vector2> CalculateGlobalSphericalUVsFromVertexPositions(Topology.VerticesIndexer vertices, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions, Quaternion orientation, IVertexAttribute<Vector2> uvs)
 		{
 			var twoPi = Mathf.PI * 2f;
 			foreach (var vertex in vertices)

@@ -82,7 +82,7 @@ namespace Experilous.MakeItTile
 				else if (surface is SphericalSurface)
 				{
 					var sphericalSurface = (SphericalSurface)surface;
-					FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, sphericalSurface.radius, faceCentroids);
+					FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, sphericalSurface, vertexPositions, faceCentroids);
 				}
 				else
 				{

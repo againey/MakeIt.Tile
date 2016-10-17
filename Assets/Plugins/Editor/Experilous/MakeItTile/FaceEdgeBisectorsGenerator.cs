@@ -12,6 +12,7 @@ namespace Experilous.MakeItTile
 	[Generator(typeof(TopologyGeneratorCollection), "Face Edge/Bisectors")]
 	public class FaceEdgeBisectorsGenerator : Generator, ISerializationCallbackReceiver
 	{
+		[AutoSelect] public InputSlot surfaceInputSlot;
 		[AutoSelect] public InputSlot topologyInputSlot;
 		public InputSlot vertexPositionsInputSlot;
 		public InputSlot facePositionsInputSlot;
@@ -21,6 +22,7 @@ namespace Experilous.MakeItTile
 		protected override void Initialize()
 		{
 			// Inputs
+			InputSlot.CreateOrResetRequired<Surface>(ref surfaceInputSlot, this);
 			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<IEdgeAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
 			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref facePositionsInputSlot, this);
@@ -31,6 +33,9 @@ namespace Experilous.MakeItTile
 
 		public void OnAfterDeserialize()
 		{
+			if (surfaceInputSlot.generator == null) surfaceInputSlot = InputSlot.CreateRequired<Surface>(this);
+
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
 			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
 			InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector3>>(vertexPositionsInputSlot);
 			InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(facePositionsInputSlot);
@@ -46,6 +51,7 @@ namespace Experilous.MakeItTile
 		{
 			get
 			{
+				yield return surfaceInputSlot;
 				yield return topologyInputSlot;
 				yield return vertexPositionsInputSlot;
 				yield return facePositionsInputSlot;
@@ -62,11 +68,12 @@ namespace Experilous.MakeItTile
 
 		public override IEnumerator BeginGeneration()
 		{
+			var surface = surfaceInputSlot.GetAsset<Surface>();
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var vertexPositions = vertexPositionsInputSlot.GetAsset<IEdgeAttribute<Vector3>>();
 			var facePositions = facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>();
 			var bisectors = Vector3EdgeAttribute.Create(topology.faceEdges.Count);
-			EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(topology.faceEdges, topology.internalFaces, vertexPositions, facePositions, bisectors);
+			EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(topology.internalFaces, surface, vertexPositions, facePositions, bisectors);
 			bisectorsOutputSlot.SetAsset(bisectors);
 
 			yield break;
