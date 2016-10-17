@@ -59,5 +59,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 158176, guid: 6c0640a805bdaa645a0303415d6089e6, type: 2}
+  - {fileID: 0}
+  - {fileID: 1000010764976748, guid: 6c0640a805bdaa645a0303415d6089e6, type: 2}
   embeddedAssets: []

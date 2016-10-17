@@ -362,7 +362,7 @@ MonoBehaviour:
     _isMutating: 0
     _key: {fileID: 11464700}
     isActive: 1
-  scale: .0500000007
+  scale: 0.05
   offsetVertexPositionsOutputSlot:
     _generator: {fileID: 11410880}
     _assetType:
@@ -1238,6 +1238,16 @@ MonoBehaviour:
   m_Name: Face Edge/Bisectors
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11437190}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11488540}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 114000012737108802}
+    isActive: 1
   topologyInputSlot:
     _generator: {fileID: 11437190}
     _assetType:
@@ -1363,8 +1373,9 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: UnityEngine.GameObject, UnityEngine, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 115080, guid: 7d1281a32cdf137488f634a722e46fce, type: 2}
-    _persistedAsset: {fileID: 115080, guid: 7d1281a32cdf137488f634a722e46fce, type: 2}
+    _asset: {fileID: 1000013474379900, guid: 7d1281a32cdf137488f634a722e46fce, type: 2}
+    _persistedAsset: {fileID: 1000013474379900, guid: 7d1281a32cdf137488f634a722e46fce,
+      type: 2}
     _availability: 3
     _persistable: 1
     _connectionTargets: []
@@ -2219,7 +2230,7 @@ MonoBehaviour:
     _key: {fileID: 0}
     isActive: 0
   constantColor: {r: 0, g: 0, b: 0, a: 1}
-  blendWeight: .5
+  blendWeight: 0.5
   faceEdgeColorsOutputSlot:
     _generator: {fileID: 11478982}
     _assetType:
@@ -3277,7 +3288,7 @@ MonoBehaviour:
     _key: {fileID: 11439214}
     isActive: 1
   passCount: 1
-  frequency: .100000001
+  frequency: 0.1
   randomness:
     randomType: 0
     seedSource: 3
@@ -3298,11 +3309,11 @@ MonoBehaviour:
   minFaceNeighbors: 5
   maxFaceNeighbors: 7
   lockBoundaryPositions: 1
-  relaxForRegularityWeight: .5
+  relaxForRegularityWeight: 0.5
   maxRelaxIterations: 20
-  relaxRelativePrecision: .949999988
+  relaxRelativePrecision: 0.95
   maxRepairIterations: 20
-  repairRate: .5
+  repairRate: 0.5
 --- !u!114 &11485586
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3315,6 +3326,16 @@ MonoBehaviour:
   m_Name: Face Edge/Bisectors
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11485586}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 1
   topologyInputSlot:
     _generator: {fileID: 11485586}
     _assetType:
@@ -3623,6 +3644,7 @@ MonoBehaviour:
     - {fileID: 11409382}
     - {fileID: 11473698}
     - {fileID: 11439910}
+    - {fileID: 114000012737108802}
     _key: {fileID: 11488540}
     name: Surface
     path: 
@@ -3869,3 +3891,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _generator: {fileID: 11440936}
+--- !u!114 &114000012737108802
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11437190}

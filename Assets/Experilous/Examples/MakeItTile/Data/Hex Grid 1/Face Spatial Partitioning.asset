@@ -11,19 +11,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b07d31325623e54787105896198984f, type: 3}
   m_Name: Face Spatial Partitioning
   m_EditorClassIdentifier: 
-  _topology: {fileID: 11400000, guid: 06be940c10df0f440a9668a33ec71216, type: 2}
   _surface: {fileID: 11400000, guid: 79e27a731aeec894fa4e740bdcceadba, type: 2}
+  _topology: {fileID: 11400000, guid: 06be940c10df0f440a9668a33ec71216, type: 2}
   _partitionBinaryTree:
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -7.00000048
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -7.0000005
     _underEdgeIndex: 294
     _overEdgeIndex: 243
     _underPartitionIndex: 5
     _overPartitionIndex: 1
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: 1.50000274
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 1.5000027
     _underEdgeIndex: 317
     _overEdgeIndex: 266
     _underPartitionIndex: 10
@@ -36,29 +36,29 @@ MonoBehaviour:
     _underPartitionIndex: 3
     _overPartitionIndex: 13
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -7.99999905
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -7.999999
     _underEdgeIndex: 432
     _overEdgeIndex: 381
     _underPartitionIndex: 25
     _overPartitionIndex: 4
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -1.99999714
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -1.9999971
     _underEdgeIndex: 455
     _overEdgeIndex: 404
     _underPartitionIndex: 11
     _overPartitionIndex: 21
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -1.49999988
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -1.4999999
     _underEdgeIndex: 60
     _overEdgeIndex: 9
     _underPartitionIndex: 54
     _overPartitionIndex: 6
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: 1.99999952
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 1.9999995
     _underEdgeIndex: 83
     _overEdgeIndex: 32
     _underPartitionIndex: 14
@@ -71,15 +71,15 @@ MonoBehaviour:
     _underPartitionIndex: 9
     _overPartitionIndex: 8
   - _plane:
-      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -5.99999714
+      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -5.999997
     _underEdgeIndex: 198
     _overEdgeIndex: 147
     _underPartitionIndex: 31
     _overPartitionIndex: 41
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -1.50000012
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -1.5000001
     _underEdgeIndex: 221
     _overEdgeIndex: 170
     _underPartitionIndex: 16
@@ -92,8 +92,8 @@ MonoBehaviour:
     _underPartitionIndex: 18
     _overPartitionIndex: 136
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: 2.92854384e-06
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 0.0000029285438
     _underEdgeIndex: 359
     _overEdgeIndex: 308
     _underPartitionIndex: 19
@@ -106,7 +106,7 @@ MonoBehaviour:
     _underPartitionIndex: 20
     _overPartitionIndex: 52
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -11.500001
     _underEdgeIndex: 474
     _overEdgeIndex: 423
@@ -120,15 +120,15 @@ MonoBehaviour:
     _underPartitionIndex: 188
     _overPartitionIndex: 15
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -4.99999905
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -4.999999
     _underEdgeIndex: 102
     _overEdgeIndex: 51
     _underPartitionIndex: 38
     _overPartitionIndex: 32
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: .499999702
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 0.4999997
     _underEdgeIndex: 125
     _overEdgeIndex: 74
     _underPartitionIndex: 22
@@ -141,8 +141,8 @@ MonoBehaviour:
     _underPartitionIndex: 23
     _overPartitionIndex: 56
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: 1.99999917
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 1.9999992
     _underEdgeIndex: 263
     _overEdgeIndex: 212
     _underPartitionIndex: 24
@@ -155,8 +155,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -1.49999726
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -1.4999973
     _underEdgeIndex: 401
     _overEdgeIndex: 350
     _underPartitionIndex: 26
@@ -176,8 +176,8 @@ MonoBehaviour:
     _underPartitionIndex: 29
     _overPartitionIndex: 165
   - _plane:
-      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -1.00000131
+      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -1.0000013
     _underEdgeIndex: 167
     _overEdgeIndex: 116
     _underPartitionIndex: 30
@@ -190,8 +190,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: .500002325
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 0.5000023
     _underEdgeIndex: 305
     _overEdgeIndex: 254
     _underPartitionIndex: 33
@@ -204,22 +204,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -10.500001
     _underEdgeIndex: 420
     _overEdgeIndex: 369
     _underPartitionIndex: 43
     _overPartitionIndex: 62
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.99999738
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.9999974
     _underEdgeIndex: 443
     _overEdgeIndex: 392
     _underPartitionIndex: 36
     _overPartitionIndex: 84
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: .999999702
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 0.9999997
     _underEdgeIndex: 71
     _overEdgeIndex: 20
     _underPartitionIndex: 37
@@ -232,15 +232,15 @@ MonoBehaviour:
     _underPartitionIndex: 39
     _overPartitionIndex: 173
   - _plane:
-      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -4.99999809
+      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -4.999998
     _underEdgeIndex: 186
     _overEdgeIndex: 135
     _underPartitionIndex: 46
     _overPartitionIndex: 57
   - _plane:
-      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
-      distance: 2.49999571
+      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: 2.4999957
     _underEdgeIndex: 209
     _overEdgeIndex: 158
     _underPartitionIndex: 40
@@ -253,15 +253,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -5.99999905
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -5.999999
     _underEdgeIndex: 324
     _overEdgeIndex: 273
     _underPartitionIndex: 49
     _overPartitionIndex: 161
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.999997437
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.99999744
     _underEdgeIndex: 347
     _overEdgeIndex: 296
     _underPartitionIndex: 42
@@ -281,15 +281,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -3.99999928
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -3.9999993
     _underEdgeIndex: 90
     _overEdgeIndex: 39
     _underPartitionIndex: 87
     _overPartitionIndex: 65
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -.500000119
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -0.5000001
     _underEdgeIndex: 113
     _overEdgeIndex: 62
     _underPartitionIndex: 45
@@ -302,8 +302,8 @@ MonoBehaviour:
     _underPartitionIndex: 47
     _overPartitionIndex: 181
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: .999999404
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 0.9999994
     _underEdgeIndex: 251
     _overEdgeIndex: 200
     _underPartitionIndex: 48
@@ -316,15 +316,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 82
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -9.50000095
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -9.500001
     _underEdgeIndex: 366
     _overEdgeIndex: 315
     _underPartitionIndex: 59
     _overPartitionIndex: 78
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.49999762
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.4999976
     _underEdgeIndex: 389
     _overEdgeIndex: 338
     _underPartitionIndex: 51
@@ -337,15 +337,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -3.99999952
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -3.9999995
     _underEdgeIndex: 132
     _overEdgeIndex: 81
     _underPartitionIndex: 64
     _overPartitionIndex: 81
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: 2.99999928
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 2.9999993
     _underEdgeIndex: 155
     _overEdgeIndex: 104
     _underPartitionIndex: 55
@@ -358,15 +358,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 127
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -4.99999952
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -4.9999995
     _underEdgeIndex: 270
     _overEdgeIndex: 219
     _underPartitionIndex: 67
     _overPartitionIndex: 128
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.499998003
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.499998
     _underEdgeIndex: 293
     _overEdgeIndex: 242
     _underPartitionIndex: 58
@@ -379,7 +379,7 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 91
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -9.5
     _underEdgeIndex: 408
     _overEdgeIndex: 357
@@ -393,8 +393,8 @@ MonoBehaviour:
     _underPartitionIndex: 218
     _overPartitionIndex: 94
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -1.05871493e-07
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -0.00000010587149
     _underEdgeIndex: 59
     _overEdgeIndex: 8
     _underPartitionIndex: 63
@@ -407,15 +407,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -3.99999881
+      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -3.9999988
     _underEdgeIndex: 174
     _overEdgeIndex: 123
     _underPartitionIndex: 73
     _overPartitionIndex: 90
   - _plane:
-      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
-      distance: 1.49999654
+      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: 1.4999965
     _underEdgeIndex: 197
     _overEdgeIndex: 146
     _underPartitionIndex: 66
@@ -428,29 +428,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 99
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -8.50000095
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -8.500001
     _underEdgeIndex: 312
     _overEdgeIndex: 261
     _underPartitionIndex: 108
     _overPartitionIndex: 92
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -1.99999774
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -1.9999977
     _underEdgeIndex: 335
     _overEdgeIndex: 284
     _underPartitionIndex: 69
     _overPartitionIndex: 116
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -9.5
     _underEdgeIndex: 450
     _overEdgeIndex: 399
     _underPartitionIndex: 111
     _overPartitionIndex: 103
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.499996543
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.49999654
     _underEdgeIndex: 473
     _overEdgeIndex: 422
     _underPartitionIndex: 71
@@ -463,15 +463,15 @@ MonoBehaviour:
     _underPartitionIndex: 186
     _overPartitionIndex: 141
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -2.99999952
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -2.9999995
     _underEdgeIndex: 78
     _overEdgeIndex: 27
     _underPartitionIndex: 113
     _overPartitionIndex: 97
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: 3.49999928
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 3.4999993
     _underEdgeIndex: 101
     _overEdgeIndex: 50
     _underPartitionIndex: 72
@@ -484,15 +484,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -3.99999976
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -3.9999998
     _underEdgeIndex: 216
     _overEdgeIndex: 165
     _underPartitionIndex: 222
     _overPartitionIndex: 183
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -4.27435793e-07
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -0.0000004274358
     _underEdgeIndex: 239
     _overEdgeIndex: 188
     _underPartitionIndex: 74
@@ -505,7 +505,7 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 107
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -8.5
     _underEdgeIndex: 354
     _overEdgeIndex: 303
@@ -526,8 +526,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 220
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -2.99999976
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -2.9999998
     _underEdgeIndex: 120
     _overEdgeIndex: 69
     _underPartitionIndex: 121
@@ -540,29 +540,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 115
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -7.49999905
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -7.499999
     _underEdgeIndex: 258
     _overEdgeIndex: 207
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -1.49999833
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -1.4999983
     _underEdgeIndex: 281
     _overEdgeIndex: 230
     _underPartitionIndex: 122
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -8.5
     _underEdgeIndex: 396
     _overEdgeIndex: 345
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: 3.27530643e-06
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 0.0000032753064
     _underEdgeIndex: 419
     _overEdgeIndex: 368
     _underPartitionIndex: 83
@@ -575,22 +575,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 120
   - _plane:
-      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -2.99999976
+      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -2.9999998
     _underEdgeIndex: 162
     _overEdgeIndex: 111
     _underPartitionIndex: 243
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
-      distance: .499997437
+      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: 0.49999744
     _underEdgeIndex: 185
     _overEdgeIndex: 134
     _underPartitionIndex: 88
     _overPartitionIndex: 134
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -7.50000048
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -7.5000005
     _underEdgeIndex: 300
     _overEdgeIndex: 249
     _underPartitionIndex: 129
@@ -603,29 +603,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 124
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -8.49999905
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -8.499999
     _underEdgeIndex: 438
     _overEdgeIndex: 387
     _underPartitionIndex: 132
     _overPartitionIndex: 125
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -1.4999969
     _underEdgeIndex: 461
     _overEdgeIndex: 410
     _underPartitionIndex: 93
     _overPartitionIndex: 139
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -1.99999976
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -1.9999998
     _underEdgeIndex: 66
     _overEdgeIndex: 15
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: 2.49999952
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 2.4999995
     _underEdgeIndex: 89
     _overEdgeIndex: 38
     _underPartitionIndex: 95
@@ -638,29 +638,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 126
   - _plane:
-      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -6.49999666
+      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -6.4999967
     _underEdgeIndex: 204
     _overEdgeIndex: 153
     _underPartitionIndex: 143
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -1.00000024
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -1.0000002
     _underEdgeIndex: 227
     _overEdgeIndex: 176
     _underPartitionIndex: 98
     _overPartitionIndex: 144
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -7.5
     _underEdgeIndex: 342
     _overEdgeIndex: 291
     _underPartitionIndex: 137
     _overPartitionIndex: 130
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: .500003099
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 0.5000031
     _underEdgeIndex: 365
     _overEdgeIndex: 314
     _underPartitionIndex: 100
@@ -673,7 +673,7 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -12.000001
     _underEdgeIndex: 480
     _overEdgeIndex: 429
@@ -687,15 +687,15 @@ MonoBehaviour:
     _underPartitionIndex: 198
     _overPartitionIndex: 172
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -1.99999988
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -1.9999999
     _underEdgeIndex: 108
     _overEdgeIndex: 57
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: .999999583
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 0.9999996
     _underEdgeIndex: 131
     _overEdgeIndex: 80
     _underPartitionIndex: 104
@@ -708,8 +708,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -6.49999905
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -6.499999
     _underEdgeIndex: 246
     _overEdgeIndex: 195
     _underPartitionIndex: 145
@@ -722,15 +722,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 177
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -7.49999952
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -7.4999995
     _underEdgeIndex: 384
     _overEdgeIndex: 333
     _underPartitionIndex: 148
     _overPartitionIndex: 138
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.999997079
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.9999971
     _underEdgeIndex: 407
     _overEdgeIndex: 356
     _underPartitionIndex: 109
@@ -750,28 +750,28 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 180
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -5.49999905
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -5.499999
     _underEdgeIndex: 150
     _overEdgeIndex: 99
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -.500001729
+      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -0.5000017
     _underEdgeIndex: 173
     _overEdgeIndex: 122
     _underPartitionIndex: 114
     _overPartitionIndex: 158
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -6.5
     _underEdgeIndex: 288
     _overEdgeIndex: 237
     _underPartitionIndex: 153
     _overPartitionIndex: 146
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: 1.0000025
     _underEdgeIndex: 311
     _overEdgeIndex: 260
@@ -785,29 +785,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -11.000001
     _underEdgeIndex: 426
     _overEdgeIndex: 375
     _underPartitionIndex: 155
     _overPartitionIndex: 149
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.49999738
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.4999974
     _underEdgeIndex: 449
     _overEdgeIndex: 398
     _underPartitionIndex: 118
     _overPartitionIndex: 163
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -.99999994
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -0.99999994
     _underEdgeIndex: 54
     _overEdgeIndex: 3
     _underPartitionIndex: 187
     _overPartitionIndex: 184
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: 1.49999964
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 1.4999996
     _underEdgeIndex: 77
     _overEdgeIndex: 26
     _underPartitionIndex: 0
@@ -820,22 +820,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -5.49999762
+      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -5.4999976
     _underEdgeIndex: 192
     _overEdgeIndex: 141
     _underPartitionIndex: 159
     _overPartitionIndex: 151
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -6.49999952
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -6.4999995
     _underEdgeIndex: 330
     _overEdgeIndex: 279
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.499997258
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.49999726
     _underEdgeIndex: 353
     _overEdgeIndex: 302
     _underPartitionIndex: 0
@@ -848,29 +848,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -11
     _underEdgeIndex: 468
     _overEdgeIndex: 417
     _underPartitionIndex: 164
     _overPartitionIndex: 156
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -4.49999952
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -4.4999995
     _underEdgeIndex: 96
     _overEdgeIndex: 45
     _underPartitionIndex: 166
     _overPartitionIndex: 157
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -2.13059593e-07
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -0.0000002130596
     _underEdgeIndex: 119
     _overEdgeIndex: 68
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -5.49999952
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -5.4999995
     _underEdgeIndex: 234
     _overEdgeIndex: 183
     _underPartitionIndex: 168
@@ -883,7 +883,7 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -10.000001
     _underEdgeIndex: 372
     _overEdgeIndex: 321
@@ -897,8 +897,8 @@ MonoBehaviour:
     _underPartitionIndex: 192
     _overPartitionIndex: 203
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -4.49999952
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -4.4999995
     _underEdgeIndex: 138
     _overEdgeIndex: 87
     _underPartitionIndex: 174
@@ -911,15 +911,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -5.5
     _underEdgeIndex: 276
     _overEdgeIndex: 225
     _underPartitionIndex: 176
     _overPartitionIndex: 169
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: 2.16882859e-06
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 0.0000021688286
     _underEdgeIndex: 299
     _overEdgeIndex: 248
     _underPartitionIndex: 0
@@ -932,15 +932,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -10
     _underEdgeIndex: 414
     _overEdgeIndex: 363
     _underPartitionIndex: 178
     _overPartitionIndex: 171
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -3.49999762
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -3.4999976
     _underEdgeIndex: 437
     _overEdgeIndex: 386
     _underPartitionIndex: 0
@@ -953,8 +953,8 @@ MonoBehaviour:
     _underPartitionIndex: 196
     _overPartitionIndex: 191
   - _plane:
-      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -4.49999857
+      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -4.4999986
     _underEdgeIndex: 180
     _overEdgeIndex: 129
     _underPartitionIndex: 182
@@ -967,15 +967,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -9.00000095
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -9.000001
     _underEdgeIndex: 318
     _overEdgeIndex: 267
     _underPartitionIndex: 152
     _overPartitionIndex: 190
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -1.49999762
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -1.4999976
     _underEdgeIndex: 341
     _overEdgeIndex: 290
     _underPartitionIndex: 0
@@ -988,15 +988,15 @@ MonoBehaviour:
     _underPartitionIndex: 199
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -10
     _underEdgeIndex: 456
     _overEdgeIndex: 405
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: 3.62206879e-06
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 0.0000036220688
     _underEdgeIndex: 479
     _overEdgeIndex: 428
     _underPartitionIndex: 194
@@ -1009,8 +1009,8 @@ MonoBehaviour:
     _underPartitionIndex: 215
     _overPartitionIndex: 197
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -3.49999952
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -3.4999995
     _underEdgeIndex: 84
     _overEdgeIndex: 33
     _underPartitionIndex: 0
@@ -1023,15 +1023,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -4.49999952
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -4.4999995
     _underEdgeIndex: 222
     _overEdgeIndex: 171
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: .499999493
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 0.4999995
     _underEdgeIndex: 245
     _overEdgeIndex: 194
     _underPartitionIndex: 0
@@ -1044,15 +1044,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -9
     _underEdgeIndex: 360
     _overEdgeIndex: 309
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.99999785
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.9999979
     _underEdgeIndex: 383
     _overEdgeIndex: 332
     _underPartitionIndex: 0
@@ -1065,8 +1065,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 244
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -3.49999952
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -3.4999995
     _underEdgeIndex: 126
     _overEdgeIndex: 75
     _underPartitionIndex: 0
@@ -1079,29 +1079,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -7.99999905
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -7.999999
     _underEdgeIndex: 264
     _overEdgeIndex: 213
     _underPartitionIndex: 200
     _overPartitionIndex: 193
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.999998212
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.9999982
     _underEdgeIndex: 287
     _overEdgeIndex: 236
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -9
     _underEdgeIndex: 402
     _overEdgeIndex: 351
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: .500003457
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 0.50000346
     _underEdgeIndex: 425
     _overEdgeIndex: 374
     _underPartitionIndex: 201
@@ -1121,15 +1121,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -3.49999928
+      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -3.4999993
     _underEdgeIndex: 168
     _overEdgeIndex: 117
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
-      distance: .99999702
+      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: 0.999997
     _underEdgeIndex: 191
     _overEdgeIndex: 140
     _underPartitionIndex: 0
@@ -1142,8 +1142,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.49999785
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.4999979
     _underEdgeIndex: 329
     _overEdgeIndex: 278
     _underPartitionIndex: 0
@@ -1156,29 +1156,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -9
     _underEdgeIndex: 444
     _overEdgeIndex: 393
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.999996722
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.9999967
     _underEdgeIndex: 467
     _overEdgeIndex: 416
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -2.49999976
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -2.4999998
     _underEdgeIndex: 72
     _overEdgeIndex: 21
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: 2.99999928
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 2.9999993
     _underEdgeIndex: 95
     _overEdgeIndex: 44
     _underPartitionIndex: 0
@@ -1191,8 +1191,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -.500000358
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -0.50000036
     _underEdgeIndex: 233
     _overEdgeIndex: 182
     _underPartitionIndex: 0
@@ -1205,8 +1205,8 @@ MonoBehaviour:
     _underPartitionIndex: 210
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: 1.00000334
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: 1.0000033
     _underEdgeIndex: 371
     _overEdgeIndex: 320
     _underPartitionIndex: 0
@@ -1226,15 +1226,15 @@ MonoBehaviour:
     _underPartitionIndex: 228
     _overPartitionIndex: 189
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -2.49999976
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -2.4999998
     _underEdgeIndex: 114
     _overEdgeIndex: 63
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: 1.49999952
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: 1.4999995
     _underEdgeIndex: 137
     _overEdgeIndex: 86
     _underPartitionIndex: 0
@@ -1247,8 +1247,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -1.99999857
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -1.9999986
     _underEdgeIndex: 275
     _overEdgeIndex: 224
     _underPartitionIndex: 0
@@ -1261,8 +1261,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.499996901
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.4999969
     _underEdgeIndex: 413
     _overEdgeIndex: 362
     _underPartitionIndex: 0
@@ -1282,15 +1282,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -5.99999905
+      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -5.999999
     _underEdgeIndex: 156
     _overEdgeIndex: 105
     _underPartitionIndex: 212
     _overPartitionIndex: 206
   - _plane:
-      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
-      distance: -2.14774127e-06
+      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
+      distance: -0.0000021477413
     _underEdgeIndex: 179
     _overEdgeIndex: 128
     _underPartitionIndex: 0
@@ -1304,21 +1304,21 @@ MonoBehaviour:
     _overPartitionIndex: 0
   - _plane:
       normal: {x: -1, y: 0, z: 0}
-      distance: .5
+      distance: 0.5
     _underEdgeIndex: 507
     _overEdgeIndex: 55
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -3.49999738
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -3.4999974
     _underEdgeIndex: 540
     _overEdgeIndex: 446
     _underPartitionIndex: 232
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -.49999994
+      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -0.49999994
     _underEdgeIndex: 489
     _overEdgeIndex: 5
     _underPartitionIndex: 205
@@ -1331,22 +1331,22 @@ MonoBehaviour:
     _underPartitionIndex: 237
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: 1.99999976
+      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: 1.9999998
     _underEdgeIndex: 496
     _overEdgeIndex: 24
     _underPartitionIndex: 235
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -3.99999952
+      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -3.9999995
     _underEdgeIndex: 503
     _overEdgeIndex: 47
     _underPartitionIndex: 209
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: -5.16191356e-08, z: -.866025329}
-      distance: -2.00000286
+      normal: {x: 0.50000024, y: -0.000000051619136, z: -0.8660253}
+      distance: -2.0000029
     _underEdgeIndex: 526
     _overEdgeIndex: 323
     _underPartitionIndex: 207
@@ -1359,15 +1359,15 @@ MonoBehaviour:
     _underPartitionIndex: 208
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -4.49999762
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -4.4999976
     _underEdgeIndex: 536
     _overEdgeIndex: 434
     _underPartitionIndex: 240
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: -5.16191427e-08, z: -.866025448}
-      distance: -2.49999905
+      normal: {x: 0.4999999, y: -0.000000051619143, z: -0.86602545}
+      distance: -2.499999
     _underEdgeIndex: 522
     _overEdgeIndex: 269
     _underPartitionIndex: 213
@@ -1380,43 +1380,43 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -10.5
     _underEdgeIndex: 543
     _overEdgeIndex: 453
     _underPartitionIndex: 214
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.999996364
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.99999636
     _underEdgeIndex: 550
     _overEdgeIndex: 476
     _underPartitionIndex: 245
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: .999999881
+      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: 0.9999999
     _underEdgeIndex: 492
     _overEdgeIndex: 12
     _underPartitionIndex: 242
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -2.99999952
+      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -2.9999995
     _underEdgeIndex: 499
     _overEdgeIndex: 35
     _underPartitionIndex: 219
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -3.99999785
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -3.9999979
     _underEdgeIndex: 532
     _overEdgeIndex: 380
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999613, y: -5.16191569e-08, z: -.866025686}
-      distance: -2.99999523
+      normal: {x: 0.4999996, y: -0.000000051619157, z: -0.8660257}
+      distance: -2.9999952
     _underEdgeIndex: 518
     _overEdgeIndex: 215
     _underPartitionIndex: 221
@@ -1429,36 +1429,36 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -3.49999809
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -3.499998
     _underEdgeIndex: 528
     _overEdgeIndex: 326
     _underPartitionIndex: 223
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -9.49999905
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -9.499999
     _underEdgeIndex: 539
     _overEdgeIndex: 441
     _underPartitionIndex: 224
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -1.99999678
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -1.9999968
     _underEdgeIndex: 546
     _overEdgeIndex: 464
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -1.22250166e-08
+      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -0.0000000122250166
     _underEdgeIndex: 486
     _overEdgeIndex: 0
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: -5.16191427e-08, z: -.866025448}
-      distance: -3.49999905
+      normal: {x: 0.4999999, y: -0.000000051619143, z: -0.86602545}
+      distance: -3.499999
     _underEdgeIndex: 514
     _overEdgeIndex: 161
     _underPartitionIndex: 225
@@ -1471,22 +1471,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -13.000001
     _underEdgeIndex: 553
     _overEdgeIndex: 483
     _underPartitionIndex: 227
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: 3.49999952
+      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: 3.4999995
     _underEdgeIndex: 502
     _overEdgeIndex: 42
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.99999809
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.999998
     _underEdgeIndex: 524
     _overEdgeIndex: 272
     _underPartitionIndex: 0
@@ -1499,8 +1499,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .499999911, y: -5.16191427e-08, z: -.866025448}
-      distance: -3.99999928
+      normal: {x: 0.4999999, y: -0.000000051619143, z: -0.86602545}
+      distance: -3.9999993
     _underEdgeIndex: 510
     _overEdgeIndex: 107
     _underPartitionIndex: 230
@@ -1513,22 +1513,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.99999714
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.9999971
     _underEdgeIndex: 542
     _overEdgeIndex: 452
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -.999999881
+      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -0.9999999
     _underEdgeIndex: 491
     _overEdgeIndex: 11
     _underPartitionIndex: 234
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.49999881
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.4999988
     _underEdgeIndex: 520
     _overEdgeIndex: 218
     _underPartitionIndex: 231
@@ -1541,22 +1541,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -12
     _underEdgeIndex: 549
     _overEdgeIndex: 471
     _underPartitionIndex: 233
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: 2.49999976
+      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: 2.4999998
     _underEdgeIndex: 498
     _overEdgeIndex: 30
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -4.49999952
+      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -4.4999995
     _underEdgeIndex: 506
     _overEdgeIndex: 53
     _underPartitionIndex: 236
@@ -1569,7 +1569,7 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
       distance: -2
     _underEdgeIndex: 516
     _overEdgeIndex: 164
@@ -1583,8 +1583,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -3.99999738
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -3.9999974
     _underEdgeIndex: 538
     _overEdgeIndex: 440
     _underPartitionIndex: 0
@@ -1597,22 +1597,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -11
     _underEdgeIndex: 545
     _overEdgeIndex: 459
     _underPartitionIndex: 241
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -.499996215
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -0.49999622
     _underEdgeIndex: 552
     _overEdgeIndex: 482
     _underPartitionIndex: 239
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -3.49999952
+      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -3.4999995
     _underEdgeIndex: 501
     _overEdgeIndex: 41
     _underPartitionIndex: 246
@@ -1639,29 +1639,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -10
     _underEdgeIndex: 541
     _overEdgeIndex: 447
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -1.49999654
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -1.4999965
     _underEdgeIndex: 548
     _overEdgeIndex: 470
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: .49999994
+      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: 0.49999994
     _underEdgeIndex: 490
     _overEdgeIndex: 6
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -2.49999976
+      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -2.4999998
     _underEdgeIndex: 497
     _overEdgeIndex: 29
     _underPartitionIndex: 0
@@ -1674,8 +1674,8 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
-      distance: -.5
+      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
+      distance: -0.5
     _underEdgeIndex: 488
     _overEdgeIndex: 2
     _underPartitionIndex: 0
@@ -1688,29 +1688,29 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: -5.16191356e-08, z: -.866025329}
-      distance: -.500003755
+      normal: {x: 0.50000024, y: -0.000000051619136, z: -0.8660253}
+      distance: -0.50000376
     _underEdgeIndex: 555
     _overEdgeIndex: 485
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -8.99999905
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -8.999999
     _underEdgeIndex: 537
     _overEdgeIndex: 435
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
-      distance: -2.4999969
+      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
+      distance: -2.499997
     _underEdgeIndex: 544
     _overEdgeIndex: 458
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: -1.49999976
+      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: -1.4999998
     _underEdgeIndex: 493
     _overEdgeIndex: 17
     _underPartitionIndex: 0
@@ -1723,22 +1723,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: -5.16191356e-08, z: -.866025329}
-      distance: -1.00000358
+      normal: {x: 0.50000024, y: -0.000000051619136, z: -0.8660253}
+      distance: -1.0000036
     _underEdgeIndex: 534
     _overEdgeIndex: 431
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
       distance: -12.500001
     _underEdgeIndex: 551
     _overEdgeIndex: 477
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
-      distance: 2.99999952
+      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
+      distance: 2.9999995
     _underEdgeIndex: 500
     _overEdgeIndex: 36
     _underPartitionIndex: 0

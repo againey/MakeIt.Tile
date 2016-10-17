@@ -150,8 +150,9 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: UnityEngine.GameObject, UnityEngine, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 132356, guid: e044129fc1ed776439a7452def2eabe0, type: 2}
-    _persistedAsset: {fileID: 132356, guid: e044129fc1ed776439a7452def2eabe0, type: 2}
+    _asset: {fileID: 1000013375399434, guid: e044129fc1ed776439a7452def2eabe0, type: 2}
+    _persistedAsset: {fileID: 1000013375399434, guid: e044129fc1ed776439a7452def2eabe0,
+      type: 2}
     _availability: 3
     _persistable: 1
     _connectionTargets: []
@@ -204,7 +205,7 @@ MonoBehaviour:
     _isMutating: 0
     _key: {fileID: 11496346}
     isActive: 1
-  scale: .100000001
+  scale: 0.1
   offsetVertexPositionsOutputSlot:
     _generator: {fileID: 11408824}
     _assetType:
@@ -338,9 +339,9 @@ MonoBehaviour:
     y: 9
   axis0: {x: 0, y: 0}
   axis1: {x: 0, y: 0}
-  midpoint: {x: .5, y: 0}
-  majorCorner: {x: .333333343, y: .666666687}
-  minorCorner: {x: -.333333313, y: .333333343}
+  midpoint: {x: 0.5, y: 0}
+  majorCorner: {x: 0.33333334, y: 0.6666667}
+  minorCorner: {x: -0.3333333, y: 0.33333334}
   hexGridAxisStyle: 0
   swapAxes: 0
   isAxis0Wrapped: 0
@@ -356,7 +357,8 @@ MonoBehaviour:
     _persistedAsset: {fileID: 11400000, guid: a5cd57791bc9fb44282e61a81ee7062c, type: 2}
     _availability: 3
     _persistable: 1
-    _connectionTargets: []
+    _connectionTargets:
+    - {fileID: 114000012086673992}
     _key: {fileID: 11454894}
     name: Surface
     path: 
@@ -517,7 +519,7 @@ MonoBehaviour:
     _key: {fileID: 0}
     isActive: 0
   constantColor: {r: 0, g: 0, b: 0, a: 1}
-  blendWeight: .5
+  blendWeight: 0.5
   faceEdgeColorsOutputSlot:
     _generator: {fileID: 11430352}
     _assetType:
@@ -807,7 +809,7 @@ MonoBehaviour:
     _key: {fileID: 11476048}
     isActive: 1
   constantColor: {r: 0, g: 0, b: 0, a: 1}
-  blendWeight: .800000012
+  blendWeight: 0.8
   faceEdgeColorsOutputSlot:
     _generator: {fileID: 11449852}
     _assetType:
@@ -847,7 +849,7 @@ MonoBehaviour:
     _isMutating: 0
     _key: {fileID: 0}
     isActive: 0
-  constantColor: {r: .188419104, g: .625, b: .552738309, a: 1}
+  constantColor: {r: 0.1884191, g: 0.625, b: 0.5527383, a: 1}
   faceGroupCollectionInputSlot:
     _generator: {fileID: 11450086}
     _assetType:
@@ -1304,6 +1306,16 @@ MonoBehaviour:
   m_Name: Face Edge/Bisectors
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11478274}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 1
   topologyInputSlot:
     _generator: {fileID: 11478274}
     _assetType:
@@ -1454,6 +1466,16 @@ MonoBehaviour:
   m_Name: Face Edge/Bisectors
   m_EditorClassIdentifier: 
   executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11485434}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.MakeItTile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11454894}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 114000012086673992}
+    isActive: 1
   topologyInputSlot:
     _generator: {fileID: 11485434}
     _assetType:
@@ -1809,3 +1831,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _generator: {fileID: 11487102}
+--- !u!114 &114000012086673992
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485434}

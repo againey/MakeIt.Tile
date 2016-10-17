@@ -11,14 +11,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4cf2dd1dcb1cbd4e8d7574dc2db2b0b, type: 3}
   m_Name: Surface
   m_EditorClassIdentifier: 
+  origin: {x: 0, y: 0, z: 0}
+  orientation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
   axis0:
     vector: {x: 9, y: 0}
     isWrapped: 0
   axis1:
-    vector: {x: 0, y: 9.00000095}
+    vector: {x: 0, y: 9.000001}
     isWrapped: 0
-  origin: {x: 0, y: 0, z: 0}
-  orientation: {x: .707106769, y: 0, z: 0, w: .707106769}
   size:
     x: 9
     y: 9

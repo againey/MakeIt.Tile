@@ -11,17 +11,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc27353d4ab6fc64e88d84e39d149796, type: 3}
   m_Name: Surface
   m_EditorClassIdentifier: 
+  origin: {x: 0, y: 0, z: 0}
+  orientation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
   axis0:
     vector: {x: 9, y: 0}
     isWrapped: 0
   axis1:
-    vector: {x: 4.5, y: 7.79422855}
+    vector: {x: 4.5, y: 7.7942286}
     isWrapped: 0
-  origin: {x: 0, y: 0, z: 0}
-  orientation: {x: .707106769, y: 0, z: 0, w: .707106769}
-  midpoint: {x: .5, y: 0}
-  majorCorner: {x: 0, y: .577350259}
-  minorCorner: {x: .5, y: .288675129}
+  midpoint: {x: 0.5, y: 0}
+  majorCorner: {x: 0, y: 0.57735026}
+  minorCorner: {x: 0.5, y: 0.28867513}
   midpointIsFirstAxis: 1
   axisStyle: 0
   size:
@@ -30,7 +30,7 @@ MonoBehaviour:
   topology: {fileID: 11400000, guid: 06be940c10df0f440a9668a33ec71216, type: 2}
   _originIsObtuse: 0
   _faceAxis0: {x: 1, y: 0}
-  _faceAxis1: {x: .5, y: .866025388}
+  _faceAxis1: {x: 0.5, y: 0.8660254}
   _vertexCount: 198
   _edgeCount: 556
   _internalFaceCount: 81
