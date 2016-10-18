@@ -9,8 +9,17 @@ using Geometry = Experilous.Numerics.Geometry;
 
 namespace Experilous.MakeItTile
 {
+	/// <summary>
+	/// Static utility class for working with manifolds, topological surfaces in three-dimensional space.
+	/// </summary>
 	public static class ManifoldUtility
 	{
+		/// <summary>
+		/// Reverses the roles of vertices and faces, as when taking the dual of a polyhedron.
+		/// </summary>
+		/// <param name="topology">The topology containing the vertices and faces to swap.</param>
+		/// <param name="facePositions">The positions of the faces.</param>
+		/// <param name="vertexPositions">The positions of the vertices after the swap.</param>
 		public static void MakeDual(Topology topology, IList<Vector3> facePositions, out Vector3[] vertexPositions)
 		{
 			var faceCount = topology.faces.Count;
@@ -19,6 +28,13 @@ namespace Experilous.MakeItTile
 			facePositions.CopyTo(vertexPositions, 0);
 		}
 
+		/// <summary>
+		/// Creates a copy of the specified topology, but with the roles of vertices and faces reversed, as when taking the dual of a polyhedron.
+		/// </summary>
+		/// <param name="topology">The original topology containing the vertices and faces to swap.</param>
+		/// <param name="facePositions">The positions of the faces.</param>
+		/// <param name="dualTopology">The copied topology with the vertices and faces swapped.</param>
+		/// <param name="vertexPositions">The positions of the vertices after the swap.</param>
 		public static void GetDualManifold(Topology topology, IList<Vector3> facePositions, out Topology dualTopology, out Vector3[] vertexPositions)
 		{
 			dualTopology = (Topology)topology.Clone();
@@ -250,6 +266,15 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <summary>
+		/// Creates a new topology based on the one provided, subdividing each face into multiple smaller faces, and adding extra vertices and edges accordingly.
+		/// </summary>
+		/// <param name="topology">The original topology to be subdivided.</param>
+		/// <param name="vertexPositions">The positions of the original topology's vertices.</param>
+		/// <param name="degree">The degree of subdivision, equivalent to the number of additional vertices that will be added along each original edge.  Must be non-negative, and a value of zero will result in an exact duplicate with no subdivision.</param>
+		/// <param name="interpolator">The function that interpolates between two vertex positions along an edge for determining the positions of new vertices.  Particularly useful for curved surfaces.</param>
+		/// <param name="subdividedTopology">The copied and subdivided topology.</param>
+		/// <param name="subdividedVertexPositions">The positions of the subdivided vertices.</param>
 		public static void Subdivide(Topology topology, IVertexAttribute<Vector3> vertexPositions, int degree, Func<Vector3, Vector3, float, Vector3> interpolator, out Topology subdividedTopology, out Vector3[] subdividedVertexPositions)
 		{
 			if (degree < 0) throw new ArgumentOutOfRangeException("Topology subdivision degree cannot be negative.");
@@ -352,6 +377,14 @@ namespace Experilous.MakeItTile
 			subdividedVertexPositions = subdividedVertexPositionsList.ToArray();
 		}
 
+		/// <summary>
+		/// Creates a new topology based on the one provided, subdividing each face into multiple smaller faces, and adding extra vertices and edges accordingly.  Uses linear interpolation for deriving the positions of new vertices.
+		/// </summary>
+		/// <param name="topology">The original topology to be subdivided.</param>
+		/// <param name="vertexPositions">The positions of the original topology's vertices.</param>
+		/// <param name="degree">The degree of subdivision, equivalent to the number of additional vertices that will be added along each original edge.  Must be non-negative, and a value of zero will result in an exact duplicate with no subdivision.</param>
+		/// <param name="subdividedTopology">The copied and subdivided topology.</param>
+		/// <param name="subdividedVertexPositions">The positions of the subdivided vertices.</param>
 		public static void Subdivide(Topology topology, IVertexAttribute<Vector3> vertexPositions, int degree, out Topology subdividedTopology, out Vector3[] subdividedVertexPositions)
 		{
 			Subdivide(topology, vertexPositions, degree, (Vector3 p0, Vector3 p1, float t) => { return Geometry.LerpUnclamped(p0, p1, t); }, out subdividedTopology, out subdividedVertexPositions);

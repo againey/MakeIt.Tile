@@ -8,10 +8,19 @@ using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
+	/// <summary>
+	/// Static utility class for working with spherical manifolds, topological surfaces shaped as spheres in three-dimensional space.
+	/// </summary>
 	public static class SphericalManifoldUtility
 	{
 		#region Generation
 
+		/// <summary>
+		/// Creates a manifold, consisting of a topology and vertex positions, in the shape of a tetrahedron.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology created.</param>
+		/// <param name="vertexPositions">The vertex positions created.</param>
 		public static void CreateTetrahedron(SphericalSurface surface, out Topology topology, out Vector3[] vertexPositions)
 		{
 			var y = surface.radius * -1f / 3f;
@@ -51,6 +60,12 @@ namespace Experilous.MakeItTile
 			topology = TopologyUtility.BuildTopology(indexer);
 		}
 
+		/// <summary>
+		/// Creates a manifold, consisting of a topology and vertex positions, in the shape of a cube.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology created.</param>
+		/// <param name="vertexPositions">The vertex positions created.</param>
 		public static void CreateCube(SphericalSurface surface, out Topology topology, out Vector3[] vertexPositions)
 		{
 			var a = surface.radius / Mathf.Sqrt(3f);
@@ -95,6 +110,12 @@ namespace Experilous.MakeItTile
 			topology = TopologyUtility.BuildTopology(indexer);
 		}
 
+		/// <summary>
+		/// Creates a manifold, consisting of a topology and vertex positions, in the shape of an octahedron.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology created.</param>
+		/// <param name="vertexPositions">The vertex positions created.</param>
 		public static void CreateOctahedron(SphericalSurface surface, out Topology topology, out Vector3[] vertexPositions)
 		{
 			vertexPositions = new Vector3[6];
@@ -139,12 +160,24 @@ namespace Experilous.MakeItTile
 			topology = TopologyUtility.BuildTopology(indexer);
 		}
 
+		/// <summary>
+		/// Creates a manifold, consisting of a topology and vertex positions, in the shape of a dodecahedron.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology created.</param>
+		/// <param name="vertexPositions">The vertex positions created.</param>
 		public static void CreateDodecahedron(SphericalSurface surface, out Topology topology, out Vector3[] vertexPositions)
 		{
 			CreateIcosahedron(surface, out topology, out vertexPositions);
 			MakeDual(surface, topology, ref vertexPositions);
 		}
 
+		/// <summary>
+		/// Creates a manifold, consisting of a topology and vertex positions, in the shape of an icosahedron.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology created.</param>
+		/// <param name="vertexPositions">The vertex positions created.</param>
 		public static void CreateIcosahedron(SphericalSurface surface, out Topology topology, out Vector3[] vertexPositions)
 		{
 			var latitude = Mathf.Atan2(1, 2);
@@ -238,22 +271,52 @@ namespace Experilous.MakeItTile
 
 		#region Modification
 
+		/// <summary>
+		/// Reverses the roles of vertices and faces, as when taking the dual of a polyhedron.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology containing the vertices and faces to swap.</param>
+		/// <param name="vertexPositions">The original positions of the vertices.</param>
+		/// <param name="dualVertexPositions">The positions of the vertices after the swap, calculated as the face centroids of the original topology.</param>
 		public static void MakeDual(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, out Vector3[] dualVertexPositions)
 		{
 			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, surface, vertexPositions), out dualVertexPositions);
 		}
 
+		/// <summary>
+		/// Reverses the roles of vertices and faces, as when taking the dual of a polyhedron.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology containing the vertices and faces to swap.</param>
+		/// <param name="vertexPositions">The positions of the vertices, which will become the new positions after the call is complete, calculated as the face centroids of the original topology.</param>
 		public static void MakeDual(SphericalSurface surface, Topology topology, ref Vector3[] vertexPositions)
 		{
 			ManifoldUtility.MakeDual(topology, FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.faces, surface, vertexPositions.AsVertexAttribute()), out vertexPositions);
 		}
 
+		/// <summary>
+		/// Creates a copy of the specified topology, but with the roles of vertices and faces reversed, as when taking the dual of a polyhedron.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The original topology containing the vertices and faces to swap.</param>
+		/// <param name="vertexPositions">The original positions of the vertices.</param>
+		/// <param name="dualTopology">The copied topology with the vertices and faces swapped.</param>
+		/// <param name="dualVertexPositions">The positions of the vertices after the swap, calculated as the face centroids of the original topology.</param>
 		public static void GetDualManifold(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, out Topology dualTopology, out Vector3[] dualVertexPositions)
 		{
 			dualTopology = (Topology)topology.Clone();
 			MakeDual(surface, dualTopology, vertexPositions, out dualVertexPositions);
 		}
 
+		/// <summary>
+		/// Creates a new topology based on the one provided, subdividing each face into multiple smaller faces, and adding extra vertices and edges accordingly.  Uses spherical linear interpolation for deriving the positions of new vertices.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The original topology to be subdivided.</param>
+		/// <param name="vertexPositions">The positions of the original topology's vertices.</param>
+		/// <param name="degree">The degree of subdivision, equivalent to the number of additional vertices that will be added along each original edge.  Must be non-negative, and a value of zero will result in an exact duplicate with no subdivision.</param>
+		/// <param name="subdividedTopology">The copied and subdivided topology.</param>
+		/// <param name="subdividedVertexPositions">The positions of the subdivided vertices.</param>
 		public static void Subdivide(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, int degree, out Topology subdividedTopology, out Vector3[] subdividedVertexPositions)
 		{
 			Func<Vector3, Vector3, float, Vector3> interpolator;
@@ -268,11 +331,28 @@ namespace Experilous.MakeItTile
 			ManifoldUtility.Subdivide(topology, vertexPositions, degree, interpolator, out subdividedTopology, out subdividedVertexPositions);
 		}
 
+		/// <summary>
+		/// Attempts to move the positions of vertices such that they have roughly uniform density, with a bias towards also making sure that the shapes of the faces become more regular.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology to relax.</param>
+		/// <param name="vertexPositions">The original positions of the vertices to relax.</param>
+		/// <param name="lockBoundaryPositions">Indicates that vertices with an external neighboring face should not have their positions altered.</param>
+		/// <returns>The relaxed vertex positions.</returns>
 		public static IVertexAttribute<Vector3> RelaxVertexPositionsForRegularity(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, bool lockBoundaryPositions)
 		{
 			return RelaxVertexPositionsForRegularity(surface, topology, vertexPositions, lockBoundaryPositions, new Vector3[topology.vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Attempts to move the positions of vertices such that they have roughly uniform density, with a bias towards also making sure that the shapes of the faces become more regular.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology to relax.</param>
+		/// <param name="vertexPositions">The original positions of the vertices to relax.</param>
+		/// <param name="lockBoundaryPositions">Indicates that vertices with an external neighboring face should not have their positions altered.</param>
+		/// <param name="relaxedVertexPositions">A pre-allocated collection in which the relaxed vertex positions will be stored.  Should not be the same collection as <paramref name="vertexPositions"/>.</param>
+		/// <returns>The relaxed vertex positions.</returns>
 		public static IVertexAttribute<Vector3> RelaxVertexPositionsForRegularity(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions)
 		{
 			foreach (var vertex in topology.vertices)
@@ -299,16 +379,45 @@ namespace Experilous.MakeItTile
 			return relaxedVertexPositions;
 		}
 
+		/// <summary>
+		/// Attempts to move the positions of vertices such that they have roughly uniform density, with a bias towards also making sure that the surface areas of the faces also become more uniform.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology to relax.</param>
+		/// <param name="vertexPositions">The original positions of the vertices to relax.</param>
+		/// <param name="lockBoundaryPositions">Indicates that vertices with an external neighboring face should not have their positions altered.</param>
+		/// <returns>The relaxed vertex positions.</returns>
 		public static IVertexAttribute<Vector3> RelaxForEqualArea(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, bool lockBoundaryPositions)
 		{
 			return RelaxForEqualArea(surface, topology, vertexPositions, lockBoundaryPositions, new Vector3[topology.vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Attempts to move the positions of vertices such that they have roughly uniform density, with a bias towards also making sure that the surface areas of the faces also become more uniform.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology to relax.</param>
+		/// <param name="vertexPositions">The original positions of the vertices to relax.</param>
+		/// <param name="lockBoundaryPositions">Indicates that vertices with an external neighboring face should not have their positions altered.</param>
+		/// <param name="relaxedVertexPositions">A pre-allocated collection in which the relaxed vertex positions will be stored.  Should not be the same collection as <paramref name="vertexPositions"/>.</param>
+		/// <returns>The relaxed vertex positions.</returns>
 		public static IVertexAttribute<Vector3> RelaxForEqualArea(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions)
 		{
 			return RelaxVertexPositionsForEqualArea(surface, topology, vertexPositions, lockBoundaryPositions, relaxedVertexPositions, new Vector3[topology.internalFaces.Count].AsFaceAttribute(), new float[topology.faceEdges.Count].AsEdgeAttribute(), new float[topology.vertices.Count].AsVertexAttribute());
 		}
 
+		/// <summary>
+		/// Attempts to move the positions of vertices such that they have roughly uniform density, with a bias towards also making sure that the surface areas of the faces also become more uniform.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology to relax.</param>
+		/// <param name="vertexPositions">The original positions of the vertices to relax.</param>
+		/// <param name="lockBoundaryPositions">Indicates that vertices with an external neighboring face should not have their positions altered.</param>
+		/// <param name="relaxedVertexPositions">A pre-allocated collection in which the relaxed vertex positions will be stored.  Should not be the same collection as <paramref name="vertexPositions"/>.</param>
+		/// <param name="faceCentroids">A pre-allocated collection in which the intermediate face centroid positions will be stored.</param>
+		/// <param name="vertexAreas">A pre-allocated collection in which the intermediate nearby surface areas of vertices will be stored.</param>
+		/// <param name="faceCentroidAngles">A pre-allocated collection in which the intermediate face centroid angles will be stored.</param>
+		/// <returns>The relaxed vertex positions.</returns>
 		public static IVertexAttribute<Vector3> RelaxVertexPositionsForEqualArea(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, bool lockBoundaryPositions, IVertexAttribute<Vector3> relaxedVertexPositions, IFaceAttribute<Vector3> faceCentroids, IEdgeAttribute<float> faceCentroidAngles, IVertexAttribute<float> vertexAreas)
 		{
 			var idealArea = surface.radius * surface.radius * 4f * Mathf.PI / topology.vertices.Count;
@@ -348,6 +457,12 @@ namespace Experilous.MakeItTile
 			return relaxedVertexPositions;
 		}
 
+		/// <summary>
+		/// Determines the total amount of change between original vertex positions and relaxed vertex positions.
+		/// </summary>
+		/// <param name="originalVertexPositions">The original vertex positions, before being relaxed.</param>
+		/// <param name="relaxedVertexPositions">The relaxed vertex positions.</param>
+		/// <returns>The total amount of change between the original and relaxed vertex positions, as a sum of distance deltas.</returns>
 		public static float CalculateRelaxationAmount(IVertexAttribute<Vector3> originalVertexPositions, IVertexAttribute<Vector3> relaxedVertexPositions)
 		{
 			float relaxationAmount = 0f;
@@ -358,6 +473,15 @@ namespace Experilous.MakeItTile
 			return relaxationAmount;
 		}
 
+		/// <summary>
+		/// Scans the topology's vertices and their positions for any egregious anomolies, such as inverted triangles, and attempts to correct them when encountered.
+		/// </summary>
+		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topology to validate and repair.</param>
+		/// <param name="vertexPositions">The topology vertex positions, which will be modified by this function.</param>
+		/// <param name="adjustmentWeight">The degree to which final repaired vertex positions should conform to the ideal computed positions, moving away from the original positions.</param>
+		/// <param name="lockBoundaryPositions">Indicates that vertices with an external neighboring face should not have their positions altered.</param>
+		/// <returns>True if all vertex positions were validated and thus not changed, and false if at least one vertex failed validation and had its position at least partially repaired.</returns>
 		public static bool ValidateAndRepair(SphericalSurface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions, float adjustmentWeight, bool lockBoundaryPositions)
 		{
 			bool repaired = false;
