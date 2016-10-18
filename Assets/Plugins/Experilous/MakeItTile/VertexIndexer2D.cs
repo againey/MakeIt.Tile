@@ -59,7 +59,7 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Gets the two-dimensional index of the vertex with the given standard one-dimesional index.
 		/// </summary>
-		/// <param name="vertex">The vertex whose two-dimensional index is to be returned.</param>
+		/// <param name="vertexIndex">The index of the vertex whose two-dimensional index is to be returned.</param>
 		/// <returns>The two-dimensional index of the vertex with the given standard one-dimesional index.</returns>
 		IntVector2 GetVertexIndex2D(int vertexIndex);
 

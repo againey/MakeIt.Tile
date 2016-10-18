@@ -52,14 +52,14 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Gets the two-dimensional index of the given face.
 		/// </summary>
-		/// <param name="face">The face whose two-dimensional index is to be returned.</param>
+		/// <param name="internalFace">The internal face whose two-dimensional index is to be returned.</param>
 		/// <returns>The two-dimensional index of the given face.</returns>
 		IntVector2 GetFaceIndex2D(Topology.Face internalFace);
 
 		/// <summary>
 		/// Gets the two-dimensional index of the face with the given standard one-dimesional index.
 		/// </summary>
-		/// <param name="face">The face whose two-dimensional index is to be returned.</param>
+		/// <param name="internalFaceIndex">The index of the internal face whose two-dimensional index is to be returned.</param>
 		/// <returns>The two-dimensional index of the face with the given standard one-dimesional index.</returns>
 		IntVector2 GetFaceIndex2D(int internalFaceIndex);
 
