@@ -1987,7 +1987,7 @@ namespace Experilous.MakeItTile
 		public int Count { get { return array.Length; } }
 
 		/// <summary>
-		/// Indicates if the collection is read-only and thus cannot have items interted into or removed from it.  Always true.
+		/// Indicates if the collection is read-only and thus cannot have items inserted into or removed from it.  Always true.
 		/// </summary>
 		public bool IsReadOnly { get { return true; } }
 
@@ -2134,7 +2134,7 @@ namespace Experilous.MakeItTile
 		public int Count { get { return underlyingAttribute.Count; } }
 
 		/// <summary>
-		/// Indicates if the collection is read-only and thus cannot have items interted into or removed from it.  Always true.
+		/// Indicates if the collection is read-only and thus cannot have items inserted into or removed from it.  Always true.
 		/// </summary>
 		public bool IsReadOnly { get { return true; } }
 
@@ -2204,7 +2204,7 @@ namespace Experilous.MakeItTile
 	}
 
 	/// <summary>
-	/// Abstract base class for edge attributes that also derive from <see cref="ScriptableObject"/>
+	/// Abstract base class for edge attributes that also derives from <see cref="ScriptableObject"/>
 	/// and can therefore be serialized, referenced, and turned into an asset by Unity.
 	/// </summary>
 	/// <typeparam name="T">The type of the attribute values.</typeparam>
