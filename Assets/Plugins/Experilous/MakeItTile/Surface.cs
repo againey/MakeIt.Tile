@@ -227,6 +227,10 @@ namespace Experilous.MakeItTile
 		Vector3 ReverseOffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap);
 	}
 
+	/// <summary>
+	/// Abstract base class for surfaces that also derives from <see cref="ScriptableObject"/>
+	/// and can therefore be serialized, referenced, and turned into an asset by Unity.
+	/// </summary>
 	public abstract class Surface : ScriptableObject, ISurface
 	{
 		/// <inheritdoc/>
