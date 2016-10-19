@@ -352,7 +352,7 @@ namespace Experilous.MakeItTile
 		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
 		/// <param name="faceCentroidAngles">The centroid angles, in radians, of the face edges.</param>
 		/// <returns>The spherical surface areas of the faces.</returns>
-		/// <seealso cref="O:EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids"/>
+		/// <seealso cref="O:Experilous.MakeItTile.EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids"/>
 		public static IFaceAttribute<float> CalculateSphericalFaceAreasFromFaceCentroidAngles(Topology.FacesIndexer faces, SphericalSurface surface, IEdgeAttribute<float> faceCentroidAngles)
 		{
 			return CalculateSphericalFaceAreasFromFaceCentroidAngles(faces, surface, faceCentroidAngles, new float[faces.Count].AsFaceAttribute());
@@ -366,7 +366,7 @@ namespace Experilous.MakeItTile
 		/// <param name="faceCentroidAngles">The centroid angles, in radians, of the face edges.</param>
 		/// <param name="faceAreas">A pre-allocated collection in which the surface areas will be stored.</param>
 		/// <returns>The spherical surface areas of the faces.</returns>
-		/// <seealso cref="O:EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids"/>
+		/// <seealso cref="O:Experilous.MakeItTile.EdgeAttributeUtility.CalculateSphericalFaceCentroidAnglesFromFaceCentroids"/>
 		public static IFaceAttribute<float> CalculateSphericalFaceAreasFromFaceCentroidAngles(Topology.FacesIndexer faces, SphericalSurface surface, IEdgeAttribute<float> faceCentroidAngles, IFaceAttribute<float> faceAreas)
 		{
 			var radiusSquared = surface.radius * surface.radius;

@@ -24,8 +24,8 @@ namespace Experilous.MakeItTile
 		/// <param name="lockBoundaryVertices">Restricts vertices which touch an external face from being part of any edge mutations.</param>
 		/// <param name="random">The random engine that will be used to randomly select the edges to spin and how to spin them.</param>
 		/// <param name="relaxFunction">The relaxation and repair function to execute once after every randomization pass, to keep the vertex positions sane.</param>
-		/// <seealso cref="O:Topology.SpinEdgeBackward"/>
-		/// <seealso cref="O:Topology.SpinEdgeForward"/>
+		/// <seealso cref="O:Experilous.MakeItTile.Topology.SpinEdgeBackward"/>
+		/// <seealso cref="O:Experilous.MakeItTile.Topology.SpinEdgeForward"/>
 		public static void Randomize(Topology topology, int passCount, float frequency, int minVertexNeighbors, int maxVertexNeighbors, int minFaceNeighbors, int maxFaceNeighbors, bool lockBoundaryVertices, IRandom random, System.Action relaxFunction)
 		{
 			var perPassRandomizationFrequency = frequency / passCount;

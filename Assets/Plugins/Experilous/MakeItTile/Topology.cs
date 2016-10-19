@@ -209,6 +209,7 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Creates a copy of the current topology, but with the roles of vertices and faces reversed, as when taking the dual of a polyhedron.
 		/// </summary>
+		/// <returns>A copy of the current topology, but with the roles of vertices and faces reversed.</returns>
 		public virtual Topology GetDualTopology()
 		{
 			var clone = (Topology)Clone();

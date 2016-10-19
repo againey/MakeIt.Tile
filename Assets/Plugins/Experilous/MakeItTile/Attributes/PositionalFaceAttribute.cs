@@ -52,7 +52,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="e">The edge whose face's attribute value is desired.</param>
 		/// <returns>The attribute value for the face of the edge indicated, relative to the edge.</returns>
-		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Item(Topology.Face)"/></para></remarks>
+		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Experilous.MakeItTile.FaceArrayAttribute`1.Item(Experilous.MakeItTile.Topology.Face)"/></para></remarks>
 		public override Vector3 this[Topology.HalfEdge e]
 		{
 			get { return surface.OffsetEdgeToFaceAttribute(array[e.face.index], e.wrap); }
@@ -64,7 +64,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="e">The edge whose face's attribute value is desired.</param>
 		/// <returns>The attribute value for the previous face of the edge indicated, relative to the edge's near vertex.</returns>
-		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Item(Topology.Face)"/></para></remarks>
+		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Experilous.MakeItTile.FaceArrayAttribute`1.Item(Experilous.MakeItTile.Topology.Face)"/></para></remarks>
 		public override Vector3 this[Topology.VertexEdge e]
 		{
 			get { return surface.OffsetVertToFaceAttribute(array[e.face.index], e.wrap); }
@@ -76,7 +76,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="e">The edge whose face's attribute value is desired.</param>
 		/// <returns>The attribute value for the far face of the edge indicated, relative to the edge's near face.</returns>
-		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Item(Topology.Face)"/></para></remarks>
+		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Experilous.MakeItTile.FaceArrayAttribute`1.Item(Experilous.MakeItTile.Topology.Face)"/></para></remarks>
 		public override Vector3 this[Topology.FaceEdge e]
 		{
 			get { return surface.OffsetFaceToFaceAttribute(array[e.face.index], e.wrap); }

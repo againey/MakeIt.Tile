@@ -125,32 +125,31 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="item"></param>
+		/// <inheritdoc/>
 		public void Add(Topology.Face item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
+		/// <inheritdoc/>
 		public void Clear() { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="item"></param>
+		/// <inheritdoc/>
 		public void Insert(int index, Topology.Face item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="item"></param>
-		/// <returns></returns>
+		/// <inheritdoc/>
 		public bool Remove(Topology.Face item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="index"></param>
+		/// <inheritdoc/>
 		public void RemoveAt(int index) { throw new NotSupportedException(); }
 	}
 

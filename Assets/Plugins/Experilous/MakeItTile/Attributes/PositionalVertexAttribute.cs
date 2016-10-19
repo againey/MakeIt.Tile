@@ -52,7 +52,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="e">The edge whose vertex's attribute value is desired.</param>
 		/// <returns>The attribute value for the vertex of the edge indicated, relative to the edge.</returns>
-		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Item(Topology.Vertex)"/></para></remarks>
+		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Experilous.MakeItTile.VertexArrayAttribute`1.Item(Experilous.MakeItTile.Topology.Vertex)"/></para></remarks>
 		public override Vector3 this[Topology.HalfEdge e]
 		{
 			get { return surface.OffsetEdgeToVertAttribute(array[e.vertex.index], e.wrap); }
@@ -64,7 +64,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="e">The edge whose vertex's attribute value is desired.</param>
 		/// <returns>The attribute value for the far vertex of the edge indicated, relative to the edge's near vertex.</returns>
-		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Item(Topology.Vertex)"/></para></remarks>
+		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Experilous.MakeItTile.VertexArrayAttribute`1.Item(Experilous.MakeItTile.Topology.Vertex)"/></para></remarks>
 		public override Vector3 this[Topology.VertexEdge e]
 		{
 			get { return surface.OffsetVertToVertAttribute(array[e.vertex.index], e.wrap); }
@@ -76,7 +76,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="e">The edge whose vertex's attribute value is desired.</param>
 		/// <returns>The attribute value for the next vertex of the edge indicated, relative to the edge's near face.</returns>
-		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Item(Topology.Vertex)"/></para></remarks>
+		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Experilous.MakeItTile.VertexArrayAttribute`1.Item(Experilous.MakeItTile.Topology.Vertex)"/></para></remarks>
 		public override Vector3 this[Topology.FaceEdge e]
 		{
 			get { return surface.OffsetFaceToVertAttribute(array[e.vertex.index], e.wrap); }

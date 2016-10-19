@@ -52,7 +52,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="e">The edge (represented as a vertex edge) whose attribute value is desired.</param>
 		/// <returns>The attribute value for the indicated edge, relative to its near vertex.</returns>
-		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Item(Topology.HalfEdge)"/></para></remarks>
+		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Experilous.MakeItTile.EdgeArrayAttribute`1.Item(Experilous.MakeItTile.Topology.HalfEdge)"/></para></remarks>
 		public override Vector3 this[Topology.VertexEdge e]
 		{
 			get { return surface.OffsetVertToEdgeAttribute(array[e.index], e.wrap); }
@@ -64,7 +64,7 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="e">The edge (represented as a face edge) whose attribute value is desired.</param>
 		/// <returns>The attribute value for the indicated edge, relative to its near face.</returns>
-		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Item(Topology.HalfEdge)"/></para></remarks>
+		/// <remarks><para>To get the raw value unwrapped, see <see cref="P:Experilous.MakeItTile.EdgeArrayAttribute`1.Item(Experilous.MakeItTile.Topology.HalfEdge)"/></para></remarks>
 		public override Vector3 this[Topology.FaceEdge e]
 		{
 			get { return surface.OffsetFaceToEdgeAttribute(array[e.index], e.wrap); }

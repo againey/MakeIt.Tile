@@ -217,10 +217,10 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
-		/// Returns the submesh with the given index.
+		/// Returns the submesh at the given index.
 		/// </summary>
 		/// <param name="index">The zero-based index of the submesh to return.  Must a non-negative integer less than <see cref="submeshCount"/>.</param>
-		/// <returns></returns>
+		/// <returns>The submesh at the given index.</returns>
 		public Mesh GetSubmesh(int index)
 		{
 			if (index < 0 || index >= _submeshes.Length) throw new ArgumentOutOfRangeException("index");

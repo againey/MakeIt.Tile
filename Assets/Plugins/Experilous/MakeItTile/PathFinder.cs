@@ -652,7 +652,7 @@ namespace Experilous.MakeItTile
 		/// <param name="target">The target vertex that the path should attempt to reach.</param>
 		/// <param name="costHeuristic">Delegate for estimating the cost of the path from the specified source vertex to the specified target vertex.</param>
 		/// <param name="cost">Delegate for determining the actual cost of the path along the specified vertex edge, from its near vertex to its far vertex.</param>
-		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
 		/// <returns>A vertex edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
 		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
 		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
@@ -746,7 +746,7 @@ namespace Experilous.MakeItTile
 		/// <param name="target">The target face that the path should attempt to reach.</param>
 		/// <param name="costHeuristic">Delegate for estimating the cost of the path from the specified source face to the specified target face.</param>
 		/// <param name="cost">Delegate for determining the actual cost of the path along the specified face edge, from its near vertex to its far face.</param>
-		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
 		/// <returns>A face edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
 		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
 		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
@@ -843,7 +843,7 @@ namespace Experilous.MakeItTile
 		/// <param name="source">The source vertex from which the path should start.</param>
 		/// <param name="target">The target vertex that the path should attempt to reach.</param>
 		/// <param name="vertexPositions">The three dimensional positions of each face in the world.</param>
-		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
 		/// <returns>A vertex edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
 		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
 		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
@@ -871,7 +871,7 @@ namespace Experilous.MakeItTile
 		/// <param name="source">The source face from which the path should start.</param>
 		/// <param name="target">The target face that the path should attempt to reach.</param>
 		/// <param name="facePositions">The three dimensional positions of each face in the world.</param>
-		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
 		/// <returns>A face edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
 		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
 		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
@@ -901,7 +901,7 @@ namespace Experilous.MakeItTile
 		/// <param name="target">The target vertex that the path should attempt to reach.</param>
 		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
 		/// <param name="vertexPositions">The three dimensional positions of each face in the world.</param>
-		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
 		/// <returns>A vertex edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
 		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
 		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
@@ -934,7 +934,7 @@ namespace Experilous.MakeItTile
 		/// <param name="target">The target face that the path should attempt to reach.</param>
 		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
 		/// <param name="facePositions">The three dimensional positions of each face in the world.</param>
-		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
 		/// <returns>A face edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
 		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
 		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional

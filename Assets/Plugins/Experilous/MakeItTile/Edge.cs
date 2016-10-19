@@ -122,6 +122,7 @@ namespace Experilous.MakeItTile
 			/// Implicitly converts a half edge wrapper to a vertex edge wrapper around the same underlying edge.
 			/// </summary>
 			/// <param name="edge">The half edge wrapper to convert.</param>
+			/// <returns>The vertex edge wrapper that represents the same edge as the converted half edge wrapper.</returns>
 			public static implicit operator VertexEdge(HalfEdge edge)
 			{
 				return new VertexEdge(edge._topology, edge._index);
@@ -131,6 +132,7 @@ namespace Experilous.MakeItTile
 			/// Implicitly converts a half edge wrapper to a face edge wrapper around the same underlying edge.
 			/// </summary>
 			/// <param name="edge">The half edge wrapper to convert.</param>
+			/// <returns>The face edge wrapper that represents the same edge as the converted half edge wrapper.</returns>
 			public static implicit operator FaceEdge(HalfEdge edge)
 			{
 				return new FaceEdge(edge._topology, edge._index);
@@ -290,6 +292,7 @@ namespace Experilous.MakeItTile
 			/// Checks if the current edge wrapper represents a valid edge.  Converts to true if so, and false if the edge wrapper is empty.
 			/// </summary>
 			/// <param name="edge">The edge to check.</param>
+			/// <returns>True if the current edge wrapper represents a valid edge, and false if the edge wrapper is empty.</returns>
 			/// <seealso cref="none"/>
 			public static implicit operator bool(HalfEdge edge) { return edge._topology != null; }
 
@@ -602,6 +605,7 @@ namespace Experilous.MakeItTile
 			/// Implicitly converts a vertex edge wrapper to a half edge wrapper around the same underlying edge.
 			/// </summary>
 			/// <param name="edge">The vertex edge wrapper to convert.</param>
+			/// <returns>The half edge wrapper that represents the same edge as the converted vertex edge wrapper.</returns>
 			public static implicit operator HalfEdge(VertexEdge edge)
 			{
 				return edge._halfEdge;
@@ -611,6 +615,7 @@ namespace Experilous.MakeItTile
 			/// Implicitly converts a vertex edge wrapper to a face edge wrapper around the same underlying edge.
 			/// </summary>
 			/// <param name="edge">The vertex edge wrapper to convert.</param>
+			/// <returns>The face edge wrapper that represents the same edge as the converted vertex edge wrapper.</returns>
 			public static implicit operator FaceEdge(VertexEdge edge)
 			{
 				return edge._halfEdge;
@@ -764,6 +769,7 @@ namespace Experilous.MakeItTile
 			/// Checks if the current edge wrapper represents a valid edge.  Converts to true if so, and false if the edge wrapper is empty.
 			/// </summary>
 			/// <param name="edge">The edge to check.</param>
+			/// <returns>True if the current edge wrapper represents a valid edge, and false if the edge wrapper is empty.</returns>
 			/// <seealso cref="none"/>
 			public static implicit operator bool(VertexEdge edge) { return edge._halfEdge; }
 
@@ -1070,6 +1076,7 @@ namespace Experilous.MakeItTile
 			/// Implicitly converts a face edge wrapper to a half edge wrapper around the same underlying edge.
 			/// </summary>
 			/// <param name="edge">The face edge wrapper to convert.</param>
+			/// <returns>The half edge wrapper that represents the same edge as the converted face edge wrapper.</returns>
 			public static implicit operator HalfEdge(FaceEdge edge)
 			{
 				return edge._halfEdge;
@@ -1079,6 +1086,7 @@ namespace Experilous.MakeItTile
 			/// Implicitly converts a face edge wrapper to a vertex edge wrapper around the same underlying edge.
 			/// </summary>
 			/// <param name="edge">The face edge wrapper to convert.</param>
+			/// <returns>The vertex edge wrapper that represents the same edge as the converted face edge wrapper.</returns>
 			public static implicit operator VertexEdge(FaceEdge edge)
 			{
 				return edge._halfEdge;
@@ -1232,6 +1240,7 @@ namespace Experilous.MakeItTile
 			/// Checks if the current edge wrapper represents a valid edge.  Converts to true if so, and false if the edge wrapper is empty.
 			/// </summary>
 			/// <param name="edge">The edge to check.</param>
+			/// <returns>True if the current edge wrapper represents a valid edge, and false if the edge wrapper is empty.</returns>
 			/// <seealso cref="none"/>
 			public static implicit operator bool(FaceEdge edge) { return edge._halfEdge; }
 
@@ -1923,6 +1932,7 @@ namespace Experilous.MakeItTile
 		/// Implicitly converts an array wrapper to a raw array by simply returning the wrapped array.
 		/// </summary>
 		/// <param name="arrayWrapper">The array wrapper to convert.</param>
+		/// <returns>The raw array wrapped by the converted array wrapper.</returns>
 		public static implicit operator T[](EdgeAttributeArrayWrapper<T> arrayWrapper)
 		{
 			return arrayWrapper.array;
@@ -1932,6 +1942,7 @@ namespace Experilous.MakeItTile
 		/// Implicitly converts a raw array to an array wrapper by constructing a wrapper around the array.
 		/// </summary>
 		/// <param name="array">The array to be converted.</param>
+		/// <returns>An array wrapper around the converted array.</returns>
 		public static implicit operator EdgeAttributeArrayWrapper<T>(T[] array)
 		{
 			return new EdgeAttributeArrayWrapper<T>(array);
@@ -1994,12 +2005,13 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="item"></param>
+		/// <inheritdoc/>
 		public void Add(T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
+		/// <inheritdoc/>
 		public void Clear() { throw new NotSupportedException(); }
 
 		/// <summary>
@@ -2032,21 +2044,19 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="item"></param>
+		/// <inheritdoc/>
 		public void Insert(int index, T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="item"></param>
-		/// <returns></returns>
+		/// <inheritdoc/>
 		public bool Remove(T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="index"></param>
+		/// <inheritdoc/>
 		public void RemoveAt(int index) { throw new NotSupportedException(); }
 
 		/// <summary>
@@ -2141,12 +2151,13 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="item"></param>
+		/// <inheritdoc/>
 		public void Add(T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
+		/// <inheritdoc/>
 		public void Clear() { throw new NotSupportedException(); }
 
 		/// <summary>
@@ -2179,21 +2190,19 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="item"></param>
+		/// <inheritdoc/>
 		public void Insert(int index, T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="item"></param>
-		/// <returns></returns>
+		/// <inheritdoc/>
 		public bool Remove(T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="index"></param>
+		/// <inheritdoc/>
 		public void RemoveAt(int index) { throw new NotSupportedException(); }
 
 		/// <summary>

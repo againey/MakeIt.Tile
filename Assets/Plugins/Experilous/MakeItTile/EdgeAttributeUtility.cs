@@ -680,10 +680,10 @@ namespace Experilous.MakeItTile
 		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <returns>The UV coordinates of the face edges, corresponding to their next-vertex references.</returns>
-		/// <remarks><para>Unlike <see cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
+		/// <remarks><para>Unlike <see cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
 		/// this function accesses vertex positions within the context of a face edge, allowing for additional behavior such as
 		/// per-face vertex positions or wrapped vertex positions in a topology with wrapping boundaries.</para></remarks>
-		/// <seealso cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
+		/// <seealso cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, Vector3.zero, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
@@ -698,10 +698,10 @@ namespace Experilous.MakeItTile
 		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <returns>The UV coordinates of the face edges, corresponding to their next-vertex references.</returns>
-		/// <remarks><para>Unlike <see cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
+		/// <remarks><para>Unlike <see cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
 		/// this function accesses vertex positions within the context of a face edge, allowing for additional behavior such as
 		/// per-face vertex positions or wrapped vertex positions in a topology with wrapping boundaries.</para></remarks>
-		/// <seealso cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
+		/// <seealso cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, origin, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
@@ -716,10 +716,10 @@ namespace Experilous.MakeItTile
 		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <param name="uvs">A pre-allocated collection in which the UV coordinates will be stored.</param>
 		/// <returns>The UV coordinates of the face edges, corresponding to their next-vertex references.</returns>
-		/// <remarks><para>Unlike <see cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
+		/// <remarks><para>Unlike <see cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
 		/// this function accesses vertex positions within the context of a face edge, allowing for additional behavior such as
 		/// per-face vertex positions or wrapped vertex positions in a topology with wrapping boundaries.</para></remarks>
-		/// <seealso cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
+		/// <seealso cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
 		{
 			return CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, Vector3.zero, uAxis, vAxis, uvs);
@@ -735,10 +735,10 @@ namespace Experilous.MakeItTile
 		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <param name="uvs">A pre-allocated collection in which the UV coordinates will be stored.</param>
 		/// <returns>The UV coordinates of the face edges, corresponding to their next-vertex references.</returns>
-		/// <remarks><para>Unlike <see cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
+		/// <remarks><para>Unlike <see cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
 		/// this function accesses vertex positions within the context of a face edge, allowing for additional behavior such as
 		/// per-face vertex positions or wrapped vertex positions in a topology with wrapping boundaries.</para></remarks>
-		/// <seealso cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
+		/// <seealso cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 origin, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
 		{
 			var normal = Vector3.Cross(vAxis, uAxis).normalized;
@@ -768,10 +768,10 @@ namespace Experilous.MakeItTile
 		/// <param name="uAxis">The world space axis along which the first UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <returns>The UV coordinates of the face edges, corresponding to their next-vertex references.</returns>
-		/// <remarks><para>Unlike <see cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
+		/// <remarks><para>Unlike <see cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
 		/// this function accesses vertex positions within the context of a face edge, allowing for additional behavior such as
 		/// per-face vertex positions or wrapped vertex positions in a topology with wrapping boundaries.</para></remarks>
-		/// <seealso cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
+		/// <seealso cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis)
 		{
 			return CalculateGlobalPlanarNormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, new Vector2[faceEdges.Count].AsEdgeAttribute());
@@ -786,10 +786,10 @@ namespace Experilous.MakeItTile
 		/// <param name="vAxis">The world space axis along which the second UV component will increase linearly at rate determined by this vector's magnitude.</param>
 		/// <param name="uvs">A pre-allocated collection in which the UV coordinates will be stored.</param>
 		/// <returns>The UV coordinates of the face edges, corresponding to their next-vertex references.</returns>
-		/// <remarks><para>Unlike <see cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
+		/// <remarks><para>Unlike <see cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>,
 		/// this function accesses vertex positions within the context of a face edge, allowing for additional behavior such as
 		/// per-face vertex positions or wrapped vertex positions in a topology with wrapping boundaries.</para></remarks>
-		/// <seealso cref="O:VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
+		/// <seealso cref="O:Experilous.MakeItTile.VertexAttributeUtility.CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions"/>
 		public static IEdgeAttribute<Vector2> CalculateGlobalPlanarNormalizedUVsFromVertexPositions(Topology.FaceEdgesIndexer faceEdges, IEdgeAttribute<Vector3> vertexPositions, Vector3 uAxis, Vector3 vAxis, IEdgeAttribute<Vector2> uvs)
 		{
 			CalculateGlobalPlanarUnnormalizedUVsFromVertexPositions(faceEdges, vertexPositions, uAxis, vAxis, uvs);

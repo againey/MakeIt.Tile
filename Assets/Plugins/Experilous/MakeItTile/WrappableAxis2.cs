@@ -49,6 +49,7 @@ namespace Experilous.MakeItTile
 		/// Implicitly converts a wrappable axis to a <see cref="Vector2"/>, essentialy just dropping the wrappable field.
 		/// </summary>
 		/// <param name="axis">The axis to be converted.</param>
+		/// <returns>The direction vector of the converted axis.</returns>
 		public static implicit operator Vector2(WrappableAxis2 axis)
 		{
 			return axis.vector;
@@ -58,6 +59,7 @@ namespace Experilous.MakeItTile
 		/// Implicitly converts a wrappable axis to a <see cref="Vector3"/>, essentialy just dropping the wrappable field and setting the z component to zero.
 		/// </summary>
 		/// <param name="axis">The axis to be converted.</param>
+		/// <returns>The direction vector of the converted axis, with the z component set to zero.</returns>
 		public static implicit operator Vector3(WrappableAxis2 axis)
 		{
 			return axis.vector;
@@ -67,6 +69,7 @@ namespace Experilous.MakeItTile
 		/// Implicitly converts a <see cref="Vector2"/> direction vector to a non-wrapping axis.
 		/// </summary>
 		/// <param name="vector">The direction vector to be converted.</param>
+		/// <returns>The a non-wrapping axis with the converted direction vector.</returns>
 		public static implicit operator WrappableAxis2(Vector2 vector)
 		{
 			return new WrappableAxis2(vector);

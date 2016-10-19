@@ -10,7 +10,7 @@
 		<introduction>
 			<autoOutline />
 		</introduction>
-		<section address="geometry">
+		<!--<section address="geometry">
 			<title>Geometry</title>
 			<content>
 				<para>
@@ -289,6 +289,6 @@
 				  	</para>
 				</alert>
 			</content>
-		</section>
+		</section>-->
 	</developerConceptualDocument>
 </topic>

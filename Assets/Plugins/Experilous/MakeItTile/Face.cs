@@ -73,6 +73,7 @@ namespace Experilous.MakeItTile
 			/// Checks if this face wrapper represents a valid face.  Converts to true if so, and false if the face wrapper is empty.
 			/// </summary>
 			/// <param name="face">The face to check.</param>
+			/// <returns>True if the current face wrapper represents a valid face, and false if the face wrapper is empty.</returns>
 			/// <seealso cref="none"/>
 			public static implicit operator bool(Face face) { return face._topology != null; }
 
@@ -816,6 +817,7 @@ namespace Experilous.MakeItTile
 		/// Implicitly converts an array wrapper to a raw array by simply returning the wrapped array.
 		/// </summary>
 		/// <param name="arrayWrapper">The array wrapper to convert.</param>
+		/// <returns>The raw array wrapped by the converted array wrapper.</returns>
 		public static implicit operator T[](FaceAttributeArrayWrapper<T> arrayWrapper)
 		{
 			return arrayWrapper.array;
@@ -825,6 +827,7 @@ namespace Experilous.MakeItTile
 		/// Implicitly converts a raw array to an array wrapper by constructing a wrapper around the array.
 		/// </summary>
 		/// <param name="array">The array to be converted.</param>
+		/// <returns>An array wrapper around the converted array.</returns>
 		public static implicit operator FaceAttributeArrayWrapper<T>(T[] array)
 		{
 			return new FaceAttributeArrayWrapper<T>(array);
@@ -898,12 +901,13 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="item"></param>
+		/// <inheritdoc/>
 		public void Add(T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
+		/// <inheritdoc/>
 		public void Clear() { throw new NotSupportedException(); }
 
 		/// <summary>
@@ -936,21 +940,19 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="item"></param>
+		/// <inheritdoc/>
 		public void Insert(int index, T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="item"></param>
-		/// <returns></returns>
+		/// <inheritdoc/>
 		public bool Remove(T item) { throw new NotSupportedException(); }
 
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		/// <param name="index"></param>
+		/// <inheritdoc/>
 		public void RemoveAt(int index) { throw new NotSupportedException(); }
 
 		/// <summary>

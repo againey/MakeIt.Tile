@@ -27,7 +27,7 @@
 		<introduction>
 			<autoOutline />
 		</introduction>
-		<section address="offer">
+		<!--<section address="offer">
 			<title>What does Make It Random offer?</title>
 			<content>
 				<para>
@@ -185,7 +185,7 @@
 					]]>
 				</code>
 			</content>
-		</section>
+		</section>-->
 		<relatedTopics>
 			<link xlink:href="0c879b33-6cff-4557-98d1-0794eeb719c8" /> <!-- Example Scenes -->
 			<codeEntityReference linkText="API Reference">R:Project_API_Reference</codeEntityReference>
