@@ -138,6 +138,51 @@
 				</code>
 			</content>
 		</section>
+		<section address="calculating">
+			<title>Calculating Attributes</title>
+			<content>
+				<para>
+					As noted above, there are a wide variety of attributes that could be
+					stored and used by games and other applications.  Some of them,
+					especially those that are based on regular geometry, are standard
+					enough to include utilities for calculating and working with them.
+					This includes concepts such as distances, surface normals, surface
+					areas, and angles, and these utilities can be foundin the classes
+					<codeEntityReference>T:Experilous.MakeItTile.VertexAttributeUtility</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.FaceAttributeUtility</codeEntityReference>, and
+					<codeEntityReference>T:Experilous.MakeItTile.EdgeAttributeUtility</codeEntityReference>.
+				</para>
+				<para>
+					Most functions in these classes come in two varieties:  one which
+					allocates a new attribute collection for the attributes computed,
+					and one which takes an existing attribute collection and writes the
+					computed values to it.  The former is a bit more convenient, but
+					the latter is of course more efficient in cases where the attribute
+					values need to be computed more than once.
+				</para>
+				<para>
+					The utilities for calculating various vertex and face attributes are
+					generally straight-forward.  Edge attributes, however, don't always
+					conceptually correspond to edges, even though they do map to edges,
+					1-to-1, making edges the natural indexer for such attributes. An
+					example would be the interior angles of face polygons.  Conceptually,
+					these angles apply to the corners of faces, but corners are not a
+					topology element type in Make It Tile.  Vertices cannot be used,
+					because a single vertex is a corner of multiple faces, and each
+					corner could have a different interior angle.  And faces of course
+					cannot work either, as each one has multiple corners, and not always
+					the same number of corners per face in a topology.  An edge, however,
+					has a perfect 1-to-1 mapping to face corners.  Just think of the far
+					vertex of the edge as the corner of the edge's near face.  This
+					mapping can also be used for the very common case of generating a
+					renderable mesh, where vertices need to be duplicated because
+					adjacent triangles don't always share the same vertex attributes.
+					A flat-shaded surface, for example, needs unique normals for each
+					triangle that a vertex belongs to.  Calculate the normals per edge
+					instead of per vertex, and the mesh generation should proceed easily.
+				</para>
+			</content>
+		</section>
 		<relatedTopics>
 			<codeEntityReference>T:Experilous.MakeItTile.Topology</codeEntityReference>
 			<codeEntityReference>T:Experilous.MakeItTile.Topology.Vertex</codeEntityReference>
@@ -151,6 +196,9 @@
 			<codeEntityReference>T:Experilous.MakeItTile.VertexAttributeArrayWrapper`1</codeEntityReference>
 			<codeEntityReference>T:Experilous.MakeItTile.FaceAttributeArrayWrapper`1</codeEntityReference>
 			<codeEntityReference>T:Experilous.MakeItTile.EdgeAttributeArrayWrapper`1</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.VertexAttributeUtility</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.FaceAttributeUtility</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.EdgeAttributeUtility</codeEntityReference>
 		</relatedTopics>
 	</developerConceptualDocument>
 </topic>
