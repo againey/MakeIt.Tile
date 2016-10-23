@@ -293,7 +293,7 @@ namespace Experilous.MakeItTile
 		/// <param name="vertexPositions">The positions of the vertices.</param>
 		/// <param name="facePositions">The positions of the faces.</param>
 		/// <returns>The bisector vectors of the interior face corners.</returns>
-		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FacesIndexer faces, Surface surface, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions)
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FacesIndexer faces, ISurface surface, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions)
 		{
 			if (faces.Count > 0)
 			{
@@ -314,7 +314,7 @@ namespace Experilous.MakeItTile
 		/// <param name="facePositions">The positions of the faces.</param>
 		/// <param name="bisectors">A pre-allocated collection in which the bisector vectors of the interior face corners will be stored.</param>
 		/// <returns>The bisector vectors of the interior face corners.</returns>
-		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FacesIndexer faces, Surface surface, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IEdgeAttribute<Vector3> bisectors)
+		public static IEdgeAttribute<Vector3> CalculateFaceEdgeBisectorsFromVertexPositions(Topology.FacesIndexer faces, ISurface surface, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> facePositions, IEdgeAttribute<Vector3> bisectors)
 		{
 			foreach (var face in faces)
 			{

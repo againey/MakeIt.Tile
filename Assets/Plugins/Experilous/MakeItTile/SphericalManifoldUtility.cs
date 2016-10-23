@@ -312,7 +312,7 @@ namespace Experilous.MakeItTile
 		/// Creates a new topology based on the one provided, subdividing each face into multiple smaller faces, and adding extra vertices and edges accordingly.  Uses spherical linear interpolation for deriving the positions of new vertices.
 		/// </summary>
 		/// <param name="surface">The spherical surface describing the overall shape of the manifold.</param>
-		/// <param name="topology">The original topology to be subdivided.</param>
+		/// <param name="topology">The original topology to be subdivided.  Cannot contain internal faces with neighbor counts of any value other than 3 or 4.</param>
 		/// <param name="vertexPositions">The positions of the original topology's vertices.</param>
 		/// <param name="degree">The degree of subdivision, equivalent to the number of additional vertices that will be added along each original edge.  Must be non-negative, and a value of zero will result in an exact duplicate with no subdivision.</param>
 		/// <param name="subdividedTopology">The copied and subdivided topology.</param>

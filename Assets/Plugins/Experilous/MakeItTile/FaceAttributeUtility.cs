@@ -20,7 +20,7 @@ namespace Experilous.MakeItTile
 		/// <param name="faces">The collection of faces whose centroids are to be calculated.</param>
 		/// <param name="vertexPositions">The positions of the vertices.</param>
 		/// <returns>The centroids of the vertices.</returns>
-		public static IFaceAttribute<Vector3> CalculateFaceCentroidsFromVertexPositions(Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions)
+		public static IFaceAttribute<Vector3> CalculateFaceCentroidsFromVertexPositions(Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions)
 		{
 			return CalculateFaceCentroidsFromVertexPositions(faces, vertexPositions, new Vector3[faces.Count].AsFaceAttribute());
 		}
@@ -32,7 +32,7 @@ namespace Experilous.MakeItTile
 		/// <param name="vertexPositions">The positions of the vertices.</param>
 		/// <param name="faceCentroids">A pre-allocated collection in which the face centroids will be stored.</param>
 		/// <returns>The centroids of the vertices.</returns>
-		public static IFaceAttribute<Vector3> CalculateFaceCentroidsFromVertexPositions(Topology.FacesIndexer faces, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceCentroids)
+		public static IFaceAttribute<Vector3> CalculateFaceCentroidsFromVertexPositions(Topology.FacesIndexer faces, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceCentroids)
 		{
 			foreach (var face in faces)
 			{
@@ -54,7 +54,7 @@ namespace Experilous.MakeItTile
 		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
 		/// <param name="vertexPositions">The positions of the vertices.</param>
 		/// <returns>The centroids of the vertices.</returns>
-		public static IFaceAttribute<Vector3> CalculateSphericalFaceCentroidsFromVertexPositions(Topology.FacesIndexer faces, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions)
+		public static IFaceAttribute<Vector3> CalculateSphericalFaceCentroidsFromVertexPositions(Topology.FacesIndexer faces, SphericalSurface surface, IEdgeAttribute<Vector3> vertexPositions)
 		{
 			return CalculateSphericalFaceCentroidsFromVertexPositions(faces, surface, vertexPositions, new Vector3[faces.Count].AsFaceAttribute());
 		}
@@ -67,7 +67,7 @@ namespace Experilous.MakeItTile
 		/// <param name="vertexPositions">The positions of the vertices.</param>
 		/// <param name="faceCentroids">A pre-allocated collection in which the face centroids will be stored.</param>
 		/// <returns>The centroids of the vertices.</returns>
-		public static IFaceAttribute<Vector3> CalculateSphericalFaceCentroidsFromVertexPositions(Topology.FacesIndexer faces, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceCentroids)
+		public static IFaceAttribute<Vector3> CalculateSphericalFaceCentroidsFromVertexPositions(Topology.FacesIndexer faces, SphericalSurface surface, IEdgeAttribute<Vector3> vertexPositions, IFaceAttribute<Vector3> faceCentroids)
 		{
 			foreach (var face in faces)
 			{
@@ -93,7 +93,7 @@ namespace Experilous.MakeItTile
 		/// <param name="surface">The surface descriptor that will provide surface normal information.</param>
 		/// <param name="facePositions">The positions of the faces.  Typically the face centroids, though any other method of mapping faces to individual points is also allowed.</param>
 		/// <returns>The surface normals of the faces.</returns>
-		public static IFaceAttribute<Vector3> CalculateFaceNormalsFromSurface(Topology.FacesIndexer faces, Surface surface, IFaceAttribute<Vector3> facePositions)
+		public static IFaceAttribute<Vector3> CalculateFaceNormalsFromSurface(Topology.FacesIndexer faces, ISurface surface, IFaceAttribute<Vector3> facePositions)
 		{
 			return CalculateFaceNormalsFromSurface(faces, surface, facePositions, new Vector3[faces.Count].AsFaceAttribute());
 		}
@@ -106,7 +106,7 @@ namespace Experilous.MakeItTile
 		/// <param name="facePositions">The positions of the faces.  Typically the face centroids, though any other method of mapping faces to individual points is also allowed.</param>
 		/// <param name="faceNormals">A pre-allocated collection in which the face normals will be stored.</param>
 		/// <returns>The surface normals of the faces.</returns>
-		public static IFaceAttribute<Vector3> CalculateFaceNormalsFromSurface(Topology.FacesIndexer faces, Surface surface, IFaceAttribute<Vector3> facePositions, IFaceAttribute<Vector3> faceNormals)
+		public static IFaceAttribute<Vector3> CalculateFaceNormalsFromSurface(Topology.FacesIndexer faces, ISurface surface, IFaceAttribute<Vector3> facePositions, IFaceAttribute<Vector3> faceNormals)
 		{
 			foreach (var face in faces)
 			{

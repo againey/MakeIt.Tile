@@ -220,5 +220,31 @@ copy /Y /B "archive.php" "Build\archive.php"</PostBuildEvent>
     <None Include="Content - Introduction.aml" />
     <None Include="Content - Example Scenes.aml" />
     <None Include="Content - Third Party Licenses.aml" />
+    <None Include="Content - Topologies.aml" />
+    <None Include="Content - Topology Attributes.aml" />
+    <None Include="Content - Edge Wrap.aml" />
+    <None Include="Content - Surface Manifolds.aml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="hex-grid-axis-style.png">
+      <ImageId>hex-grid-axis-style</ImageId>
+      <AlternateText>hex-grid-axis-style</AlternateText>
+    </Image>
+    <Image Include="hex-grid-axes.png">
+      <ImageId>hex-grid-axes</ImageId>
+      <AlternateText>hex-grid-axes</AlternateText>
+    </Image>
+    <Image Include="hex-grid-vertex-neighbors.png">
+      <ImageId>hex-grid-vertex-neighbors</ImageId>
+      <AlternateText>hex-grid-vertex-neighbors</AlternateText>
+    </Image>
+    <Image Include="hex-grid-face-neighbors.png">
+      <ImageId>hex-grid-face-neighbors</ImageId>
+      <AlternateText>hex-grid-face-neighbors</AlternateText>
+    </Image>
+    <Image Include="hex-grid-1.png">
+      <ImageId>hex-grid-1</ImageId>
+      <AlternateText>hex-grid-1</AlternateText>
+    </Image>
   </ItemGroup>
 </Project>

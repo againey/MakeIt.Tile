@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="c0bb2b58-ff6e-4be1-8d35-a74636aaf262" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				Surface manifolds are an extension of the topology concept, embedding
+				a topology onto a two-dimensional surface within three-dimensional space.
+			</para>
+		</summary>
+		<introduction>
+			<autoOutline />
+		</introduction>
+		<section address="overview">
+			<title>Overview</title>
+			<content>
+				<para>
+					A manifold is combination of a topology with, at the very minimum,
+					an attribute collection of positions for one of the three topology
+					elements, usually vertex positions.  In addition, the topology and
+					positions may be accompanied by an implementation of
+					<codeEntityReference>T:Experilous.MakeItTile.ISurface</codeEntityReference>,
+					which provides basic descriptions of a surface.  Creating a manifold
+					generally consists of first constructing the desired surface, and
+					then using it to further build the topology and vertex positions.
+					Make It Tile includes three concrete surface types,
+					<codeEntityReference>T:Experilous.MakeItTile.SphericalSurface</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.RectangularQuadGrid</codeEntityReference>, and
+					<codeEntityReference>T:Experilous.MakeItTile.RectangularHexGrid</codeEntityReference>.
+				</para>
+			</content>
+		</section>
+		<section address="spherical">
+			<title>Spherical Surfaces</title>
+			<content>
+				<para>
+					Spherical surfaces are of course most naturally used for creating
+					planetary game worlds.  They can also be turned inside-out, as if
+					the world was formed on the inside of a hollow planet or the inner
+					surface of a Dyson sphere.  After constructing an instance of
+					<codeEntityReference>T:Experilous.MakeItTile.SphericalSurface</codeEntityReference>,
+					the other manifold elements can be created using functions found in
+					<codeEntityReference>T:Experilous.MakeItTile.SphericalManifoldUtility</codeEntityReference>.
+					For example, a mostly hexagonal tiling of a sphere can be created by first calling 
+					<codeEntityReference linkText="CreateIcosahedron()">M:Experilous.MakeItTile.SphericalManifoldUtility.CreateIcosahedron(Experilous.MakeItTile.SphericalSurface,Experilous.MakeItTile.Topology@,UnityEngine.Vector3[]@)</codeEntityReference>,
+					followed by <codeEntityReference linkText="Subdivide()">M:Experilous.MakeItTile.SphericalManifoldUtility.Subdivide(Experilous.MakeItTile.SphericalSurface,Experilous.MakeItTile.Topology,Experilous.MakeItTile.IVertexAttribute{UnityEngine.Vector3},System.Int32,Experilous.MakeItTile.Topology@,UnityEngine.Vector3[]@)</codeEntityReference>,
+					to increase the number of tiles up to roughly the quantity desired, and finally
+					followed by <codeEntityReference>Overload:Experilous.MakeItTile.SphericalManifoldUtility.MakeDual</codeEntityReference>
+					to switch from the subdivided triangles from the previous step to
+					hexagons (and twelve pentagons)
+				</para>
+			</content>
+		</section>
+		<section address="planar">
+			<title>Quadrilateral Grids</title>
+			<content>
+				<para>
+					The other two surfaces are both implementations of the further refinements
+					<codeEntityReference>T:Experilous.MakeItTile.PlanarSurface</codeEntityReference> and
+					<codeEntityReference>T:Experilous.MakeItTile.QuadrilateralSurface</codeEntityReference>.
+					The first of course just describing a flat plane, while the latter describes
+					a more-or-less quadralateral shape cut out of such a plane, defined by an
+					point, two axis vectors, and an orientation.  These two axes are valuable
+					in that they provide a clear frame of reference for the two-dimensional
+					surface which can be used in a variety of calculations.
+				</para>
+				<para>
+					The surface type <codeEntityReference>T:Experilous.MakeItTile.RectangularQuadGrid</codeEntityReference>
+					can be used to describe a grid consisting of identically shaped
+					parallelogram tiles, arranged in specific quantities of rows and
+					columns.  The most obvious configuration is a simple grid of squares,
+					but alternatives such as rectangular, diamond, or rectangular tiles are
+					entirely possible too.  Because of the regular nature of a quadrilateral
+					grid, two additional interfaces are supported by this class:
+					<codeEntityReference>T:Experilous.MakeItTile.IVertexIndexer2D</codeEntityReference> and
+					<codeEntityReference>T:Experilous.MakeItTile.IFaceIndexer2D</codeEntityReference>.
+					These interfaces allow easy lookup of vertices and faces given
+					traditional two-dimensional indexes of the column/row variety,
+					and the inverse operation of finding the column/row position of
+					any given vertex or face.
+				</para>
+			</content>
+		</section>
+		<section address="hexagonal">
+			<title>Hexagonal Grids</title>
+			<content>
+				<para>
+					The surface type <codeEntityReference>T:Experilous.MakeItTile.RectangularHexGrid</codeEntityReference>
+					is similar, but uses hexagonal tiles instead of parallelograms.
+					Hexagons are a bit more complex than parallelograms, and hence
+					their description is also a bit more complex.  Instead of merely
+					describing two axes that clearly map to the generated parallegrams,
+					the type <codeEntityReference>T:Experilous.MakeItTile.HexGridDescriptor</codeEntityReference>,
+					used in the construction of a hex grid, requires the specification
+					of three vectors, plus a couple of additional details to fully
+					specify the arrangement of tiles.
+				</para>
+				<mediaLink>
+					<caption placement="after">Four different ways to configure hexagonal tiles.</caption>
+					<image placement="center" xlink:href="hex-grid-axes"/>
+				</mediaLink>
+				<para>
+					Above are some examples of how the shapes of the hexagonal tiles can
+					be specified, by providing vectors for the midpoint, the major corner,
+					and the minor corner.  Notice how in the fourth example the minor
+					corner is not between the midpoint vector and the major corner;
+					this affects where the row of hexagons above the first row start.
+					With the first hexagon arrangements above, the first hexagon on
+					the second row will be up and to the right of the first hexagon
+					in the first row.  But with the last hexagon arrangement, the first
+					hexagon of the second row will be up and to the left instead.  The
+					remaining hexagons on the row will still proceed in the direction
+					of the first (red/x) axis, but this nuance determines the arrangement
+					of corner tiles in your grid in ways that could be significant to
+					game play mechanics.
+				</para>
+				<para>
+					An additional property of hexagonal tiles to be specified is if the
+					midpoint vector is the first (red/x) or second (green/y) of two axes.
+					In the above diagram, the second hexagon has the midpoint set as the
+					second axis (green/y), in order to get the flat-side-up style of
+					hexagon, while still sticking to the conventional layout of x/y axes.
+				</para>
+				<mediaLink>
+					<caption placement="after">Straight, staggered, and staggered-symmetric axis styles.</caption>
+					<image placement="center" xlink:href="hex-grid-axes"/>
+				</mediaLink>
+				<para>
+					Finally, there are three different axis styles available, demonstrated
+					above.  The first style, straight, lines up hexagons along a straight
+					line for both the first and second axis.  For regularly shaped hexagons,
+					this forces the overall grid to be skewed, but it keeps the indexing of
+					hexagons simple, as it is easy to identify rows and columns.  The second
+					style, staggered, attempts to keep the overall grid rectangular by
+					offsetting every other row.  Finally, the style that is both staggered
+					and symmetric also alters the number of tiles in every other row such
+					that there is a mirror symmetry around the axis that is staggered.
+				</para>
+			</content>
+		</section>
+		<relatedTopics>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.ISurface</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.SphericalSurface</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.PlanarSurface</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.QuadrilateralSurface</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.RectangularQuadGrid</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.RectangularHexGrid</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.HexGridDescriptor</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.ManifoldUtility</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.SphericalManifoldUtility</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.PlanarManifoldUtility</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.IVertexIndexer2D</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.IFaceIndexer2D</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>

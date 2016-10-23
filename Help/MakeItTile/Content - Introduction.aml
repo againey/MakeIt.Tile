@@ -3,8 +3,8 @@
 	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
 		<summary>
 			<para>
-				Welcome to the Make It Random User's Manual.  This document will
-				assist in integrating this collection of random number generation
+				Welcome to the Make It Tile User's Manual.  This document will
+				assist in integrating this collection of tile-based topology
 				utilities into your Unity project.
 			</para>
 			<alert type="note">
@@ -12,14 +12,14 @@
 					An online version of this documentation is available
 					<externalLink>
 						<linkText>here</linkText>
-						<linkAlternateText>Make It Random Online User's Manual at experilous.com</linkAlternateText>
-						<linkUri>http://experilous.com/1/product/make-it-random/1.0/documentation/html/cb0daf55-236d-4175-aedc-48751c1d0964.htm</linkUri>
+						<linkAlternateText>Make It Tile Online User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-tile/2.0/documentation/html/327c9325-40d7-4d24-a5d2-99da4936d7e0.htm</linkUri>
 					</externalLink>,
 					and a downloadable archive for offline use can be acquired
 					<externalLink>
 						<linkText>here</linkText>
-						<linkAlternateText>Make It Random Downloadable User's Manual at experilous.com</linkAlternateText>
-						<linkUri>http://experilous.com/1/product/make-it-random/1.0/documentation/archive</linkUri>
+						<linkAlternateText>Make It Tile Downloadable User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-tile/2.0/documentation/archive</linkUri>
 					</externalLink>.
 				</para>
 			</alert>
@@ -27,16 +27,26 @@
 		<introduction>
 			<autoOutline />
 		</introduction>
-		<!--<section address="offer">
+		<section address="offer">
 			<title>What does Make It Random offer?</title>
 			<content>
 				<para>
-					Make It Random is a fast, flexible, extensible, and feature rich
-					random number generation library for Unity.  It provides classes
-					and functions, accessible from scripts, for generating random
-					data of various sorts, including:
+					Make It Tile is a framework for Unity to aid in the creation
+					and usage of game worlds which are divided up into discrete
+					tiles.  It is designed to be maximally flexible, applying just
+					as easily to the simple 8x8 game world of chess as to a large
+					hex grid in a strategy game or even an irregular arrangment of
+					tiles on the surface of a sphere.  It includes support for:
 				</para>
 				<list class="bullet">
+					<listItem>square, hex, and irregular grids</listItem>
+					<listItem>planar and spherical surfaces</listItem>
+					<listItem>world edge wrap-around</listItem>
+					<listItem>mouse picking</listItem>
+					<listItem>A* path finding</listItem>
+					<listItem>dynamic mesh generation</listItem>
+					<listItem>neighboring tile visitation</listItem>
+					<!--
 					<listItem><codeEntityReference linkText="bits">T:Experilous.MakeItRandom.RandomBits</codeEntityReference></listItem>
 					<listItem><codeEntityReference linkText="integers">T:Experilous.MakeItRandom.RandomInteger</codeEntityReference></listItem>
 					<listItem><codeEntityReference linkText="floating point numbers">T:Experilous.MakeItRandom.RandomFloatingPoint</codeEntityReference></listItem>
@@ -45,11 +55,25 @@
 					<listItem><codeEntityReference linkText="strings">T:Experilous.MakeItRandom.RandomString</codeEntityReference></listItem>
 					<listItem><codeEntityReference linkText="dice rolls">T:Experilous.MakeItRandom.RandomDice</codeEntityReference></listItem>
 					<listItem><codeEntityReference linkText="colors">T:Experilous.MakeItRandom.RandomColor</codeEntityReference> (includes the full Make It Colorful library!)</listItem>
+					-->
 				</list>
 				<para>
-					In addition to simply generating random data, it also includes
-					utilities for the following (with support for non-uniform weights,
-					where applicable):
+					As a bonus, and in support of tiled world generation, Make It Tile includes the full
+					<externalLink>
+						<linkText>Make It Random</linkText>
+						<linkAlternateText>Make It Random Online User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/documentation/html/cb0daf55-236d-4175-aedc-48751c1d0964.htm</linkUri>
+					</externalLink> and
+					<externalLink>
+						<linkText>Make It Colorful</linkText>
+						<linkAlternateText>Make It Random Online User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-colorful/1.0/documentation/html/1c2a6866-2869-4203-a950-4beed65c23c3.htm</linkUri>
+					</externalLink> libraries.
+				</para>
+				<para>
+					In addition to the above features, the framework is very
+					extensible, to support whatever tiling patterns, tile
+					attributes, and algorithms you might need.
 				</para>
 				<list class="bullet">
 					<listItem><codeEntityReference linkText="evaluating probabilities">T:Experilous.MakeItRandom.RandomChance</codeEntityReference></listItem>
@@ -77,7 +101,7 @@
 				</alert>
 			</content>
 		</section>
-		<section address="organized">
+		<!--<section address="organized">
 			<title>How is Make It Random organized?</title>
 			<content>
 				<para>
@@ -187,6 +211,7 @@
 			</content>
 		</section>-->
 		<relatedTopics>
+			<link xlink:href="59aabaa7-214d-462d-a0d0-6463157129d5" /> <!-- Topologies -->
 			<link xlink:href="0c879b33-6cff-4557-98d1-0794eeb719c8" /> <!-- Example Scenes -->
 			<codeEntityReference linkText="API Reference">R:Project_API_Reference</codeEntityReference>
 		</relatedTopics>

@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="59aabaa7-214d-462d-a0d0-6463157129d5" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				The core of the Make It Tile framework is a topology, a data structure
+				for representing the relations between vertices, edges, and faces.
+			</para>
+		</summary>
+		<introduction>
+			<autoOutline />
+		</introduction>
+		<section address="overview">
+			<title>Overview</title>
+			<content>
+				<para>
+					In terms of the primary use case for this framework, faces are
+					typically synonymous with tiles, while vertices are the corners
+					of each tile. Edges are the boundaries between two adjacent
+					faces/tiles, and they can simultaneously be treated as the
+					connections between two adjacent vertices/corners.
+				</para>
+				<para>
+					Below is an example topology for a hexagonal grid.  It consists of 16
+					faces, 48 vertices, and 63 edges (split into 126 half-edge pairs).
+				</para>
+				<mediaLink>
+					<caption placement="after">A topology for a hexagonal grid.</caption>
+					<image placement="center" xlink:href="hex-grid-1"/>
+				</mediaLink>
+				<para>
+					The <codeEntityReference>T:Experilous.MakeItTile.Topology</codeEntityReference>
+					class is responsible for storing all the raw data of the topology
+					data structure.  It provides access to the elements of this data
+					structure through collections of the nested types
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.Vertex</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.Face</codeEntityReference>, and
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.HalfEdge</codeEntityReference>.
+					Edges can also be access through the types
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference> and
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>
+					for special behavior as will be explained below.
+				</para>
+				<para>
+					The majority of faces in a topology will be ordinary <newTerm>internal</newTerm>
+					faces, but depending on the shape and edge-wrapping behavior of the topology,
+					some faces might be external.  This means that they are not really part of the
+					surface described by the topology, but are included to simplify behavior of the
+					data structure along the boundaries of the topology.  In the above hexagonal
+					grid example, there is a single unmarked external face that surrounds the
+					the other faces.
+				</para>
+			</content>
+		</section>
+		<section address="neighbors-and-edges">
+			<title>Neighbors &amp; Edges</title>
+			<content>
+				<para>
+					Edges are the elements of the topology data structure that express
+					<newTerm>neighbor</newTerm> relationships among vertices and faces,
+					as well as among other edges.
+				</para>
+				<mediaLink>
+					<caption placement="after">The neighboring edges of a vertex.</caption>
+					<image placement="center" xlink:href="hex-grid-vertex-neighbors"/>
+				</mediaLink>
+				<para>
+					In the above diagram, a single vertex, 32, has been highlighted in
+					blue.  Around it, three half-edges have been highlighted in red,
+					52, 56, and 84.  These are the neighboring edges of the vertex.
+					It is through these edges that one can observe the relations to
+					other vertices and to the faces around the vertex.
+				</para>
+				<para>
+					For each vertex, only one of its neighboring edges is stored.
+					This is the vertex's <newTerm>first edge</newTerm>.  In the above
+					case, let's assume that egde 52 is the first edge of vertex 32.
+					(It could have been any of the three; nothing prioritizes any
+					edge over any other as being the first.)  The rest of the vertex's
+					neighboring edges can be found by following what is essentially a
+					circular linked list starting from the first edge.  It is guaranteed
+					to proceed clockwise around the vertex, when viewed from above the
+					surface.  Thus, the next edge would by 84, followed by 56.  And
+					56 will just link back to 52 since the list is circular.  To get
+					the first edge for a vertex, you can access the propety
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.Vertex.firstEdge</codeEntityReference>.
+				</para>
+				<para>
+					When using the <codeEntityReference>T:Experilous.MakeItTile.Topology.HalfEdge</codeEntityReference>
+					type, the property <codeEntityReference>P:Experilous.MakeItTile.Topology.HalfEdge.nextAroundVertex</codeEntityReference>
+					can be used to traverse this linked list.  If backwards traversal is needed,
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.HalfEdge.prevAroundVertex</codeEntityReference>
+					is also available, but is a bit slower.  If the <codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference>
+					type is used instead, then visiting the neighboring edges of a vertex is
+					simplified a bit through the properties <codeEntityReference>P:Experilous.MakeItTile.Topology.VertexEdge.next</codeEntityReference>
+					and <codeEntityReference>P:Experilous.MakeItTile.Topology.VertexEdge.prev</codeEntityReference>.
+				</para>
+				<para>
+					Most of the time, you can simplify this process of visiting a vertex's
+					neighboring edges even further by using the property
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.Vertex.edges</codeEntityReference>.
+					This returns an enumerable object of instances of
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference>,
+					ideal for use in a <codeInline>foreach</codeInline> loop.
+				</para>
+				<mediaLink>
+					<caption placement="after">The neighboring edges of a face.</caption>
+					<image placement="center" xlink:href="hex-grid-face-neighbors"/>
+				</mediaLink>
+				<para>
+					Faces behave just like vertices in regard to neighboring edges.
+					The neighboring edges of face 6 above are 36, 37, 38, 39, 40, and 41.  
+					The order of the neighboring edges is clockwise, just as with the
+					neighboring edges of a vertex.  The property
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.Face.firstEdge</codeEntityReference>
+					gives one access to head of the linked list of neighboring faces.  The properties
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.HalfEdge.nextAroundFace</codeEntityReference> and
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.HalfEdge.prevAroundFace</codeEntityReference> are available on the type
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.HalfEdge</codeEntityReference>, and
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.next</codeEntityReference> and
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.prev</codeEntityReference> are the shorthand properties available on the type
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>.
+					Finally, the property 
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.Face.edges</codeEntityReference>
+					returns an enumerable object of instances of
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>,
+					ideal for use in a <codeInline>foreach</codeInline> loop.
+				</para>
+			</content>
+		</section>
+		<section address="edge-relations">
+			<title>Edge Relations</title>
+			<content>
+				<para>
+					To use edges to access further elements of a topology, there are the properties
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.HalfEdge.vertex</codeEntityReference> and
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.HalfEdge.face</codeEntityReference>.
+					These properties access the target objects at the far end of the edge.
+					For vertices, the target is obvious; it is the vertex that the edge's
+					arrow is pointing to, in the diagrams above.  The target face is a bit
+					less intuitive, however.  It is the face immediately adjacent to the
+					half-edge, into which the half-arrow line is extended.
+				</para>
+				<mediaLink>
+					<caption placement="after">The neighboring edges of a vertex.</caption>
+					<image placement="center" xlink:href="hex-grid-vertex-neighbors"/>
+				</mediaLink>
+				<para>
+					Revisiting the diagram with the neighbors of the vertex, we can see
+					that the neighboring vertices are therefore 19, 31, and 33, which are
+					respectively the target vertices of edges 52, 84, and 56. Likewise,
+					the neighboring faces are 9, 8, 14, corresponding to the same edges.
+				</para>
+				<para>
+					For clarity when it is appropriate, <codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference>
+					provides the properties <codeEntityReference>P:Experilous.MakeItTile.Topology.VertexEdge.farVertex</codeEntityReference> and
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.VertexEdge.nearVertex</codeEntityReference>.
+					The former is identical to <codeEntityReference>P:Experilous.MakeItTile.Topology.VertexEdge.vertex</codeEntityReference>,
+					and the latter provides (slightly slower) access to the vertex at the source end of the edge.
+					Similarly, <codeEntityReference>P:Experilous.MakeItTile.Topology.VertexEdge.prevFace</codeEntityReference> is equivalent to
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.VertexEdge.face</codeEntityReference>, and
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.VertexEdge.nextFace</codeEntityReference>
+					provides access to the face on the other side of the edge.  (Note that
+					"prev" and "next" continue to consistently refer to counter-clockwise
+					and clockwise movement around the reference element, vertex 32 in this
+					case.)
+				</para>
+				<mediaLink>
+					<caption placement="after">The neighboring edges of a face.</caption>
+					<image placement="center" xlink:href="hex-grid-face-neighbors"/>
+				</mediaLink>
+				<para>
+					Looking at the neighbors of a face, we can see that the neighboring
+					vertices are 13, 26, 27, 28, 15, and 14, which are respectively the
+					target vertices of edges 36, 37, 38, 39, 40, and 41. Likewise, the
+					neighboring faces are 0, 5, 11, 12, 7, and 1, corresponding to the
+					same edges.
+				</para>
+				<para>
+					As with vertices, the following additional properties are available on the type
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>:
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.farFace</codeEntityReference>,
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.nearFace</codeEntityReference>,
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.nextVertex</codeEntityReference>, and
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.prevVertex</codeEntityReference>.
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.farFace</codeEntityReference> is the same as
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.face</codeEntityReference>,
+					but note that, in a reversal from vertices, it is not
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.prevVertex</codeEntityReference> that is the same as
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.vertex</codeEntityReference>, but
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.FaceEdge.nextVertex</codeEntityReference>.
+					This is simply a necessary artifact of how the geometry of the winding order
+					works out, in order to maintain consistency with clockwise ordering.
+				</para>
+				<para>
+					Finally, edges have the property 
+					<codeEntityReference>P:Experilous.MakeItTile.Topology.HalfEdge.twin</codeEntityReference>,
+					which simply returns the adjacent half-edge pointing in the opposite direction.
+					The twin of edge 38, for example, is 71.  It is through the twin, in fact, that
+					the near vertex and near face can be determined, as well as the previous edge
+					around either the vertex or face, since edges only directly store data regarding
+					the far vertex and face, and the next edges in the clockwise direction.
+				</para>
+			</content>
+		</section>
+		<relatedTopics>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.Vertex</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.Face</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.HalfEdge</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>

@@ -21,7 +21,7 @@ namespace Experilous.MakeItTile
 		/// <param name="surface">The surface descriptor that will provide surface normal information.</param>
 		/// <param name="vertexPositions">The positions of the vertices.</param>
 		/// <returns>The surface normals of the vertices.</returns>
-		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromSurface(Topology.VerticesIndexer vertices, Surface surface, IVertexAttribute<Vector3> vertexPositions)
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromSurface(Topology.VerticesIndexer vertices, ISurface surface, IVertexAttribute<Vector3> vertexPositions)
 		{
 			return CalculateVertexNormalsFromSurface(vertices, surface, vertexPositions, new Vector3[vertices.Count].AsVertexAttribute());
 		}
@@ -34,7 +34,7 @@ namespace Experilous.MakeItTile
 		/// <param name="vertexPositions">The positions of the vertices.</param>
 		/// <param name="vertexNormals">A pre-allocated collection in which the vertex normals will be stored.</param>
 		/// <returns>The surface normals of the vertices.</returns>
-		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromSurface(Topology.VerticesIndexer vertices, Surface surface, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
+		public static IVertexAttribute<Vector3> CalculateVertexNormalsFromSurface(Topology.VerticesIndexer vertices, ISurface surface, IVertexAttribute<Vector3> vertexPositions, IVertexAttribute<Vector3> vertexNormals)
 		{
 			foreach (var vertex in vertices)
 			{

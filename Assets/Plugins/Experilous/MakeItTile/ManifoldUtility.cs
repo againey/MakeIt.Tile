@@ -5,7 +5,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Geometry = Experilous.Numerics.Geometry;
+using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
@@ -269,7 +269,7 @@ namespace Experilous.MakeItTile
 		/// <summary>
 		/// Creates a new topology based on the one provided, subdividing each face into multiple smaller faces, and adding extra vertices and edges accordingly.
 		/// </summary>
-		/// <param name="topology">The original topology to be subdivided.</param>
+		/// <param name="topology">The original topology to be subdivided.  Cannot contain internal faces with neighbor counts of any value other than 3 or 4.</param>
 		/// <param name="vertexPositions">The positions of the original topology's vertices.</param>
 		/// <param name="degree">The degree of subdivision, equivalent to the number of additional vertices that will be added along each original edge.  Must be non-negative, and a value of zero will result in an exact duplicate with no subdivision.</param>
 		/// <param name="interpolator">The function that interpolates between two vertex positions along an edge for determining the positions of new vertices.  Particularly useful for curved surfaces.</param>
@@ -389,5 +389,354 @@ namespace Experilous.MakeItTile
 		{
 			Subdivide(topology, vertexPositions, degree, (Vector3 p0, Vector3 p1, float t) => { return Geometry.LerpUnclamped(p0, p1, t); }, out subdividedTopology, out subdividedVertexPositions);
 		}
+
+		#region Export
+
+		/// <summary>
+		/// Helper class for <see cref="ExportToSVG"/> to define the style used by the resulting SVG file.
+		/// </summary>
+		public class SVGStyle
+		{
+			/// <summary>
+			/// CSS style dictionary for the top-level svg element.
+			/// </summary>
+			public readonly Dictionary<string, string> svg = new Dictionary<string, string>();
+
+			/// <summary>
+			/// CSS style dictionary for any index elements.
+			/// </summary>
+			public readonly Dictionary<string, string> index = new Dictionary<string, string>();
+
+			/// <summary>
+			/// CSS style dictionary for any textual index elements.
+			/// </summary>
+			public readonly Dictionary<string, string> vertexCircle = new Dictionary<string, string>();
+
+			/// <summary>
+			/// CSS style dictionary for the textual vertex index elements.
+			/// </summary>
+			public readonly Dictionary<string, string> vertexIndex = new Dictionary<string, string>();
+
+			/// <summary>
+			/// CSS style dictionary for the edge path elements.
+			/// </summary>
+			public readonly Dictionary<string, string> edgePath = new Dictionary<string, string>();
+
+			/// <summary>
+			/// CSS style dictionary for the textual edge index elements.
+			/// </summary>
+			public readonly Dictionary<string, string> edgeIndex = new Dictionary<string, string>();
+
+			/// <summary>
+			/// CSS style dictionary for the face polygon elements.
+			/// </summary>
+			public readonly Dictionary<string, string> facePolygon = new Dictionary<string, string>();
+
+			/// <summary>
+			/// CSS style dictionary for the textual face index elements.
+			/// </summary>
+			public readonly Dictionary<string, string> faceIndex = new Dictionary<string, string>();
+
+			/// <summary>
+			/// The radius of the circle drawn around vertices.
+			/// </summary>
+			public float vertexCircleRadius = 0.05f;
+
+			/// <summary>
+			/// The inset distance from the outer edge of a face to the polygon that is draw inside a face.
+			/// </summary>
+			public float faceInset = 0.1f;
+
+			/// <summary>
+			/// The distance between the drawn lines of half-edge twins.
+			/// </summary>
+			public float edgeSeparation = 0.025f;
+
+			/// <summary>
+			/// The vector describing the half-arrow drawn at the tip of a half-edge, with the x axis corresponding to the axial length of arrow and the y axis corresponding to the width.
+			/// </summary>
+			public Vector2 edgeArrowOffset = new Vector2(0.035f, 0.025f);
+
+			/// <summary>
+			/// The distance from the drawn half-edge line where its numerical index should be placed.
+			/// </summary>
+			public float edgeIndexOffset = 0.025f;
+
+			/// <summary>
+			/// The amount of padding, in pixels, around the whole manifold.
+			/// </summary>
+			public Vector2 padding = new Vector2(10f, 10f);
+
+			/// <summary>
+			/// Indicates if the numerical face indices should be drawn at the middle of each internal face.
+			/// </summary>
+			public bool showFaceIndices = true;
+
+			/// <summary>
+			/// Indicates if the numerical vertex indices should be drawn inside the circle of each vertex.
+			/// </summary>
+			public bool showVertexIndices = true;
+
+			/// <summary>
+			/// Indicates if the numerical edge indices should be drawn to the side of each half-edge.
+			/// </summary>
+			public bool showEdgeIndices = true;
+
+			/// <summary>
+			/// Constructs a default instance of <see cref="SVGStyle"/>.
+			/// </summary>
+			public SVGStyle()
+			{
+			}
+
+			/// <summary>
+			/// Constructs an instance of <see cref="SVGStyle"/> with the given properties.
+			/// </summary>
+			/// <param name="vertexCircleRadius">The radius of the circle drawn around vertices.</param>
+			/// <param name="faceInset">The inset distance from the outer edge of a face to the polygon that is draw inside a face.</param>
+			/// <param name="edgeSeparation">The distance between the drawn lines of half-edge twins.</param>
+			/// <param name="edgeArrowOffset">The vector describing the half-arrow drawn at the tip of a half-edge.</param>
+			/// <param name="edgeIndexOffset">The distance from the drawn half-edge line where its numerical index should be placed.</param>
+			/// <param name="padding">The amount of padding, in pixels, around the whole manifold.</param>
+			/// <param name="showFaceIndices">Indicates if the numerical face indices should be drawn at the middle of each internal face.</param>
+			/// <param name="showVertexIndices">Indicates if the numerical vertex indices should be drawn inside the circle of each vertex.</param>
+			/// <param name="showEdgeIndices">Indicates if the numerical edge indices should be drawn to the side of each half-edge.</param>
+			public SVGStyle(float vertexCircleRadius, float faceInset, float edgeSeparation, Vector2 edgeArrowOffset, float edgeIndexOffset, Vector2 padding, bool showFaceIndices, bool showVertexIndices, bool showEdgeIndices)
+			{
+				this.vertexCircleRadius = vertexCircleRadius;
+
+				this.faceInset = faceInset;
+
+				this.edgeSeparation = edgeSeparation;
+				this.edgeArrowOffset = edgeArrowOffset;
+				this.edgeIndexOffset = edgeIndexOffset;
+
+				this.padding = padding;
+
+				this.showFaceIndices = showFaceIndices;
+				this.showVertexIndices = showVertexIndices;
+				this.showEdgeIndices = showEdgeIndices;
+			}
+		}
+
+		/// <summary>
+		/// Exports the given manifold to SVG format with the given style, flattening it onto a plane if necessary.
+		/// </summary>
+		/// <param name="writer">The writer to which the SVG-formatted manifold will be written.</param>
+		/// <param name="surface">The surface describing the manifold.</param>
+		/// <param name="topology">The topology of the manifold.</param>
+		/// <param name="orientation">The orientation of the plane to which the manifold will be flattened.</param>
+		/// <param name="scale">The scale which will be applied to the manifold while writing out SVG positions.</param>
+		/// <param name="vertexPositions">The vertex positions of the manifold.</param>
+		/// <param name="numericFormat">The format specifier to use for each number written to <paramref name="writer"/>.</param>
+		/// <param name="style">The style details to apply to the SVG content.</param>
+		public static void ExportToSVG(System.IO.TextWriter writer, ISurface surface, Topology topology, Quaternion orientation, Vector3 scale, IVertexAttribute<Vector3> vertexPositions, string numericFormat, SVGStyle style)
+		{
+			var inverseOrientation = Quaternion.Inverse(orientation);
+
+			var plane = new Plane(orientation * Vector3.back, 0f);
+
+			var transform = Matrix4x4.TRS(Vector3.zero, inverseOrientation, scale);
+
+			Vector2 transformedVertexDotRadius = new Vector2(style.vertexCircleRadius * transform.m00, style.vertexCircleRadius * transform.m11);
+
+			Func<Vector3, Vector2> flatten = (Vector3 point) => transform * plane.ClosestPoint(point);
+
+			Vector2 min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+			Vector2 max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+			foreach (var vertex in topology.vertices)
+			{
+				var p = flatten(vertexPositions[vertex]);
+				min = Geometry.AxisAlignedMin(min, p);
+				max = Geometry.AxisAlignedMax(max, p);
+			}
+
+			var range = max - min;
+
+			flatten = (Vector3 point) =>
+			{
+				Vector2 p = transform * plane.ClosestPoint(point);
+				p.y = max.y - p.y + min.y;
+				return p;
+			};
+
+			writer.WriteLine("<svg viewBox=\"{0} {1} {2} {3}\" xmlns=\"http://www.w3.org/2000/svg\">",
+				(min.x - style.padding.x).ToString(numericFormat), (min.y - style.padding.y).ToString(numericFormat),
+				(range.x + style.padding.x * 2f).ToString(numericFormat), (range.y + style.padding.y * 2f).ToString(numericFormat));
+
+			writer.WriteLine("\t<style>");
+
+			writer.WriteLine("\t\tsvg");
+			writer.WriteLine("\t\t{");
+			if (!style.svg.ContainsKey("width")) writer.WriteLine("\t\t\twidth: 100%;");
+			if (!style.svg.ContainsKey("height")) writer.WriteLine("\t\t\theight: 100%;");
+			foreach (var keyValue in style.svg)
+			{
+				writer.WriteLine("\t\t\t{0}: {1};", keyValue.Key, keyValue.Value);
+			}
+			writer.WriteLine("\t\t}");
+
+			writer.WriteLine("\t\ttext.index");
+			writer.WriteLine("\t\t{");
+			foreach (var keyValue in style.index)
+			{
+				writer.WriteLine("\t\t\t{0}: {1};", keyValue.Key, keyValue.Value);
+			}
+			writer.WriteLine("\t\t}");
+
+			writer.WriteLine("\t\tellipse.vertex");
+			writer.WriteLine("\t\t{");
+			if (!style.vertexCircle.ContainsKey("stroke")) writer.WriteLine("\t\t\tstroke: black;");
+			if (!style.vertexCircle.ContainsKey("stroke-width")) writer.WriteLine("\t\t\tstroke-width: 1;");
+			if (!style.vertexCircle.ContainsKey("fill")) writer.WriteLine("\t\t\tfill: none;");
+			foreach (var keyValue in style.vertexCircle)
+			{
+				writer.WriteLine("\t\t\t{0}: {1};", keyValue.Key, keyValue.Value);
+			}
+			writer.WriteLine("\t\t}");
+
+			writer.WriteLine("\t\ttext.vertex.index");
+			writer.WriteLine("\t\t{");
+			if (!style.vertexIndex.ContainsKey("fill")) writer.WriteLine("\t\t\tfill: black;");
+			if (!style.vertexIndex.ContainsKey("font-size")) writer.WriteLine("\t\t\tfont-size: {0:F0}px;", transformedVertexDotRadius.x);
+			if (!style.vertexIndex.ContainsKey("text-anchor")) writer.WriteLine("\t\t\ttext-anchor: middle;");
+			if (!style.vertexIndex.ContainsKey("dominant-baseline")) writer.WriteLine("\t\t\tdominant-baseline: central;");
+			foreach (var keyValue in style.vertexIndex)
+			{
+				writer.WriteLine("\t\t\t{0}: {1};", keyValue.Key, keyValue.Value);
+			}
+			writer.WriteLine("\t\t}");
+
+			writer.WriteLine("\t\tpolygon.face");
+			writer.WriteLine("\t\t{");
+			if (!style.facePolygon.ContainsKey("fill")) writer.WriteLine("\t\t\tfill: #CCC;");
+			if (!style.facePolygon.ContainsKey("stroke")) writer.WriteLine("\t\t\tstroke: none;");
+			foreach (var keyValue in style.facePolygon)
+			{
+				writer.WriteLine("\t\t\t{0}: {1};", keyValue.Key, keyValue.Value);
+			}
+			writer.WriteLine("\t\t}");
+
+			writer.WriteLine("\t\ttext.face.index");
+			writer.WriteLine("\t\t{");
+			if (!style.faceIndex.ContainsKey("fill")) writer.WriteLine("\t\t\tfill: black;");
+			if (!style.faceIndex.ContainsKey("font-size")) writer.WriteLine("\t\t\tfont-size: {0:F0}px;", transformedVertexDotRadius.x * 2f);
+			if (!style.faceIndex.ContainsKey("text-anchor")) writer.WriteLine("\t\t\ttext-anchor: middle;");
+			if (!style.faceIndex.ContainsKey("dominant-baseline")) writer.WriteLine("\t\t\tdominant-baseline: central;");
+			foreach (var keyValue in style.faceIndex)
+			{
+				writer.WriteLine("\t\t\t{0}: {1};", keyValue.Key, keyValue.Value);
+			}
+			writer.WriteLine("\t\t}");
+
+			writer.WriteLine("\t\tpolyline.edge");
+			writer.WriteLine("\t\t{");
+			if (!style.edgePath.ContainsKey("stroke")) writer.WriteLine("\t\t\tstroke: black;");
+			if (!style.edgePath.ContainsKey("stroke-width")) writer.WriteLine("\t\t\tstroke-width: 1;");
+			if (!style.edgePath.ContainsKey("stroke-linecap")) writer.WriteLine("\t\t\tstroke-linecap: square;");
+			if (!style.edgePath.ContainsKey("stroke-linejoin")) writer.WriteLine("\t\t\tstroke-linejoin: miter;");
+			if (!style.edgePath.ContainsKey("fill")) writer.WriteLine("\t\t\tfill: none;");
+			foreach (var keyValue in style.edgePath)
+			{
+				writer.WriteLine("\t\t\t{0}: {1};", keyValue.Key, keyValue.Value);
+			}
+			writer.WriteLine("\t\t}");
+
+			writer.WriteLine("\t\ttext.edge.index");
+			writer.WriteLine("\t\t{");
+			if (!style.edgeIndex.ContainsKey("fill")) writer.WriteLine("\t\t\tfill: black;");
+			if (!style.edgeIndex.ContainsKey("font-size")) writer.WriteLine("\t\t\tfont-size: {0:F0}px;", style.edgeIndexOffset * Mathf.Sqrt(transform.m00 * transform.m11));
+			if (!style.edgeIndex.ContainsKey("text-anchor")) writer.WriteLine("\t\t\ttext-anchor: middle;");
+			if (!style.edgeIndex.ContainsKey("dominant-baseline")) writer.WriteLine("\t\t\tdominant-baseline: central;");
+			foreach (var keyValue in style.edgeIndex)
+			{
+				writer.WriteLine("\t\t\t{0}: {1};", keyValue.Key, keyValue.Value);
+			}
+			writer.WriteLine("\t\t}");
+
+			writer.WriteLine("\t</style>");
+
+			var facePointFormat = string.Format("{{0:{0}}},{{1:{0}}}", numericFormat);
+			var faceIndexFormat = string.Format("\t<text class=\"face index\" x=\"{{0:{0}}}\" y=\"{{1:{0}}}\">{{2}}</text>", numericFormat);
+			var arrowFormat = string.Format("\t<polyline class=\"edge\" points=\"{{0:{0}}},{{1:{0}}} {{2:{0}}},{{3:{0}}} {{4:{0}}},{{5:{0}}}\" />", numericFormat);
+			var edgeIndexFormat = string.Format("\t<text class=\"edge index\" x=\"{{0:{0}}}\" y=\"{{1:{0}}}\">{{2}}</text>", numericFormat);
+			var vertexFormat = string.Format("\t<ellipse class=\"vertex\" cx=\"{{0:{0}}}\" cy=\"{{1:{0}}}\" rx=\"{{2:{0}}}\" ry=\"{{3:{0}}}\" />", numericFormat);
+			var vertexIndexFormat = string.Format("\t<text class=\"vertex index\" x=\"{{0:{0}}}\" y=\"{{1:{0}}}\">{{2}}</text>", numericFormat);
+
+			var centroids = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
+			var bisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(topology.internalFaces, surface, vertexPositions, centroids);
+
+			writer.WriteLine();
+			writer.WriteLine("\t<!-- Faces -->");
+
+			foreach (var face in topology.internalFaces)
+			{
+				writer.Write("\t<polygon class=\"face\" points=\"");
+				foreach (var edge in face.edges)
+				{
+					if (edge != face.firstEdge) writer.Write(" ");
+					var p = flatten(vertexPositions[edge] + bisectors[edge] * style.faceInset);
+					writer.Write(facePointFormat, p.x, p.y);
+				}
+				writer.WriteLine("\" />");
+
+				if (style.showFaceIndices)
+				{
+					var p = flatten(centroids[face]);
+					writer.WriteLine(faceIndexFormat, p.x, p.y, face.index);
+				}
+			}
+
+			writer.WriteLine();
+			writer.WriteLine("\t<!-- Edges -->");
+
+			foreach (var face in topology.faces)
+			{
+				foreach (var edge in face.edges)
+				{
+					var p0 = vertexPositions[edge.prev];
+					var p1 = vertexPositions[edge];
+					var n0 = surface.GetNormal(p0);
+					var n1 = surface.GetNormal(p1);
+					var edgeDirection = (p1 - p0).normalized;
+					var edgeNormal0 = (n0 + n1).normalized;
+					var edgeNormal1 = Vector3.Cross(edgeDirection, edgeNormal0);
+
+					var offset0 = edgeDirection * (style.vertexCircleRadius + style.edgeSeparation);
+					var offset1 = edgeNormal1 * style.edgeSeparation * 0.5f;
+					var offset2 = -edgeDirection * style.edgeArrowOffset.x + edgeNormal1 * style.edgeArrowOffset.y;
+
+					Vector2 arrow0 = flatten(p0 + offset0 + offset1);
+					Vector2 arrow1 = flatten(p1 - offset0 + offset1);
+					Vector2 arrow2 = flatten(p1 - offset0 + offset1 + offset2);
+
+					writer.WriteLine(arrowFormat, arrow0.x, arrow0.y, arrow1.x, arrow1.y, arrow2.x, arrow2.y);
+
+					if (style.showEdgeIndices)
+					{
+						var edgeCenter = flatten((p0 + p1) * 0.5f + edgeNormal1 * (style.edgeSeparation * 0.5f + style.edgeIndexOffset));
+						writer.WriteLine(edgeIndexFormat, edgeCenter.x, edgeCenter.y, edge.index);
+					}
+				}
+			}
+
+			writer.WriteLine();
+			writer.WriteLine("\t<!-- Vertices -->");
+
+			foreach (var vertex in topology.vertices)
+			{
+				var p = flatten(vertexPositions[vertex]);
+				writer.WriteLine(vertexFormat, p.x, p.y, transformedVertexDotRadius.x, transformedVertexDotRadius.y);
+
+				if (style.showVertexIndices)
+				{
+					writer.WriteLine(vertexIndexFormat, p.x, p.y, vertex.index);
+				}
+			}
+
+			writer.WriteLine("</svg>");
+		}
+
+		#endregion
 	}
 }
