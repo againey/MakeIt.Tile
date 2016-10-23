@@ -1097,7 +1097,7 @@ namespace Experilous.MakeItTile
 			/// <summary>
 			/// An empty face edge wrapper that does not reference any topology or edge.
 			/// </summary>
-			public static VertexEdge none { get { return new VertexEdge(); } }
+			public static FaceEdge none { get { return new FaceEdge(); } }
 
 			/// <summary>
 			/// The topology to which the current face belongs.
@@ -1232,7 +1232,7 @@ namespace Experilous.MakeItTile
 			/// <summary>
 			/// A vertex edge wrapper around the same underlying edge as the current face edge.
 			/// </summary>
-			public VertexEdge faceEdge { get { return _halfEdge; } }
+			public VertexEdge vertexEdge { get { return _halfEdge; } }
 
 			#endregion
 
