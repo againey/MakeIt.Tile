@@ -519,6 +519,44 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		private static void ExportEdgeToSVG(System.IO.TextWriter writer, ISurface surface, Topology.FaceEdge edge, Topology.FaceEdge nearVertexFaceEdge, Topology.FaceEdge farVertexFaceEdge, Func<Vector3, Vector2> flatten, IVertexAttribute<Vector3> vertexPositions, string arrowFormat, string edgeIndexFormat, SVGStyle style, string additionalClasses)
+		{
+			var p0 = vertexPositions[nearVertexFaceEdge];
+			var p1 = vertexPositions[farVertexFaceEdge];
+			var n0 = surface.GetNormal(p0);
+			var n1 = surface.GetNormal(p1);
+			var edgeDirection = (p1 - p0).normalized;
+			var edgeNormal0 = (n0 + n1).normalized;
+			var edgeNormal1 = Vector3.Cross(edgeDirection, edgeNormal0);
+
+			var offset0 = edgeDirection * (style.vertexCircleRadius + style.edgeSeparation);
+			var offset1 = edgeNormal1 * style.edgeSeparation * 0.5f;
+			var offset2 = -edgeDirection * style.edgeArrowOffset.x + edgeNormal1 * style.edgeArrowOffset.y;
+
+			Vector2 arrow0 = flatten(p0 + offset0 + offset1);
+			Vector2 arrow1 = flatten(p1 - offset0 + offset1);
+			Vector2 arrow2 = flatten(p1 - offset0 + offset1 + offset2);
+
+			writer.WriteLine(arrowFormat, arrow0.x, arrow0.y, arrow1.x, arrow1.y, arrow2.x, arrow2.y, additionalClasses);
+
+			if (style.showEdgeIndices)
+			{
+				var edgeCenter = flatten((p0 + p1) * 0.5f + edgeNormal1 * (style.edgeSeparation * 0.5f + style.edgeIndexOffset));
+				writer.WriteLine(edgeIndexFormat, edgeCenter.x, edgeCenter.y, edge.index, additionalClasses);
+			}
+		}
+
+		private static void ExportVertexToSVG(System.IO.TextWriter writer, Topology.Vertex vertex, Topology.FaceEdge edge, Func<Vector3, Vector2> flatten, IVertexAttribute<Vector3> vertexPositions, Vector2 transformedVertexDotRadius, string vertexFormat, string vertexIndexFormat, SVGStyle style, string additionalClasses)
+		{
+			var p = flatten(vertexPositions[edge]);
+			writer.WriteLine(vertexFormat, p.x, p.y, transformedVertexDotRadius.x, transformedVertexDotRadius.y, additionalClasses);
+
+			if (style.showVertexIndices)
+			{
+				writer.WriteLine(vertexIndexFormat, p.x, p.y, vertex.index, additionalClasses);
+			}
+		}
+
 		/// <summary>
 		/// Exports the given manifold to SVG format with the given style, flattening it onto a plane if necessary.
 		/// </summary>
@@ -544,11 +582,14 @@ namespace Experilous.MakeItTile
 
 			Vector2 min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
 			Vector2 max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
-			foreach (var vertex in topology.vertices)
+			foreach (var face in topology.faces)
 			{
-				var p = flatten(vertexPositions[vertex]);
-				min = Geometry.AxisAlignedMin(min, p);
-				max = Geometry.AxisAlignedMax(max, p);
+				foreach (var edge in face.edges)
+				{
+					var p = flatten(vertexPositions[edge]);
+					min = Geometry.AxisAlignedMin(min, p);
+					max = Geometry.AxisAlignedMax(max, p);
+				}
 			}
 
 			var range = max - min;
@@ -658,10 +699,10 @@ namespace Experilous.MakeItTile
 
 			var facePointFormat = string.Format("{{0:{0}}},{{1:{0}}}", numericFormat);
 			var faceIndexFormat = string.Format("\t<text class=\"face index\" x=\"{{0:{0}}}\" y=\"{{1:{0}}}\">{{2}}</text>", numericFormat);
-			var arrowFormat = string.Format("\t<polyline class=\"edge\" points=\"{{0:{0}}},{{1:{0}}} {{2:{0}}},{{3:{0}}} {{4:{0}}},{{5:{0}}}\" />", numericFormat);
-			var edgeIndexFormat = string.Format("\t<text class=\"edge index\" x=\"{{0:{0}}}\" y=\"{{1:{0}}}\">{{2}}</text>", numericFormat);
-			var vertexFormat = string.Format("\t<ellipse class=\"vertex\" cx=\"{{0:{0}}}\" cy=\"{{1:{0}}}\" rx=\"{{2:{0}}}\" ry=\"{{3:{0}}}\" />", numericFormat);
-			var vertexIndexFormat = string.Format("\t<text class=\"vertex index\" x=\"{{0:{0}}}\" y=\"{{1:{0}}}\">{{2}}</text>", numericFormat);
+			var arrowFormat = string.Format("\t<polyline class=\"edge{{6}}\" points=\"{{0:{0}}},{{1:{0}}} {{2:{0}}},{{3:{0}}} {{4:{0}}},{{5:{0}}}\" />", numericFormat);
+			var edgeIndexFormat = string.Format("\t<text class=\"edge index{{3}}\" x=\"{{0:{0}}}\" y=\"{{1:{0}}}\">{{2}}</text>", numericFormat);
+			var vertexFormat = string.Format("\t<ellipse class=\"vertex{{4}}\" cx=\"{{0:{0}}}\" cy=\"{{1:{0}}}\" rx=\"{{2:{0}}}\" ry=\"{{3:{0}}}\" />", numericFormat);
+			var vertexIndexFormat = string.Format("\t<text class=\"vertex index{{3}}\" x=\"{{0:{0}}}\" y=\"{{1:{0}}}\">{{2}}</text>", numericFormat);
 
 			var centroids = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 			var bisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(topology.internalFaces, surface, vertexPositions, centroids);
@@ -694,28 +735,10 @@ namespace Experilous.MakeItTile
 			{
 				foreach (var edge in face.edges)
 				{
-					var p0 = vertexPositions[edge.prev];
-					var p1 = vertexPositions[edge];
-					var n0 = surface.GetNormal(p0);
-					var n1 = surface.GetNormal(p1);
-					var edgeDirection = (p1 - p0).normalized;
-					var edgeNormal0 = (n0 + n1).normalized;
-					var edgeNormal1 = Vector3.Cross(edgeDirection, edgeNormal0);
-
-					var offset0 = edgeDirection * (style.vertexCircleRadius + style.edgeSeparation);
-					var offset1 = edgeNormal1 * style.edgeSeparation * 0.5f;
-					var offset2 = -edgeDirection * style.edgeArrowOffset.x + edgeNormal1 * style.edgeArrowOffset.y;
-
-					Vector2 arrow0 = flatten(p0 + offset0 + offset1);
-					Vector2 arrow1 = flatten(p1 - offset0 + offset1);
-					Vector2 arrow2 = flatten(p1 - offset0 + offset1 + offset2);
-
-					writer.WriteLine(arrowFormat, arrow0.x, arrow0.y, arrow1.x, arrow1.y, arrow2.x, arrow2.y);
-
-					if (style.showEdgeIndices)
+					ExportEdgeToSVG(writer, surface, edge, edge.prev, edge, flatten, vertexPositions, arrowFormat, edgeIndexFormat, style, " not-wrapped");
+					if ((edge.wrap & EdgeWrap.FaceToFace) != EdgeWrap.None)
 					{
-						var edgeCenter = flatten((p0 + p1) * 0.5f + edgeNormal1 * (style.edgeSeparation * 0.5f + style.edgeIndexOffset));
-						writer.WriteLine(edgeIndexFormat, edgeCenter.x, edgeCenter.y, edge.index);
+						ExportEdgeToSVG(writer, surface, edge, edge.twin, edge.twin.vertexEdge.next.twin.faceEdge, flatten, vertexPositions, arrowFormat, edgeIndexFormat, style, " wrapped");
 					}
 				}
 			}
@@ -725,12 +748,46 @@ namespace Experilous.MakeItTile
 
 			foreach (var vertex in topology.vertices)
 			{
-				var p = flatten(vertexPositions[vertex]);
-				writer.WriteLine(vertexFormat, p.x, p.y, transformedVertexDotRadius.x, transformedVertexDotRadius.y);
-
-				if (style.showVertexIndices)
+				bool neitherAxis = false;
+				bool axis0 = false;
+				bool axis1 = false;
+				bool bothAxes = false;
+				foreach (var edge in vertex.edges)
 				{
-					writer.WriteLine(vertexIndexFormat, p.x, p.y, vertex.index);
+					var faceEdge = edge.twin.faceEdge;
+					var wrap = faceEdge.wrap & EdgeWrap.FaceToVert;
+					if (EdgeWrapUtility.WrapsOnNeitherAxis(wrap))
+					{
+						if (!neitherAxis)
+						{
+							neitherAxis = true;
+							ExportVertexToSVG(writer, vertex, faceEdge, flatten, vertexPositions, transformedVertexDotRadius, vertexFormat, vertexIndexFormat, style, " wrapped-neither");
+						}
+					}
+					else if (EdgeWrapUtility.WrapsOnOnlyAxis0(wrap))
+					{
+						if (!axis0)
+						{
+							axis0 = true;
+							ExportVertexToSVG(writer, vertex, faceEdge, flatten, vertexPositions, transformedVertexDotRadius, vertexFormat, vertexIndexFormat, style, " wrapped-axis-0");
+						}
+					}
+					else if (EdgeWrapUtility.WrapsOnOnlyAxis1(wrap))
+					{
+						if (!axis1)
+						{
+							axis1 = true;
+							ExportVertexToSVG(writer, vertex, faceEdge, flatten, vertexPositions, transformedVertexDotRadius, vertexFormat, vertexIndexFormat, style, " wrapped-axis-1");
+						}
+					}
+					else
+					{
+						if (!bothAxes)
+						{
+							bothAxes = true;
+							ExportVertexToSVG(writer, vertex, faceEdge, flatten, vertexPositions, transformedVertexDotRadius, vertexFormat, vertexIndexFormat, style, " wrapped-both");
+						}
+					}
 				}
 			}
 

@@ -149,6 +149,36 @@ namespace Experilous.MakeItTile
 				ShiftAxis1AsAxis0(edgeWrap) & EdgeWrap.Axis0;
 		}
 
+		public static bool WrapsOnAxis0(EdgeWrap edgeWrap)
+		{
+			return (edgeWrap & EdgeWrap.Axis0) != EdgeWrap.None;
+		}
+
+		public static bool WrapsOnAxis1(EdgeWrap edgeWrap)
+		{
+			return (edgeWrap & EdgeWrap.Axis1) != EdgeWrap.None;
+		}
+
+		public static bool WrapsOnOnlyAxis0(EdgeWrap edgeWrap)
+		{
+			return (edgeWrap & EdgeWrap.Axis0) != EdgeWrap.None && (edgeWrap & EdgeWrap.Axis1) == EdgeWrap.None;
+		}
+
+		public static bool WrapsOnOnlyAxis1(EdgeWrap edgeWrap)
+		{
+			return (edgeWrap & EdgeWrap.Axis1) != EdgeWrap.None && (edgeWrap & EdgeWrap.Axis0) == EdgeWrap.None;
+		}
+
+		public static bool WrapsOnBothAxes(EdgeWrap edgeWrap)
+		{
+			return (edgeWrap & EdgeWrap.Axis1) != EdgeWrap.None && (edgeWrap & EdgeWrap.Axis0) != EdgeWrap.None;
+		}
+
+		public static bool WrapsOnNeitherAxis(EdgeWrap edgeWrap)
+		{
+			return edgeWrap == EdgeWrap.None;
+		}
+
 		/// <summary>
 		/// Extracts the direction and axis data for the vertex-to-vertex relations from the edge wrap data and converts it to the reduced <see cref="Generic"/> enumeration.
 		/// </summary>
