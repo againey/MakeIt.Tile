@@ -226,6 +226,10 @@ copy /Y /B "archive.php" "Build\archive.php"</PostBuildEvent>
     <None Include="Content - Surface Manifolds.aml" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="square-grid-wrapped.png">
+      <ImageId>square-grid-wrapped</ImageId>
+      <AlternateText>square-grid-wrapped</AlternateText>
+    </Image>
     <Image Include="hex-grid-axis-style.png">
       <ImageId>hex-grid-axis-style</ImageId>
       <AlternateText>hex-grid-axis-style</AlternateText>
