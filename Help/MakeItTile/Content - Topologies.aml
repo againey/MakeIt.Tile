@@ -203,6 +203,55 @@
 				</para>
 			</content>
 		</section>
+		<section address="outer-edges">
+			<title>Outer Edges</title>
+			<content>
+				<para>
+					The properties <codeEntityReference linkText="Vertex.edges">P:Experilous.MakeItTile.Topology.Vertex.edges</codeEntityReference>
+					and <codeEntityReference linkText="Face.edges">P:Experilous.MakeItTile.Topology.Face.edges</codeEntityReference>
+					serve to provide access to neighboring vertices and faces that are
+					immediately connected to the source vertex or face through a single
+					edge.  Sometimes the concept of adjacency needs to expand out a
+					little further, however.  A very common case is with square grids
+					for which squares in diagonal directions are considered adjacent.
+					The above two properties will only enumerate the four neighbors
+					that share an edge with a vertex or face.
+				</para>
+				<para>
+					The properties <codeEntityReference linkText="Vertex.outerEdges">P:Experilous.MakeItTile.Topology.Vertex.outerEdges</codeEntityReference>
+					and <codeEntityReference linkText="Face.outerEdges">P:Experilous.MakeItTile.Topology.Face.outerEdges</codeEntityReference>
+					enable you to enumerate neighbors in such a way that diagonal
+					connections are included.  Below you can see the difference
+					between the normal set of neighboring edges, in blue, and the
+					larger set of outer edges, in red.
+				</para>
+				<mediaLink>
+					<caption placement="after">Neighbor edges in blue, and outer edges in red, for a vertex on left, and face on right.</caption>
+					<image placement="center" xlink:href="square-grid-outer-edges"/>
+				</mediaLink>
+				<para>
+					The left diagram shows the edges and outer edges of vertex 5.
+					If the far vertex of each ordinary edge is accessed, you can see
+					that the immediate neighbors of vertex 5 are vertices 1, 4, 9,
+					and 6.  Looking at the far vertices of the outer edges, the
+					neighboring vertices become 0, 4, 8, 9, 10, 6, 2, and 1, so the
+					four diagonal vertices are included with the first four.  In
+					essence, these are the vertices that share at least one face with
+					the source vertex, even if they do not share an edge.
+				</para>
+				<para>
+					Likewise, the diagram on the right shows the edges and outer edges
+					of face 4.  It is a little harder to follow, but you can see that
+					the four ordinary neighboring edges 16, 17, 18, and 19 face outward
+					toward the direct neighboring faces 1, 3, 7, and 5.  But the outer
+					edges 3, 12, 24, 29, 33, 22, 10, and 7 face outward toward faces
+					1, 0, 3, 6, 7, 8, 5, and 2.  Just as with vertices, all eight
+					neighboring faces are included.  And again, in essence, these are
+					the faces that share at least one vertex with the source face,
+					even if they do not share an edge.
+				</para>
+			</content>
+		</section>
 		<relatedTopics>
 			<codeEntityReference>T:Experilous.MakeItTile.Topology</codeEntityReference>
 			<codeEntityReference>T:Experilous.MakeItTile.Topology.Vertex</codeEntityReference>

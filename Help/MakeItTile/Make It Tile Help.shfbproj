@@ -230,6 +230,10 @@ copy /Y /B "archive.php" "Build\archive.php"</PostBuildEvent>
     <None Include="Content - Topology Traversal.aml" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="square-grid-outer-edges.png">
+      <ImageId>square-grid-outer-edges</ImageId>
+      <AlternateText>square-grid-outer-edges</AlternateText>
+    </Image>
     <Image Include="square-grid-wrapped.png">
       <ImageId>square-grid-wrapped</ImageId>
       <AlternateText>square-grid-wrapped</AlternateText>
