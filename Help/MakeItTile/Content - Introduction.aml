@@ -65,13 +65,6 @@
 					extensible, to support whatever tiling patterns, tile
 					attributes, and algorithms you might need.
 				</para>
-				<list class="bullet">
-					<listItem><codeEntityReference linkText="evaluating probabilities">T:Experilous.MakeItRandom.RandomChance</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="selecting elements from a list">T:Experilous.MakeItRandom.RandomListAccess</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="selecting values from an enumeration">T:Experilous.MakeItRandom.RandomEnum</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="selecting values from the set {-1, 0, +1}">T:Experilous.MakeItRandom.RandomSignOrZero</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="shuffling a list">T:Experilous.MakeItRandom.RandomShuffle</codeEntityReference></listItem>
-				</list>
 			</content>
 		</section>
 		<section address="organized">
