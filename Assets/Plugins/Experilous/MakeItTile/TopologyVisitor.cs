@@ -1418,48 +1418,48 @@ namespace Experilous.MakeItTile
 
 		#endregion
 
-		#region Shortest Distance Visitation
+		#region Shortest Distance First Visitation
 
 		#region Distance Comparisons
 
 		#region Vertices
 
-		private static bool AreOrderedByShortestDistance(VertexVisitor<int>.QueueItem lhs, VertexVisitor<int>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(VertexVisitor<int>.QueueItem lhs, VertexVisitor<int>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(VertexEdgeVisitor<int>.QueueItem lhs, VertexEdgeVisitor<int>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(VertexEdgeVisitor<int>.QueueItem lhs, VertexEdgeVisitor<int>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(VertexVisitor<uint>.QueueItem lhs, VertexVisitor<uint>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(VertexVisitor<uint>.QueueItem lhs, VertexVisitor<uint>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(VertexEdgeVisitor<uint>.QueueItem lhs, VertexEdgeVisitor<uint>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(VertexEdgeVisitor<uint>.QueueItem lhs, VertexEdgeVisitor<uint>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(VertexVisitor<float>.QueueItem lhs, VertexVisitor<float>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(VertexVisitor<float>.QueueItem lhs, VertexVisitor<float>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(VertexEdgeVisitor<float>.QueueItem lhs, VertexEdgeVisitor<float>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(VertexEdgeVisitor<float>.QueueItem lhs, VertexEdgeVisitor<float>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(VertexVisitor<double>.QueueItem lhs, VertexVisitor<double>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(VertexVisitor<double>.QueueItem lhs, VertexVisitor<double>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(VertexEdgeVisitor<double>.QueueItem lhs, VertexEdgeVisitor<double>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(VertexEdgeVisitor<double>.QueueItem lhs, VertexEdgeVisitor<double>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
@@ -1468,42 +1468,42 @@ namespace Experilous.MakeItTile
 
 		#region Faces
 
-		private static bool AreOrderedByShortestDistance(FaceVisitor<int>.QueueItem lhs, FaceVisitor<int>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<int>.QueueItem lhs, FaceVisitor<int>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(FaceEdgeVisitor<int>.QueueItem lhs, FaceEdgeVisitor<int>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(FaceEdgeVisitor<int>.QueueItem lhs, FaceEdgeVisitor<int>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(FaceVisitor<uint>.QueueItem lhs, FaceVisitor<uint>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<uint>.QueueItem lhs, FaceVisitor<uint>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(FaceEdgeVisitor<uint>.QueueItem lhs, FaceEdgeVisitor<uint>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(FaceEdgeVisitor<uint>.QueueItem lhs, FaceEdgeVisitor<uint>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(FaceVisitor<float>.QueueItem lhs, FaceVisitor<float>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<float>.QueueItem lhs, FaceVisitor<float>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(FaceEdgeVisitor<float>.QueueItem lhs, FaceEdgeVisitor<float>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(FaceEdgeVisitor<float>.QueueItem lhs, FaceEdgeVisitor<float>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(FaceVisitor<double>.QueueItem lhs, FaceVisitor<double>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<double>.QueueItem lhs, FaceVisitor<double>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
 
-		private static bool AreOrderedByShortestDistance(FaceEdgeVisitor<double>.QueueItem lhs, FaceEdgeVisitor<double>.QueueItem rhs)
+		private static bool AreOrderedByShortestDistanceFirst(FaceEdgeVisitor<double>.QueueItem lhs, FaceEdgeVisitor<double>.QueueItem rhs)
 		{
 			return lhs.distance <= rhs.distance;
 		}
@@ -1523,9 +1523,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1535,9 +1535,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1549,9 +1549,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1563,9 +1563,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1575,9 +1575,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1587,9 +1587,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1601,9 +1601,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1615,9 +1615,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -1631,9 +1631,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1643,9 +1643,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1657,9 +1657,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1671,9 +1671,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1683,9 +1683,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1695,9 +1695,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1709,9 +1709,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1723,9 +1723,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -1739,9 +1739,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1751,9 +1751,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1765,9 +1765,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1779,9 +1779,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1791,9 +1791,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1803,9 +1803,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1817,9 +1817,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1831,9 +1831,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -1847,9 +1847,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1859,9 +1859,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1873,9 +1873,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1887,9 +1887,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1899,9 +1899,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1911,9 +1911,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInShortestDistanceFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1925,9 +1925,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1939,9 +1939,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInShortestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -1959,9 +1959,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1971,9 +1971,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -1985,9 +1985,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -1999,9 +1999,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2011,9 +2011,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2023,9 +2023,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2037,9 +2037,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2051,9 +2051,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -2067,9 +2067,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2079,9 +2079,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2093,9 +2093,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2107,9 +2107,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2119,9 +2119,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2131,9 +2131,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2145,9 +2145,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2159,9 +2159,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -2175,9 +2175,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2187,9 +2187,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2201,9 +2201,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2215,9 +2215,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2227,9 +2227,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2239,9 +2239,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2253,9 +2253,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2267,9 +2267,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -2283,9 +2283,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2295,9 +2295,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2309,9 +2309,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2323,9 +2323,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2335,9 +2335,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2347,9 +2347,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitFacesInShortestDistanceFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2361,9 +2361,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2375,9 +2375,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInShortestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInShortestDistanceFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistance), visitDelegate, state);
+			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -2386,48 +2386,48 @@ namespace Experilous.MakeItTile
 
 		#endregion
 
-		#region Longest Distance Visitation
+		#region Longest Distance First Visitation
 
 		#region Distance Comparisons
 
 		#region Vertices
 
-		private static bool AreOrderedByLongestDistance(VertexVisitor<int>.QueueItem lhs, VertexVisitor<int>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(VertexVisitor<int>.QueueItem lhs, VertexVisitor<int>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(VertexEdgeVisitor<int>.QueueItem lhs, VertexEdgeVisitor<int>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(VertexEdgeVisitor<int>.QueueItem lhs, VertexEdgeVisitor<int>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(VertexVisitor<uint>.QueueItem lhs, VertexVisitor<uint>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(VertexVisitor<uint>.QueueItem lhs, VertexVisitor<uint>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(VertexEdgeVisitor<uint>.QueueItem lhs, VertexEdgeVisitor<uint>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(VertexEdgeVisitor<uint>.QueueItem lhs, VertexEdgeVisitor<uint>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(VertexVisitor<float>.QueueItem lhs, VertexVisitor<float>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(VertexVisitor<float>.QueueItem lhs, VertexVisitor<float>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(VertexEdgeVisitor<float>.QueueItem lhs, VertexEdgeVisitor<float>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(VertexEdgeVisitor<float>.QueueItem lhs, VertexEdgeVisitor<float>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(VertexVisitor<double>.QueueItem lhs, VertexVisitor<double>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(VertexVisitor<double>.QueueItem lhs, VertexVisitor<double>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(VertexEdgeVisitor<double>.QueueItem lhs, VertexEdgeVisitor<double>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(VertexEdgeVisitor<double>.QueueItem lhs, VertexEdgeVisitor<double>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
@@ -2436,42 +2436,42 @@ namespace Experilous.MakeItTile
 
 		#region Faces
 
-		private static bool AreOrderedByLongestDistance(FaceVisitor<int>.QueueItem lhs, FaceVisitor<int>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<int>.QueueItem lhs, FaceVisitor<int>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(FaceEdgeVisitor<int>.QueueItem lhs, FaceEdgeVisitor<int>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(FaceEdgeVisitor<int>.QueueItem lhs, FaceEdgeVisitor<int>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(FaceVisitor<uint>.QueueItem lhs, FaceVisitor<uint>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<uint>.QueueItem lhs, FaceVisitor<uint>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(FaceEdgeVisitor<uint>.QueueItem lhs, FaceEdgeVisitor<uint>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(FaceEdgeVisitor<uint>.QueueItem lhs, FaceEdgeVisitor<uint>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(FaceVisitor<float>.QueueItem lhs, FaceVisitor<float>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<float>.QueueItem lhs, FaceVisitor<float>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(FaceEdgeVisitor<float>.QueueItem lhs, FaceEdgeVisitor<float>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(FaceEdgeVisitor<float>.QueueItem lhs, FaceEdgeVisitor<float>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(FaceVisitor<double>.QueueItem lhs, FaceVisitor<double>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<double>.QueueItem lhs, FaceVisitor<double>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
 
-		private static bool AreOrderedByLongestDistance(FaceEdgeVisitor<double>.QueueItem lhs, FaceEdgeVisitor<double>.QueueItem rhs)
+		private static bool AreOrderedByLongestDistanceFirst(FaceEdgeVisitor<double>.QueueItem lhs, FaceEdgeVisitor<double>.QueueItem rhs)
 		{
 			return lhs.distance >= rhs.distance;
 		}
@@ -2491,9 +2491,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2503,9 +2503,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2517,9 +2517,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexVisitor<int>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2531,9 +2531,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexVisitor<int>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2543,9 +2543,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2555,9 +2555,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2569,9 +2569,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2583,9 +2583,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -2599,9 +2599,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2611,9 +2611,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2625,9 +2625,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexVisitor<uint>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2639,9 +2639,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexVisitor<uint>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2651,9 +2651,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2663,9 +2663,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2677,9 +2677,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2691,9 +2691,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -2707,9 +2707,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2719,9 +2719,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2733,9 +2733,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexVisitor<float>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2747,9 +2747,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexVisitor<float>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2759,9 +2759,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2771,9 +2771,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2785,9 +2785,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2799,9 +2799,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -2815,9 +2815,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2827,9 +2827,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each vertex that is visited.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2841,9 +2841,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(Topology.Vertex rootVertex, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexVisitor<double>.Visit(rootVertex, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2855,9 +2855,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.Vertex> rootVertices, VertexVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexVisitor<double>.Visit(rootVertices, new DelegateOrderedPriorityQueue<VertexVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2867,9 +2867,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2879,9 +2879,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitVerticesInLongestDistanceFirstOrder(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2893,9 +2893,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(Topology.VertexEdge rootEdge, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2907,9 +2907,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="VertexEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitVerticesInLongestDistanceOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitVerticesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.VertexEdge> rootEdges, VertexEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -2927,9 +2927,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2939,9 +2939,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2953,9 +2953,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceVisitor<int>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2967,9 +2967,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceVisitor<int>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -2979,9 +2979,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -2991,9 +2991,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3005,9 +3005,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceEdgeVisitor<int>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3019,9 +3019,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<int>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -3035,9 +3035,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3047,9 +3047,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3061,9 +3061,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceVisitor<uint>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3075,9 +3075,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceVisitor<uint>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3087,9 +3087,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3099,9 +3099,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3113,9 +3113,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceEdgeVisitor<uint>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3127,9 +3127,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<uint>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -3143,9 +3143,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3155,9 +3155,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3169,9 +3169,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceVisitor<float>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3183,9 +3183,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceVisitor<float>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3195,9 +3195,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3207,9 +3207,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3221,9 +3221,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceEdgeVisitor<float>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3235,9 +3235,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<float>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
@@ -3251,9 +3251,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3263,9 +3263,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3277,9 +3277,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceVisitor<double>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3291,9 +3291,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceVisitor<double>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3303,9 +3303,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3315,9 +3315,9 @@ namespace Experilous.MakeItTile
 		/// <param name="visitDelegate">The delegate that will be called for each edge that is visited.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
+		public static void VisitFacesInLongestDistanceFirstOrder(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate visitDelegate)
 		{
-			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate);
+			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -3329,9 +3329,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(Topology.FaceEdge rootEdge, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceEdgeVisitor<double>.Visit(rootEdge, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -3343,9 +3343,9 @@ namespace Experilous.MakeItTile
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceEdgeVisitor{TDistance}"/>
 		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInLongestDistanceOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFacesInLongestDistanceFirstOrder<TState>(IEnumerable<Topology.FaceEdge> rootEdges, FaceEdgeVisitor<double>.VisitDelegate<TState> visitDelegate, TState state)
 		{
-			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistance), visitDelegate, state);
+			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
 		#endregion
