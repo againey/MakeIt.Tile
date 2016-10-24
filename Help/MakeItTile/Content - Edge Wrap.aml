@@ -7,11 +7,7 @@
 				edges of a world can be built.
 			</para>
 		</summary>
-		<introduction>
-			<autoOutline />
-		</introduction>
-		<section address="overview">
-			<title>Overview</title>
+		<section>
 			<content>
 				<para>
 					Many games, turn based strategy and role playing games in particular,
@@ -26,13 +22,6 @@
 					in most cases, this data allows the library to do the expected right
 					thing automatically.
 				</para>
-				<para>
-				</para>
-			</content>
-		</section>
-		<section address="data">
-			<title>Edge Wrap Data</title>
-			<content>
 				<para>
 					One of the difficulties of topologies that wrap is that certain elements
 					can seem to be in multiple places at once.  For example, in the diagram
