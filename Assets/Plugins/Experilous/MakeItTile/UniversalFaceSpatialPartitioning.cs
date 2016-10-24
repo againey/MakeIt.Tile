@@ -13,7 +13,7 @@ namespace Experilous.MakeItTile
 	/// ownership or intersection of points or rays can be performed efficiently, typically
 	/// in O(log(n)) time where n is the number of edges in the manifold.
 	/// </summary>
-	public class UniversalFaceSpatialPartitioning : ScriptableObject, IFaceSpatialPartioning
+	public class UniversalFaceSpatialPartitioning : ScriptableObject, IFaceSpatialPartitioning
 	{
 		[Serializable] private struct Partition
 		{

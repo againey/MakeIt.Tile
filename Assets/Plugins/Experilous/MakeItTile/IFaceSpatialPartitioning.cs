@@ -10,7 +10,7 @@ namespace Experilous.MakeItTile
 	/// <summary>
 	/// Interface for identifying the face of a manifold to which points belong, and for performing ray picking against a manifold to find the face that was hit by the ray.
 	/// </summary>
-	public interface IFaceSpatialPartioning
+	public interface IFaceSpatialPartitioning
 	{
 		/// <summary>
 		/// Finds the face to which the given point belongs.
