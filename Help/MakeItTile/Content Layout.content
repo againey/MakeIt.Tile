@@ -5,7 +5,8 @@
   <Topic id="bc568936-a4aa-4131-b42f-048b55134185" visible="True" title="Topology Attributes" />
   <Topic id="c0bb2b58-ff6e-4be1-8d35-a74636aaf262" visible="True" title="Surface Manifolds" />
   <Topic id="685165ae-969e-47cf-a277-4b2d54d169d4" visible="True" title="Edge Wrap" />
-  <Topic id="8c9c513b-f20d-41b0-af60-1b11cd048497" visible="True" isSelected="true" title="Dynamic Mesh" />
+  <Topic id="8c9c513b-f20d-41b0-af60-1b11cd048497" visible="True" title="Dynamic Mesh" />
+  <Topic id="10082986-fc31-4c23-9faf-fe19ff871ac5" visible="True" isSelected="true" />
   <Topic id="0c879b33-6cff-4557-98d1-0794eeb719c8" visible="True" title="Example Scenes" />
   <Topic id="4005b8fd-1388-4363-b826-6e79cbce3cef" visible="True" apiParentMode="InsertAfter" title="Third Party Licenses" />
 </Topics>
