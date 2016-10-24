@@ -149,31 +149,61 @@ namespace Experilous.MakeItTile
 				ShiftAxis1AsAxis0(edgeWrap) & EdgeWrap.Axis0;
 		}
 
+		/// <summary>
+		/// Determines if the given edge wrap data includes any wrapping along axis 0, whether positive or negative.
+		/// </summary>
+		/// <param name="edgeWrap">The edge wrap data to examine.</param>
+		/// <returns>True if the edge wrap data includes any wrapping along axis 0 in either direction, and false if it does not.</returns>
 		public static bool WrapsOnAxis0(EdgeWrap edgeWrap)
 		{
 			return (edgeWrap & EdgeWrap.Axis0) != EdgeWrap.None;
 		}
 
+		/// <summary>
+		/// Determines if the given edge wrap data includes any wrapping along axis 1, whether positive or negative.
+		/// </summary>
+		/// <param name="edgeWrap">The edge wrap data to examine.</param>
+		/// <returns>True if the edge wrap data includes any wrapping along axis 1 in either direction, and false if it does not.</returns>
 		public static bool WrapsOnAxis1(EdgeWrap edgeWrap)
 		{
 			return (edgeWrap & EdgeWrap.Axis1) != EdgeWrap.None;
 		}
 
+		/// <summary>
+		/// Determines if the given edge wrap data includes any wrapping along axis 0, whether positive or negative, and no wrapping at all on axis 1.
+		/// </summary>
+		/// <param name="edgeWrap">The edge wrap data to examine.</param>
+		/// <returns>True if the edge wrap data includes any wrapping along axis 0 in either direction and none on axis 1, and false otherwise.</returns>
 		public static bool WrapsOnOnlyAxis0(EdgeWrap edgeWrap)
 		{
 			return (edgeWrap & EdgeWrap.Axis0) != EdgeWrap.None && (edgeWrap & EdgeWrap.Axis1) == EdgeWrap.None;
 		}
 
+		/// <summary>
+		/// Determines if the given edge wrap data includes any wrapping along axis 1, whether positive or negative, and no wrapping at all on axis 0.
+		/// </summary>
+		/// <param name="edgeWrap">The edge wrap data to examine.</param>
+		/// <returns>True if the edge wrap data includes any wrapping along axis 1 in either direction and none on axis 0, and false otherwise.</returns>
 		public static bool WrapsOnOnlyAxis1(EdgeWrap edgeWrap)
 		{
 			return (edgeWrap & EdgeWrap.Axis1) != EdgeWrap.None && (edgeWrap & EdgeWrap.Axis0) == EdgeWrap.None;
 		}
 
+		/// <summary>
+		/// Determines if the given edge wrap data includes any wrapping along both axis 0 and axis 1, whether positive or negative.
+		/// </summary>
+		/// <param name="edgeWrap">The edge wrap data to examine.</param>
+		/// <returns>True if the edge wrap data includes any wrapping along both axes in either direction, and false if it does not.</returns>
 		public static bool WrapsOnBothAxes(EdgeWrap edgeWrap)
 		{
 			return (edgeWrap & EdgeWrap.Axis1) != EdgeWrap.None && (edgeWrap & EdgeWrap.Axis0) != EdgeWrap.None;
 		}
 
+		/// <summary>
+		/// Determines if the given edge wrap data includes no wrapping along either axis 0 and axis 1.
+		/// </summary>
+		/// <param name="edgeWrap">The edge wrap data to examine.</param>
+		/// <returns>True if the edge wrap data includes no wrapping along either axis in either direction, and false if it does.</returns>
 		public static bool WrapsOnNeitherAxis(EdgeWrap edgeWrap)
 		{
 			return edgeWrap == EdgeWrap.None;
