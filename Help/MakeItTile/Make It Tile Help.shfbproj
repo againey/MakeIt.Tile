@@ -224,6 +224,7 @@ copy /Y /B "archive.php" "Build\archive.php"</PostBuildEvent>
     <None Include="Content - Topology Attributes.aml" />
     <None Include="Content - Edge Wrap.aml" />
     <None Include="Content - Surface Manifolds.aml" />
+    <None Include="Content - Dynamic Mesh.aml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="square-grid-wrapped.png">
