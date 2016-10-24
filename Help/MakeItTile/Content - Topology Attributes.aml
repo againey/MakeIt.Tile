@@ -15,10 +15,10 @@
 			<content>
 				<para>
 					There are many different kinds of information that could be associated
-					with a topology, depending on the needs of the software.  Elevation,
-					terrain type, a list of units, movement costs, surface normals, and
-					more.  Attribute collections allow you to store whatever data you need
-					and access it easily using the topology element types
+					with a topology, depending on the needs of your game or application.
+					Elevation, terrain type, a list of units, movement costs, surface normals,
+					and more.  Attribute collections allow you to store whatever data you
+					need and access it easily using the topology element types
 					<codeEntityReference>T:Experilous.MakeItTile.Topology.Vertex</codeEntityReference>,
 					<codeEntityReference>T:Experilous.MakeItTile.Topology.Face</codeEntityReference>, and the three edge types
 					<codeEntityReference>T:Experilous.MakeItTile.Topology.HalfEdge</codeEntityReference>,

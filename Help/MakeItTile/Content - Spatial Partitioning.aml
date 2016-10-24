@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="085fb9ef-bacc-43a6-8f64-ec0fc464eac4" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+			</para>
+		</summary>
+		<section>
+			<content>
+				<para>
+				</para>
+			</content>
+		</section>
+		<relatedTopics>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>

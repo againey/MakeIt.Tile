@@ -46,16 +46,6 @@
 					<listItem>A* path finding</listItem>
 					<listItem>dynamic mesh generation</listItem>
 					<listItem>neighboring tile visitation</listItem>
-					<!--
-					<listItem><codeEntityReference linkText="bits">T:Experilous.MakeItRandom.RandomBits</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="integers">T:Experilous.MakeItRandom.RandomInteger</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="floating point numbers">T:Experilous.MakeItRandom.RandomFloatingPoint</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="angles">T:Experilous.MakeItRandom.RandomAngle</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="vectors and quaternions">T:Experilous.MakeItRandom.RandomGeometry</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="strings">T:Experilous.MakeItRandom.RandomString</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="dice rolls">T:Experilous.MakeItRandom.RandomDice</codeEntityReference></listItem>
-					<listItem><codeEntityReference linkText="colors">T:Experilous.MakeItRandom.RandomColor</codeEntityReference> (includes the full Make It Colorful library!)</listItem>
-					-->
 				</list>
 				<para>
 					As a bonus, and in support of tiled world generation, Make It Tile includes the full
@@ -82,136 +72,84 @@
 					<listItem><codeEntityReference linkText="selecting values from the set {-1, 0, +1}">T:Experilous.MakeItRandom.RandomSignOrZero</codeEntityReference></listItem>
 					<listItem><codeEntityReference linkText="shuffling a list">T:Experilous.MakeItRandom.RandomShuffle</codeEntityReference></listItem>
 				</list>
+			</content>
+		</section>
+		<section address="organized">
+			<title>How is Make It Tile organized?</title>
+			<content>
+				<para>
+					The core of the Make It Tile framework is a <link xlink:href="59aabaa7-214d-462d-a0d0-6463157129d5" linkText="topology" />,
+					a data structure for representing the relations between vertices,
+					edges, and faces.  In terms of the primary use case for this
+					framework, faces are typically synonymous with tiles, while
+					vertices are the corners of each tile. Edges are the boundaries
+					between two adjacent faces/tiles, and they can simultaneously be
+					treated as the connections between two adjacent vertices/corners.
+				</para>
+				<para>
+					On top of this foundational data structure, <link xlink:href="bc568936-a4aa-4131-b42f-048b55134185" linkText="topology element attributes" />
+					enable any kind of data to be associated with the individual vertices,
+					edges, and faces of a topology.  There are many different kinds of
+					information that could be associated with a topology, depending on the
+					needs of your game or application.  Elevation, terrain type, a list of
+					units, movement costs, surface normals, and more.
+				</para>
+				<para>
+					<link xlink:href="c0bb2b58-ff6e-4be1-8d35-a74636aaf262" linkText="Surface manifolds" />
+					are an extension of the topology concept, embedding a topology onto
+					a two-dimensional surface within three-dimensional space.  Make It
+					Tile supports spherical and planar surfaces, constructible with a
+					variety of tiling patterns, including subdivisions of the five
+					Platonic solids for spherical surfaces, and highly flexible
+					quadrilateral and hexagonal tiles for planar surfaces.  Surfaces are
+					typically the first thing you construct, and which is then used to
+					build the full topology data structure and additional attributes
+					such as vertex positions.
+				</para>
+				<para>
+					Further utilities are provided such as the
+					<link xlink:href="8c9c513b-f20d-41b0-af60-1b11cd048497" linkText="dynamic mesh" />
+					for generating renderable meshes of the tiled surfaces,
+					<link xlink:href="085fb9ef-bacc-43a6-8f64-ec0fc464eac4" linkText="spatial partitioning" />
+					data structures for quickly looking up elements of a topology nearest a point or intersected by a ray, a
+					<link xlink:href="e013769f-feee-4a74-9898-7011318c1034#path-finding" linkText="path finder" />
+					utilizing the A* path finding algorithm, a variety of
+					<link xlink:href="e013769f-feee-4a74-9898-7011318c1034#topology-visitation" linkText="graph visitation methods" />
+					for iterating over the elements of a topology in particular orders, utilities for calculating additional common
+					<link xlink:href="bc568936-a4aa-4131-b42f-048b55134185" linkText="topology attributes" />,
+					and tools to
+					<link xlink:href="10082986-fc31-4c23-9faf-fe19ff871ac5" linkText="mutate and randomize" />
+					the shapes and arrangements of tiles in a topology.
+				</para>
 				<alert type="note">
 					<para>
-						A basic version of Make It Random is available if you only need
-						the core generation features. Documentation can be found online
-						<externalLink>
-							<linkText>here</linkText>
-							<linkAlternateText>Make It Random Basic Online User's Manual at experilous.com</linkAlternateText>
-							<linkUri>http://experilous.com/1/product/make-it-random-basic/1.0/documentation/html/cb0daf55-236d-4175-aedc-48751c1d0964.htm</linkUri>
-						</externalLink>,
-						and the library can be acquired on the
-						<externalLink>
-							<linkText>Unity Asset Store</linkText>
-							<linkAlternateText>Make It Random Basic on the Unity Asset Store</linkAlternateText>
-							<linkUri>https://www.assetstore.unity3d.com/#!/content/72589</linkUri>
-						</externalLink>.
+						The Make It Tile library is located within the
+						<codeEntityReference qualifyHint="true">N:Experilous.MakeItTile</codeEntityReference>
+						namespace, with supporting libraries and supplemental utilities in
+						<codeEntityReference qualifyHint="true">N:Experilous.Core</codeEntityReference>,
+						<codeEntityReference qualifyHint="true">N:Experilous.Numerics</codeEntityReference>,
+						<codeEntityReference qualifyHint="true">N:Experilous.Containers</codeEntityReference>,
+						<codeEntityReference qualifyHint="true">N:Experilous.MakeItRandom</codeEntityReference>, and
+						<codeEntityReference qualifyHint="true">N:Experilous.MakeItColorful</codeEntityReference>.
+						Be sure to put the appropriate <codeInline>using</codeInline> directives at the
+						top of your scripts, or explicitly qualify type names within your code.  For namespaces
+						that contain types which might cause name ambiguities with types in Unity or third party
+						assets, consider using <codeInline>using</codeInline> aliases for just the types you
+						need, rather than pulling in an entire namespace, as in the following example:
 					</para>
+					<code><![CDATA[using IntVector2 = Experilous.Numerics.IntVector2;]]></code>
 				</alert>
 			</content>
 		</section>
-		<!--<section address="organized">
-			<title>How is Make It Random organized?</title>
-			<content>
-				<para>
-					The foundation of Make It Random is the concept of a
-					<link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#global-instance">Random Engine</link>,
-					an object providing the basic services of a pseudo-random number
-					generator (PRGN), responsible for generating a deterministic
-					sequence of seemingly random bits initialized by a seed value.
-					Unlike <codeEntityReference qualifyHint="true">T:UnityEngine.Random</codeEntityReference>, Make It Random
-					engines are standard non-static classes which can be passed around,
-					copied, and serialized.  Multiple instances can exist simultaneously
-					and independently, making it easier to control deterministic behavior
-					when it is needed.  (A <link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#global-instance">static global instance</link>
-					does exist for convenience, however.)
-				</para>
-				<para>
-					On top of random engines, a wide variety of extension methods
-					are available for using the random bits they generate to produce
-					all of the more structured and complex data typically required
-					by games.  Because they are extension methods which apply to the
-					<codeEntityReference qualifyHint="true">T:Experilous.MakeItRandom.IRandom</codeEntityReference>
-					interface which all Make It Random engines implement, it is easy
-					to add further extension methods that will immediately become
-					usable by any random engine type.  Similarly, if for some reason
-					none of the <link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#implementations">random engines</link>
-					supplied by Make It Random are suitable and you need to create your own,
-					just make sure it implements <codeEntityReference qualifyHint="false">T:Experilous.MakeItRandom.IRandom</codeEntityReference>
-					and your new engine will automatically support all of the already existing utilities.
-					(See <link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#making-your-own">Making Your Own Random Engine</link> for more information.)
-				</para>
-			</content>
-		</section>
-		<section address="using">
-			<title>Using Make It Random</title>
-			<content>
-				<para>
-					The first step in using Make It Random is to select a
-					<link xlink:href="fd2aa55f-9f2f-4c52-bc28-69bf962dc386#implementations">random engine</link>
-					and create an instance of it.  <codeEntityReference>T:Experilous.MakeItRandom.XorShift128Plus</codeEntityReference>
-					is recommended as an excellent default choice.  A simple call to
-					<codeEntityReference>M:Experilous.MakeItRandom.XorShift128Plus.Create</codeEntityReference> will return
-					a fully initialized instance, already randomized based on the
-					system time and other dynamic factors.
-				</para>
-				<para>
-					Using that created instance, you can now call any of the numerous
-					extension methods, depending on your needs.  Here are some examples:
-				</para>
-				<code language="C#" title="Make It Random Usage Examples">
-					<![CDATA[
-						// Initialize random engine
-						var random = XorShift128Plus.Create();
-						
-						// Generate an integer where 1 <= n <= 10
-						int num1to10 = random.RangeCC(1, 10);
-						
-						// Generate a number where 0 <= n < 1
-						float num0to1 = random.FloatCO();
-						
-						// Flip a coin
-						bool heads = random.Chance();
-						
-						// Check a 3 in 10 probability
-						bool criticalHit = random.Probability(3, 10);
-						
-						// Generate an angle in degrees where -90 < n < +90
-						float angleNeg90toPos90 = random.SignedHalfAngleDegOO();
-						
-						// Generate +1, -1, or 0 where +1 is twice as likely as -1, and 0 is rare
-						int numPNZ = random.SignOrZero(200, 100, 1);
-						
-						// Roll 43 20-sided dice
-						int[] diceRolls = random.RollDice(43, 20);
-						
-						// Roll 5 4-sided dice and just keep the sum
-						int diceRollSum = random.SumRollDice(5, 4);
-						
-						// Shuffle the array of earlier dice rolls
-						random.Shuffle(diceRolls);
-						
-						// Select a random die roll from the array
-						int dieRoll = random.Element(diceRolls);
-						
-						// Select index where higher die rolls are more likely to be picked
-						int dieRollIndex = random.WeightedIndex(diceRolls);
-						
-						// Generate a random 3D unit vector
-						Vector3 direction = random.UnitVector3();
-						
-						// Generate a position within a cirle of radius = 5
-						Vector2 point = random.PointWithinCircle(5f);
-						
-						// Generate a 32-character string with only alpha-numeric characters.
-						string str = random.AlphaNumericString(32);
-						
-						// Make a generator which will produce random font styles.
-						var fontStyleGen = random.MakeEnumGenerator<UnityEngine.FontStyles>();
-						// Generate a font style
-						var style = fontStyleGen.Next();
-						
-						// Pick a random color from the HCY color space
-						var color = random.ColorHCY();
-						// Alter the color's hue randomly by no more than 1/10.
-						color = random.HueShift(color, 0.1f);
-					]]>
-				</code>
-			</content>
-		</section>-->
 		<relatedTopics>
 			<link xlink:href="59aabaa7-214d-462d-a0d0-6463157129d5" /> <!-- Topologies -->
+			<link xlink:href="bc568936-a4aa-4131-b42f-048b55134185" /> <!-- Topology Attributes -->
+			<link xlink:href="c0bb2b58-ff6e-4be1-8d35-a74636aaf262" /> <!-- Surface Manifolds -->
+			<link xlink:href="685165ae-969e-47cf-a277-4b2d54d169d4" /> <!-- Edge Wrap -->
+			<link xlink:href="8c9c513b-f20d-41b0-af60-1b11cd048497" /> <!-- Dynamic Mesh -->
+			<link xlink:href="10082986-fc31-4c23-9faf-fe19ff871ac5" /> <!-- Topology Mutation -->
+			<link xlink:href="085fb9ef-bacc-43a6-8f64-ec0fc464eac4" /> <!-- Spatial Partitioning -->
+			<link xlink:href="e013769f-feee-4a74-9898-7011318c1034" /> <!-- Topology Traversal -->
 			<link xlink:href="0c879b33-6cff-4557-98d1-0794eeb719c8" /> <!-- Example Scenes -->
 			<codeEntityReference linkText="API Reference">R:Project_API_Reference</codeEntityReference>
 		</relatedTopics>
