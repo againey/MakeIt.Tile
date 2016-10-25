@@ -79,91 +79,93 @@
     <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Core" isExposed="True">
-  <Filter entryType="Class" fullName="Experilous.Core.GameObjectHierarchy" filterName="GameObjectHierarchy" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.Core.LabelAttribute" filterName="LabelAttribute" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.Core.RenderTargetFileSaver" filterName="RenderTargetFileSaver" isExposed="False" />
-</Filter>
-<Filter entryType="Namespace" fullName="Experilous.Examples.MakeItColorful" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Examples.MakeItRandom" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Examples.MakeItTile" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Examples.MakeItWrap" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Examples.Shared" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.Internal" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.MakeItColorful.Detail" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.MakeItGenerate" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.MakeItRandom.Detail" isExposed="False" />
-<Filter entryType="Namespace" fullName="Experilous.MakeItTile" isExposed="True">
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceCentroidsGenerator" filterName="FaceCentroidsGenerator" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceCentroidsGeneratorEditor" filterName="FaceCentroidsGeneratorEditor" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceColorsGenerator" filterName="FaceColorsGenerator" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.FaceColorsGenerator.ColorSource" filterName="FaceColorsGenerator.ColorSource" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceColorsGeneratorEditor" filterName="FaceColorsGeneratorEditor" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceEdgeBisectorsGenerator" filterName="FaceEdgeBisectorsGenerator" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceEdgeColorsGenerator" filterName="FaceEdgeColorsGenerator" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.FaceEdgeColorsGenerator.ColorSource" filterName="FaceEdgeColorsGenerator.ColorSource" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceEdgeColorsGeneratorEditor" filterName="FaceEdgeColorsGeneratorEditor" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceEdgeOffsetVertexPositionsGenerator" filterName="FaceEdgeOffsetVertexPositionsGenerator" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceNormalsGenerator" filterName="FaceNormalsGenerator" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.FaceNormalsGenerator.CalculationMethod" filterName="FaceNormalsGenerator.CalculationMethod" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceSpatialPartitioningGenerator" filterName="FaceSpatialPartitioningGenerator" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.MeshGenerator" filterName="MeshGenerator" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.MeshGenerator.SourceType" filterName="MeshGenerator.SourceType" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.MeshGenerator.Triangulation" filterName="MeshGenerator.Triangulation" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.MeshGeneratorEditor" filterName="MeshGeneratorEditor" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.PlanarManifoldGenerator" filterName="PlanarManifoldGenerator" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.HexGridAxisOptions" filterName="PlanarManifoldGenerator.HexGridAxisOptions" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.HexGridAxisStyleOptions" filterName="PlanarManifoldGenerator.HexGridAxisStyleOptions" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.HexTileShapes" filterName="PlanarManifoldGenerator.HexTileShapes" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.HorizontalAxisOptions" filterName="PlanarManifoldGenerator.HorizontalAxisOptions" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.NormalOptions" filterName="PlanarManifoldGenerator.NormalOptions" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.PlanarTileShapes" filterName="PlanarManifoldGenerator.PlanarTileShapes" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.QuadTileShapes" filterName="PlanarManifoldGenerator.QuadTileShapes" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.TileTypes" filterName="PlanarManifoldGenerator.TileTypes" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.VerticalAxisOptions" filterName="PlanarManifoldGenerator.VerticalAxisOptions" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.WrapOptions" filterName="PlanarManifoldGenerator.WrapOptions" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.PlanarManifoldGeneratorEditor" filterName="PlanarManifoldGeneratorEditor" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGeneratorEditor.HexShapeOptions" filterName="PlanarManifoldGeneratorEditor.HexShapeOptions" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGeneratorEditor.RestrictedVerticalAxisOptions" filterName="PlanarManifoldGeneratorEditor.RestrictedVerticalAxisOptions" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.PrefabGenerator" filterName="PrefabGenerator" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.RandomFaceGroupsGenerator" filterName="RandomFaceGroupsGenerator" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.RectangularFaceGroupsGenerator" filterName="RectangularFaceGroupsGenerator" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.SphericalManifoldGenerator" filterName="SphericalManifoldGenerator" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.SphericalManifoldGenerator.SphericalPolyhedrons" filterName="SphericalManifoldGenerator.SphericalPolyhedrons" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.TopologyGeneratorCollection" filterName="TopologyGeneratorCollection" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.TopologyRandomizerGenerator" filterName="TopologyRandomizerGenerator" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.TopologyRandomizerGeneratorEditor" filterName="TopologyRandomizerGeneratorEditor" isExposed="False" />
-  <Filter entryType="Class" fullName="Experilous.MakeItTile.VertexNormalsGenerator" filterName="VertexNormalsGenerator" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.VertexNormalsGenerator.CalculationMethod" filterName="VertexNormalsGenerator.CalculationMethod" isExposed="False" />
-</Filter>
-<Filter entryType="Namespace" fullName="Experilous.MakeItWrap" isExposed="False" />
-<Filter entryType="Namespace" fullName="UnityEditor" isExposed="True">
-  <Filter entryType="Class" fullName="UnityEditor.Editor" filterName="Editor" isExposed="False" />
-  <Filter entryType="Class" fullName="UnityEditor.EditorWindow" filterName="EditorWindow" isExposed="False" />
-  <Filter entryType="Class" fullName="UnityEditor.PropertyDrawer" filterName="PropertyDrawer" isExposed="False" />
-</Filter>
-<Filter entryType="Namespace" fullName="UnityEngine" isExposed="True">
-  <Filter entryType="Class" fullName="UnityEngine.Behaviour" filterName="Behaviour" isExposed="False" />
-  <Filter entryType="Class" fullName="UnityEngine.Component" filterName="Component" isExposed="False" />
-  <Filter entryType="Class" fullName="UnityEngine.MonoBehaviour" filterName="MonoBehaviour" isExposed="False" />
-  <Filter entryType="Class" fullName="UnityEngine.Object" filterName="Object" isExposed="False" />
-  <Filter entryType="Class" fullName="UnityEngine.ScriptableObject" filterName="ScriptableObject" isExposed="False" />
-</Filter>
-<Filter entryType="Namespace" fullName="UnityEngine.Events" isExposed="True">
-  <Filter entryType="Class" fullName="UnityEngine.Events.UnityEvent`2" filterName="UnityEvent`2" isExposed="False" />
-  <Filter entryType="Class" fullName="UnityEngine.Events.UnityEventBase" filterName="UnityEventBase" isExposed="False" />
-</Filter></ApiFilter>
+      <Filter entryType="Namespace" fullName="Experilous" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.Core" isExposed="True">
+        <Filter entryType="Class" fullName="Experilous.Core.GameObjectHierarchy" filterName="GameObjectHierarchy" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.Core.LabelAttribute" filterName="LabelAttribute" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.Core.RenderTargetFileSaver" filterName="RenderTargetFileSaver" isExposed="False" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="Experilous.Examples.MakeItColorful" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.Examples.MakeItRandom" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.Examples.MakeItTile" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.Examples.MakeItWrap" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.Examples.Shared" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.Internal" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.MakeItColorful.Detail" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.MakeItGenerate" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.MakeItRandom.Detail" isExposed="False" />
+      <Filter entryType="Namespace" fullName="Experilous.MakeItTile" isExposed="True">
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceCentroidsGenerator" filterName="FaceCentroidsGenerator" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceCentroidsGeneratorEditor" filterName="FaceCentroidsGeneratorEditor" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceColorsGenerator" filterName="FaceColorsGenerator" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.FaceColorsGenerator.ColorSource" filterName="FaceColorsGenerator.ColorSource" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceColorsGeneratorEditor" filterName="FaceColorsGeneratorEditor" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceEdgeBisectorsGenerator" filterName="FaceEdgeBisectorsGenerator" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceEdgeColorsGenerator" filterName="FaceEdgeColorsGenerator" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.FaceEdgeColorsGenerator.ColorSource" filterName="FaceEdgeColorsGenerator.ColorSource" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceEdgeColorsGeneratorEditor" filterName="FaceEdgeColorsGeneratorEditor" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceEdgeOffsetVertexPositionsGenerator" filterName="FaceEdgeOffsetVertexPositionsGenerator" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceNormalsGenerator" filterName="FaceNormalsGenerator" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.FaceNormalsGenerator.CalculationMethod" filterName="FaceNormalsGenerator.CalculationMethod" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.FaceSpatialPartitioningGenerator" filterName="FaceSpatialPartitioningGenerator" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.MeshGenerator" filterName="MeshGenerator" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.MeshGenerator.SourceType" filterName="MeshGenerator.SourceType" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.MeshGenerator.Triangulation" filterName="MeshGenerator.Triangulation" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.MeshGeneratorEditor" filterName="MeshGeneratorEditor" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.PlanarManifoldGenerator" filterName="PlanarManifoldGenerator" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.HexGridAxisOptions" filterName="PlanarManifoldGenerator.HexGridAxisOptions" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.HexGridAxisStyleOptions" filterName="PlanarManifoldGenerator.HexGridAxisStyleOptions" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.HexTileShapes" filterName="PlanarManifoldGenerator.HexTileShapes" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.HorizontalAxisOptions" filterName="PlanarManifoldGenerator.HorizontalAxisOptions" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.NormalOptions" filterName="PlanarManifoldGenerator.NormalOptions" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.PlanarTileShapes" filterName="PlanarManifoldGenerator.PlanarTileShapes" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.QuadTileShapes" filterName="PlanarManifoldGenerator.QuadTileShapes" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.TileTypes" filterName="PlanarManifoldGenerator.TileTypes" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.VerticalAxisOptions" filterName="PlanarManifoldGenerator.VerticalAxisOptions" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGenerator.WrapOptions" filterName="PlanarManifoldGenerator.WrapOptions" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.PlanarManifoldGeneratorEditor" filterName="PlanarManifoldGeneratorEditor" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGeneratorEditor.HexShapeOptions" filterName="PlanarManifoldGeneratorEditor.HexShapeOptions" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.PlanarManifoldGeneratorEditor.RestrictedVerticalAxisOptions" filterName="PlanarManifoldGeneratorEditor.RestrictedVerticalAxisOptions" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.PrefabGenerator" filterName="PrefabGenerator" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.RandomFaceGroupsGenerator" filterName="RandomFaceGroupsGenerator" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.RectangularFaceGroupsGenerator" filterName="RectangularFaceGroupsGenerator" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.SphericalManifoldGenerator" filterName="SphericalManifoldGenerator" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.SphericalManifoldGenerator.SphericalPolyhedrons" filterName="SphericalManifoldGenerator.SphericalPolyhedrons" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.TopologyGeneratorCollection" filterName="TopologyGeneratorCollection" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.TopologyRandomizerGenerator" filterName="TopologyRandomizerGenerator" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.TopologyRandomizerGeneratorEditor" filterName="TopologyRandomizerGeneratorEditor" isExposed="False" />
+        <Filter entryType="Class" fullName="Experilous.MakeItTile.VertexNormalsGenerator" filterName="VertexNormalsGenerator" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="Experilous.MakeItTile.VertexNormalsGenerator.CalculationMethod" filterName="VertexNormalsGenerator.CalculationMethod" isExposed="False" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="Experilous.MakeItWrap" isExposed="False" />
+      <Filter entryType="Namespace" fullName="UnityEditor" isExposed="True">
+        <Filter entryType="Class" fullName="UnityEditor.Editor" filterName="Editor" isExposed="False" />
+        <Filter entryType="Class" fullName="UnityEditor.EditorWindow" filterName="EditorWindow" isExposed="False" />
+        <Filter entryType="Class" fullName="UnityEditor.PropertyDrawer" filterName="PropertyDrawer" isExposed="False" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="UnityEngine" isExposed="True">
+        <Filter entryType="Class" fullName="UnityEngine.Behaviour" filterName="Behaviour" isExposed="False" />
+        <Filter entryType="Class" fullName="UnityEngine.Component" filterName="Component" isExposed="False" />
+        <Filter entryType="Class" fullName="UnityEngine.MonoBehaviour" filterName="MonoBehaviour" isExposed="False" />
+        <Filter entryType="Class" fullName="UnityEngine.Object" filterName="Object" isExposed="False" />
+        <Filter entryType="Class" fullName="UnityEngine.ScriptableObject" filterName="ScriptableObject" isExposed="False" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="UnityEngine.Events" isExposed="True">
+        <Filter entryType="Class" fullName="UnityEngine.Events.UnityEvent`2" filterName="UnityEvent`2" isExposed="False" />
+        <Filter entryType="Class" fullName="UnityEngine.Events.UnityEventBase" filterName="UnityEventBase" isExposed="False" />
+      </Filter>
+    </ApiFilter>
     <ComponentPath>..\Temp\UnityVS_bin\Debug\</ComponentPath>
     <ProjectSummary>
     </ProjectSummary>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Experilous.MakeItTile" isDocumented="True">In this namespace are tools for generating and working with topologies consisting of vertices, edges, and faces, and the relations among them, as well as manifolds, which are topologies embedded in three-dimensional space.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Experilous.MakeItRandom" isDocumented="True">In this namespace are a variety of pseudo-random number generators (PRNGs) and numerous sets of extention methods that provide advance randomization utilities on top of them, along with a few miscellaneous helper classes.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Experilous.MakeItColorful" isDocumented="True">In this namespace are a collection of color space structs used to work with colors in particular color spaces to achieve certain effects and avoid undesirable effects of the standard RGB color space.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Experilous.Containers" isDocumented="True">In this namespace are a variety of containers to supplement those found in System.Collections.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Experilous.Core" isDocumented="True">In this namespace are core utilities not belonging within any more specific namespace.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Experilous.Numerics" isDocumented="True">In this namespace are utilities and types for working with mathematical concepts and entities.</NamespaceSummaryItem></NamespaceSummaries>
+      <NamespaceSummaryItem name="Experilous.MakeItRandom" isDocumented="True">In this namespace are a variety of pseudo-random number generators (PRNGs) and numerous sets of extention methods that provide advance randomization utilities on top of them, along with a few miscellaneous helper classes.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Experilous.MakeItColorful" isDocumented="True">In this namespace are a collection of color space structs used to work with colors in particular color spaces to achieve certain effects and avoid undesirable effects of the standard RGB color space.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Experilous.Containers" isDocumented="True">In this namespace are a variety of containers to supplement those found in System.Collections.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Experilous.Core" isDocumented="True">In this namespace are core utilities not belonging within any more specific namespace.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Experilous.Numerics" isDocumented="True">In this namespace are utilities and types for working with mathematical concepts and entities.</NamespaceSummaryItem>
+    </NamespaceSummaries>
     <ComponentConfigurations />
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
@@ -230,6 +232,30 @@ copy /Y /B "archive.php" "Build\archive.php"</PostBuildEvent>
     <None Include="Content - Topology Traversal.aml" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="example-scene-jumble-go.png">
+      <ImageId>example-scene-jumble-go</ImageId>
+      <AlternateText>example-scene-jumble-go</AlternateText>
+    </Image>
+    <Image Include="example-scene-planar-topologies.png">
+      <ImageId>example-scene-planar-topologies</ImageId>
+      <AlternateText>example-scene-planar-topologies</AlternateText>
+    </Image>
+    <Image Include="example-scene-spherical-path-finding.png">
+      <ImageId>example-scene-spherical-path-finding</ImageId>
+      <AlternateText>example-scene-spherical-path-finding</AlternateText>
+    </Image>
+    <Image Include="example-scene-spherical-topology.png">
+      <ImageId>example-scene-spherical-topology</ImageId>
+      <AlternateText>example-scene-spherical-topology</AlternateText>
+    </Image>
+    <Image Include="example-scene-texture-demo.png">
+      <ImageId>example-scene-texture-demo</ImageId>
+      <AlternateText>example-scene-texture-demo</AlternateText>
+    </Image>
+    <Image Include="example-scene-tutorial-1.png">
+      <ImageId>example-scene-tutorial-1</ImageId>
+      <AlternateText>example-scene-tutorial-1</AlternateText>
+    </Image>
     <Image Include="square-grid-outer-edges.png">
       <ImageId>square-grid-outer-edges</ImageId>
       <AlternateText>square-grid-outer-edges</AlternateText>
