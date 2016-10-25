@@ -27,6 +27,39 @@
 					a more intelligent and efficient intersection test using knowledge
 					of the grids irregularity.
 				</para>
+				<code language="C#" title="Mouse picking by raycasting against spatial partition.">
+					<![CDATA[
+						class MousePicker : MonoBehaviour
+						{
+							public Camera camera;
+							public Transform manifold;
+							
+							private IFaceSpatialPartitioning _partitioning;
+							
+							// To be called by another script that has already created a manifold.
+							public void Initialize(Surface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions)
+							{
+								_partitioning = UniversalFaceSpatialPartitioning(surface, topology, vertexPositions);
+							}
+							
+							protected void Update()
+							{
+								var worldRay = camera.ScreenPointToRay(Input.mousePosition);
+
+								var manifoldRay = new Ray(
+									manifold.InverseTransformPoint(worldRay.origin),
+									manifold.InverseTransformDirection(worldRay.direction));
+									
+								var face = _partitioning.FindFace(manifoldRay);
+								
+								if (face)
+								{
+									Debug.LogFormat("Mouse Position: {0}; Intersected Face: {1}", Input.mousePosition, face.index);
+								}
+							}
+						}
+					]]>
+				</code>
 			</content>
 		</section>
 		<relatedTopics>

@@ -50,6 +50,38 @@
 					grid example, there is a single unmarked external face that surrounds the
 					the other faces.
 				</para>
+				<code language="C#" title="Accessing the elements of a topology.">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						
+						// Element collections can be enumerated using a foreach loop:
+						foreach (Topology.Vertex vertex in topology.vertices)
+						{
+							// do something with the vertex
+						}
+						
+						// They can also be accessed by integer indices:
+						for (int i = 0; i < topology.faces.Count; ++i)
+						{
+							Topology.Face face = topology.faces[i];
+							// do something with the face
+						}
+						
+						// The two subsets of faces, internal and external, can also be enumerated:
+						foreach (Topology.Face face in topology.internalFaces)
+						{
+							// do something with the face
+						}
+
+						// The edges are accessible in three varieties, all representing
+						// the same set of edges, but producing different behavior in
+						// certain cases, as will be explained in other topics.
+						foreach (Topology.HalfEdge edge in topology.halfEdges)
+						{
+							// do something with the edge
+						}
+					]]>
+				</code>
 			</content>
 		</section>
 		<section address="neighbors-and-edges">
@@ -103,6 +135,29 @@
 					<codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference>,
 					ideal for use in a <codeInline>foreach</codeInline> loop.
 				</para>
+				<code language="C#" title="Accessing the neighboring edges of a vertex.">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						
+						foreach (Topology.Vertex vertex in topology.vertices)
+						{
+							// Automatic enumeration using the edges property
+							foreach (Topology.VertexEdge edge in vertex.edges)
+							{
+								// do something with the edge
+							}
+							
+							// Manual enumeration using the firstEdge and next properties
+							var firstEdge = vertex.firstEdge;
+							var currentEdge = firstEdge;
+							do
+							{
+								// do something with currentEdge
+								currentEdge = currentEdge.next;
+							} while (currentEdge != firstEdge);
+						}
+					]]>
+				</code>
 				<mediaLink>
 					<caption placement="after">The neighboring edges of a face.</caption>
 					<image placement="center" xlink:href="hex-grid-face-neighbors"/>
@@ -126,6 +181,29 @@
 					<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>,
 					ideal for use in a <codeInline>foreach</codeInline> loop.
 				</para>
+				<code language="C#" title="Accessing the neighboring edges of a face.">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						
+						foreach (Topology.Face face in topology.internalFaces)
+						{
+							// Automatic enumeration using the edges property
+							foreach (Topology.FaceEdge edge in face.edges)
+							{
+								// do something with the edge
+							}
+							
+							// Manual enumeration using the firstEdge and next properties
+							var firstEdge = face.firstEdge;
+							var currentEdge = firstEdge;
+							do
+							{
+								// do something with currentEdge
+								currentEdge = currentEdge.next;
+							} while (currentEdge != firstEdge);
+						}
+					]]>
+				</code>
 			</content>
 		</section>
 		<section address="edge-relations">
@@ -165,6 +243,26 @@
 					and clockwise movement around the reference element, vertex 32 in this
 					case.)
 				</para>
+				<code language="C#" title="Accessing the neighbors of a vertex.">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						
+						foreach (Topology.Vertex vertex in topology.vertices)
+						{
+							foreach (Topology.VertexEdge edge in vertex.edges)
+							{
+								Topology.Vertex neighborVertex = edge.vertex;
+								Topology.Face neighborFace = edge.face;
+								
+								Topology.Vertex currentVertex = edge.nearVertex; // same as the local vertex variable
+								Topology.Vertex farVertex = edge.farVertex; // same as edge.vertex
+								
+								Topology.Face prevFace = edge.prevFace; // face on CCW side of edge, same as edge.face
+								Topology.Face nextFace = edge.nextFace; // face on CW side of edge
+							}
+						}
+					]]>
+				</code>
 				<mediaLink>
 					<caption placement="after">The neighboring edges of a face.</caption>
 					<image placement="center" xlink:href="hex-grid-face-neighbors"/>
@@ -192,6 +290,26 @@
 					This is simply a necessary artifact of how the geometry of the winding order
 					works out, in order to maintain consistency with clockwise ordering.
 				</para>
+				<code language="C#" title="Accessing the neighbors of a face.">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						
+						foreach (Topology.Face face in topology.faces)
+						{
+							foreach (Topology.FaceEdge edge in face.edges)
+							{
+								Topology.Face neighborFace = edge.face;
+								Topology.Vertex neighborVertex = edge.vertex;
+								
+								Topology.Face currentFace = edge.nearFace; // same as the local face variable
+								Topology.Face farFace = edge.farFace; // same as edge.face
+								
+								Topology.Vertex prevVertex = edge.prevVertex; // vertex on CCW side of edge
+								Topology.Vertex nextVertex = edge.nextVertex; // vertex on CW side of edge, same as edge.vertex
+							}
+						}
+					]]>
+				</code>
 				<para>
 					Finally, edges have the property 
 					<codeEntityReference>P:Experilous.MakeItTile.Topology.HalfEdge.twin</codeEntityReference>,
@@ -239,6 +357,17 @@
 					essence, these are the vertices that share at least one face with
 					the source vertex, even if they do not share an edge.
 				</para>
+				<code language="C#" title="Enumerating the outer neighbors of a vertex.">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+
+						Topology.Vertex vertex = topology.vertices[5];
+						foreach (Topology.VertexEdge edge in vertex.outerEdges)
+						{
+							Debug.LogFormat("Edge {0}, Vertex {1}", edge.index, edge.vertex.index);
+						}
+					]]>
+				</code>
 				<para>
 					Likewise, the diagram on the right shows the edges and outer edges
 					of face 4.  It is a little harder to follow, but you can see that
@@ -250,6 +379,17 @@
 					the faces that share at least one vertex with the source face,
 					even if they do not share an edge.
 				</para>
+				<code language="C#" title="Enumerating the outer neighbors of a face.">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+
+						Topology.Face face = topology.faces[4];
+						foreach (Topology.FaceEdge edge in face.outerEdges)
+						{
+							Debug.LogFormat("Edge {0}, Face {1}", edge.index, edge.face.index);
+						}
+					]]>
+				</code>
 			</content>
 		</section>
 		<relatedTopics>

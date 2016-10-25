@@ -92,6 +92,50 @@
 						for it to write the resulting path into a previous path's internal buffer.
 					</para>
 				</alert>
+				<code language="C#" title="Find a Euclidean path between two faces">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						IFaceAttribute<Vector3> facePositions = ...; // Create face positions.
+						
+						var pathFinder = new PathFinder();
+						var path = pathFinder.FindEuclideanPath(topology.faces[10], topology.faces[43], facePositions);
+						Debug.LogFormat("Starting from Face {0}", path.source.index);
+						foreach (Topology.FaceEdge edge in path)
+						{
+							Debug.LogFormat("Through Edge {0}, to Face {1}", edge.index, edge.face.index);
+						}
+					]]>
+				</code>
+				<code language="C#" title="Find a custom-cost path between two faces">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						IFaceAttribute<Vector3> facePositions = ...; // Create face positions.
+						IEdgeAttribute<float> travelCosts = ...; // Create travel costs between faces.
+						float minTravelCost = ...; // Determine cheapest travel cost between any two adjacent faces.
+						float maxAdjacentDistance = ...; // Determine the maximum distance between any two adjacent faces.
+						
+						var pathFinder = new PathFinder();
+						PathFinder.FaceCostHeuristicDelegate heuristic =
+							(Topology.Face source, Topology.Face target, int pathLength) =>
+							{
+								float distance = (facePositions[target] - facePositions[source]).magnitude;
+								float minFaceCount = Mathf.Ceil(distance / maxAdjacentDistance);
+								return minTravelCost * minFaceCount;
+							};
+						PathFinder.FaceCostDelegate cost =
+							(Topology.FaceEdge edge, int pathLength) =>
+							{
+								return travelCosts[edge];
+							};
+
+						var path = pathFinder.FindPath(topology.faces[10], topology.faces[43], heuristic, cost);
+						Debug.LogFormat("Starting from Face {0}", path.source.index);
+						foreach (Topology.FaceEdge edge in path)
+						{
+							Debug.LogFormat("Through Edge {0}, to Face {1}", edge.index, edge.face.index);
+						}
+					]]>
+				</code>
 			</content>
 		</section>
 		<section address="topology-visitation">
@@ -264,6 +308,47 @@
 						</listItem>
 					</list>
 				</para>
+				<code language="C#" title="Performing a limited flood-fill of vertices from a single root vertex">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						IVertexAttribute<Color> vertexColors = ...; // Create vertex colors.
+						
+						var rootVertex = topology.vertices[17];
+						var originalColor = vertexColors[rootVertex];
+						var targetColor = new Color(0.1f, 0.4f, 0.8f, 1f);
+						
+						// Maximum edge count from root vertex to perform flood fill.
+						// int maxDepth = 10;
+						
+						// Maximum number of vertices to re-color before terminating early.
+						int maxVertexCount = 108;
+						int recoloredVertexCount = 0;
+						
+						TopologyVisitor.VisitVerticesInBreadthFirstOrder(rootVertex,
+							(VertexVisitor visitor) =>
+							{
+								vertexColors[visitor.vertex] = targetColor;
+								++recoloredVertexCount;
+								
+								if (recoloredVertexCount >= maxVertexCount)
+								{
+									visitor.Break();
+								}
+								
+								if (visitor.depth < maxDepth)
+								{
+									foreach (var edge in visitor.vertex.edges)
+									{
+										if (vertexColors[edge] == originalColor)
+										{
+											visitor.VisitNeighbor(edge.vertex);
+										}
+									}
+								}
+							});
+						}
+					]]>
+				</code>
 			</content>
 		</section>
 		<relatedTopics>

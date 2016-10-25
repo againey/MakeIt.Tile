@@ -79,12 +79,12 @@
 						var faceColors = new FaceAttributeArrayWrapper<Color>(topology.internalFaces.Count);
 						var edgeCosts = new EdgeAttributeArrayWrapper<float>(new float[topology.halfEdges.Count]);
 						
-						foreach (Vertex vertex in topology.vertices)
+						foreach (Topology.Vertex vertex in topology.vertices)
 						{
 							vertexPositions[vertex] = ...; // Assign positions to each vertex.
 						}
 						
-						foreach (Vertex vertex in topology.vertices)
+						foreach (Topology.Vertex vertex in topology.vertices)
 						{
 							Debug.Log(vertexPositions[vertex]); // Log out the positions of each vertex.
 						}
@@ -115,14 +115,14 @@
 				</para>
 				<code language="C#" title="Accessing Attributes">
 					<![CDATA[
-						IVertexAttribute<Vector3> vertexPositions = ...; // Create vertex positions;
+						IVertexAttribute<Vector3> vertexPositions = ...; // Create vertex positions.
 						
-						foreach (Vertex vertex in topology.vertices)
+						foreach (Topology.Vertex vertex in topology.vertices)
 						{
 							vertexPositions[vertex] = ...; // Assign positions to each vertex.
 						}
 						
-						foreach (Vertex vertex in topology.vertices)
+						foreach (Topology.Vertex vertex in topology.vertices)
 						{
 							Debug.LogFormat("<b>{0}</b>", vertexPositions[vertex]); // Log out the positions of each vertex.
 							
