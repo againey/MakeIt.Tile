@@ -20,7 +20,9 @@ namespace Experilous.MakeItGenerate
 
 		[SerializeField] private Generator _generator;
 		[SerializeField] private SerializableType _assetType;
-		[SerializeField] private Object _asset;
+
+		private object _asset;
+
 		[SerializeField] private Object _persistedAsset;
 
 		[SerializeField] private Availability _availability;
@@ -112,7 +114,7 @@ namespace Experilous.MakeItGenerate
 
 		public Generator generator { get { return _generator; } }
 		public System.Type assetType { get { return _assetType; } }
-		public Object asset { get { return _asset; } }
+		public object asset { get { return _asset; } }
 		public Object persistedAsset { get { return _persistedAsset; } }
 
 		public bool canBeGrouped { get { return isAvailableAfterGeneration; } }
@@ -195,9 +197,19 @@ namespace Experilous.MakeItGenerate
 			return _persistedAsset as TAsset;
 		}
 
-		public TAsset SetAsset<TAsset>(TAsset newAsset, bool persist = true) where TAsset : class
+		public TAsset SetAsset<TAsset>(TAsset newAsset) where TAsset : class
 		{
-			var assetObject = (Object)(object)newAsset;
+			return SetAsset(newAsset, _persistable);
+		}
+
+		public TAsset SetAsset<TAsset>(TAsset newAsset, bool persist) where TAsset : class
+		{
+			if (!_persistable && persist)
+			{
+				throw new System.ArgumentException("The output slot is not persistable, but the new asset was requested to be persisted.", "persist");
+			}
+
+			var assetObject = (object)newAsset;
 
 			// Are we setting or clearing the generated asset?
 			if (assetObject != null)
@@ -209,7 +221,14 @@ namespace Experilous.MakeItGenerate
 
 				if (persist)
 				{
-					_persistedAsset = _asset = _generator.executive.SetAsset(this, assetObject as Object);
+					if (assetObject is Object)
+					{
+						_asset = _persistedAsset = _generator.executive.SetAsset(this, assetObject as Object);
+					}
+					else
+					{
+						throw new System.ArgumentException("The new asset instance cannot be persisted because it is not derived from UnityEngine.Object.", "newAsset");
+					}
 				}
 				else
 				{
@@ -222,10 +241,15 @@ namespace Experilous.MakeItGenerate
 				ClearAsset();
 			}
 
-			return (TAsset)(object)_asset;
+			return (TAsset)_asset;
 		}
 
-		public TAsset SetAsset<TAsset>(ref TAsset newAsset, bool persist = true) where TAsset : class
+		public TAsset SetAsset<TAsset>(ref TAsset newAsset) where TAsset : class
+		{
+			return SetAsset(ref newAsset, _persistable);
+		}
+
+		public TAsset SetAsset<TAsset>(ref TAsset newAsset, bool persist) where TAsset : class
 		{
 			newAsset = SetAsset(newAsset, persist);
 			return newAsset;
@@ -233,6 +257,11 @@ namespace Experilous.MakeItGenerate
 
 		public void ClearAsset(bool persist = true)
 		{
+			if (!_persistable && persist)
+			{
+				throw new System.ArgumentException("The output slot is not persistable, but the cleared asset was requested to be persisted.", "persist");
+			}
+
 			if (_asset != null)
 			{
 				if (persist)
@@ -246,12 +275,24 @@ namespace Experilous.MakeItGenerate
 
 		public void ForgetAsset()
 		{
-			_persistedAsset = _asset = null;
+			_asset = _persistedAsset = null;
 		}
 
 		public void Persist()
 		{
-			_persistedAsset = _asset = _generator.executive.SetAsset(this, _asset);
+			if (!_persistable)
+			{
+				throw new System.ArgumentException("The output slot is not persistable, but the asset was requested to be persisted.", "persist");
+			}
+
+			if (_asset is Object)
+			{
+				_asset = _persistedAsset = _generator.executive.SetAsset(this, _asset as Object);
+			}
+			else
+			{
+				throw new System.InvalidOperationException("The asset instance cannot be persisted because it is not derived from UnityEngine.Object.");
+			}
 		}
 
 		public static void ResetAssetTypeIfNull<TAsset>(OutputSlot outputSlot)
