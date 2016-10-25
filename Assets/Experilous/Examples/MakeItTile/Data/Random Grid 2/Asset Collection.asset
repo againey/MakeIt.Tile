@@ -44,5 +44,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 1000011662326056, guid: 92d6429aa73d56f4cbeadcfb314d78b4, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 153252, guid: 92d6429aa73d56f4cbeadcfb314d78b4, type: 2}
   embeddedAssets: []

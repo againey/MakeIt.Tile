@@ -11,4 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6383008b266be154abfbf4eadaae92ce, type: 3}
   m_Name: Face Colors
   m_EditorClassIdentifier: 
-  constant: {r: 0.5315126, g: 0.517301, b: 0.6764706, a: 1}
+  constant: {r: .531512618, g: .517301023, b: .676470578, a: 1}

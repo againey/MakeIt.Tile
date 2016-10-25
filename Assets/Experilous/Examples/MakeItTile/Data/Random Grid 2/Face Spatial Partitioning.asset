@@ -15,1793 +15,1793 @@ MonoBehaviour:
   _topology: {fileID: 11400000, guid: e700414c89e3e414381df9899214f3d7, type: 2}
   _partitionBinaryTree:
   - _plane:
-      normal: {x: 0.9487007, y: 0.000000018845537, z: 0.3161756}
-      distance: -5.858107
+      normal: {x: .948700726, y: 1.88455367e-08, z: .31617561}
+      distance: -5.85810709
     _underEdgeIndex: 235
     _overEdgeIndex: 232
     _underPartitionIndex: 1
     _overPartitionIndex: 3
   - _plane:
-      normal: {x: -0.48230472, y: 0.000000052213885, z: 0.87600356}
-      distance: -2.8810754
+      normal: {x: -.482304722, y: 5.22138848e-08, z: .876003563}
+      distance: -2.88107538
     _underEdgeIndex: 329
     _overEdgeIndex: 278
     _underPartitionIndex: 4
     _overPartitionIndex: 2
   - _plane:
-      normal: {x: 0.10196172, y: -0.00000005929401, z: -0.99478835}
-      distance: 6.081922
+      normal: {x: .101961717, y: -5.92940097e-08, z: -.994788349}
+      distance: 6.08192205
     _underEdgeIndex: 373
     _overEdgeIndex: 370
     _underPartitionIndex: 22
     _overPartitionIndex: 10
   - _plane:
-      normal: {x: 0.1961902, y: 0.000000058446282, z: 0.98056585}
+      normal: {x: .196190193, y: 5.84462825e-08, z: .980565846}
       distance: -7.9330554
     _underEdgeIndex: 444
     _overEdgeIndex: 393
     _underPartitionIndex: 5
     _overPartitionIndex: 13
   - _plane:
-      normal: {x: 0.9995131, y: -0.0000000018598008, z: -0.031202275}
-      distance: -3.9980524
+      normal: {x: .99951309, y: -1.85980076e-09, z: -.0312022753}
+      distance: -3.99805236
     _underEdgeIndex: 25
     _overEdgeIndex: 22
     _underPartitionIndex: 6
     _overPartitionIndex: 19
   - _plane:
-      normal: {x: 0.59207016, y: 0.00000004803458, z: 0.80588645}
-      distance: -5.2302175
+      normal: {x: .592070162, y: 4.8034579e-08, z: .805886447}
+      distance: -5.23021746
     _underEdgeIndex: 96
     _overEdgeIndex: 45
     _underPartitionIndex: 14
     _overPartitionIndex: 8
   - _plane:
-      normal: {x: -0.13394342, y: 0.000000059067553, z: 0.99098897}
-      distance: -0.8523525
+      normal: {x: -.133943424, y: 5.90675526e-08, z: .99098897}
+      distance: -.8523525
     _underEdgeIndex: 119
     _overEdgeIndex: 68
     _underPartitionIndex: 25
     _overPartitionIndex: 7
   - _plane:
-      normal: {x: 0.16886152, y: -0.000000058748718, z: -0.9856398}
-      distance: 2.3751206
+      normal: {x: .168861523, y: -5.87487179e-08, z: -.985639811}
+      distance: 2.37512064
     _underEdgeIndex: 163
     _overEdgeIndex: 160
     _underPartitionIndex: 18
     _overPartitionIndex: 15
   - _plane:
-      normal: {x: 0.07277091, y: 0.00000005944662, z: 0.9973487}
-      distance: -3.917148
+      normal: {x: .0727709085, y: 5.94466201e-08, z: .997348726}
+      distance: -3.91714811
     _underEdgeIndex: 234
     _overEdgeIndex: 183
     _underPartitionIndex: 17
     _overPartitionIndex: 9
   - _plane:
-      normal: {x: 0.91355026, y: 0.000000024242757, z: 0.40672594}
-      distance: -8.969132
+      normal: {x: .913550258, y: 2.42427571e-08, z: .406725943}
+      distance: -8.96913242
     _underEdgeIndex: 301
     _overEdgeIndex: 298
     _underPartitionIndex: 11
     _overPartitionIndex: 63
   - _plane:
-      normal: {x: 0.7565157, y: 0.000000038979987, z: 0.6539756}
-      distance: -6.300835
+      normal: {x: .756515682, y: 3.89799872e-08, z: .653975606}
+      distance: -6.30083513
     _underEdgeIndex: 372
     _overEdgeIndex: 321
     _underPartitionIndex: 21
     _overPartitionIndex: 53
   - _plane:
-      normal: {x: 0.062067814, y: 0.000000059489732, z: 0.99807197}
-      distance: -6.105311
+      normal: {x: .0620678142, y: 5.94897323e-08, z: .998071969}
+      distance: -6.10531092
     _underEdgeIndex: 395
     _overEdgeIndex: 344
     _underPartitionIndex: 20
     _overPartitionIndex: 12
   - _plane:
-      normal: {x: 0.9790789, y: -0.000000012128427, z: -0.20348121}
-      distance: -3.3681552
+      normal: {x: .979078889, y: -1.21284272e-08, z: -.203481212}
+      distance: -3.36815524
     _underEdgeIndex: 439
     _overEdgeIndex: 436
     _underPartitionIndex: 33
     _overPartitionIndex: 24
   - _plane:
-      normal: {x: 0.9790789, y: -0.000000012128427, z: -0.20348121}
-      distance: -3.3681552
+      normal: {x: .979078889, y: -1.21284272e-08, z: -.203481212}
+      distance: -3.36815524
     _underEdgeIndex: 439
     _overEdgeIndex: 436
     _underPartitionIndex: 34
     _overPartitionIndex: 43
   - _plane:
-      normal: {x: 0.9999533, y: 5.760608e-10, z: 0.009664696}
-      distance: -6.5733356
+      normal: {x: .99995333, y: 5.7606081e-10, z: .00966469571}
+      distance: -6.57333565
     _underEdgeIndex: 91
     _overEdgeIndex: 88
     _underPartitionIndex: 16
     _overPartitionIndex: 26
   - _plane:
-      normal: {x: 0.6900856, y: 0.00000004313754, z: 0.72372776}
+      normal: {x: .69008559, y: 4.31375398e-08, z: .723727763}
       distance: -3.3603363
     _underEdgeIndex: 162
     _overEdgeIndex: 111
     _underPartitionIndex: 27
     _overPartitionIndex: 58
   - _plane:
-      normal: {x: 0.92986786, y: 0.000000021928175, z: 0.3678937}
-      distance: -5.9413075
+      normal: {x: .929867864, y: 2.19281748e-08, z: .367893696}
+      distance: -5.94130754
     _underEdgeIndex: 185
     _overEdgeIndex: 134
     _underPartitionIndex: 46
     _overPartitionIndex: 89
   - _plane:
-      normal: {x: 0.92986786, y: 0.000000021928175, z: 0.3678937}
-      distance: -5.9413075
+      normal: {x: .929867864, y: 2.19281748e-08, z: .367893696}
+      distance: -5.94130754
     _underEdgeIndex: 185
     _overEdgeIndex: 134
     _underPartitionIndex: 200
     _overPartitionIndex: 29
   - _plane:
-      normal: {x: 0.7681631, y: -0.00000003816213, z: -0.64025426}
-      distance: -0.62597376
+      normal: {x: .768163085, y: -3.81621312e-08, z: -.640254259}
+      distance: -.625973761
     _underEdgeIndex: 229
     _overEdgeIndex: 226
     _underPartitionIndex: 36
     _overPartitionIndex: 111
   - _plane:
-      normal: {x: 0.7681631, y: -0.00000003816213, z: -0.64025426}
-      distance: -0.62597376
+      normal: {x: .768163085, y: -3.81621312e-08, z: -.640254259}
+      distance: -.625973761
     _underEdgeIndex: 229
     _overEdgeIndex: 226
     _underPartitionIndex: 73
     _overPartitionIndex: 28
   - _plane:
-      normal: {x: 0.8378861, y: -0.000000032534913, z: -0.5458452}
-      distance: -4.2290883
+      normal: {x: .837886095, y: -3.25349134e-08, z: -.545845211}
+      distance: -4.22908831
     _underEdgeIndex: 300
     _overEdgeIndex: 249
     _underPartitionIndex: 30
     _overPartitionIndex: 178
   - _plane:
-      normal: {x: -0.53322923, y: 0.000000050423797, z: 0.84597087}
+      normal: {x: -.533229232, y: 5.04237967e-08, z: .845970869}
       distance: -2.983356
     _underEdgeIndex: 323
     _overEdgeIndex: 272
     _underPartitionIndex: 114
     _overPartitionIndex: 23
   - _plane:
-      normal: {x: 0.9201725, y: -0.000000023336005, z: -0.39151317}
-      distance: 1.4349437
+      normal: {x: .920172513, y: -2.33360051e-08, z: -.391513169}
+      distance: 1.43494368
     _underEdgeIndex: 367
     _overEdgeIndex: 364
     _underPartitionIndex: 95
     _overPartitionIndex: 55
   - _plane:
-      normal: {x: 0.9201725, y: -0.000000023336005, z: -0.39151317}
-      distance: 1.4349437
+      normal: {x: .920172513, y: -2.33360051e-08, z: -.391513169}
+      distance: 1.43494368
     _underEdgeIndex: 367
     _overEdgeIndex: 364
     _underPartitionIndex: 52
     _overPartitionIndex: 31
   - _plane:
-      normal: {x: 0.82995415, y: 0.000000033249364, z: 0.5578317}
-      distance: -7.8517656
+      normal: {x: .829954147, y: 3.32493642e-08, z: .557831705}
+      distance: -7.85176563
     _underEdgeIndex: 438
     _overEdgeIndex: 387
     _underPartitionIndex: 32
     _overPartitionIndex: 86
   - _plane:
-      normal: {x: 0.9957997, y: -0.0000000054573563, z: -0.09155924}
-      distance: -2.987399
+      normal: {x: .99579972, y: -5.45735634e-09, z: -.0915592387}
+      distance: -2.9873991
     _underEdgeIndex: 19
     _overEdgeIndex: 16
     _underPartitionIndex: 44
     _overPartitionIndex: 77
   - _plane:
-      normal: {x: 0.4856718, y: 0.000000052102887, z: 0.8741413}
-      distance: -3.9422894
+      normal: {x: .485671788, y: 5.21028873e-08, z: .874141276}
+      distance: -3.94228935
     _underEdgeIndex: 90
     _overEdgeIndex: 39
     _underPartitionIndex: 156
     _overPartitionIndex: 88
   - _plane:
-      normal: {x: -0.7017938, y: 0.000000042461174, z: 0.71238023}
-      distance: 0.5558646
+      normal: {x: -.70179379, y: 4.24611741e-08, z: .71238023}
+      distance: .555864573
     _underEdgeIndex: 113
     _overEdgeIndex: 62
     _underPartitionIndex: 127
     _overPartitionIndex: 37
   - _plane:
-      normal: {x: 0.041263614, y: 0.000000059553884, z: 0.9991483}
-      distance: -3.345875
+      normal: {x: .0412636138, y: 5.95538836e-08, z: .999148309}
+      distance: -3.34587502
     _underEdgeIndex: 228
     _overEdgeIndex: 177
     _underPartitionIndex: 35
     _overPartitionIndex: 81
   - _plane:
-      normal: {x: -0.56279653, y: 0.000000049268934, z: 0.8265955}
+      normal: {x: -.562796533, y: 4.92689338e-08, z: .826595485}
       distance: 1.6180048
     _underEdgeIndex: 251
     _overEdgeIndex: 200
     _underPartitionIndex: 48
     _overPartitionIndex: 50
   - _plane:
-      normal: {x: 0.99268895, y: -0.000000007194323, z: -0.1207007}
-      distance: -5.8021655
+      normal: {x: .992688954, y: -7.19432292e-09, z: -.120700702}
+      distance: -5.80216551
     _underEdgeIndex: 295
     _overEdgeIndex: 292
     _underPartitionIndex: 51
     _overPartitionIndex: 40
   - _plane:
-      normal: {x: -0.17170964, y: 0.000000058719376, z: 0.9851476}
-      distance: -5.3798876
+      normal: {x: -.171709642, y: 5.8719376e-08, z: .985147595}
+      distance: -5.37988758
     _underEdgeIndex: 366
     _overEdgeIndex: 315
     _underPartitionIndex: 41
     _overPartitionIndex: 94
   - _plane:
-      normal: {x: -0.72181004, y: 0.00000004125186, z: 0.6920913}
-      distance: -0.67734206
+      normal: {x: -.721810043, y: 4.12518588e-08, z: .692091286}
+      distance: -.677342057
     _underEdgeIndex: 389
     _overEdgeIndex: 338
     _underPartitionIndex: 123
     _overPartitionIndex: 219
   - _plane:
-      normal: {x: 0.9995656, y: -0.0000000017568111, z: -0.029474396}
-      distance: -3.7770407
+      normal: {x: .999565601, y: -1.75681114e-09, z: -.0294743963}
+      distance: -3.77704072
     _underEdgeIndex: 433
     _overEdgeIndex: 430
     _underPartitionIndex: 125
     _overPartitionIndex: 42
   - _plane:
-      normal: {x: 0.9995656, y: -0.0000000017568111, z: -0.029474396}
-      distance: -3.7770407
+      normal: {x: .999565601, y: -1.75681114e-09, z: -.0294743963}
+      distance: -3.77704072
     _underEdgeIndex: 433
     _overEdgeIndex: 430
     _underPartitionIndex: 294
     _overPartitionIndex: 282
   - _plane:
-      normal: {x: 0.99249774, y: -0.0000000072874524, z: -0.12226315}
-      distance: -5.4420485
+      normal: {x: .992497742, y: -7.28745242e-09, z: -.122263148}
+      distance: -5.44204855
     _underEdgeIndex: 85
     _overEdgeIndex: 82
     _underPartitionIndex: 38
     _overPartitionIndex: 45
   - _plane:
-      normal: {x: 0.93464345, y: 0.000000021194595, z: 0.3555863}
+      normal: {x: .934643447, y: 2.11945945e-08, z: .35558629}
       distance: -1.3911618
     _underEdgeIndex: 156
     _overEdgeIndex: 105
     _underPartitionIndex: 300
     _overPartitionIndex: 39
   - _plane:
-      normal: {x: 0.93464345, y: 0.000000021194595, z: 0.3555863}
+      normal: {x: .934643447, y: 2.11945945e-08, z: .35558629}
       distance: -1.3911618
     _underEdgeIndex: 156
     _overEdgeIndex: 105
     _underPartitionIndex: 47
     _overPartitionIndex: 98
   - _plane:
-      normal: {x: -0.5552243, y: 0.00000004957323, z: 0.83170074}
-      distance: 0.3722451
+      normal: {x: -.555224299, y: 4.95732309e-08, z: .831700742}
+      distance: .372245103
     _underEdgeIndex: 179
     _overEdgeIndex: 128
     _underPartitionIndex: 56
     _overPartitionIndex: 187
   - _plane:
-      normal: {x: 0.9757642, y: 0.000000013042961, z: 0.21882457}
-      distance: -4.004149
+      normal: {x: .975764215, y: 1.30429614e-08, z: .218824565}
+      distance: -4.00414896
     _underEdgeIndex: 223
     _overEdgeIndex: 220
     _underPartitionIndex: 59
     _overPartitionIndex: 49
   - _plane:
-      normal: {x: 0.6260253, y: 0.00000004647987, z: 0.77980274}
-      distance: -7.2537684
+      normal: {x: .626025319, y: 4.64798688e-08, z: .77980274}
+      distance: -7.25376844
     _underEdgeIndex: 294
     _overEdgeIndex: 243
     _underPartitionIndex: 203
     _overPartitionIndex: 84
   - _plane:
-      normal: {x: -0.71419156, y: 0.000000041720295, z: 0.69995034}
-      distance: -2.2425098
+      normal: {x: -.714191556, y: 4.17202948e-08, z: .699950337}
+      distance: -2.24250984
     _underEdgeIndex: 317
     _overEdgeIndex: 266
     _underPartitionIndex: 133
     _overPartitionIndex: 62
   - _plane:
-      normal: {x: 0.5529937, y: 0.00000004966173, z: 0.8331855}
+      normal: {x: .552993715, y: 4.9661729e-08, z: .833185494}
       distance: -7.9847827
     _underEdgeIndex: 432
     _overEdgeIndex: 381
     _underPartitionIndex: 54
     _overPartitionIndex: 104
   - _plane:
-      normal: {x: 0.8591481, y: 0.00000003050131, z: 0.51172704}
+      normal: {x: .859148085, y: 3.05013117e-08, z: .511727035}
       distance: -10.261425
     _underEdgeIndex: 455
     _overEdgeIndex: 404
     _underPartitionIndex: 65
     _overPartitionIndex: 195
   - _plane:
-      normal: {x: 0.94992125, y: -0.000000018625819, z: -0.31248936}
+      normal: {x: .94992125, y: -1.86258191e-08, z: -.312489361}
       distance: -1.8998425
     _underEdgeIndex: 13
     _overEdgeIndex: 10
     _underPartitionIndex: 66
     _overPartitionIndex: 96
   - _plane:
-      normal: {x: 0.4889928, y: 0.000000051992412, z: 0.87228787}
-      distance: -3.4600077
+      normal: {x: .48899281, y: 5.19924122e-08, z: .872287869}
+      distance: -3.46000767
     _underEdgeIndex: 84
     _overEdgeIndex: 33
     _underPartitionIndex: 208
     _overPartitionIndex: 184
   - _plane:
-      normal: {x: 0.4889928, y: 0.000000051992412, z: 0.87228787}
-      distance: -3.4600077
+      normal: {x: .48899281, y: 5.19924122e-08, z: .872287869}
+      distance: -3.46000767
     _underEdgeIndex: 84
     _overEdgeIndex: 33
     _underPartitionIndex: 209
     _overPartitionIndex: 106
   - _plane:
-      normal: {x: -0.92906195, y: 0.000000022049209, z: 0.3699243}
-      distance: -0.06940872
+      normal: {x: -.929061949, y: 2.20492087e-08, z: .369924307}
+      distance: -.0694087222
     _underEdgeIndex: 107
     _overEdgeIndex: 56
     _underPartitionIndex: 304
     _overPartitionIndex: 263
   - _plane:
-      normal: {x: 0.90309244, y: -0.000000025596995, z: -0.42944628}
-      distance: -6.061309
+      normal: {x: .903092444, y: -2.55969947e-08, z: -.42944628}
+      distance: -6.06130886
     _underEdgeIndex: 151
     _overEdgeIndex: 148
     _underPartitionIndex: 69
     _overPartitionIndex: 57
   - _plane:
-      normal: {x: 0.12923327, y: 0.00000005910482, z: 0.9916143}
-      distance: -4.15783
+      normal: {x: .129233271, y: 5.91048206e-08, z: .991614282}
+      distance: -4.15783024
     _underEdgeIndex: 222
     _overEdgeIndex: 171
     _underPartitionIndex: 0
     _overPartitionIndex: 72
   - _plane:
-      normal: {x: -0.54760146, y: 0.00000004987356, z: 0.83673936}
-      distance: 1.0602655
+      normal: {x: -.547601461, y: 4.98735595e-08, z: .836739361}
+      distance: 1.06026554
     _underEdgeIndex: 245
     _overEdgeIndex: 194
     _underPartitionIndex: 140
     _overPartitionIndex: 71
   - _plane:
-      normal: {x: 0.9959227, y: -0.0000000053770126, z: -0.090211295}
-      distance: -4.8955503
+      normal: {x: .995922685, y: -5.37701261e-09, z: -.0902112946}
+      distance: -4.89555025
     _underEdgeIndex: 289
     _overEdgeIndex: 286
     _underPartitionIndex: 122
     _overPartitionIndex: 60
   - _plane:
-      normal: {x: -0.12004353, y: 0.00000005917363, z: 0.99276865}
-      distance: -5.9583178
+      normal: {x: -.120043531, y: 5.91736296e-08, z: .992768645}
+      distance: -5.95831776
     _underEdgeIndex: 360
     _overEdgeIndex: 309
     _underPartitionIndex: 61
     _overPartitionIndex: 258
   - _plane:
-      normal: {x: -0.48763907, y: 0.00000005203756, z: 0.8730453}
-      distance: -3.266416
+      normal: {x: -.48763907, y: 5.203756e-08, z: .873045325}
+      distance: -3.26641607
     _underEdgeIndex: 383
     _overEdgeIndex: 332
     _underPartitionIndex: 144
     _overPartitionIndex: 75
   - _plane:
-      normal: {x: -0.48763907, y: 0.00000005203756, z: 0.8730453}
-      distance: -3.266416
+      normal: {x: -.48763907, y: 5.203756e-08, z: .873045325}
+      distance: -3.26641607
     _underEdgeIndex: 383
     _overEdgeIndex: 332
     _underPartitionIndex: 218
     _overPartitionIndex: 206
   - _plane:
-      normal: {x: 0.9856426, y: 0.000000010063955, z: 0.16884515}
-      distance: -4.2242036
+      normal: {x: .985642612, y: 1.0063955e-08, z: .168845147}
+      distance: -4.22420359
     _underEdgeIndex: 427
     _overEdgeIndex: 424
     _underPartitionIndex: 76
     _overPartitionIndex: 64
   - _plane:
-      normal: {x: 0.982459, y: -0.0000000111150005, z: -0.18647875}
-      distance: -4.347954
+      normal: {x: .982459009, y: -1.11150005e-08, z: -.186478749}
+      distance: -4.3479538
     _underEdgeIndex: 79
     _overEdgeIndex: 76
     _underPartitionIndex: 129
     _overPartitionIndex: 67
   - _plane:
-      normal: {x: -0.106354035, y: 0.000000059266593, z: 0.9943283}
-      distance: -0.5311799
+      normal: {x: -.106354035, y: 5.92665934e-08, z: .99432832}
+      distance: -.531179905
     _underEdgeIndex: 150
     _overEdgeIndex: 99
     _underPartitionIndex: 68
     _overPartitionIndex: 138
   - _plane:
-      normal: {x: -0.4933565, y: 0.000000051845745, z: 0.8698272}
-      distance: -0.34828377
+      normal: {x: -.493356496, y: 5.18457455e-08, z: .869827211}
+      distance: -.348283768
     _underEdgeIndex: 173
     _overEdgeIndex: 122
     _underPartitionIndex: 149
     _overPartitionIndex: 79
   - _plane:
-      normal: {x: 0.8138627, y: 0.000000034633718, z: 0.5810573}
-      distance: -3.6739864
+      normal: {x: .813862681, y: 3.46337181e-08, z: .58105731}
+      distance: -3.67398643
     _underEdgeIndex: 217
     _overEdgeIndex: 214
     _underPartitionIndex: 80
     _overPartitionIndex: 70
   - _plane:
-      normal: {x: 0.60034084, y: 0.00000004766848, z: 0.7997443}
-      distance: -6.643961
+      normal: {x: .600340843, y: 4.76684789e-08, z: .799744308}
+      distance: -6.64396095
     _underEdgeIndex: 288
     _overEdgeIndex: 237
     _underPartitionIndex: 227
     _overPartitionIndex: 102
   - _plane:
-      normal: {x: -0.3862423, y: 0.00000005497917, z: 0.9223974}
-      distance: -4.3335223
+      normal: {x: -.3862423, y: 5.49791714e-08, z: .922397375}
+      distance: -4.33352232
     _underEdgeIndex: 311
     _overEdgeIndex: 260
     _underPartitionIndex: 250
     _overPartitionIndex: 270
   - _plane:
-      normal: {x: -0.3862423, y: 0.00000005497917, z: 0.9223974}
-      distance: -4.3335223
+      normal: {x: -.3862423, y: 5.49791714e-08, z: .922397375}
+      distance: -4.33352232
     _underEdgeIndex: 311
     _overEdgeIndex: 260
     _underPartitionIndex: 165
     _overPartitionIndex: 192
   - _plane:
-      normal: {x: 0.9990994, y: -0.0000000025291218, z: -0.042431623}
-      distance: -7.8433967
+      normal: {x: .999099374, y: -2.5291218e-09, z: -.0424316227}
+      distance: -7.84339666
     _underEdgeIndex: 355
     _overEdgeIndex: 352
     _underPartitionIndex: 82
     _overPartitionIndex: 74
   - _plane:
-      normal: {x: 0.3920571, y: 0.000000054832753, z: 0.9199409}
+      normal: {x: .392057091, y: 5.48327534e-08, z: .919940889}
       distance: -7.5247364
     _underEdgeIndex: 426
     _overEdgeIndex: 375
     _underPartitionIndex: 231
     _overPartitionIndex: 124
   - _plane:
-      normal: {x: -0.73319954, y: 0.000000040531972, z: 0.6800136}
-      distance: 0.446442
+      normal: {x: -.733199537, y: 4.05319724e-08, z: .680013597}
+      distance: .446442008
     _underEdgeIndex: 449
     _overEdgeIndex: 398
     _underPartitionIndex: 136
     _overPartitionIndex: 221
   - _plane:
-      normal: {x: 0.9986843, y: 0.0000000030565424, z: 0.051280268}
-      distance: -0.9986843
+      normal: {x: .998684287, y: 3.05654235e-09, z: .0512802675}
+      distance: -.998684287
     _underEdgeIndex: 7
     _overEdgeIndex: 4
     _underPartitionIndex: 147
     _overPartitionIndex: 126
   - _plane:
-      normal: {x: 0.541262, y: 0.00000005011881, z: 0.84085405}
-      distance: -3.2232301
+      normal: {x: .541261971, y: 5.01188104e-08, z: .840854049}
+      distance: -3.22323012
     _underEdgeIndex: 78
     _overEdgeIndex: 27
     _underPartitionIndex: 234
     _overPartitionIndex: 109
   - _plane:
-      normal: {x: -0.55648756, y: 0.00000004952288, z: 0.83085597}
+      normal: {x: -.55648756, y: 4.95228782e-08, z: .830855966}
       distance: 4.010602
     _underEdgeIndex: 101
     _overEdgeIndex: 50
     _underPartitionIndex: 269
     _overPartitionIndex: 244
   - _plane:
-      normal: {x: 0.9777661, y: 0.000000012499006, z: 0.20969851}
-      distance: -7.2661824
+      normal: {x: .977766097, y: 1.24990063e-08, z: .209698513}
+      distance: -7.26618242
     _underEdgeIndex: 145
     _overEdgeIndex: 142
     _underPartitionIndex: 139
     _overPartitionIndex: 78
   - _plane:
-      normal: {x: 0.08197731, y: 0.000000059404037, z: 0.99663424}
-      distance: -3.4512384
+      normal: {x: .0819773078, y: 5.94040372e-08, z: .996634245}
+      distance: -3.45123839
     _underEdgeIndex: 216
     _overEdgeIndex: 165
     _underPartitionIndex: 237
     _overPartitionIndex: 113
   - _plane:
-      normal: {x: 0.90399534, y: 0.000000025483514, z: 0.4275424}
-      distance: -6.4570956
+      normal: {x: .903995335, y: 2.5483514e-08, z: .427542388}
+      distance: -6.45709562
     _underEdgeIndex: 239
     _overEdgeIndex: 188
     _underPartitionIndex: 162
     _overPartitionIndex: 202
   - _plane:
-      normal: {x: 0.90383655, y: -0.000000025503516, z: -0.42787796}
-      distance: -1.6217303
+      normal: {x: .903836548, y: -2.55035157e-08, z: -.427877963}
+      distance: -1.62173033
     _underEdgeIndex: 283
     _overEdgeIndex: 280
     _underPartitionIndex: 92
     _overPartitionIndex: 166
   - _plane:
-      normal: {x: 0.90383655, y: -0.000000025503516, z: -0.42787796}
-      distance: -1.6217303
+      normal: {x: .903836548, y: -2.55035157e-08, z: -.427877963}
+      distance: -1.62173033
     _underEdgeIndex: 283
     _overEdgeIndex: 280
     _underPartitionIndex: 153
     _overPartitionIndex: 167
   - _plane:
-      normal: {x: 0.58877146, y: 0.000000048178414, z: 0.8082996}
-      distance: -8.971268
+      normal: {x: .588771462, y: 4.81784141e-08, z: .808299601}
+      distance: -8.9712677
     _underEdgeIndex: 354
     _overEdgeIndex: 303
     _underPartitionIndex: 83
     _overPartitionIndex: 220
   - _plane:
-      normal: {x: -0.41731632, y: 0.0000000541664, z: 0.9087613}
-      distance: -4.161599
+      normal: {x: -.417316318, y: 5.41663994e-08, z: .908761322}
+      distance: -4.16159916
     _underEdgeIndex: 377
     _overEdgeIndex: 326
     _underPartitionIndex: 241
     _overPartitionIndex: 232
   - _plane:
-      normal: {x: 0.9630567, y: -0.000000016051468, z: -0.26929894}
-      distance: 0.09512404
+      normal: {x: .963056684, y: -1.60514677e-08, z: -.269298941}
+      distance: .0951240435
     _underEdgeIndex: 421
     _overEdgeIndex: 418
     _underPartitionIndex: 172
     _overPartitionIndex: 85
   - _plane:
-      normal: {x: 0.96156406, y: 0.000000016366288, z: 0.27458072}
-      distance: -3.5469456
+      normal: {x: .961564064, y: 1.63662879e-08, z: .274580717}
+      distance: -3.54694557
     _underEdgeIndex: 73
     _overEdgeIndex: 70
     _underPartitionIndex: 173
     _overPartitionIndex: 87
   - _plane:
-      normal: {x: -0.0023953868, y: 0.00000005960448, z: 0.99999714}
-      distance: -1.8412718
+      normal: {x: -.00239538681, y: 5.96044814e-08, z: .999997139}
+      distance: -1.84127176
     _underEdgeIndex: 144
     _overEdgeIndex: 93
     _underPartitionIndex: 0
     _overPartitionIndex: 119
   - _plane:
-      normal: {x: -0.5649663, y: 0.000000049180628, z: 0.82511395}
-      distance: -0.54792094
+      normal: {x: -.564966321, y: 4.91806276e-08, z: .825113952}
+      distance: -.547920942
     _underEdgeIndex: 167
     _overEdgeIndex: 116
     _underPartitionIndex: 212
     _overPartitionIndex: 238
   - _plane:
-      normal: {x: 0.98761845, y: -0.000000009350493, z: -0.15687522}
-      distance: -0.47561425
+      normal: {x: .987618446, y: -9.35049282e-09, z: -.156875223}
+      distance: -.47561425
     _underEdgeIndex: 211
     _overEdgeIndex: 208
     _underPartitionIndex: 163
     _overPartitionIndex: 90
   - _plane:
-      normal: {x: 0.1829546, y: 0.00000005859861, z: 0.9831214}
-      distance: -4.818868
+      normal: {x: .182954594, y: 5.85986086e-08, z: .983121395}
+      distance: -4.81886816
     _underEdgeIndex: 282
     _overEdgeIndex: 231
     _underPartitionIndex: 91
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.032159094, y: 0.000000059573818, z: 0.99948275}
-      distance: -4.601239
+      normal: {x: .0321590938, y: 5.95738179e-08, z: .999482751}
+      distance: -4.6012392
     _underEdgeIndex: 305
     _overEdgeIndex: 254
     _underPartitionIndex: 0
     _overPartitionIndex: 135
   - _plane:
-      normal: {x: 0.032159094, y: 0.000000059573818, z: 0.99948275}
-      distance: -4.601239
+      normal: {x: .0321590938, y: 5.95738179e-08, z: .999482751}
+      distance: -4.6012392
     _underEdgeIndex: 305
     _overEdgeIndex: 254
     _underPartitionIndex: 248
     _overPartitionIndex: 338
   - _plane:
-      normal: {x: 0.9464022, y: 0.000000019251736, z: 0.3229905}
-      distance: -8.232747
+      normal: {x: .946402192, y: 1.92517362e-08, z: .322990507}
+      distance: -8.23274708
     _underEdgeIndex: 349
     _overEdgeIndex: 346
     _underPartitionIndex: 100
     _overPartitionIndex: 93
   - _plane:
-      normal: {x: 0.8091576, y: 0.0000000350232, z: 0.5875917}
-      distance: -5.466788
+      normal: {x: .80915761, y: 3.50231986e-08, z: .587591708}
+      distance: -5.46678782
     _underEdgeIndex: 420
     _overEdgeIndex: 369
     _underPartitionIndex: 0
     _overPartitionIndex: 146
   - _plane:
-      normal: {x: -0.82058495, y: 0.000000034065522, z: 0.57152456}
-      distance: 1.2082217
+      normal: {x: -.820584953, y: 3.4065522e-08, z: .57152456}
+      distance: 1.20822167
     _underEdgeIndex: 443
     _overEdgeIndex: 392
     _underPartitionIndex: 170
     _overPartitionIndex: 181
   - _plane:
-      normal: {x: 0.39152285, y: 0.000000054846314, z: 0.9201684}
-      distance: -2.0930302
+      normal: {x: .391522855, y: 5.48463142e-08, z: .9201684}
+      distance: -2.09303021
     _underEdgeIndex: 72
     _overEdgeIndex: 21
     _underPartitionIndex: 319
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.40364498, y: 0.000000054533235, z: 0.91491574}
-      distance: 2.3345065
+      normal: {x: -.403644979, y: 5.45332348e-08, z: .91491574}
+      distance: 2.33450651
     _underEdgeIndex: 95
     _overEdgeIndex: 44
     _underPartitionIndex: 157
     _overPartitionIndex: 160
   - _plane:
-      normal: {x: 0.9903455, y: 0.000000008262489, z: 0.13862155}
-      distance: -6.24733
+      normal: {x: .990345478, y: 8.26248936e-09, z: .138621554}
+      distance: -6.24733019
     _underEdgeIndex: 139
     _overEdgeIndex: 136
     _underPartitionIndex: 107
     _overPartitionIndex: 97
   - _plane:
-      normal: {x: 0.8296778, y: 0.000000033273857, z: 0.5582426}
-      distance: -2.6133955
+      normal: {x: .82967782, y: 3.32738566e-08, z: .558242619}
+      distance: -2.61339545
     _underEdgeIndex: 210
     _overEdgeIndex: 159
     _underPartitionIndex: 0
     _overPartitionIndex: 151
   - _plane:
-      normal: {x: -0.7630284, y: 0.000000038526355, z: 0.646365}
-      distance: 1.5019419
+      normal: {x: -.763028383, y: 3.85263554e-08, z: .646364987}
+      distance: 1.50194192
     _underEdgeIndex: 233
     _overEdgeIndex: 182
     _underPartitionIndex: 0
     _overPartitionIndex: 112
   - _plane:
-      normal: {x: 0.9951204, y: 0.00000000588107, z: 0.09866797}
-      distance: -3.9864283
+      normal: {x: .995120406, y: 5.88106985e-09, z: .0986679718}
+      distance: -3.98642826
     _underEdgeIndex: 277
     _overEdgeIndex: 274
     _underPartitionIndex: 190
     _overPartitionIndex: 99
   - _plane:
-      normal: {x: 0.33102003, y: 0.000000056244364, z: 0.9436238}
-      distance: -7.154142
+      normal: {x: .331020027, y: 5.62443638e-08, z: .943623781}
+      distance: -7.1541419
     _underEdgeIndex: 348
     _overEdgeIndex: 297
     _underPartitionIndex: 101
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.88321275, y: 0.00000002795295, z: 0.46897262}
-      distance: -1.0666369
+      normal: {x: -.883212745, y: 2.79529502e-08, z: .468972623}
+      distance: -1.06663692
     _underEdgeIndex: 371
     _overEdgeIndex: 320
     _underPartitionIndex: 169
     _overPartitionIndex: 116
   - _plane:
-      normal: {x: 0.9913325, y: -0.000000007830702, z: -0.13137737}
-      distance: -0.0052726944
+      normal: {x: .991332471, y: -7.83070231e-09, z: -.131377369}
+      distance: -.0052726944
     _underEdgeIndex: 415
     _overEdgeIndex: 412
     _underPartitionIndex: 194
     _overPartitionIndex: 103
   - _plane:
-      normal: {x: 0.96603256, y: -0.000000015403065, z: -0.25842053}
-      distance: -2.3829086
+      normal: {x: .966032565, y: -1.54030655e-08, z: -.258420527}
+      distance: -2.38290858
     _underEdgeIndex: 67
     _overEdgeIndex: 64
     _underPartitionIndex: 196
     _overPartitionIndex: 105
   - _plane:
-      normal: {x: 0.34641838, y: 0.000000055913937, z: 0.93808013}
-      distance: -3.6294177
+      normal: {x: .346418381, y: 5.59139366e-08, z: .938080132}
+      distance: -3.62941766
     _underEdgeIndex: 138
     _overEdgeIndex: 87
     _underPartitionIndex: 108
     _overPartitionIndex: 246
   - _plane:
-      normal: {x: -0.95020086, y: 0.00000001857509, z: 0.31163827}
-      distance: 0.4781528
+      normal: {x: -.950200856, y: 1.85750899e-08, z: .311638266}
+      distance: .478152812
     _underEdgeIndex: 161
     _overEdgeIndex: 110
     _underPartitionIndex: 117
     _overPartitionIndex: 197
   - _plane:
-      normal: {x: 0.17703445, y: 0.000000058663172, z: 0.98420465}
-      distance: -5.3018503
+      normal: {x: .177034453, y: 5.86631721e-08, z: .98420465}
+      distance: -5.30185032
     _underEdgeIndex: 276
     _overEdgeIndex: 225
     _underPartitionIndex: 0
     _overPartitionIndex: 152
   - _plane:
-      normal: {x: -0.10491607, y: 0.0000000592757, z: 0.9944811}
-      distance: -3.0034244
+      normal: {x: -.104916073, y: 5.9275699e-08, z: .994481087}
+      distance: -3.00342441
     _underEdgeIndex: 299
     _overEdgeIndex: 248
     _underPartitionIndex: 0
     _overPartitionIndex: 180
   - _plane:
-      normal: {x: -0.10491607, y: 0.0000000592757, z: 0.9944811}
-      distance: -3.0034244
+      normal: {x: -.104916073, y: 5.9275699e-08, z: .994481087}
+      distance: -3.00342441
     _underEdgeIndex: 299
     _overEdgeIndex: 248
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.93784, y: -0.000000020686867, z: -0.347068}
-      distance: -3.8326435
+      normal: {x: .937839985, y: -2.06868673e-08, z: -.347068012}
+      distance: -3.83264351
     _underEdgeIndex: 343
     _overEdgeIndex: 340
     _underPartitionIndex: 205
     _overPartitionIndex: 115
   - _plane:
-      normal: {x: 0.66449565, y: 0.000000044542087, z: 0.74729216}
-      distance: -5.786331
+      normal: {x: .664495647, y: 4.45420874e-08, z: .747292161}
+      distance: -5.78633118
     _underEdgeIndex: 414
     _overEdgeIndex: 363
     _underPartitionIndex: 0
     _overPartitionIndex: 249
   - _plane:
-      normal: {x: -0.37090838, y: 0.00000005535302, z: 0.9286695}
-      distance: -4.5502915
+      normal: {x: -.37090838, y: 5.53530199e-08, z: .928669512}
+      distance: -4.55029154
     _underEdgeIndex: 437
     _overEdgeIndex: 386
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.5936341, y: 0.00000004796595, z: 0.80473506}
-      distance: -2.245044
+      normal: {x: .593634129, y: 4.79659512e-08, z: .804735065}
+      distance: -2.24504399
     _underEdgeIndex: 66
     _overEdgeIndex: 15
     _underPartitionIndex: 298
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.48991215, y: 0.000000051961656, z: 0.8717718}
-      distance: 2.4647639
+      normal: {x: -.489912152, y: 5.19616563e-08, z: .871771812}
+      distance: 2.46476388
     _underEdgeIndex: 89
     _overEdgeIndex: 38
     _underPartitionIndex: 0
     _overPartitionIndex: 110
   - _plane:
-      normal: {x: -0.48991215, y: 0.000000051961656, z: 0.8717718}
-      distance: 2.4647639
+      normal: {x: -.489912152, y: 5.19616563e-08, z: .871771812}
+      distance: 2.46476388
     _underEdgeIndex: 89
     _overEdgeIndex: 38
     _underPartitionIndex: 0
     _overPartitionIndex: 175
   - _plane:
-      normal: {x: -0.48991215, y: 0.000000051961656, z: 0.8717718}
-      distance: 2.4647639
+      normal: {x: -.489912152, y: 5.19616563e-08, z: .871771812}
+      distance: 2.46476388
     _underEdgeIndex: 89
     _overEdgeIndex: 38
     _underPartitionIndex: 286
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.8718747, y: -0.000000029190135, z: -0.48972914}
-      distance: -3.8071764
+      normal: {x: .87187469, y: -2.91901348e-08, z: -.489729136}
+      distance: -3.80717635
     _underEdgeIndex: 133
     _overEdgeIndex: 130
     _underPartitionIndex: 199
     _overPartitionIndex: 118
   - _plane:
-      normal: {x: 0.8718747, y: -0.000000029190135, z: -0.48972914}
-      distance: -3.8071764
+      normal: {x: .87187469, y: -2.91901348e-08, z: -.489729136}
+      distance: -3.80717635
     _underEdgeIndex: 133
     _overEdgeIndex: 130
     _underPartitionIndex: 0
     _overPartitionIndex: 185
   - _plane:
-      normal: {x: 0.86974424, y: 0.000000029415066, z: 0.49350286}
-      distance: -5.200298
+      normal: {x: .869744241, y: 2.94150659e-08, z: .493502855}
+      distance: -5.20029783
     _underEdgeIndex: 227
     _overEdgeIndex: 176
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.86974424, y: 0.000000029415066, z: 0.49350286}
-      distance: -5.200298
+      normal: {x: .869744241, y: 2.94150659e-08, z: .493502855}
+      distance: -5.20029783
     _underEdgeIndex: 227
     _overEdgeIndex: 176
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9999934, y: 2.1690481e-10, z: 0.0036390587}
-      distance: -2.5860143
+      normal: {x: .999993384, y: 2.16904814e-10, z: .00363905868}
+      distance: -2.58601427
     _underEdgeIndex: 271
     _overEdgeIndex: 268
     _underPartitionIndex: 141
     _overPartitionIndex: 120
   - _plane:
-      normal: {x: 0.9999934, y: 2.1690481e-10, z: 0.0036390587}
-      distance: -2.5860143
+      normal: {x: .999993384, y: 2.16904814e-10, z: .00363905868}
+      distance: -2.58601427
     _underEdgeIndex: 271
     _overEdgeIndex: 268
     _underPartitionIndex: 132
     _overPartitionIndex: 179
   - _plane:
-      normal: {x: 0.6088987, y: 0.00000004728127, z: 0.793248}
-      distance: -7.7537146
+      normal: {x: .608898699, y: 4.72812687e-08, z: .793247998}
+      distance: -7.75371456
     _underEdgeIndex: 342
     _overEdgeIndex: 291
     _underPartitionIndex: 121
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.7982041, y: 0.00000003590507, z: 0.6023871}
-      distance: -4.528291
+      normal: {x: .798204124, y: 3.59050709e-08, z: .602387071}
+      distance: -4.52829123
     _underEdgeIndex: 365
     _overEdgeIndex: 314
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.1762954, y: -0.000000058671084, z: -0.98433733}
+      normal: {x: -.1762954, y: -5.8671084e-08, z: -.98433733}
       distance: 1.5135448
     _underEdgeIndex: 61
     _overEdgeIndex: 58
     _underPartitionIndex: 174
     _overPartitionIndex: 223
   - _plane:
-      normal: {x: 0.63021487, y: 0.000000046278288, z: 0.7764208}
-      distance: -4.628971
+      normal: {x: .63021487, y: 4.62782879e-08, z: .776420772}
+      distance: -4.6289711
     _underEdgeIndex: 132
     _overEdgeIndex: 81
     _underPartitionIndex: 128
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9981599, y: 0.0000000036142391, z: 0.060636867}
+      normal: {x: .998159885, y: 3.61423913e-09, z: .0606368668}
       distance: -7.514575
     _underEdgeIndex: 199
     _overEdgeIndex: 196
     _underPartitionIndex: 226
     _overPartitionIndex: 130
   - _plane:
-      normal: {x: 0.46491838, y: 0.000000052771192, z: 0.88535357}
-      distance: -5.3391547
+      normal: {x: .464918375, y: 5.27711919e-08, z: .885353565}
+      distance: -5.33915472
     _underEdgeIndex: 270
     _overEdgeIndex: 219
     _underPartitionIndex: 131
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.2726463, y: 0.000000057346487, z: 0.96211433}
-      distance: -2.3078895
+      normal: {x: -.272646308, y: 5.73464867e-08, z: .962114334}
+      distance: -2.30788946
     _underEdgeIndex: 293
     _overEdgeIndex: 242
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.99978864, y: 0.0000000012255482, z: 0.020561285}
-      distance: -4.9031506
+      normal: {x: .999788642, y: 1.22554822e-09, z: .0205612853}
+      distance: -4.90315056
     _underEdgeIndex: 337
     _overEdgeIndex: 334
     _underPartitionIndex: 230
     _overPartitionIndex: 134
   - _plane:
-      normal: {x: 0.99978864, y: 0.0000000012255482, z: 0.020561285}
-      distance: -4.9031506
+      normal: {x: .999788642, y: 1.22554822e-09, z: .0205612853}
+      distance: -4.90315056
     _underEdgeIndex: 337
     _overEdgeIndex: 334
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.52397716, y: 0.000000050767206, z: 0.8517323}
+      normal: {x: -.52397716, y: 5.07672056e-08, z: .851732314}
       distance: -3.8235786
     _underEdgeIndex: 431
     _overEdgeIndex: 380
     _underPartitionIndex: 0
     _overPartitionIndex: 293
   - _plane:
-      normal: {x: -0.52397716, y: 0.000000050767206, z: 0.8517323}
+      normal: {x: -.52397716, y: 5.07672056e-08, z: .851732314}
       distance: -3.8235786
     _underEdgeIndex: 431
     _overEdgeIndex: 380
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9139101, y: 0.000000024194527, z: 0.40591678}
-      distance: -2.2989395
+      normal: {x: .913910091, y: 2.41945273e-08, z: .40591678}
+      distance: -2.29893947
     _underEdgeIndex: 60
     _overEdgeIndex: 9
     _underPartitionIndex: 222
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9139101, y: 0.000000024194527, z: 0.40591678}
-      distance: -2.2989395
+      normal: {x: .913910091, y: 2.41945273e-08, z: .40591678}
+      distance: -2.29893947
     _underEdgeIndex: 60
     _overEdgeIndex: 9
     _underPartitionIndex: 0
     _overPartitionIndex: 158
   - _plane:
-      normal: {x: -0.43674672, y: 0.00000005361942, z: 0.89958453}
-      distance: 1.6884336
+      normal: {x: -.436746716, y: 5.361942e-08, z: .899584532}
+      distance: 1.68843365
     _underEdgeIndex: 83
     _overEdgeIndex: 32
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.98283213, y: -0.000000010997191, z: -0.18450223}
-      distance: -3.814637
+      normal: {x: .982832134, y: -1.09971907e-08, z: -.184502229}
+      distance: -3.81463695
     _underEdgeIndex: 127
     _overEdgeIndex: 124
     _underPartitionIndex: 236
     _overPartitionIndex: 137
   - _plane:
-      normal: {x: 0.4348676, y: 0.000000053673652, z: 0.9004944}
-      distance: -5.5027084
+      normal: {x: .434867591, y: 5.36736522e-08, z: .900494397}
+      distance: -5.50270844
     _underEdgeIndex: 198
     _overEdgeIndex: 147
     _underPartitionIndex: 0
     _overPartitionIndex: 188
   - _plane:
-      normal: {x: -0.74288446, y: 0.000000039900524, z: 0.6694197}
-      distance: -0.10188402
+      normal: {x: -.742884457, y: 3.99005238e-08, z: .669419706}
+      distance: -.101884022
     _underEdgeIndex: 221
     _overEdgeIndex: 170
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.8828716, y: 0.000000027991206, z: 0.46961445}
-      distance: -3.9078994
+      normal: {x: .882871628, y: 2.79912058e-08, z: .469614446}
+      distance: -3.90789938
     _underEdgeIndex: 265
     _overEdgeIndex: 262
     _underPartitionIndex: 142
     _overPartitionIndex: 216
   - _plane:
-      normal: {x: 0.8828716, y: 0.000000027991206, z: 0.46961445}
-      distance: -3.9078994
+      normal: {x: .882871628, y: 2.79912058e-08, z: .469614446}
+      distance: -3.90789938
     _underEdgeIndex: 265
     _overEdgeIndex: 262
     _underPartitionIndex: 0
     _overPartitionIndex: 168
   - _plane:
-      normal: {x: 0.5755905, y: 0.000000048740993, z: 0.8177381}
-      distance: -7.133972
+      normal: {x: .575590491, y: 4.87409935e-08, z: .817738116}
+      distance: -7.13397217
     _underEdgeIndex: 336
     _overEdgeIndex: 285
     _underPartitionIndex: 143
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.85798866, y: -0.000000030617045, z: -0.5136687}
-      distance: -3.428921
+      normal: {x: .857988656, y: -3.06170449e-08, z: -.513668716}
+      distance: -3.42892098
     _underEdgeIndex: 403
     _overEdgeIndex: 400
     _underPartitionIndex: 155
     _overPartitionIndex: 145
   - _plane:
-      normal: {x: 0.85798866, y: -0.000000030617045, z: -0.5136687}
-      distance: -3.428921
+      normal: {x: .857988656, y: -3.06170449e-08, z: -.513668716}
+      distance: -3.42892098
     _underEdgeIndex: 403
     _overEdgeIndex: 400
     _underPartitionIndex: 233
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.6927938, y: 0.00000004298304, z: 0.72113574}
-      distance: -4.338008
+      normal: {x: .692793787, y: 4.29830394e-08, z: .721135736}
+      distance: -4.33800793
     _underEdgeIndex: 126
     _overEdgeIndex: 75
     _underPartitionIndex: 148
     _overPartitionIndex: 198
   - _plane:
-      normal: {x: 0.8269284, y: 0.000000033516134, z: 0.56230736}
-      distance: -7.3269086
+      normal: {x: .826928377, y: 3.35161339e-08, z: .562307358}
+      distance: -7.32690859
     _underEdgeIndex: 149
     _overEdgeIndex: 98
     _underPartitionIndex: 0
     _overPartitionIndex: 189
   - _plane:
-      normal: {x: 0.97998273, y: 0.0000000118662555, z: 0.19908272}
-      distance: -6.7843885
+      normal: {x: .979982734, y: 1.18662555e-08, z: .199082717}
+      distance: -6.78438854
     _underEdgeIndex: 193
     _overEdgeIndex: 190
     _underPartitionIndex: 247
     _overPartitionIndex: 150
   - _plane:
-      normal: {x: 0.97998273, y: 0.0000000118662555, z: 0.19908272}
-      distance: -6.7843885
+      normal: {x: .979982734, y: 1.18662555e-08, z: .199082717}
+      distance: -6.78438854
     _underEdgeIndex: 193
     _overEdgeIndex: 190
     _underPartitionIndex: 0
     _overPartitionIndex: 177
   - _plane:
-      normal: {x: 0.92086923, y: -0.00000002323816, z: -0.3898716}
-      distance: -0.1097486
+      normal: {x: .920869231, y: -2.32381598e-08, z: -.389871597}
+      distance: -.109748602
     _underEdgeIndex: 264
     _overEdgeIndex: 213
     _underPartitionIndex: 0
     _overPartitionIndex: 215
   - _plane:
-      normal: {x: 0.92086923, y: -0.00000002323816, z: -0.3898716}
-      distance: -0.1097486
+      normal: {x: .920869231, y: -2.32381598e-08, z: -.389871597}
+      distance: -.109748602
     _underEdgeIndex: 264
     _overEdgeIndex: 213
     _underPartitionIndex: 164
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.5700134, y: 0.00000004897329, z: 0.8216354}
-      distance: -0.5272694
+      normal: {x: -.570013404, y: 4.89732912e-08, z: .821635425}
+      distance: -.527269423
     _underEdgeIndex: 287
     _overEdgeIndex: 236
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9960002, y: -0.0000000053257825, z: -0.089351796}
-      distance: -3.383867
+      normal: {x: .996000171, y: -5.32578248e-09, z: -.0893517956}
+      distance: -3.38386703
     _underEdgeIndex: 331
     _overEdgeIndex: 328
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.7380565, y: 0.000000040217582, z: 0.674739}
-      distance: -9.913758
+      normal: {x: .738056481, y: 4.02175822e-08, z: .674739003}
+      distance: -9.91375828
     _underEdgeIndex: 402
     _overEdgeIndex: 351
     _underPartitionIndex: 154
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.8204045, y: 0.00000003408096, z: 0.57178354}
-      distance: -1.3658307
+      normal: {x: -.82040453, y: 3.40809585e-08, z: .571783543}
+      distance: -1.36583066
     _underEdgeIndex: 425
     _overEdgeIndex: 374
     _underPartitionIndex: 0
     _overPartitionIndex: 306
   - _plane:
-      normal: {x: 0.29256827, y: 0.000000056996626, z: 0.95624465}
-      distance: -0.9744162
+      normal: {x: .292568266, y: 5.69966261e-08, z: .956244648}
+      distance: -.974416196
     _underEdgeIndex: 54
     _overEdgeIndex: 3
     _underPartitionIndex: 274
     _overPartitionIndex: 303
   - _plane:
-      normal: {x: -0.47747064, y: 0.00000005237149, z: 0.87864774}
-      distance: 1.4217402
+      normal: {x: -.477470636, y: 5.23714903e-08, z: .878647745}
+      distance: 1.42174017
     _underEdgeIndex: 77
     _overEdgeIndex: 26
     _underPartitionIndex: 275
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9527334, y: 0.000000018108349, z: 0.30380765}
-      distance: -4.0907574
+      normal: {x: .952733397, y: 1.81083486e-08, z: .303807646}
+      distance: -4.09075737
     _underEdgeIndex: 121
     _overEdgeIndex: 118
     _underPartitionIndex: 159
     _overPartitionIndex: 224
   - _plane:
-      normal: {x: 0.255388, y: 0.000000057628082, z: 0.96683866}
-      distance: -3.968725
+      normal: {x: .255387992, y: 5.76280819e-08, z: .966838658}
+      distance: -3.96872497
     _underEdgeIndex: 192
     _overEdgeIndex: 141
     _underPartitionIndex: 161
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.9456568, y: 0.000000019381437, z: 0.32516652}
-      distance: 0.9834355
+      normal: {x: -.945656776, y: 1.93814369e-08, z: .325166523}
+      distance: .983435512
     _underEdgeIndex: 215
     _overEdgeIndex: 164
     _underPartitionIndex: 0
     _overPartitionIndex: 240
   - _plane:
-      normal: {x: 0.63023657, y: 0.00000004627724, z: 0.7764032}
-      distance: -6.6620064
+      normal: {x: .630236566, y: 4.62772398e-08, z: .776403189}
+      distance: -6.66200638
     _underEdgeIndex: 330
     _overEdgeIndex: 279
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.63023657, y: 0.00000004627724, z: 0.7764032}
-      distance: -6.6620064
+      normal: {x: .630236566, y: 4.62772398e-08, z: .776403189}
+      distance: -6.66200638
     _underEdgeIndex: 330
     _overEdgeIndex: 279
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.5855919, y: 0.00000004831589, z: 0.81060606}
-      distance: 0.49629983
+      normal: {x: -.585591912, y: 4.831589e-08, z: .810606062}
+      distance: .496299833
     _underEdgeIndex: 353
     _overEdgeIndex: 302
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.88247263, y: 0.000000028035865, z: 0.47036374}
-      distance: -9.199806
+      normal: {x: .882472634, y: 2.80358652e-08, z: .470363736}
+      distance: -9.19980621
     _underEdgeIndex: 397
     _overEdgeIndex: 394
     _underPartitionIndex: 171
     _overPartitionIndex: 242
   - _plane:
-      normal: {x: 0.99486643, y: -0.0000000060318097, z: -0.10119697}
-      distance: -7.9589314
+      normal: {x: .994866431, y: -6.03180972e-09, z: -.101196967}
+      distance: -7.95893145
     _underEdgeIndex: 49
     _overEdgeIndex: 46
     _underPartitionIndex: 182
     _overPartitionIndex: 267
   - _plane:
-      normal: {x: 0.99486643, y: -0.0000000060318097, z: -0.10119697}
-      distance: -7.9589314
+      normal: {x: .994866431, y: -6.03180972e-09, z: -.101196967}
+      distance: -7.95893145
     _underEdgeIndex: 49
     _overEdgeIndex: 46
     _underPartitionIndex: 0
     _overPartitionIndex: 268
   - _plane:
-      normal: {x: 0.83649427, y: -0.0000000326619, z: -0.5479757}
-      distance: -2.0562625
+      normal: {x: .836494267, y: -3.26619016e-08, z: -.547975719}
+      distance: -2.05626249
     _underEdgeIndex: 120
     _overEdgeIndex: 69
     _underPartitionIndex: 183
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.83649427, y: -0.0000000326619, z: -0.5479757}
-      distance: -2.0562625
+      normal: {x: .836494267, y: -3.26619016e-08, z: -.547975719}
+      distance: -2.05626249
     _underEdgeIndex: 120
     _overEdgeIndex: 69
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.65618145, y: 0.00000004497786, z: 0.7546032}
-      distance: 3.2127159
+      normal: {x: -.656181455, y: 4.49778597e-08, z: .754603207}
+      distance: 3.21271586
     _underEdgeIndex: 143
     _overEdgeIndex: 92
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.65618145, y: 0.00000004497786, z: 0.7546032}
-      distance: 3.2127159
+      normal: {x: -.656181455, y: 4.49778597e-08, z: .754603207}
+      distance: 3.21271586
     _underEdgeIndex: 143
     _overEdgeIndex: 92
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.7219951, y: -0.000000041240348, z: -0.69189817}
-      distance: -2.0472474
+      normal: {x: .721995115, y: -4.1240348e-08, z: -.691898167}
+      distance: -2.04724741
     _underEdgeIndex: 187
     _overEdgeIndex: 184
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.67190295, y: 0.000000044145544, z: 0.74063927}
-      distance: -3.543013
+      normal: {x: .671902955, y: 4.41455441e-08, z: .740639269}
+      distance: -3.5430131
     _underEdgeIndex: 258
     _overEdgeIndex: 207
     _underPartitionIndex: 176
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.67190295, y: 0.000000044145544, z: 0.74063927}
-      distance: -3.543013
+      normal: {x: .671902955, y: 4.41455441e-08, z: .740639269}
+      distance: -3.5430131
     _underEdgeIndex: 258
     _overEdgeIndex: 207
     _underPartitionIndex: 279
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.67190295, y: 0.000000044145544, z: 0.74063927}
-      distance: -3.543013
+      normal: {x: .671902955, y: 4.41455441e-08, z: .740639269}
+      distance: -3.5430131
     _underEdgeIndex: 258
     _overEdgeIndex: 207
     _underPartitionIndex: 251
     _overPartitionIndex: 191
   - _plane:
-      normal: {x: 0.9185196, y: 0.000000023566212, z: 0.3953754}
-      distance: -5.522472
+      normal: {x: .918519616, y: 2.35662121e-08, z: .395375401}
+      distance: -5.5224719
     _underEdgeIndex: 281
     _overEdgeIndex: 230
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9185196, y: 0.000000023566212, z: 0.3953754}
-      distance: -5.522472
+      normal: {x: .918519616, y: 2.35662121e-08, z: .395375401}
+      distance: -5.5224719
     _underEdgeIndex: 281
     _overEdgeIndex: 230
     _underPartitionIndex: 0
     _overPartitionIndex: 229
   - _plane:
-      normal: {x: 0.9926933, y: -0.000000007192191, z: -0.12066493}
-      distance: -2.3794568
+      normal: {x: .992693305, y: -7.19219084e-09, z: -.120664932}
+      distance: -2.37945676
     _underEdgeIndex: 325
     _overEdgeIndex: 322
     _underPartitionIndex: 204
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9926933, y: -0.000000007192191, z: -0.12066493}
-      distance: -2.3794568
+      normal: {x: .992693305, y: -7.19219084e-09, z: -.120664932}
+      distance: -2.37945676
     _underEdgeIndex: 325
     _overEdgeIndex: 322
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.8265725, y: -0.000000033547302, z: -0.56283027}
-      distance: -2.3767722
+      normal: {x: .826572478, y: -3.35473018e-08, z: -.562830269}
+      distance: -2.37677217
     _underEdgeIndex: 396
     _overEdgeIndex: 345
     _underPartitionIndex: 193
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.8265725, y: -0.000000033547302, z: -0.56283027}
-      distance: -2.3767722
+      normal: {x: .826572478, y: -3.35473018e-08, z: -.562830269}
+      distance: -2.37677217
     _underEdgeIndex: 396
     _overEdgeIndex: 345
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.32999083, y: 0.000000056265847, z: 0.94398415}
-      distance: -5.837287
+      normal: {x: -.329990834, y: 5.62658471e-08, z: .943984151}
+      distance: -5.83728695
     _underEdgeIndex: 419
     _overEdgeIndex: 368
     _underPartitionIndex: 0
     _overPartitionIndex: 315
   - _plane:
-      normal: {x: -0.5393064, y: 0.00000005019365, z: 0.8421096}
-      distance: 1.189855
+      normal: {x: -.539306402, y: 5.01936483e-08, z: .842109621}
+      distance: 1.18985498
     _underEdgeIndex: 71
     _overEdgeIndex: 20
     _underPartitionIndex: 284
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9991904, y: -0.0000000023980349, z: -0.040232345}
+      normal: {x: .99919039, y: -2.39803488e-09, z: -.0402323455}
       distance: -2.3332746
     _underEdgeIndex: 115
     _overEdgeIndex: 112
     _underPartitionIndex: 210
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.13613243, y: 0.00000005904977, z: 0.99069065}
-      distance: -2.8492324
+      normal: {x: .136132434, y: 5.90497713e-08, z: .990690649}
+      distance: -2.84923244
     _underEdgeIndex: 186
     _overEdgeIndex: 135
     _underPartitionIndex: 186
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.06682919, y: 0.0000000594714, z: 0.99776447}
-      distance: -3.1349127
+      normal: {x: -.0668291897, y: 5.94714002e-08, z: .997764468}
+      distance: -3.13491273
     _underEdgeIndex: 209
     _overEdgeIndex: 158
     _underPartitionIndex: 254
     _overPartitionIndex: 322
   - _plane:
-      normal: {x: 0.87511426, y: 0.000000028843669, z: 0.4839164}
-      distance: -8.437798
+      normal: {x: .875114262, y: 2.88436688e-08, z: .483916402}
+      distance: -8.43779755
     _underEdgeIndex: 253
     _overEdgeIndex: 250
     _underPartitionIndex: 214
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.87511426, y: 0.000000028843669, z: 0.4839164}
-      distance: -8.437798
+      normal: {x: .875114262, y: 2.88436688e-08, z: .483916402}
+      distance: -8.43779755
     _underEdgeIndex: 253
     _overEdgeIndex: 250
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49614298, y: 0.00000005175119, z: 0.86824083}
-      distance: -6.2548165
+      normal: {x: .496142983, y: 5.175119e-08, z: .868240833}
+      distance: -6.25481653
     _underEdgeIndex: 324
     _overEdgeIndex: 273
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.51888305, y: 0.00000005095275, z: 0.8548452}
-      distance: -0.7966348
+      normal: {x: -.518883049, y: 5.09527496e-08, z: .854845226}
+      distance: -.796634793
     _underEdgeIndex: 347
     _overEdgeIndex: 296
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.0823425, y: -0.00000005940224, z: -0.9966041}
-      distance: 6.7804317
+      normal: {x: -.082342498, y: -5.94022396e-08, z: -.996604085}
+      distance: 6.78043175
     _underEdgeIndex: 391
     _overEdgeIndex: 388
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.98937964, y: -0.000000008663817, z: -0.14535472}
-      distance: -6.9256573
+      normal: {x: .989379644, y: -8.66381722e-09, z: -.145354718}
+      distance: -6.92565727
     _underEdgeIndex: 43
     _overEdgeIndex: 40
     _underPartitionIndex: 287
     _overPartitionIndex: 253
   - _plane:
-      normal: {x: 0.65368384, y: 0.000000045106876, z: 0.75676775}
-      distance: -2.7660587
+      normal: {x: .653683841, y: 4.51068765e-08, z: .75676775}
+      distance: -2.76605868
     _underEdgeIndex: 114
     _overEdgeIndex: 63
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.5030623, y: 0.00000005151333, z: 0.8642502}
+      normal: {x: -.503062308, y: 5.15133287e-08, z: .864250183}
       distance: 1.6561321
     _underEdgeIndex: 137
     _overEdgeIndex: 86
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.5030623, y: 0.00000005151333, z: 0.8642502}
+      normal: {x: -.503062308, y: 5.15133287e-08, z: .864250183}
       distance: 1.6561321
     _underEdgeIndex: 137
     _overEdgeIndex: 86
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.5030623, y: 0.00000005151333, z: 0.8642502}
+      normal: {x: -.503062308, y: 5.15133287e-08, z: .864250183}
       distance: 1.6561321
     _underEdgeIndex: 137
     _overEdgeIndex: 86
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.94887596, y: 0.000000018814168, z: 0.31564933}
+      normal: {x: .948875964, y: 1.8814168e-08, z: .315649331}
       distance: -5.4018445
     _underEdgeIndex: 181
     _overEdgeIndex: 178
     _underPartitionIndex: 213
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.23544411, y: 0.000000057929036, z: 0.9718879}
-      distance: -5.0874333
+      normal: {x: .235444114, y: 5.79290358e-08, z: .971887887}
+      distance: -5.08743334
     _underEdgeIndex: 252
     _overEdgeIndex: 201
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.23544411, y: 0.000000057929036, z: 0.9718879}
-      distance: -5.0874333
+      normal: {x: .235444114, y: 5.79290358e-08, z: .971887887}
+      distance: -5.08743334
     _underEdgeIndex: 252
     _overEdgeIndex: 201
     _underPartitionIndex: 201
     _overPartitionIndex: 271
   - _plane:
-      normal: {x: -0.65200275, y: 0.00000004519324, z: 0.7582167}
+      normal: {x: -.652002752, y: 4.51932394e-08, z: .758216679}
       distance: -1.2975992
     _underEdgeIndex: 275
     _overEdgeIndex: 224
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.92237157, y: 0.00000002302552, z: 0.38630408}
-      distance: -3.955003
+      normal: {x: .922371566, y: 2.30255193e-08, z: .38630408}
+      distance: -3.95500302
     _underEdgeIndex: 319
     _overEdgeIndex: 316
     _underPartitionIndex: 228
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.92237157, y: 0.00000002302552, z: 0.38630408}
-      distance: -3.955003
+      normal: {x: .922371566, y: 2.30255193e-08, z: .38630408}
+      distance: -3.95500302
     _underEdgeIndex: 319
     _overEdgeIndex: 316
     _underPartitionIndex: 217
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.8688547, y: 0.000000029508305, z: 0.49506718}
-      distance: -8.230748
+      normal: {x: .868854702, y: 2.95083051e-08, z: .495067179}
+      distance: -8.23074818
     _underEdgeIndex: 390
     _overEdgeIndex: 339
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.5563433, y: 0.000000049528637, z: 0.8309526}
-      distance: -5.2389603
+      normal: {x: -.556343317, y: 4.95286372e-08, z: .830952585}
+      distance: -5.23896027
     _underEdgeIndex: 413
     _overEdgeIndex: 362
     _underPartitionIndex: 257
     _overPartitionIndex: 255
   - _plane:
-      normal: {x: 0.8364547, y: -0.000000032665504, z: -0.54803616}
-      distance: -2.5783231
+      normal: {x: .83645469, y: -3.26655041e-08, z: -.548036158}
+      distance: -2.57832313
     _underEdgeIndex: 457
     _overEdgeIndex: 454
     _underPartitionIndex: 259
     _overPartitionIndex: 207
   - _plane:
-      normal: {x: -0.2953905, y: 0.000000056944888, z: 0.9553766}
-      distance: 0.018548258
+      normal: {x: -.295390487, y: 5.69448879e-08, z: .955376625}
+      distance: .0185482576
     _underEdgeIndex: 65
     _overEdgeIndex: 14
     _underPartitionIndex: 297
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.06284635, y: -0.000000059486826, z: -0.9980232}
-      distance: 2.0491605
+      normal: {x: -.0628463477, y: -5.94868261e-08, z: -.998023212}
+      distance: 2.04916048
     _underEdgeIndex: 109
     _overEdgeIndex: 106
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.20376906, y: 0.000000058354086, z: 0.979019}
+      normal: {x: .203769058, y: 5.8354086e-08, z: .979018986}
       distance: -3.6600883
     _underEdgeIndex: 180
     _overEdgeIndex: 129
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.20376906, y: 0.000000058354086, z: 0.979019}
+      normal: {x: .203769058, y: 5.8354086e-08, z: .979018986}
       distance: -3.6600883
     _underEdgeIndex: 180
     _overEdgeIndex: 129
     _underPartitionIndex: 211
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.20376906, y: 0.000000058354086, z: 0.979019}
+      normal: {x: .203769058, y: 5.8354086e-08, z: .979018986}
       distance: -3.6600883
     _underEdgeIndex: 180
     _overEdgeIndex: 129
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.36311346, y: 0.00000005553633, z: 0.93174493}
-      distance: 0.6657204
+      normal: {x: -.363113463, y: 5.55363293e-08, z: .931744933}
+      distance: .665720403
     _underEdgeIndex: 203
     _overEdgeIndex: 152
     _underPartitionIndex: 256
     _overPartitionIndex: 288
   - _plane:
-      normal: {x: 0.9950428, y: -0.0000000059275647, z: -0.099448025}
-      distance: -6.509003
+      normal: {x: .995042801, y: -5.92756466e-09, z: -.0994480252}
+      distance: -6.50900316
     _underEdgeIndex: 247
     _overEdgeIndex: 244
     _underPartitionIndex: 239
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9950428, y: -0.0000000059275647, z: -0.099448025}
-      distance: -6.509003
+      normal: {x: .995042801, y: -5.92756466e-09, z: -.0994480252}
+      distance: -6.50900316
     _underEdgeIndex: 247
     _overEdgeIndex: 244
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.31164005, y: 0.000000056636356, z: 0.95020026}
-      distance: -5.688632
+      normal: {x: .311640054, y: 5.6636356e-08, z: .95020026}
+      distance: -5.68863201
     _underEdgeIndex: 318
     _overEdgeIndex: 267
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.32797554, y: 0.000000056307695, z: 0.94468623}
+      normal: {x: -.327975541, y: 5.63076945e-08, z: .944686234}
       distance: -2.9156003
     _underEdgeIndex: 341
     _overEdgeIndex: 290
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9976021, y: -0.0000000041252726, z: -0.06921058}
+      normal: {x: .997602105, y: -4.12527257e-09, z: -.0692105815}
       distance: -3.9341495
     _underEdgeIndex: 385
     _overEdgeIndex: 382
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.028339183, y: 0.000000059580714, z: 0.9995984}
-      distance: -6.8777437
+      normal: {x: .028339183, y: 5.95807137e-08, z: .999598384}
+      distance: -6.87774372
     _underEdgeIndex: 456
     _overEdgeIndex: 405
     _underPartitionIndex: 292
     _overPartitionIndex: 252
   - _plane:
-      normal: {x: 0.9958965, y: -0.0000000053941824, z: -0.09049936}
-      distance: -5.9753785
+      normal: {x: .995896518, y: -5.39418243e-09, z: -.0904993564}
+      distance: -5.97537851
     _underEdgeIndex: 37
     _overEdgeIndex: 34
     _underPartitionIndex: 266
     _overPartitionIndex: 260
   - _plane:
-      normal: {x: 0.9958965, y: -0.0000000053941824, z: -0.09049936}
-      distance: -5.9753785
+      normal: {x: .995896518, y: -5.39418243e-09, z: -.0904993564}
+      distance: -5.97537851
     _underEdgeIndex: 37
     _overEdgeIndex: 34
     _underPartitionIndex: 0
     _overPartitionIndex: 261
   - _plane:
-      normal: {x: 0.95595545, y: 0.000000017494676, z: 0.29351193}
+      normal: {x: .955955446, y: 1.74946759e-08, z: .293511927}
       distance: -1.6833632
     _underEdgeIndex: 108
     _overEdgeIndex: 57
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.27458838, y: 0.000000057313564, z: 0.9615619}
-      distance: -0.1415279
+      normal: {x: -.274588376, y: 5.73135637e-08, z: .961561918}
+      distance: -.141527906
     _underEdgeIndex: 131
     _overEdgeIndex: 80
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.949125, y: -0.00000001876948, z: -0.3148996}
-      distance: -2.9641922
+      normal: {x: .949124992, y: -1.87694802e-08, z: -.314899594}
+      distance: -2.96419215
     _underEdgeIndex: 175
     _overEdgeIndex: 172
     _underPartitionIndex: 245
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.949125, y: -0.00000001876948, z: -0.3148996}
-      distance: -2.9641922
+      normal: {x: .949124992, y: -1.87694802e-08, z: -.314899594}
+      distance: -2.96419215
     _underEdgeIndex: 175
     _overEdgeIndex: 172
     _underPartitionIndex: 0
     _overPartitionIndex: 225
   - _plane:
-      normal: {x: 0.35508135, y: 0.000000055720538, z: 0.93483543}
-      distance: -5.4518456
+      normal: {x: .35508135, y: 5.57205375e-08, z: .934835434}
+      distance: -5.45184565
     _underEdgeIndex: 246
     _overEdgeIndex: 195
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.30421144, y: 0.000000056779662, z: 0.95260453}
-      distance: -3.6780999
+      normal: {x: -.304211438, y: 5.67796619e-08, z: .952604532}
+      distance: -3.67809987
     _underEdgeIndex: 269
     _overEdgeIndex: 218
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.30421144, y: 0.000000056779662, z: 0.95260453}
-      distance: -3.6780999
+      normal: {x: -.304211438, y: 5.67796619e-08, z: .952604532}
+      distance: -3.67809987
     _underEdgeIndex: 269
     _overEdgeIndex: 218
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.95063484, y: -0.000000018496026, z: -0.3103118}
-      distance: 0.46507546
+      normal: {x: .950634837, y: -1.8496026e-08, z: -.310311794}
+      distance: .465075463
     _underEdgeIndex: 313
     _overEdgeIndex: 310
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.4708242, y: 0.000000052584834, z: 0.88222706}
-      distance: -7.514183
+      normal: {x: .470824212, y: 5.25848343e-08, z: .882227063}
+      distance: -7.51418304
     _underEdgeIndex: 384
     _overEdgeIndex: 333
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.4708242, y: 0.000000052584834, z: 0.88222706}
-      distance: -7.514183
+      normal: {x: .470824212, y: 5.25848343e-08, z: .882227063}
+      distance: -7.51418304
     _underEdgeIndex: 384
     _overEdgeIndex: 333
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49299815, y: 0.000000051857857, z: 0.8700304}
-      distance: -1.0837941
+      normal: {x: -.492998153, y: 5.18578567e-08, z: .870030403}
+      distance: -1.08379412
     _underEdgeIndex: 407
     _overEdgeIndex: 356
     _underPartitionIndex: 262
     _overPartitionIndex: 291
   - _plane:
-      normal: {x: 0.9042865, y: 0.000000025446788, z: 0.42692623}
-      distance: -9.534323
+      normal: {x: .904286504, y: 2.54467878e-08, z: .426926225}
+      distance: -9.53432274
     _underEdgeIndex: 451
     _overEdgeIndex: 448
     _underPartitionIndex: 243
     _overPartitionIndex: 295
   - _plane:
-      normal: {x: -0.81736994, y: 0.00000003433903, z: 0.5761133}
-      distance: 0.36961266
+      normal: {x: -.817369938, y: 3.43390312e-08, z: .576113284}
+      distance: .369612664
     _underEdgeIndex: 59
     _overEdgeIndex: 8
     _underPartitionIndex: 308
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.81736994, y: 0.00000003433903, z: 0.5761133}
-      distance: 0.36961266
+      normal: {x: -.817369938, y: 3.43390312e-08, z: .576113284}
+      distance: .369612664
     _underEdgeIndex: 59
     _overEdgeIndex: 8
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.5619289, y: 0.000000049304106, z: 0.8271856}
+      normal: {x: .561928928, y: 4.93041057e-08, z: .827185571}
       distance: -4.4665947
     _underEdgeIndex: 174
     _overEdgeIndex: 123
     _underPartitionIndex: 235
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.5619289, y: 0.000000049304106, z: 0.8271856}
+      normal: {x: .561928928, y: 4.93041057e-08, z: .827185571}
       distance: -4.4665947
     _underEdgeIndex: 174
     _overEdgeIndex: 123
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.5457648, y: 0.000000049945026, z: 0.8379384}
-      distance: 1.8875206
+      normal: {x: -.545764804, y: 4.99450259e-08, z: .837938428}
+      distance: 1.88752055
     _underEdgeIndex: 197
     _overEdgeIndex: 146
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.8980043, y: -0.000000026225258, z: -0.4399868}
-      distance: -3.3635361
+      normal: {x: .898004293, y: -2.62252584e-08, z: -.439986795}
+      distance: -3.36353612
     _underEdgeIndex: 241
     _overEdgeIndex: 238
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.33976662, y: 0.000000056058756, z: 0.9405098}
+      normal: {x: .339766622, y: 5.60587559e-08, z: .940509796}
       distance: -5.3060503
     _underEdgeIndex: 312
     _overEdgeIndex: 261
     _underPartitionIndex: 312
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.33897492, y: 0.00000005607578, z: 0.9407954}
-      distance: -3.407684
+      normal: {x: -.338974923, y: 5.60757805e-08, z: .940795422}
+      distance: -3.40768409
     _underEdgeIndex: 335
     _overEdgeIndex: 284
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.33897492, y: 0.00000005607578, z: 0.9407954}
-      distance: -3.407684
+      normal: {x: -.338974923, y: 5.60757805e-08, z: .940795422}
+      distance: -3.40768409
     _underEdgeIndex: 335
     _overEdgeIndex: 284
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9998101, y: -0.0000000011615033, z: -0.01948679}
-      distance: -3.4131773
+      normal: {x: .9998101, y: -1.16150334e-09, z: -.0194867905}
+      distance: -3.41317725
     _underEdgeIndex: 379
     _overEdgeIndex: 376
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9998101, y: -0.0000000011615033, z: -0.01948679}
-      distance: -3.4131773
+      normal: {x: .9998101, y: -1.16150334e-09, z: -.0194867905}
+      distance: -3.41317725
     _underEdgeIndex: 379
     _overEdgeIndex: 376
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.026050957, y: 0.000000059584423, z: 0.9996606}
-      distance: -7.283243
+      normal: {x: .0260509569, y: 5.95844227e-08, z: .999660611}
+      distance: -7.28324318
     _underEdgeIndex: 450
     _overEdgeIndex: 399
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9952047, y: -0.000000005830202, z: -0.09781455}
-      distance: -4.976023
+      normal: {x: .995204687, y: -5.8302021e-09, z: -.0978145525}
+      distance: -4.9760232
     _underEdgeIndex: 31
     _overEdgeIndex: 28
     _underPartitionIndex: 276
     _overPartitionIndex: 265
   - _plane:
-      normal: {x: -0.095200956, y: 0.00000005933393, z: 0.9954581}
-      distance: -1.5244656
+      normal: {x: -.0952009559, y: 5.93339315e-08, z: .995458126}
+      distance: -1.52446556
     _underEdgeIndex: 125
     _overEdgeIndex: 74
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.095200956, y: 0.00000005933393, z: 0.9954581}
-      distance: -1.5244656
+      normal: {x: -.0952009559, y: 5.93339315e-08, z: .995458126}
+      distance: -1.52446556
     _underEdgeIndex: 125
     _overEdgeIndex: 74
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.97598004, y: 0.000000012985474, z: 0.21786009}
-      distance: -3.415375
+      normal: {x: .975980043, y: 1.2985474e-08, z: .217860088}
+      distance: -3.41537499
     _underEdgeIndex: 169
     _overEdgeIndex: 166
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.97598004, y: 0.000000012985474, z: 0.21786009}
-      distance: -3.415375
+      normal: {x: .975980043, y: 1.2985474e-08, z: .217860088}
+      distance: -3.41537499
     _underEdgeIndex: 169
     _overEdgeIndex: 166
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.20402092, y: 0.000000058350956, z: 0.97896653}
-      distance: -4.113048
+      normal: {x: .204020917, y: 5.83509561e-08, z: .978966534}
+      distance: -4.11304808
     _underEdgeIndex: 240
     _overEdgeIndex: 189
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.09661204, y: 0.000000059325828, z: 0.9953221}
-      distance: -3.676748
+      normal: {x: -.0966120437, y: 5.93258278e-08, z: .995322108}
+      distance: -3.67674804
     _underEdgeIndex: 263
     _overEdgeIndex: 212
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.55840766, y: 0.000000049446033, z: 0.8295667}
-      distance: -7.1192946
+      normal: {x: .558407664, y: 4.9446033e-08, z: .829566717}
+      distance: -7.11929464
     _underEdgeIndex: 378
     _overEdgeIndex: 327
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.028609443, y: 0.000000059580252, z: 0.9995907}
-      distance: -6.013171
+      normal: {x: -.0286094435, y: 5.95802518e-08, z: .999590695}
+      distance: -6.0131712
     _underEdgeIndex: 401
     _overEdgeIndex: 350
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.9413002, y: 0.00000002012078, z: 0.33757064}
-      distance: -8.181455
+      normal: {x: .941300213, y: 2.01207797e-08, z: .337570637}
+      distance: -8.18145466
     _underEdgeIndex: 445
     _overEdgeIndex: 442
     _underPartitionIndex: 273
     _overPartitionIndex: 264
   - _plane:
-      normal: {x: 0.91916764, y: -0.000000023476275, z: -0.3938665}
-      distance: -6.736634
+      normal: {x: .919167638, y: -2.34762751e-08, z: -.393866509}
+      distance: -6.73663378
     _underEdgeIndex: 97
     _overEdgeIndex: 94
     _underPartitionIndex: 0
     _overPartitionIndex: 333
   - _plane:
-      normal: {x: 0.37731525, y: 0.000000055198964, z: 0.9260849}
-      distance: -3.5550618
+      normal: {x: .377315253, y: 5.51989636e-08, z: .926084876}
+      distance: -3.55506182
     _underEdgeIndex: 168
     _overEdgeIndex: 117
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.6537101, y: 0.000000045105526, z: 0.7567451}
+      normal: {x: -.653710127, y: 4.51055264e-08, z: .7567451}
       distance: 2.3860507
     _underEdgeIndex: 191
     _overEdgeIndex: 140
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.6537101, y: 0.000000045105526, z: 0.7567451}
+      normal: {x: -.653710127, y: 4.51055264e-08, z: .7567451}
       distance: 2.3860507
     _underEdgeIndex: 191
     _overEdgeIndex: 140
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -8.000001
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -8.00000095
     _underEdgeIndex: 497
     _overEdgeIndex: 255
     _underPartitionIndex: 272
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -5.999998
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -5.99999809
     _underEdgeIndex: 514
     _overEdgeIndex: 416
     _underPartitionIndex: 314
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -3.499999
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -3.49999905
     _underEdgeIndex: 496
     _overEdgeIndex: 206
     _underPartitionIndex: 280
     _overPartitionIndex: 311
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -3.499999
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -3.49999905
     _underEdgeIndex: 496
     _overEdgeIndex: 206
     _underPartitionIndex: 281
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
       distance: -11
     _underEdgeIndex: 529
     _overEdgeIndex: 459
     _underPartitionIndex: 278
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 3.4999995
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 3.49999952
     _underEdgeIndex: 478
     _overEdgeIndex: 42
     _underPartitionIndex: 277
     _overPartitionIndex: 0
   - _plane:
       normal: {x: -1, y: 0, z: 0}
-      distance: 0.5
+      distance: .5
     _underEdgeIndex: 492
     _overEdgeIndex: 157
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -6.4999986
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -6.49999857
     _underEdgeIndex: 512
     _overEdgeIndex: 410
     _underPartitionIndex: 289
@@ -1815,35 +1815,35 @@ MonoBehaviour:
     _overPartitionIndex: 0
   - _plane:
       normal: {x: -1, y: 0, z: 0}
-      distance: 0.5
+      distance: .5
     _underEdgeIndex: 508
     _overEdgeIndex: 361
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
       normal: {x: -1, y: 0, z: 0}
-      distance: 0.5
+      distance: .5
     _underEdgeIndex: 508
     _overEdgeIndex: 361
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
       distance: -10.5
     _underEdgeIndex: 527
     _overEdgeIndex: 453
     _underPartitionIndex: 296
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 2.9999995
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 2.99999952
     _underEdgeIndex: 476
     _overEdgeIndex: 36
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 2.9999995
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 2.99999952
     _underEdgeIndex: 476
     _overEdgeIndex: 36
     _underPartitionIndex: 285
@@ -1856,78 +1856,78 @@ MonoBehaviour:
     _underPartitionIndex: 302
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.4999999, y: -0.000000051619143, z: -0.86602545}
+      normal: {x: -.499999911, y: -5.16191427e-08, z: -.866025448}
       distance: 1.5
     _underEdgeIndex: 486
     _overEdgeIndex: 102
     _underPartitionIndex: 301
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
       distance: -10
     _underEdgeIndex: 525
     _overEdgeIndex: 447
     _underPartitionIndex: 307
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 2.4999998
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 2.49999976
     _underEdgeIndex: 474
     _overEdgeIndex: 30
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 2.4999998
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 2.49999976
     _underEdgeIndex: 474
     _overEdgeIndex: 30
     _underPartitionIndex: 299
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -4.4999995
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -4.49999952
     _underEdgeIndex: 483
     _overEdgeIndex: 53
     _underPartitionIndex: 340
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -4.4999995
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -4.49999952
     _underEdgeIndex: 483
     _overEdgeIndex: 53
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -4.4999995
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -4.49999952
     _underEdgeIndex: 483
     _overEdgeIndex: 53
     _underPartitionIndex: 310
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: -0.000000051619136, z: -0.8660253}
-      distance: 4.4999986
+      normal: {x: -.500000238, y: -5.16191356e-08, z: -.866025329}
+      distance: 4.49999857
     _underEdgeIndex: 502
     _overEdgeIndex: 306
     _underPartitionIndex: 305
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.4999999, y: -0.000000051619143, z: -0.86602545}
-      distance: -1.4999993
+      normal: {x: .499999911, y: -5.16191427e-08, z: -.866025448}
+      distance: -1.49999928
     _underEdgeIndex: 499
     _overEdgeIndex: 257
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.4999999, y: -0.000000051619143, z: -0.86602545}
-      distance: -1.4999993
+      normal: {x: .499999911, y: -5.16191427e-08, z: -.866025448}
+      distance: -1.49999928
     _underEdgeIndex: 499
     _overEdgeIndex: 257
     _underPartitionIndex: 313
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -9.499999
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -9.49999905
     _underEdgeIndex: 523
     _overEdgeIndex: 441
     _underPartitionIndex: 316
@@ -1940,28 +1940,28 @@ MonoBehaviour:
     _underPartitionIndex: 317
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 1.9999998
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 1.99999976
     _underEdgeIndex: 472
     _overEdgeIndex: 24
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 1.9999998
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 1.99999976
     _underEdgeIndex: 472
     _overEdgeIndex: 24
     _underPartitionIndex: 309
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -3.9999995
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -3.99999952
     _underEdgeIndex: 479
     _overEdgeIndex: 47
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: -0.000000051619136, z: -0.8660253}
+      normal: {x: .500000238, y: -5.16191356e-08, z: -.866025329}
       distance: 1.4999969
     _underEdgeIndex: 531
     _overEdgeIndex: 461
@@ -1989,43 +1989,43 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -8.999999
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -8.99999905
     _underEdgeIndex: 521
     _overEdgeIndex: 435
     _underPartitionIndex: 325
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -2.499997
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -2.4999969
     _underEdgeIndex: 528
     _overEdgeIndex: 458
     _underPartitionIndex: 320
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 1.4999998
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 1.49999976
     _underEdgeIndex: 470
     _overEdgeIndex: 18
     _underPartitionIndex: 318
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -3.4999995
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -3.49999952
     _underEdgeIndex: 477
     _overEdgeIndex: 41
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -3.4999995
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -3.49999952
     _underEdgeIndex: 477
     _overEdgeIndex: 41
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -3.4999995
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -3.49999952
     _underEdgeIndex: 477
     _overEdgeIndex: 41
     _underPartitionIndex: 0
@@ -2045,8 +2045,8 @@ MonoBehaviour:
     _underPartitionIndex: 324
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.4999996, y: 0.000000051619157, z: 0.8660257}
-      distance: -6.4999967
+      normal: {x: .499999613, y: 5.16191569e-08, z: .866025686}
+      distance: -6.49999666
     _underEdgeIndex: 489
     _overEdgeIndex: 153
     _underPartitionIndex: 327
@@ -2066,70 +2066,70 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -8.499999
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -8.49999905
     _underEdgeIndex: 519
     _overEdgeIndex: 429
     _underPartitionIndex: 330
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -8.499999
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -8.49999905
     _underEdgeIndex: 519
     _overEdgeIndex: 429
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -2.9999971
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -2.99999714
     _underEdgeIndex: 526
     _overEdgeIndex: 452
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -2.9999971
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -2.99999714
     _underEdgeIndex: 526
     _overEdgeIndex: 452
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 0.9999999
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: .999999881
     _underEdgeIndex: 468
     _overEdgeIndex: 12
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 0.9999999
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: .999999881
     _underEdgeIndex: 468
     _overEdgeIndex: 12
     _underPartitionIndex: 326
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -2.9999995
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -2.99999952
     _underEdgeIndex: 475
     _overEdgeIndex: 35
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
-      distance: -2.0000005
+      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
+      distance: -2.00000048
     _underEdgeIndex: 488
     _overEdgeIndex: 104
     _underPartitionIndex: 0
     _overPartitionIndex: 321
   - _plane:
-      normal: {x: -0.4999996, y: 0.000000051619157, z: 0.8660257}
-      distance: -2.0000005
+      normal: {x: -.499999613, y: 5.16191569e-08, z: .866025686}
+      distance: -2.00000048
     _underEdgeIndex: 488
     _overEdgeIndex: 104
     _underPartitionIndex: 332
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
       distance: -9.5
     _underEdgeIndex: 505
     _overEdgeIndex: 357
@@ -2137,49 +2137,49 @@ MonoBehaviour:
     _overPartitionIndex: 0
   - _plane:
       normal: {x: -1, y: 0, z: 0}
-      distance: 0.5
+      distance: .5
     _underEdgeIndex: 484
     _overEdgeIndex: 55
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
       normal: {x: -1, y: 0, z: 0}
-      distance: 0.5
+      distance: .5
     _underEdgeIndex: 484
     _overEdgeIndex: 55
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -4.9999986
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -4.99999857
     _underEdgeIndex: 504
     _overEdgeIndex: 308
     _underPartitionIndex: 334
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -7.999999
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -7.99999905
     _underEdgeIndex: 517
     _overEdgeIndex: 423
     _underPartitionIndex: 335
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -3.4999974
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -3.49999738
     _underEdgeIndex: 524
     _overEdgeIndex: 446
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 0.49999994
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: .49999994
     _underEdgeIndex: 466
     _overEdgeIndex: 6
     _underPartitionIndex: 331
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -2.4999998
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -2.49999976
     _underEdgeIndex: 473
     _overEdgeIndex: 29
     _underPartitionIndex: 0
@@ -2193,14 +2193,14 @@ MonoBehaviour:
     _overPartitionIndex: 0
   - _plane:
       normal: {x: -1, y: 0, z: 0}
-      distance: 0.5
+      distance: .5
     _underEdgeIndex: 500
     _overEdgeIndex: 259
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
       normal: {x: -1, y: 0, z: 0}
-      distance: 0.5
+      distance: .5
     _underEdgeIndex: 500
     _overEdgeIndex: 259
     _underPartitionIndex: 0
@@ -2213,43 +2213,43 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -7.4999986
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -7.49999857
     _underEdgeIndex: 515
     _overEdgeIndex: 417
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -7.4999986
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -7.49999857
     _underEdgeIndex: 515
     _overEdgeIndex: 417
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -3.9999974
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -3.99999738
     _underEdgeIndex: 522
     _overEdgeIndex: 440
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -0.0000000122250166
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -1.22250166e-08
     _underEdgeIndex: 462
     _overEdgeIndex: 0
     _underPartitionIndex: 336
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -1.9999998
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -1.99999976
     _underEdgeIndex: 471
     _overEdgeIndex: 23
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -1.9999998
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -1.99999976
     _underEdgeIndex: 471
     _overEdgeIndex: 23
     _underPartitionIndex: 0
@@ -2262,78 +2262,78 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.4999999, y: -0.000000051619143, z: -0.86602545}
+      normal: {x: -.499999911, y: -5.16191427e-08, z: -.866025448}
       distance: 3
     _underEdgeIndex: 494
     _overEdgeIndex: 204
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.4999999, y: -0.000000051619143, z: -0.86602545}
+      normal: {x: -.499999911, y: -5.16191427e-08, z: -.866025448}
       distance: 3
     _underEdgeIndex: 494
     _overEdgeIndex: 204
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.4999999, y: -0.000000051619143, z: -0.86602545}
+      normal: {x: -.499999911, y: -5.16191427e-08, z: -.866025448}
       distance: 3
     _underEdgeIndex: 494
     _overEdgeIndex: 204
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -6.9999986
+      normal: {x: .500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -6.99999857
     _underEdgeIndex: 513
     _overEdgeIndex: 411
     _underPartitionIndex: 328
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -4.4999976
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -4.49999762
     _underEdgeIndex: 520
     _overEdgeIndex: 434
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -1.4999998
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -1.49999976
     _underEdgeIndex: 469
     _overEdgeIndex: 17
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.4999999, y: -0.000000051619143, z: -0.86602545}
-      distance: -2.9999993
+      normal: {x: .499999911, y: -5.16191427e-08, z: -.866025448}
+      distance: -2.99999928
     _underEdgeIndex: 491
     _overEdgeIndex: 155
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: -0.000000051619136, z: -0.8660253}
-      distance: 5.9999986
+      normal: {x: -.500000238, y: -5.16191356e-08, z: -.866025329}
+      distance: 5.99999857
     _underEdgeIndex: 510
     _overEdgeIndex: 408
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.50000024, y: -0.000000051619136, z: -0.8660253}
-      distance: -0.0000029064804
+      normal: {x: .500000238, y: -5.16191356e-08, z: -.866025329}
+      distance: -2.9064804e-06
     _underEdgeIndex: 507
     _overEdgeIndex: 359
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -4.9999976
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -4.99999762
     _underEdgeIndex: 518
     _overEdgeIndex: 428
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -0.9999999
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -.999999881
     _underEdgeIndex: 467
     _overEdgeIndex: 11
     _underPartitionIndex: 0
@@ -2360,22 +2360,22 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.50000024, y: 0.000000051619136, z: 0.8660253}
-      distance: -5.499998
+      normal: {x: -.500000238, y: 5.16191356e-08, z: .866025329}
+      distance: -5.49999809
     _underEdgeIndex: 516
     _overEdgeIndex: 422
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: -0.49999994
+      normal: {x: .49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: -.49999994
     _underEdgeIndex: 465
     _overEdgeIndex: 5
     _underPartitionIndex: 339
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: 0.4999999, y: 0.000000051619143, z: 0.86602545}
-      distance: -4.999999
+      normal: {x: .499999911, y: 5.16191427e-08, z: .866025448}
+      distance: -4.99999905
     _underEdgeIndex: 481
     _overEdgeIndex: 51
     _underPartitionIndex: 0
@@ -2388,15 +2388,15 @@ MonoBehaviour:
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.4999999, y: 0.000000051619143, z: 0.86602545}
-      distance: -0.5
+      normal: {x: -.499999911, y: 5.16191427e-08, z: .866025448}
+      distance: -.5
     _underEdgeIndex: 464
     _overEdgeIndex: 2
     _underPartitionIndex: 0
     _overPartitionIndex: 0
   - _plane:
-      normal: {x: -0.49999994, y: -0.000000051619143, z: -0.86602545}
-      distance: 3.9999995
+      normal: {x: -.49999994, y: -5.16191427e-08, z: -.866025448}
+      distance: 3.99999952
     _underEdgeIndex: 480
     _overEdgeIndex: 48
     _underPartitionIndex: 0

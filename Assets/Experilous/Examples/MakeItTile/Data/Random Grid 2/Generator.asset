@@ -77,7 +77,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: de8ebe858fe81604a815ec8cea5e2d52, type: 2}
     _persistedAsset: {fileID: 11400000, guid: de8ebe858fe81604a815ec8cea5e2d52, type: 2}
     _availability: 3
     _persistable: 1
@@ -88,6 +87,18 @@ MonoBehaviour:
     path: Attributes
     isActive: 1
     isEnabled: 1
+--- !u!114 &11402100
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11472100}
 --- !u!114 &11402908
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -100,6 +111,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _generator: {fileID: 11408824}
+--- !u!114 &11405752
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11491914}
 --- !u!114 &11407618
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -140,9 +163,7 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: UnityEngine.GameObject, UnityEngine, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 1000011662326056, guid: 92d6429aa73d56f4cbeadcfb314d78b4, type: 2}
-    _persistedAsset: {fileID: 1000011662326056, guid: 92d6429aa73d56f4cbeadcfb314d78b4,
-      type: 2}
+    _persistedAsset: {fileID: 153252, guid: 92d6429aa73d56f4cbeadcfb314d78b4, type: 2}
     _availability: 3
     _persistable: 1
     _connectionTargets: []
@@ -183,7 +204,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 1
     _persistable: 0
@@ -237,14 +257,13 @@ MonoBehaviour:
     _isMutating: 0
     _key: {fileID: 11496346}
     isActive: 1
-  scale: 0.1
+  scale: .100000001
   offsetVertexPositionsOutputSlot:
     _generator: {fileID: 11408824}
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: e43b12ed4f2459946b55026858fe92b2, type: 2}
     _persistedAsset: {fileID: 11400000, guid: e43b12ed4f2459946b55026858fe92b2, type: 2}
     _availability: 3
     _persistable: 1
@@ -383,9 +402,9 @@ MonoBehaviour:
     y: 9
   axis0: {x: 0, y: 0}
   axis1: {x: 0, y: 0}
-  midpoint: {x: 0.5, y: 0}
-  majorCorner: {x: 0, y: 0.57735026}
-  minorCorner: {x: 0.5, y: 0.28867513}
+  midpoint: {x: .5, y: 0}
+  majorCorner: {x: 0, y: .577350259}
+  minorCorner: {x: .5, y: .288675129}
   hexGridAxisStyle: 2
   swapAxes: 0
   isAxis0Wrapped: 0
@@ -397,12 +416,11 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.QuadrilateralSurface, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: 1d9269ce7bdf88d498a1331f21612574, type: 2}
     _persistedAsset: {fileID: 11400000, guid: 1d9269ce7bdf88d498a1331f21612574, type: 2}
     _availability: 3
     _persistable: 1
     _connectionTargets:
-    - {fileID: 114000010958407530}
+    - {fileID: 11402100}
     _key: {fileID: 11454894}
     name: Surface
     path: 
@@ -413,7 +431,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.Topology, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: e700414c89e3e414381df9899214f3d7, type: 2}
     _persistedAsset: {fileID: 11400000, guid: e700414c89e3e414381df9899214f3d7, type: 2}
     _availability: 3
     _persistable: 1
@@ -430,7 +447,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: bb3d6cbafb6360942b37e88b82a28a42, type: 2}
     _persistedAsset: {fileID: 11400000, guid: bb3d6cbafb6360942b37e88b82a28a42, type: 2}
     _availability: 3
     _persistable: 1
@@ -518,7 +534,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.UniversalFaceSpatialPartitioning,
         Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: b6d83c560a4482a4186ada69cf38d2a1, type: 2}
     _persistedAsset: {fileID: 11400000, guid: b6d83c560a4482a4186ada69cf38d2a1, type: 2}
     _availability: 3
     _persistable: 1
@@ -575,14 +590,13 @@ MonoBehaviour:
     _key: {fileID: 0}
     isActive: 0
   constantColor: {r: 0, g: 0, b: 0, a: 1}
-  blendWeight: 0.5
+  blendWeight: .5
   faceEdgeColorsOutputSlot:
     _generator: {fileID: 11430352}
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: bea5999abc254fd40b042c4c2b323499, type: 2}
     _persistedAsset: {fileID: 11400000, guid: bea5999abc254fd40b042c4c2b323499, type: 2}
     _availability: 3
     _persistable: 1
@@ -592,7 +606,7 @@ MonoBehaviour:
     path: Attributes
     isActive: 1
     isEnabled: 1
---- !u!114 &11430852
+--- !u!114 &11431678
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_PrefabParentObject: {fileID: 0}
@@ -600,10 +614,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _generator: {fileID: 11491914}
+  _generator: {fileID: 11481802}
 --- !u!114 &11431684
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -796,7 +810,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IVertexAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: 1c007ff4ece44574a82e4aeb99003764, type: 2}
     _persistedAsset: {fileID: 11400000, guid: 1c007ff4ece44574a82e4aeb99003764, type: 2}
     _availability: 3
     _persistable: 1
@@ -877,14 +890,13 @@ MonoBehaviour:
     _key: {fileID: 11476048}
     isActive: 1
   constantColor: {r: 0, g: 0, b: 0, a: 1}
-  blendWeight: 0.8
+  blendWeight: .800000012
   faceEdgeColorsOutputSlot:
     _generator: {fileID: 11449852}
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: 3f9f0dfabcc76eb4e9cf8e30333ae781, type: 2}
     _persistedAsset: {fileID: 11400000, guid: 3f9f0dfabcc76eb4e9cf8e30333ae781, type: 2}
     _availability: 3
     _persistable: 1
@@ -917,7 +929,7 @@ MonoBehaviour:
     _isMutating: 0
     _key: {fileID: 11429702}
     isActive: 0
-  constantColor: {r: 0.4855984, g: 0.27612457, b: 0.67058825, a: 1}
+  constantColor: {r: .485598385, g: .276124567, b: .670588255, a: 1}
   faceGroupCollectionInputSlot:
     _generator: {fileID: 11450086}
     _assetType:
@@ -960,7 +972,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceGroupAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 3
     _persistable: 1
@@ -976,7 +987,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Color,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: 8781cdb6421ea454aa5e47ef3f3f2797, type: 2}
     _persistedAsset: {fileID: 11400000, guid: 8781cdb6421ea454aa5e47ef3f3f2797, type: 2}
     _availability: 3
     _persistable: 1
@@ -1066,7 +1076,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 1
     _persistable: 0
@@ -1120,7 +1129,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 1
     _persistable: 0
@@ -1181,7 +1189,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.FaceGroupCollection, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 3
     _persistable: 1
@@ -1197,7 +1204,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[System.Int32,
         mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],
         Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 3
     _persistable: 1
@@ -1233,18 +1239,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _generator: {fileID: 11450086}
 --- !u!114 &11461980
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _generator: {fileID: 11481802}
---- !u!114 &11462678
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_PrefabParentObject: {fileID: 0}
@@ -1388,7 +1382,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IFaceAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: d81909b6f04a1e2478474f18bcd7b866, type: 2}
     _persistedAsset: {fileID: 11400000, guid: d81909b6f04a1e2478474f18bcd7b866, type: 2}
     _availability: 3
     _persistable: 1
@@ -1466,7 +1459,7 @@ MonoBehaviour:
     _sourceKey: {fileID: 11454894}
     _isOptional: 0
     _isMutating: 0
-    _key: {fileID: 114000010958407530}
+    _key: {fileID: 11402100}
     isActive: 1
   topologyInputSlot:
     _generator: {fileID: 11472100}
@@ -1506,7 +1499,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: 51666870f3397c54594646af539b89aa, type: 2}
     _persistedAsset: {fileID: 11400000, guid: 51666870f3397c54594646af539b89aa, type: 2}
     _availability: 3
     _persistable: 1
@@ -1661,7 +1653,6 @@ MonoBehaviour:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.IEdgeAttribute`1[[UnityEngine.Vector3,
         UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 3
     _persistable: 1
@@ -1739,7 +1730,7 @@ MonoBehaviour:
     _key: {fileID: 11495086}
     isActive: 1
   passCount: 1
-  frequency: 0.1
+  frequency: .100000001
   randomness:
     randomType: 0
     seedSource: 3
@@ -1750,21 +1741,21 @@ MonoBehaviour:
       _assetType:
         _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _sourceKey: {fileID: 11430852}
+      _sourceKey: {fileID: 11405752}
       _isOptional: 0
       _isMutating: 1
-      _key: {fileID: 11462678}
+      _key: {fileID: 11431678}
       isActive: 1
   minVertexNeighbors: 3
   maxVertexNeighbors: 3
   minFaceNeighbors: 5
   maxFaceNeighbors: 7
   lockBoundaryPositions: 1
-  relaxForRegularityWeight: 0.851
+  relaxForRegularityWeight: .851000011
   maxRelaxIterations: 20
-  relaxRelativePrecision: 0.95
+  relaxRelativePrecision: .949999988
   maxRepairIterations: 20
-  repairRate: 0.5
+  repairRate: .5
 --- !u!114 &11482542
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -1809,7 +1800,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 1
     _persistable: 0
@@ -2040,7 +2030,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItTile.DynamicMesh, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 11400000, guid: c27eb7c0af9dba84580fd0a33efd9509, type: 2}
     _persistedAsset: {fileID: 11400000, guid: c27eb7c0af9dba84580fd0a33efd9509, type: 2}
     _availability: 3
     _persistable: 1
@@ -2055,7 +2044,6 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: UnityEngine.Mesh, UnityEngine, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 4300000, guid: 278a919d228087841b8cd89a065614c1, type: 2}
     _persistedAsset: {fileID: 4300000, guid: 278a919d228087841b8cd89a065614c1, type: 2}
     _availability: 3
     _persistable: 1
@@ -2121,13 +2109,12 @@ MonoBehaviour:
     _assetType:
       _assemblyQualifiedTypeName: Experilous.MakeItRandom.IRandom, Assembly-CSharp-firstpass,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    _asset: {fileID: 0}
     _persistedAsset: {fileID: 0}
     _availability: 1
     _persistable: 0
     _connectionTargets:
-    - {fileID: 11462678}
-    _key: {fileID: 11430852}
+    - {fileID: 11431678}
+    _key: {fileID: 11405752}
     name: Randomness
     path: 
     isActive: 1
@@ -2216,15 +2203,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _generator: {fileID: 11487102}
---- !u!114 &114000010958407530
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _generator: {fileID: 11472100}

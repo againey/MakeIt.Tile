@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Name: Surface
   m_EditorClassIdentifier: 
   origin: {x: 0, y: 0, z: 0}
-  orientation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
+  orientation: {x: .707106769, y: 0, z: 0, w: .707106769}
   axis0:
     vector: {x: 9, y: 0}
     isWrapped: 0
   axis1:
-    vector: {x: 0, y: 9.000001}
+    vector: {x: 0, y: 9.00000095}
     isWrapped: 0
   size:
     x: 9
