@@ -230,6 +230,7 @@ copy /Y /B "archive.php" "Build\archive.php"</PostBuildEvent>
     <None Include="Content - Topology Mutation.aml" />
     <None Include="Content - Spatial Partitioning.aml" />
     <None Include="Content - Topology Traversal.aml" />
+    <None Include="Content - In-Editor Generation.aml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="example-scene-jumble-go.png">

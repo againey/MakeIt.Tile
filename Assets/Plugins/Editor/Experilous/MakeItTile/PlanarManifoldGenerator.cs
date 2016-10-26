@@ -69,7 +69,7 @@ namespace Experilous.MakeItTile
 		[SerializeField] private bool _pregenerationFailed = false;
 		[SerializeField] private string _pregenerationFailedMessage;
 
-		[MenuItem("Assets/Create/Topology/Planar Manifold Generator")]
+		[MenuItem("Assets/Create/Make It Tile/Planar Manifold Generator")]
 		public static void CreateDefaultGeneratorCollection()
 		{
 			var collection = TopologyGeneratorCollection.Create("New Planar Manifold");

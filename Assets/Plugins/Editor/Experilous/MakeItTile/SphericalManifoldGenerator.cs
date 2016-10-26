@@ -35,7 +35,7 @@ namespace Experilous.MakeItTile
 		public OutputSlot topologyOutputSlot;
 		public OutputSlot vertexPositionsOutputSlot;
 
-		[MenuItem("Assets/Create/Topology/Spherical Manifold Generator")]
+		[MenuItem("Assets/Create/Make It Tile/Spherical Manifold Generator")]
 		public static void CreateDefaultGeneratorCollection()
 		{
 			var collection = TopologyGeneratorCollection.Create("New Spherical Manifold");
