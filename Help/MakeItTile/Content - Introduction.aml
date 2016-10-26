@@ -28,7 +28,7 @@
 			<autoOutline />
 		</introduction>
 		<section address="offer">
-			<title>What does Make It Random offer?</title>
+			<title>What does Make It Tile offer?</title>
 			<content>
 				<para>
 					Make It Tile is a framework for Unity to aid in the creation
@@ -56,7 +56,7 @@
 					</externalLink> and
 					<externalLink>
 						<linkText>Make It Colorful</linkText>
-						<linkAlternateText>Make It Random Online User's Manual at experilous.com</linkAlternateText>
+						<linkAlternateText>Make It Colorful Online User's Manual at experilous.com</linkAlternateText>
 						<linkUri>http://experilous.com/1/product/make-it-colorful/1.0/documentation/html/1c2a6866-2869-4203-a950-4beed65c23c3.htm</linkUri>
 					</externalLink> libraries.
 				</para>
