@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4cf2dd1dcb1cbd4e8d7574dc2db2b0b, type: 3}
+  m_Name: Surface
+  m_EditorClassIdentifier: 
+  axis0:
+    vector: {x: 9, y: 0, z: 0}
+    isWrapped: 0
+  axis1:
+    vector: {x: 0, y: 0, z: 9}
+    isWrapped: 0
+  origin: {x: 0, y: 0, z: 0}
+  surfaceNormal: {x: 0, y: 1, z: 0}
+  axis0Normal: {x: 0, y: 0, z: 1}
+  axis1Normal: {x: 1, y: -0, z: -0}
+  plane:
+    normal: {x: 0, y: 1, z: 0}
+    distance: -0
+  isInverted: 0
+  size:
+    x: 9
+    y: 9
+  topology: {fileID: 11400000, guid: dfc13c087d678f04e9314cb6994046fe, type: 2}
+  faceAxis0: {x: 1, y: 0, z: 0}
+  faceAxis1: {x: 0, y: 0, z: 1}
+  _faceAxis0Count: 9
+  _faceAxis1Count: 9
+  _vertexAxis0Count: 10
+  _vertexAxis1Count: 10
+  _vertexCount: 100
+  _edgeCount: 360
+  _internalFaceCount: 81
+  _externalFaceCount: 1

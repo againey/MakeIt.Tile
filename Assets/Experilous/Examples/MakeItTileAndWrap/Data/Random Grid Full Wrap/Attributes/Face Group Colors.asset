@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 597f2daf2241ded49812551c97152c0a, type: 3}
+  m_Name: Face Group Colors
+  m_EditorClassIdentifier: 
+  array:
+  - {r: .871417761, g: .80796814, b: .702554107, a: 1}
+  - {r: .975181103, g: .794175863, b: .152022719, a: 1}
+  - {r: .912110567, g: .575927615, b: .285936117, a: 1}
+  - {r: .0788835287, g: .917014837, b: .848787785, a: 1}
+  - {r: .422689319, g: .599916458, b: .859645605, a: 1}
+  - {r: .0901371241, g: .747293591, b: .267741919, a: 1}
+  - {r: .14747715, g: .43751812, b: .720590711, a: 1}
+  - {r: .158979654, g: .301527739, b: .536626697, a: 1}
+  - {r: .466241002, g: .774990916, b: .137392402, a: 1}
+  - {r: .218947411, g: .0957151651, b: .330880284, a: 1}
