@@ -4,11 +4,13 @@ syntax: regexp
 ^Assets/UnityVS.meta
 ^Assets/AssetStoreTools/
 ^Assets/AssetStoreTools.meta$
+^Assets/Experilous/Documentation/.*\.(7z|zip)$
 ^Assets/UnityVS\.meta$
 ^Miscellaneous/Screenshots/
 ^Miscellaneous/Videos/
 ^Miscellaneous/Export Test/
 ^Miscellaneous/.*\.(7z|zip)$
+^Miscellaneous/.*\.pov\.bak$
 ^Library/
 ^Temp/
 ^Build/
@@ -20,3 +22,15 @@ syntax: regexp
 ^[^/]*\.csproj$
 \~\$[^/]*\.docx$
 \~[^/]*\.tmp$
+^Miscellaneous/C\+\+/.*/[^/]*\.tlog$
+^Miscellaneous/C\+\+/.*/[^/]*\.lastbuildstate$
+^Miscellaneous/C\+\+/.*/[^/]*\.exe$
+^Miscellaneous/C\+\+/.*/[^/]*\.ilk$
+^Miscellaneous/C\+\+/.*/[^/]*\.log$
+^Miscellaneous/C\+\+/.*/[^/]*\.pdb$
+^Miscellaneous/C\+\+/.*/[^/]*\.obj$
+^Miscellaneous/C\+\+/.*/[^/]*\.idb$
+^Miscellaneous/C\+\+/.*/[^/]*\.sdf$
+^Miscellaneous/C\+\+/.*/[^/]*\.user$
+^Miscellaneous/Archive
+^Help/.*/Build

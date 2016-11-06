@@ -1,0 +1,1968 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 402ad9582560bfc4a968dfbb74991266, type: 3}
+  m_Name: Generator
+  m_EditorClassIdentifier: 
+  _generators:
+  - {fileID: 11426132}
+  - {fileID: 11458134}
+  - {fileID: 11470652}
+  - {fileID: 11401898}
+  - {fileID: 11467994}
+  - {fileID: 11444684}
+  - {fileID: 11474316}
+  - {fileID: 11408824}
+  - {fileID: 11450086}
+  - {fileID: 11430352}
+  - {fileID: 11449852}
+  - {fileID: 11487102}
+  - {fileID: 11408226}
+  - {fileID: 11427974}
+  _assetCollection: {fileID: 11400000, guid: 8b192bfa2a8ab3e4aa885920124b727e, type: 2}
+--- !u!114 &11400682
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11458134}
+--- !u!114 &11401898
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3751b9dc02d22a448258d4d7a53a8ee, type: 3}
+  m_Name: Face/Centroids
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  flatten: 0
+  surfaceInputSlot:
+    _generator: {fileID: 11401898}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11454894}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11431774}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11401898}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11432032}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11401898}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11480674}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11486992}
+    isActive: 1
+  faceCentroidsOutputSlot:
+    _generator: {fileID: 11401898}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: 418c074677a0a3444aa032fff2c9ac58, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: 418c074677a0a3444aa032fff2c9ac58, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11418580}
+    _key: {fileID: 11435060}
+    name: Face Centroids
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11402908
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11408824}
+--- !u!114 &11404928
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11470652}
+--- !u!114 &11407618
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11467994}
+--- !u!114 &11408226
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 618b41d5d38e63543ad5787b5521137f, type: 3}
+  m_Name: Unity Asset/Prefab
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  dynamicMeshInputSlot:
+    _generator: {fileID: 11408226}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.DynamicMesh, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11495522}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11441944}
+    isActive: 1
+  meshPrefab: {fileID: 3309004, guid: 71a09b6d0d7bf794191e027263c95a39, type: 2}
+  prefabOutputSlot:
+    _generator: {fileID: 11408226}
+    _assetType:
+      _assemblyQualifiedTypeName: UnityEngine.GameObject, UnityEngine, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 166926, guid: 6c0640a805bdaa645a0303415d6089e6, type: 2}
+    _persistedAsset: {fileID: 166926, guid: 6c0640a805bdaa645a0303415d6089e6, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11443726}
+    name: Prefab
+    path: 
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11408824
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6a6de0d3fa5dea48ad06ea7997a5fbe, type: 3}
+  m_Name: Face Edge/Offset Vertex Positions
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  topologyInputSlot:
+    _generator: {fileID: 11408824}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11414934}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11408824}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11480674}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11435230}
+    isActive: 1
+  offsetsInputSlot:
+    _generator: {fileID: 11408824}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11435058}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11496346}
+    isActive: 1
+  scale: .100000001
+  offsetVertexPositionsOutputSlot:
+    _generator: {fileID: 11408824}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: e547c02d3d3a9854694d51ee0760e1cb, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: e547c02d3d3a9854694d51ee0760e1cb, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11402908}
+    name: Offset Vertex Positions
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11411172
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11414934
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11408824}
+--- !u!114 &11417968
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11444684}
+--- !u!114 &11418580
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11474316}
+--- !u!114 &11420564
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11474316}
+--- !u!114 &11421996
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11467994}
+--- !u!114 &11424128
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11478274}
+--- !u!114 &11424160
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11482816}
+--- !u!114 &11425044
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11467994}
+--- !u!114 &11426132
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13fb9af11e51be149871bfc9e9efd637, type: 3}
+  m_Name: Topology/Planar Manifold
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  planarTileShape: 0
+  size:
+    x: 9
+    y: 9
+  quadGridHorizontalAxisOptions: 0
+  quadGridVerticalAxisOptions: 2
+  hexGridAxisStyleOptions: 0
+  hexGridAxisOptions: 0
+  hexGridHorizontalAxisOptions: 0
+  hexGridVerticalAxisOptions: 0
+  horizontalAxis: {x: 1, y: 0, z: 0}
+  verticalAxis: {x: 0, y: 1, z: 0}
+  horizontalAxisLength: 1
+  verticalAxisLength: 1
+  variableRowLength: 0
+  normalOptions: 3
+  normal: {x: 0, y: 0, z: -1}
+  originPosition: {x: 0, y: 0, z: 0}
+  wrapOptions: 0
+  surfaceOutputSlot:
+    _generator: {fileID: 11426132}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.PlanarSurface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: d05007d1af0bb4742a20d2ae51647030, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: d05007d1af0bb4742a20d2ae51647030, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11454894}
+    name: Surface
+    path: 
+    isActive: 1
+    isEnabled: 1
+  topologyOutputSlot:
+    _generator: {fileID: 11426132}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: dfc13c087d678f04e9314cb6994046fe, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: dfc13c087d678f04e9314cb6994046fe, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11420564}
+    _key: {fileID: 11431684}
+    name: Topology
+    path: 
+    isActive: 1
+    isEnabled: 1
+  vertexPositionsOutputSlot:
+    _generator: {fileID: 11426132}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: 5716eb45c587cde4e8645eb3bc68dcb5, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: 5716eb45c587cde4e8645eb3bc68dcb5, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11453956}
+    _key: {fileID: 11480674}
+    name: Vertex Positions
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+  _pregenerationFailed: 0
+--- !u!114 &11427224
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11427974
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3ceb89166537d142b11d0ce4f008826, type: 3}
+  m_Name: Utility/Face Spatial Partitioning
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  topologyInputSlot:
+    _generator: {fileID: 11427974}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11477934}
+    isActive: 1
+  surfaceInputSlot:
+    _generator: {fileID: 11427974}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11454894}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11458908}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11427974}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11480674}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11472962}
+    isActive: 1
+  partitioningOutputSlot:
+    _generator: {fileID: 11427974}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.UniversalFaceSpatialPartitioning,
+        Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: e2056eb0a477dcc4a9501027d26d761e, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: e2056eb0a477dcc4a9501027d26d761e, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11445384}
+    name: Face Spatial Partitioning
+    path: 
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11430352
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b02086eb9ae76c848aa7803957f483de, type: 3}
+  m_Name: Face Edge/Colors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  colorSource: 0
+  topologyInputSlot:
+    _generator: {fileID: 11430352}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  faceColorsInputSlot:
+    _generator: {fileID: 11430352}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  constantColor: {r: 0, g: 0, b: 0, a: 1}
+  blendWeight: .5
+  faceEdgeColorsOutputSlot:
+    _generator: {fileID: 11430352}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: 7b642d44786060342a2f3613b4d97abd, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: 7b642d44786060342a2f3613b4d97abd, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11448768}
+    name: External Face Edge Colors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11431684
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11426132}
+--- !u!114 &11431774
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11401898}
+--- !u!114 &11432032
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11401898}
+--- !u!114 &11435058
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11474316}
+--- !u!114 &11435060
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11401898}
+--- !u!114 &11435230
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11408824}
+--- !u!114 &11441648
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11457946}
+--- !u!114 &11441890
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11457946}
+--- !u!114 &11441944
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11408226}
+--- !u!114 &11443596
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11444684}
+--- !u!114 &11443726
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11408226}
+--- !u!114 &11444684
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d4f349977af60b4195a4500b77349db, type: 3}
+  m_Name: Vertex/Normals
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  calculationMethod: 0
+  topologyInputSlot:
+    _generator: {fileID: 11444684}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11417968}
+    isActive: 1
+  surfaceInputSlot:
+    _generator: {fileID: 11444684}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11454894}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11466700}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11444684}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11480674}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11481748}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 11444684}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  faceNormalsInputSlot:
+    _generator: {fileID: 11444684}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  vertexNormalsOutputSlot:
+    _generator: {fileID: 11444684}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: 20240ebab1d24fc43abd2bbe18cbb89f, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: 20240ebab1d24fc43abd2bbe18cbb89f, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11443596}
+    name: Vertex Normals
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11445384
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11427974}
+--- !u!114 &11447684
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11448768
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11430352}
+--- !u!114 &11449852
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b02086eb9ae76c848aa7803957f483de, type: 3}
+  m_Name: Face Edge/Colors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  colorSource: 1
+  topologyInputSlot:
+    _generator: {fileID: 11449852}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11473744}
+    isActive: 1
+  faceColorsInputSlot:
+    _generator: {fileID: 11449852}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11459418}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11476048}
+    isActive: 1
+  constantColor: {r: 0, g: 0, b: 0, a: 1}
+  blendWeight: .800000012
+  faceEdgeColorsOutputSlot:
+    _generator: {fileID: 11449852}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: a4373670d5aab5e48a606c50f89d00a6, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: a4373670d5aab5e48a606c50f89d00a6, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11463592}
+    name: Internal Face Edge Colors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11450086
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4a223cc09199345b6719657c8953ba, type: 3}
+  m_Name: Face/Colors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  colorSource: 0
+  topologyInputSlot:
+    _generator: {fileID: 11450086}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  constantColor: {r: .886274517, g: .698776841, b: .257193387, a: 1}
+  faceGroupCollectionInputSlot:
+    _generator: {fileID: 11450086}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.FaceGroupCollection, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  faceGroupIndicesInputSlot:
+    _generator: {fileID: 11450086}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[System.Int32,
+        mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],
+        Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  randomness:
+    randomEngineType: 0
+    seedSource: 3
+    seedNumber: 0
+    seedText: 
+    randomEngineSeedInputSlot:
+      _generator: {fileID: 11450086}
+      _assetType:
+        _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _sourceKey: {fileID: 0}
+      _isOptional: 0
+      _isMutating: 1
+      _key: {fileID: 0}
+      isActive: 0
+  faceGroupColorsOutputSlot:
+    _generator: {fileID: 11450086}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceGroupAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 0}
+    _persistedAsset: {fileID: 0}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11453760}
+    name: Face Group Colors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+  faceColorsOutputSlot:
+    _generator: {fileID: 11450086}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: 4bddd4671ef296d4eac911398efe017f, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: 4bddd4671ef296d4eac911398efe017f, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11459418}
+    name: Face Colors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11451626
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11467994}
+--- !u!114 &11453760
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11450086}
+--- !u!114 &11453956
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11474316}
+--- !u!114 &11454894
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11426132}
+--- !u!114 &11457438
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11470652}
+--- !u!114 &11457946
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6ced58a5b72bcc48ba6c568f0914671, type: 3}
+  m_Name: Face Group/Rectangular
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  axisDivisions:
+    x: 4
+    y: 4
+  surfaceInputSlot:
+    _generator: {fileID: 11457946}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.PlanarSurface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11454894}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11488110}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11457946}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11441648}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 11457946}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11435060}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11491284}
+    isActive: 1
+  faceGroupCollectionOutputSlot:
+    _generator: {fileID: 11457946}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.FaceGroupCollection, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 0}
+    _persistedAsset: {fileID: 0}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11441890}
+    name: Rectangular Face Groups
+    path: Face Groups
+    isActive: 1
+    isEnabled: 1
+  faceGroupIndicesOutputSlot:
+    _generator: {fileID: 11457946}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[System.Int32,
+        mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],
+        Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 0}
+    _persistedAsset: {fileID: 0}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11467738}
+    name: Rectangular Face Group Indices
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+  faceGroupOutputSlots: []
+--- !u!114 &11458134
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad06bb241e42dd45bd9a493b176d26c, type: 3}
+  m_Name: Utility/Random Engine
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  randomness:
+    randomEngineType: 0
+    seedSource: 1
+    seedNumber: 0
+    seedText: 
+    randomEngineSeedInputSlot:
+      _generator: {fileID: 11458134}
+      _assetType:
+        _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _sourceKey: {fileID: 0}
+      _isOptional: 0
+      _isMutating: 1
+      _key: {fileID: 0}
+      isActive: 0
+  randomEngineOutputSlot:
+    _generator: {fileID: 11458134}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 0}
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 0
+    _connectionTargets: []
+    _key: {fileID: 11400682}
+    name: Random Engine
+    path: 
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11458716
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11470652}
+--- !u!114 &11458908
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11427974}
+--- !u!114 &11459418
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11450086}
+--- !u!114 &11463592
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11449852}
+--- !u!114 &11466528
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11466700
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11444684}
+--- !u!114 &11467738
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11457946}
+--- !u!114 &11467994
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f39ea72028a3c7478e78cd21185fcd2, type: 3}
+  m_Name: Face/Normals
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  calculationMethod: 0
+  topologyInputSlot:
+    _generator: {fileID: 11467994}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11451626}
+    isActive: 1
+  surfaceInputSlot:
+    _generator: {fileID: 11467994}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11454894}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11407618}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 11467994}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11435060}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11425044}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11467994}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  vertexNormalsInputSlot:
+    _generator: {fileID: 11467994}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  faceNormalsOutputSlot:
+    _generator: {fileID: 11467994}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: 17859d4ef309d8844bc269690df94f73, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: 17859d4ef309d8844bc269690df94f73, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11421996}
+    name: Face Normals
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11470114
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11470652
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71887e38c9009334ab0efdcb7070be50, type: 3}
+  m_Name: Topology/Randomizer
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11470652}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11454894}
+    _isOptional: 0
+    _isMutating: 1
+    _key: {fileID: 11404928}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11470652}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 1
+    _key: {fileID: 11458716}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11470652}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11480674}
+    _isOptional: 1
+    _isMutating: 1
+    _key: {fileID: 11457438}
+    isActive: 1
+  passCount: 1
+  frequency: .100000001
+  randomness:
+    randomEngineType: 0
+    seedSource: 3
+    seedNumber: 0
+    seedText: 
+    randomEngineSeedInputSlot:
+      _generator: {fileID: 11470652}
+      _assetType:
+        _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _sourceKey: {fileID: 11400682}
+      _isOptional: 0
+      _isMutating: 1
+      _key: {fileID: 11473962}
+      isActive: 1
+  minVertexNeighbors: 4
+  maxVertexNeighbors: 4
+  minFaceNeighbors: 3
+  maxFaceNeighbors: 5
+  lockBoundaryPositions: 1
+  relaxForRegularityWeight: .5
+  maxRelaxIterations: 20
+  relaxRelativePrecision: .949999988
+  maxRepairIterations: 20
+  repairRate: .5
+--- !u!114 &11471946
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11472078
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11478274}
+--- !u!114 &11472962
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11427974}
+--- !u!114 &11473744
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11449852}
+--- !u!114 &11473962
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11470652}
+--- !u!114 &11474316
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73a17dd3f45e38845a865ad217a23018, type: 3}
+  m_Name: Face Edge/Bisectors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  topologyInputSlot:
+    _generator: {fileID: 11474316}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11420564}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11474316}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11480674}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11453956}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 11474316}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11435060}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11418580}
+    isActive: 1
+  bisectorsOutputSlot:
+    _generator: {fileID: 11474316}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: 22c08d8fcd824a945b5fa9aed87ccd6f, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: 22c08d8fcd824a945b5fa9aed87ccd6f, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11496346}
+    _key: {fileID: 11435058}
+    name: Face Edge Bisectors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11476048
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11449852}
+--- !u!114 &11476420
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11477934
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11427974}
+--- !u!114 &11478274
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73a17dd3f45e38845a865ad217a23018, type: 3}
+  m_Name: Face Edge/Bisectors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  topologyInputSlot:
+    _generator: {fileID: 11478274}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11482902}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11478274}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11480674}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11424128}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 0}
+    _assetType:
+      _assemblyQualifiedTypeName: 
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  bisectorsOutputSlot:
+    _generator: {fileID: 11478274}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 0}
+    _persistedAsset: {fileID: 0}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11472078}
+    name: Face Edge Bisectors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11480674
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11426132}
+--- !u!114 &11481748
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11444684}
+--- !u!114 &11482542
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11482816
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad06bb241e42dd45bd9a493b176d26c, type: 3}
+  m_Name: Utility/Random Engine
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  randomness:
+    randomEngineType: 0
+    seedSource: 1
+    seedNumber: 0
+    seedText: 
+    randomEngineSeedInputSlot:
+      _generator: {fileID: 11482816}
+      _assetType:
+        _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _sourceKey: {fileID: 0}
+      _isOptional: 0
+      _isMutating: 1
+      _key: {fileID: 0}
+      isActive: 0
+  randomEngineOutputSlot:
+    _generator: {fileID: 11482816}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Randomization.IRandomEngine, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 0}
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 0
+    _connectionTargets: []
+    _key: {fileID: 11424160}
+    name: Random Engine
+    path: 
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11482902
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11478274}
+--- !u!114 &11486178
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11486992
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11401898}
+--- !u!114 &11487102
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2d2d13a49470a14eb0abe1b53709f6c, type: 3}
+  m_Name: Unity Asset/Mesh
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  sourceType: 0
+  triangulation: 2
+  ringDepth: 2
+  maxVerticesPerSubmesh: 65534
+  vertexAttributes: 7
+  showMeshOutputs: 0
+  topologyInputSlot:
+    _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11431684}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11495314}
+    isActive: 1
+  faceGroupCollectionInputSlot:
+    _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.FaceGroupCollection, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11497728}
+    isActive: 0
+  faceGroupInputSlot:
+    _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  ringVertexPositionsInputSlots:
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11480674}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11466528}
+    isActive: 1
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11402908}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11471946}
+    isActive: 1
+  ringVertexNormalsInputSlots:
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11443596}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11476420}
+    isActive: 1
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11443596}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11482542}
+    isActive: 1
+  ringVertexColorsInputSlots:
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11448768}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11486178}
+    isActive: 1
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IEdgeAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11463592}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11494588}
+    isActive: 1
+  ringVertexColor32sInputSlots: []
+  ringVertexUV1sInputSlots: []
+  ringVertexUV2sInputSlots: []
+  ringVertexUV3sInputSlots: []
+  ringVertexUV4sInputSlots: []
+  ringVertexTangentsInputSlots: []
+  centerVertexPositionsInputSlots:
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11435060}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11447684}
+    isActive: 1
+  centerVertexNormalsInputSlots:
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11421996}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11470114}
+    isActive: 1
+  centerVertexColorsInputSlots:
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.IFaceAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11459418}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11427224}
+    isActive: 1
+  centerVertexColor32sInputSlots: []
+  centerVertexUV1sInputSlots: []
+  centerVertexUV2sInputSlots: []
+  centerVertexUV3sInputSlots: []
+  centerVertexUV4sInputSlots: []
+  centerVertexTangentsInputSlots: []
+  dynamicMeshOutputSlot:
+    _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: Experilous.Topological.DynamicMesh, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 11400000, guid: 0c961b92b170da748af06d7def733876, type: 2}
+    _persistedAsset: {fileID: 11400000, guid: 0c961b92b170da748af06d7def733876, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11495522}
+    name: Dynamic Mesh
+    path: 
+    isActive: 1
+    isEnabled: 1
+  meshOutputSlots:
+  - _generator: {fileID: 11487102}
+    _assetType:
+      _assemblyQualifiedTypeName: UnityEngine.Mesh, UnityEngine, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    _asset: {fileID: 4300000, guid: 75a7c80c94f651e499463dbb6d21c8af, type: 2}
+    _persistedAsset: {fileID: 4300000, guid: 75a7c80c94f651e499463dbb6d21c8af, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11411172}
+    name: Mesh
+    path: Meshes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11488110
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11457946}
+--- !u!114 &11491284
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11457946}
+--- !u!114 &11494588
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11495314
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11495522
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
+--- !u!114 &11496346
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11408824}
+--- !u!114 &11497728
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11487102}
