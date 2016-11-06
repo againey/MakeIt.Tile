@@ -100,6 +100,8 @@ namespace Experilous.Topological
 
 		private void PickStart(Vector2 mousePosition, int button)
 		{
+			this.DisableAndThrowOnUnassignedReference(partitioning, "The FaceSpatialPartitioningPicker component requires a reference to a UniversalFaceSpatialPartitioning scriptable object.  Either create a saved asset using generators available in the Assets/Create/Topology menu, or create and assign one at runtime before the picker's Start() event runs.");
+
 			var ray = transform.InverseTransformRay(camera.ScreenPointToRay(mousePosition));
 			var startFace = partitioning.FindFace(ray);
 			if (startFace)
@@ -117,6 +119,8 @@ namespace Experilous.Topological
 
 		private void PickChange(Vector2 mousePosition)
 		{
+			this.DisableAndThrowOnUnassignedReference(partitioning, "The FaceSpatialPartitioningPicker component requires a reference to a UniversalFaceSpatialPartitioning scriptable object.  Either create a saved asset using generators available in the Assets/Create/Topology menu, or create and assign one at runtime before the picker's Start() event runs.");
+
 			var ray = transform.InverseTransformRay(camera.ScreenPointToRay(mousePosition));
 			var face = partitioning.FindFace(ray);
 			if (face && _currentFace != face)
@@ -129,10 +133,16 @@ namespace Experilous.Topological
 
 		private void PickEnd(int button)
 		{
-			var endFace = _currentFace;
-			_picking[button] = false;
-			_currentFace = Topology.Face.none;
-			OnPickEnd.Invoke(endFace, button);
+			if (_picking[button] == true)
+			{
+				var endFace = _currentFace;
+				_picking[button] = false;
+				if ((_picking[0] || _picking[1] || _picking[2]) == false)
+				{
+					_currentFace = Topology.Face.none;
+				}
+				OnPickEnd.Invoke(endFace, button);
+			}
 		}
 
 		public void LogPickStart(Topology.Face startFace, int button)
