@@ -122,7 +122,7 @@
 				</para>
 				<mediaLink>
 					<caption placement="after">Straight, staggered, and staggered-symmetric axis styles.</caption>
-					<image placement="center" xlink:href="hex-grid-axes"/>
+					<image placement="center" xlink:href="hex-grid-axis-style"/>
 				</mediaLink>
 				<para>
 					Finally, there are three different axis styles available, demonstrated
