@@ -12,7 +12,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face Group/Random")]
-	public class RandomFaceGroupsGenerator : Generator
+	public class RandomFaceGroupsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		[AutoSelect] public InputSlot topologyInputSlot;
 
@@ -37,6 +37,20 @@ namespace Experilous.MakeItTile
 			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionOutputSlot, this, "Random Face Groups", "Face Groups");
 			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesOutputSlot, this, "Random Face Group Indices", "Attributes");
 			faceGroupOutputSlots = new OutputSlot[0];
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			randomness.ResetIfBroken(this);
+
+			OutputSlot.ResetAssetTypeIfNull<FaceGroupCollection>(faceGroupCollectionOutputSlot);
+			OutputSlot.ResetAssetTypeIfNull<IFaceAttribute<int>>(faceGroupIndicesOutputSlot);
+			foreach (var outputSlot in faceGroupOutputSlots) OutputSlot.ResetAssetTypeIfNull<FaceGroup>(outputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		protected override void OnUpdate()
@@ -110,12 +124,12 @@ namespace Experilous.MakeItTile
 					Topology.Face face;
 					do
 					{
-						face = topology.internalFaces.RandomElement(random);
+						face = topology.internalFaces[random.Index(topology.internalFaces.Count)];
 					} while (rootFaces.Contains(face));
 					rootFaces.Add(face);
 					foreach (var edge in face.edges)
 					{
-						if (edge.farFace.isInternal)
+						if (edge.face.isInternal)
 						{
 							rootFaceEdges.Add(edge);
 						}
@@ -129,16 +143,10 @@ namespace Experilous.MakeItTile
 					(FaceEdgeVisitor visitor) =>
 					{
 						var faceGroupIndex = faceGroupIndices[visitor.edge.nearFace];
-						faceGroupIndices[visitor.edge.farFace] = faceGroupIndex;
-						faceGroupFaceIndices[faceGroupIndex].Add(visitor.edge.farFace.index);
+						faceGroupIndices[visitor.edge] = faceGroupIndex;
+						faceGroupFaceIndices[faceGroupIndex].Add(visitor.edge.face.index);
 
-						foreach (var edge in visitor.edge.farFace.edges)
-						{
-							if (edge.farFace.isInternal && edge.twin != visitor.edge)
-							{
-								visitor.VisitNeighbor(edge);
-							}
-						}
+						visitor.VisitInternalNeighborsExceptSource();
 					},
 					random);
 			});
@@ -179,6 +187,21 @@ namespace Experilous.MakeItTile
 			{
 				return base.canGenerate &&
 					groupCount >= 1;
+			}
+		}
+
+		public override string canGenerateMessage
+		{
+			get
+			{
+				if (groupCount < 1)
+				{
+					return "Must generate at least one face group.";
+				}
+				else
+				{
+					return base.canGenerateMessage;
+				}
 			}
 		}
 

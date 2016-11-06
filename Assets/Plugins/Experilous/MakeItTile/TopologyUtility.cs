@@ -251,6 +251,10 @@ namespace Experilous.MakeItTile
 
 		#region Validation
 
+		/// <summary>
+		/// Examines all neighbor cycles around vertices to make sure that all cycles have the expected number of neighbors.
+		/// </summary>
+		/// <param name="topology">The topology to validate.</param>
 		public static void CheckVerticesForInvalidEdgeCycles(Topology topology)
 		{
 			foreach (var vertex in topology.vertices)
@@ -267,6 +271,10 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <summary>
+		/// Examines all neighbor cycles around faces to make sure that all cycles have the expected number of neighbors.
+		/// </summary>
+		/// <param name="topology">The topology to validate.</param>
 		public static void CheckFacesForInvalidEdgeCycles(Topology topology)
 		{
 			foreach (var face in topology.faces)

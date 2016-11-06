@@ -30,5 +30,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3c9bb173951330641815a96202bee8d6, type: 2}
   - {fileID: 0}
   - {fileID: 11400000, guid: c6f684b8866718e4492d7310c13520c3, type: 2}
-  - {fileID: 165112, guid: e044129fc1ed776439a7452def2eabe0, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 184020, guid: e044129fc1ed776439a7452def2eabe0, type: 2}
   embeddedAssets: []

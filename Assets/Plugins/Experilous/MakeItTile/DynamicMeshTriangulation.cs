@@ -36,7 +36,7 @@ namespace Experilous.MakeItTile
 		/// Construct a strip triangulation instance with no inner rings using the supplied delegate to set vertex attribute values.
 		/// </summary>
 		/// <param name="addRingVertices">The delegate used to set vertex attribute values.</param>
-		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <c>DynamicMesh.IIndexedVertexAttributes.Advance()</c>
+		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/>
 		/// once after each vertex that is added by the delegate, which should also be equal to the ring depth.</remarks>
 		/// <seealso cref="DynamicMesh"/>
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
@@ -52,7 +52,7 @@ namespace Experilous.MakeItTile
 		/// <param name="ringDepth">The total number of vertex rings to generate.
 		/// The minimum value of 1 specifies just the outer ring, while values of 2 or more generate inner vertex rings also.</param>
 		/// <param name="addRingVertices">The delegate used to set vertex attribute values.</param>
-		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <c>DynamicMesh.IIndexedVertexAttributes.Advance()</c>
+		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/>
 		/// once after each vertex that is added by the delegate, which should also be equal to the ring depth.</remarks>
 		/// <seealso cref="DynamicMesh"/>
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
@@ -63,11 +63,13 @@ namespace Experilous.MakeItTile
 			_addRingVertices = addRingVertices;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexCount(Topology.Face face)
 		{
 			return face.neighborCount * _ringDepth;
 		}
 
+		/// <inheritdoc/>
 		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
 		{
 			int neighborCount = face.neighborCount;
@@ -136,6 +138,7 @@ namespace Experilous.MakeItTile
 			RebuildFace(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
 		{
 			foreach (var edge in face.edges)
@@ -144,6 +147,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <inheritdoc/>
 		public void FinalizeSubmesh(int index)
 		{
 		}
@@ -176,7 +180,7 @@ namespace Experilous.MakeItTile
 		/// Construct a fan triangulation instance with no inner rings using the supplied delegate to set vertex attribute values.
 		/// </summary>
 		/// <param name="addRingVertices">The delegate used to set vertex attribute values.</param>
-		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <c>DynamicMesh.IIndexedVertexAttributes.Advance()</c>
+		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/>
 		/// once after each vertex that is added by the delegate, which should also be equal to the ring depth.</remarks>
 		/// <seealso cref="DynamicMesh"/>
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
@@ -192,7 +196,7 @@ namespace Experilous.MakeItTile
 		/// <param name="ringDepth">The total number of vertex rings to generate.
 		/// The minimum value of 1 specifies just the outer ring, while values of 2 or more generate inner vertex rings also.</param>
 		/// <param name="addRingVertices">The delegate used to set vertex attribute values.</param>
-		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <c>DynamicMesh.IIndexedVertexAttributes.Advance()</c>
+		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/>
 		/// once after each vertex that is added by the delegate, which should also be equal to the ring depth.</remarks>
 		/// <seealso cref="DynamicMesh"/>
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
@@ -203,11 +207,13 @@ namespace Experilous.MakeItTile
 			_addRingVertices = addRingVertices;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexCount(Topology.Face face)
 		{
 			return face.neighborCount * _ringDepth;
 		}
 
+		/// <inheritdoc/>
 		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
 		{
 			int neighborCount = face.neighborCount;
@@ -265,6 +271,7 @@ namespace Experilous.MakeItTile
 			RebuildFace(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
 		{
 			foreach (var edge in face.edges)
@@ -273,6 +280,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <inheritdoc/>
 		public void FinalizeSubmesh(int index)
 		{
 		}
@@ -308,9 +316,9 @@ namespace Experilous.MakeItTile
 		/// </summary>
 		/// <param name="addRingVertices">The delegate used to set vertex attribute values on all ring vertices.</param>
 		/// <param name="addCenterVertex">The delegate used to set vertex attribute for the center vertex.</param>
-		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <c>DynamicMesh.IIndexedVertexAttributes.Advance()</c>
+		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/>
 		/// once after each vertex that is added by the delegate, which should also be equal to the ring depth.  Similarly, the
-		/// <paramref name="addCenterVertex"/> delegate is expected to call <c>Advance()</c> exactly once.</remarks>
+		/// <paramref name="addCenterVertex"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/> exactly once.</remarks>
 		/// <seealso cref="DynamicMesh"/>
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
 		public SeparatedFacesUmbrellaTriangulation(
@@ -329,9 +337,9 @@ namespace Experilous.MakeItTile
 		/// The minimum value of 1 specifies just the outer ring, while values of 2 or more generate inner vertex rings also.</param>
 		/// <param name="addRingVertices">The delegate used to set vertex attribute values on all ring vertices.</param>
 		/// <param name="addCenterVertex">The delegate used to set vertex attribute for the center vertex.</param>
-		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <c>DynamicMesh.IIndexedVertexAttributes.Advance()</c>
+		/// <remarks>The <paramref name="addRingVertices"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/>
 		/// once after each vertex that is added by the delegate, which should also be equal to the ring depth.  Similarly, the
-		/// <paramref name="addCenterVertex"/> delegate is expected to call <c>Advance()</c> exactly once.</remarks>
+		/// <paramref name="addCenterVertex"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/> exactly once.</remarks>
 		/// <seealso cref="DynamicMesh"/>
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
 		public SeparatedFacesUmbrellaTriangulation(
@@ -345,11 +353,13 @@ namespace Experilous.MakeItTile
 			_addCenterVertex = addCenterVertex;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexCount(Topology.Face face)
 		{
 			return face.neighborCount * _ringDepth + 1;
 		}
 
+		/// <inheritdoc/>
 		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
 		{
 			int neighborCount = face.neighborCount;
@@ -402,6 +412,7 @@ namespace Experilous.MakeItTile
 			RebuildFace(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
 		{
 			foreach (var edge in face.edges)
@@ -412,14 +423,22 @@ namespace Experilous.MakeItTile
 			_addCenterVertex(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void FinalizeSubmesh(int index)
 		{
 		}
 	}
 
 	/// <summary>
+	/// Triangulates a topology face using a kite pattern at the corners, not sharing vertices among other faces.
 	/// </summary>
 	/// <remarks>
+	/// <para>This triangulation method creates two rings of vertices around each face, using a
+	/// kite pattern at each corner, with three vertices per corner on the outside ring, and one
+	/// vertex per corner on the inner ring.</para>
+	/// 
+	/// <para>All vertices on the outer ring of the face are duplicated rather than shared with
+	/// adjacent faces.</para>
 	/// </remarks>
 	/// <seealso cref="DynamicMesh"/>
 	/// <seealso cref="DynamicMesh.ITriangulation"/>
@@ -428,7 +447,10 @@ namespace Experilous.MakeItTile
 		private Action<Topology.FaceEdge, DynamicMesh.IIndexedVertexAttributes> _addCornerVertices;
 
 		/// <summary>
+		/// Construct a kite triangulation instance using the supplied delegate to set vertex attribute values.
 		/// </summary>
+		/// <param name="addCornerVertices">The delegate used to set vertex attribute values on all corner kite vertices.</param>
+		/// <remarks>The <paramref name="addCornerVertices"/> delegate is expected to call <see cref="DynamicMesh.IIndexedVertexAttributes.Advance()"/> four times each time it is invoked.</remarks>
 		/// <seealso cref="DynamicMesh"/>
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
 		public SeparatedFacesKiteCornerStripTriangulation(Action<Topology.FaceEdge, DynamicMesh.IIndexedVertexAttributes> addCornerVertices)
@@ -436,11 +458,13 @@ namespace Experilous.MakeItTile
 			_addCornerVertices = addCornerVertices;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexCount(Topology.Face face)
 		{
 			return face.neighborCount * 4;
 		}
 
+		/// <inheritdoc/>
 		public void BuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes, IList<int> triangleIndices)
 		{
 			int neighborCount = face.neighborCount;
@@ -513,6 +537,7 @@ namespace Experilous.MakeItTile
 			RebuildFace(face, vertexAttributes);
 		}
 
+		/// <inheritdoc/>
 		public void RebuildFace(Topology.Face face, DynamicMesh.IIndexedVertexAttributes vertexAttributes)
 		{
 			foreach (var edge in face.edges)
@@ -521,6 +546,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <inheritdoc/>
 		public void FinalizeSubmesh(int index)
 		{
 		}

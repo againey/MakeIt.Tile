@@ -10,10 +10,10 @@ using Experilous.MakeItGenerate;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Utility/Face Spatial Partitioning")]
-	public class FaceSpatialPartitioningGenerator : Generator
+	public class FaceSpatialPartitioningGenerator : Generator, ISerializationCallbackReceiver
 	{
-		[AutoSelect] public InputSlot topologyInputSlot;
 		[AutoSelect] public InputSlot surfaceInputSlot;
+		[AutoSelect] public InputSlot topologyInputSlot;
 		public InputSlot vertexPositionsInputSlot;
 
 		public OutputSlot partitioningOutputSlot;
@@ -21,12 +21,25 @@ namespace Experilous.MakeItTile
 		protected override void Initialize()
 		{
 			// Inputs
-			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<Surface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<IVertexAttribute<Vector3>>(ref vertexPositionsInputSlot, this);
 
 			// Outputs
 			OutputSlot.CreateOrReset<UniversalFaceSpatialPartitioning>(ref partitioningOutputSlot, this, "Face Spatial Partitioning");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<UniversalFaceSpatialPartitioning>(partitioningOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<InputSlot> inputs
@@ -59,8 +72,8 @@ namespace Experilous.MakeItTile
 		public override IEnumerator BeginGeneration()
 		{
 			var partitioning = UniversalFaceSpatialPartitioning.Create(
-				topologyInputSlot.GetAsset<Topology>(),
 				surfaceInputSlot.GetAsset<Surface>(),
+				topologyInputSlot.GetAsset<Topology>(),
 				vertexPositionsInputSlot.GetAsset<IVertexAttribute<Vector3>>());
 			partitioningOutputSlot.SetAsset(partitioning);
 			yield break;

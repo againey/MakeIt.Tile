@@ -32,5 +32,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 11400000, guid: 22c08d8fcd824a945b5fa9aed87ccd6f, type: 2}
-  - {fileID: 166926, guid: 6c0640a805bdaa645a0303415d6089e6, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 148966, guid: 6c0640a805bdaa645a0303415d6089e6, type: 2}
   embeddedAssets: []

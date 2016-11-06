@@ -11,7 +11,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face/Centroids")]
-	public class FaceCentroidsGenerator : Generator
+	public class FaceCentroidsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public bool flatten;
 
@@ -33,6 +33,19 @@ namespace Experilous.MakeItTile
 
 			// Outputs
 			OutputSlot.CreateOrResetGrouped<IFaceAttribute<Vector3>>(ref faceCentroidsOutputSlot, this, "Face Centroids", "Attributes");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(faceCentroidsOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<InputSlot> inputs
@@ -62,14 +75,14 @@ namespace Experilous.MakeItTile
 
 			yield return executive.GenerateConcurrently(() =>
 			{
-				if (flatten || surface is PlanarSurface)
+				if (flatten || surface is QuadrilateralSurface)
 				{
 					FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, faceCentroids);
 				}
 				else if (surface is SphericalSurface)
 				{
 					var sphericalSurface = (SphericalSurface)surface;
-					FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions, sphericalSurface.radius, faceCentroids);
+					FaceAttributeUtility.CalculateSphericalFaceCentroidsFromVertexPositions(topology.internalFaces, sphericalSurface, vertexPositions, faceCentroids);
 				}
 				else
 				{

@@ -150,5 +150,17 @@ namespace Experilous.MakeItGenerate
 					throw new NotImplementedException();
 			}
 		}
+
+		public void ResetIfBroken(Generator generator)
+		{
+			if (randomSeedInputSlot != null && randomSeedInputSlot.generator != null)
+			{
+				InputSlot.ResetAssetTypeIfNull<IRandom>(randomSeedInputSlot);
+			}
+			else
+			{
+				InputSlot.CreateOrResetRequiredMutating<IRandom>(ref randomSeedInputSlot, generator);
+			}
+		}
 	}
 }

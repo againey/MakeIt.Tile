@@ -147,68 +147,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
---- !u!1 &708371025
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 145480, guid: 7d1281a32cdf137488f634a722e46fce, type: 2}
-  m_PrefabInternal: {fileID: 1812819567}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 708371026}
-  - 33: {fileID: 708371028}
-  - 23: {fileID: 708371027}
-  m_Layer: 0
-  m_Name: Prefab
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &708371026
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 493040, guid: 7d1281a32cdf137488f634a722e46fce, type: 2}
-  m_PrefabInternal: {fileID: 1812819567}
-  m_GameObject: {fileID: 708371025}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 892365924}
-  m_RootOrder: 1
---- !u!23 &708371027
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 2383768, guid: 7d1281a32cdf137488f634a722e46fce,
-    type: 2}
-  m_PrefabInternal: {fileID: 1812819567}
-  m_GameObject: {fileID: 708371025}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_Materials:
-  - {fileID: 2100000, guid: 4fe9aad6facdbc24592eb25cb274e07b, type: 2}
-  m_SubsetIndices: 
-  m_StaticBatchRoot: {fileID: 0}
-  m_UseLightProbes: 1
-  m_ReflectionProbeUsage: 1
-  m_ProbeAnchor: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 0
-  m_ImportantGI: 0
-  m_AutoUVMaxDistance: .5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
---- !u!33 &708371028
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 3341760, guid: 7d1281a32cdf137488f634a722e46fce,
-    type: 2}
-  m_PrefabInternal: {fileID: 1812819567}
-  m_GameObject: {fileID: 708371025}
-  m_Mesh: {fileID: 4300000, guid: 413f1d8bdc9717e4abbe1f97ac13df3e, type: 2}
 --- !u!1 &836093020
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,7 +371,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 836093021}
-  - {fileID: 708371026}
+  - {fileID: 1812819568}
   m_Father: {fileID: 0}
   m_RootOrder: 1
 --- !u!114 &892365925
@@ -448,7 +386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 836093027}
-  partitioning: {fileID: 0}
+  partitioning: {fileID: 11400000, guid: 49fd2b0b8e2c401418f937921e3af160, type: 2}
   OnPickStart:
     m_PersistentCalls:
       m_Calls:
@@ -464,7 +402,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickStartEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickStartEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   OnPickChange:
     m_PersistentCalls:
@@ -481,7 +419,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickChangeEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickChangeEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   OnPickEnd:
     m_PersistentCalls:
@@ -498,7 +436,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: Experilous.Topological.FaceSpatialPartitioningPicker+PickEndEvent,
+    m_TypeName: Experilous.MakeItTile.FaceSpatialPartitioningPicker+PickEndEvent,
       Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!1001 &1812819567
 Prefab:
@@ -541,5 +479,8 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7d1281a32cdf137488f634a722e46fce, type: 2}
-  m_RootGameObject: {fileID: 708371025}
   m_IsPrefabParent: 0
+--- !u!4 &1812819568
+Transform:
+  m_PrefabParentObject: {fileID: 405312, guid: 7d1281a32cdf137488f634a722e46fce, type: 2}
+  m_PrefabInternal: {fileID: 1812819567}

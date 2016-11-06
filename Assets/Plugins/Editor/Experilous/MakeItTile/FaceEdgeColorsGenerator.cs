@@ -10,7 +10,7 @@ using Experilous.MakeItGenerate;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face Edge/Colors")]
-	public class FaceEdgeColorsGenerator : Generator
+	public class FaceEdgeColorsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public enum ColorSource
 		{
@@ -41,6 +41,18 @@ namespace Experilous.MakeItTile
 
 			// Outputs
 			OutputSlot.CreateOrResetGrouped<IEdgeAttribute<Color>>(ref faceEdgeColorsOutputSlot, this, "Face Edge Colors", "Attributes");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Color>>(faceColorsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Color>>(faceEdgeColorsOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		protected override void OnUpdate()

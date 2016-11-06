@@ -10,7 +10,7 @@ using Experilous.MakeItGenerate;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Unity Asset/Prefab")]
-	public class PrefabGenerator : Generator
+	public class PrefabGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public InputSlot dynamicMeshInputSlot;
 
@@ -28,6 +28,17 @@ namespace Experilous.MakeItTile
 
 			// Outputs
 			OutputSlot.CreateOrReset<GameObject>(ref prefabOutputSlot, this, "Prefab");
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<DynamicMesh>(dynamicMeshInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<GameObject>(prefabOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<InputSlot> inputs

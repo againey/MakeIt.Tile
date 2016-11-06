@@ -26,6 +26,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c1f9b56fd95b8894f8acc1b71ded1046, type: 2}
   - {fileID: 4300000, guid: ab131aea1f3a3764999e68d2f50c4f56, type: 2}
   - {fileID: 11400000, guid: 18297a5f001e2f34c937a31d9dd4e6f6, type: 2}
-  - {fileID: 100902, guid: fe9a74fdfba6d144fb943334ce39dc7f, type: 2}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 17bfbc45d80b42a48ba035de7f7ec60c, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 173462, guid: fe9a74fdfba6d144fb943334ce39dc7f, type: 2}
   embeddedAssets: []

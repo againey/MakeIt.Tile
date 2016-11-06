@@ -10,7 +10,7 @@ using Experilous.MakeItGenerate;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Unity Asset/Mesh")]
-	public class MeshGenerator : Generator
+	public class MeshGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public enum SourceType
 		{
@@ -96,6 +96,38 @@ namespace Experilous.MakeItTile
 			// Outputs
 			OutputSlot.CreateOrReset<DynamicMesh>(ref dynamicMeshOutputSlot, this, "Dynamic Mesh");
 			meshOutputSlots = new OutputSlot[0];
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<FaceGroupCollection>(faceGroupCollectionInputSlot);
+			InputSlot.ResetAssetTypeIfNull<FaceGroup>(faceGroupInputSlot);
+
+			foreach (var inputSlot in ringVertexPositionsInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector3>>(inputSlot);
+			foreach (var inputSlot in ringVertexNormalsInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector3>>(inputSlot);
+			foreach (var inputSlot in ringVertexColorsInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Color>>(inputSlot);
+			foreach (var inputSlot in ringVertexColor32sInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Color32>>(inputSlot);
+			foreach (var inputSlot in ringVertexUV1sInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector2>>(inputSlot);
+			foreach (var inputSlot in ringVertexUV2sInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector2>>(inputSlot);
+			foreach (var inputSlot in ringVertexUV3sInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector2>>(inputSlot);
+			foreach (var inputSlot in ringVertexUV4sInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector2>>(inputSlot);
+			foreach (var inputSlot in ringVertexTangentsInputSlots) InputSlot.ResetAssetTypeIfNull<IEdgeAttribute<Vector4>>(inputSlot);
+			foreach (var inputSlot in centerVertexPositionsInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(inputSlot);
+			foreach (var inputSlot in centerVertexNormalsInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(inputSlot);
+			foreach (var inputSlot in centerVertexColorsInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Color>>(inputSlot);
+			foreach (var inputSlot in centerVertexColor32sInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Color32>>(inputSlot);
+			foreach (var inputSlot in centerVertexUV1sInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector2>>(inputSlot);
+			foreach (var inputSlot in centerVertexUV2sInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector2>>(inputSlot);
+			foreach (var inputSlot in centerVertexUV3sInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector2>>(inputSlot);
+			foreach (var inputSlot in centerVertexUV4sInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector2>>(inputSlot);
+			foreach (var inputSlot in centerVertexTangentsInputSlots) InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector4>>(inputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<DynamicMesh>(dynamicMeshOutputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		protected override void OnUpdate()
@@ -360,7 +392,7 @@ namespace Experilous.MakeItTile
 			switch (sourceType)
 			{
 				case SourceType.InternalFaces:
-					dynamicMesh = DynamicMesh.Create(topology.internalFaces, vertexAttributes, triangulationInstance, maxVerticesPerSubmesh);
+					dynamicMesh = DynamicMesh.Create(topology.enumerableInternalFaces, vertexAttributes, triangulationInstance, maxVerticesPerSubmesh);
 					break;
 				case SourceType.FaceGroupCollection:
 					dynamicMesh = DynamicMesh.Create(faceGroupCollectionInputSlot.GetAsset<FaceGroupCollection>(), vertexAttributes, triangulationInstance, maxVerticesPerSubmesh);

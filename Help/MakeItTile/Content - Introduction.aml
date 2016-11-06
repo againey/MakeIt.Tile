@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="327c9325-40d7-4d24-a5d2-99da4936d7e0" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				Welcome to the Make It Tile User's Manual.  This document will
+				assist in integrating this collection of tile-based topology
+				utilities into your Unity project.
+			</para>
+			<alert type="note">
+				<para>
+					An online version of this documentation is available
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Make It Tile Online User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-tile/2.0/documentation/html/327c9325-40d7-4d24-a5d2-99da4936d7e0.htm</linkUri>
+					</externalLink>,
+					and a downloadable archive for offline use can be acquired
+					<externalLink>
+						<linkText>here</linkText>
+						<linkAlternateText>Make It Tile Downloadable User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-tile/2.0/documentation/archive</linkUri>
+					</externalLink>.
+				</para>
+			</alert>
+		</summary>
+		<introduction>
+			<autoOutline />
+		</introduction>
+		<section address="offer">
+			<title>What does Make It Tile offer?</title>
+			<content>
+				<para>
+					Make It Tile is a framework for Unity to aid in the creation
+					and usage of game worlds which are divided up into discrete
+					tiles.  It is designed to be maximally flexible, applying just
+					as easily to the simple 8x8 game world of chess as to a large
+					hex grid in a strategy game or even an irregular arrangment of
+					tiles on the surface of a sphere.  It includes support for:
+				</para>
+				<list class="bullet">
+					<listItem>square, hex, and irregular grids</listItem>
+					<listItem>planar and spherical surfaces</listItem>
+					<listItem>world edge wrap-around</listItem>
+					<listItem>mouse picking</listItem>
+					<listItem>A* path finding</listItem>
+					<listItem>dynamic mesh generation</listItem>
+					<listItem>neighboring tile visitation</listItem>
+				</list>
+				<para>
+					As a bonus, and in support of tiled world generation, Make It Tile includes the full
+					<externalLink>
+						<linkText>Make It Random</linkText>
+						<linkAlternateText>Make It Random Online User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-random/1.0/documentation/html/cb0daf55-236d-4175-aedc-48751c1d0964.htm</linkUri>
+					</externalLink> and
+					<externalLink>
+						<linkText>Make It Colorful</linkText>
+						<linkAlternateText>Make It Colorful Online User's Manual at experilous.com</linkAlternateText>
+						<linkUri>http://experilous.com/1/product/make-it-colorful/1.0/documentation/html/1c2a6866-2869-4203-a950-4beed65c23c3.htm</linkUri>
+					</externalLink> libraries.
+				</para>
+				<para>
+					In addition to the above features, the framework is very
+					extensible, to support whatever tiling patterns, tile
+					attributes, and algorithms you might need.
+				</para>
+			</content>
+		</section>
+		<section address="organized">
+			<title>How is Make It Tile organized?</title>
+			<content>
+				<para>
+					The core of the Make It Tile framework is a <link xlink:href="59aabaa7-214d-462d-a0d0-6463157129d5" linkText="topology" />,
+					a data structure for representing the relations between vertices,
+					edges, and faces.  In terms of the primary use case for this
+					framework, faces are typically synonymous with tiles, while
+					vertices are the corners of each tile. Edges are the boundaries
+					between two adjacent faces/tiles, and they can simultaneously be
+					treated as the connections between two adjacent vertices/corners.
+				</para>
+				<para>
+					On top of this foundational data structure, <link xlink:href="bc568936-a4aa-4131-b42f-048b55134185" linkText="topology element attributes" />
+					enable any kind of data to be associated with the individual vertices,
+					edges, and faces of a topology.  There are many different kinds of
+					information that could be associated with a topology, depending on the
+					needs of your game or application.  Elevation, terrain type, a list of
+					units, movement costs, surface normals, and more.
+				</para>
+				<para>
+					<link xlink:href="c0bb2b58-ff6e-4be1-8d35-a74636aaf262" linkText="Surface manifolds" />
+					are an extension of the topology concept, embedding a topology onto
+					a two-dimensional surface within three-dimensional space.  Make It
+					Tile supports spherical and planar surfaces, constructible with a
+					variety of tiling patterns, including subdivisions of the five
+					Platonic solids for spherical surfaces, and highly flexible
+					quadrilateral and hexagonal tiles for planar surfaces.  Surfaces are
+					typically the first thing you construct, and which is then used to
+					build the full topology data structure and additional attributes
+					such as vertex positions.
+				</para>
+				<para>
+					Further utilities are provided such as the
+					<link xlink:href="8c9c513b-f20d-41b0-af60-1b11cd048497" linkText="dynamic mesh" />
+					for generating renderable meshes of the tiled surfaces,
+					<link xlink:href="085fb9ef-bacc-43a6-8f64-ec0fc464eac4" linkText="spatial partitioning" />
+					data structures for quickly looking up elements of a topology nearest a point or intersected by a ray, a
+					<link xlink:href="e013769f-feee-4a74-9898-7011318c1034#path-finding" linkText="path finder" />
+					utilizing the A* path finding algorithm, a variety of
+					<link xlink:href="e013769f-feee-4a74-9898-7011318c1034#topology-visitation" linkText="graph visitation methods" />
+					for iterating over the elements of a topology in particular orders, utilities for calculating additional common
+					<link xlink:href="bc568936-a4aa-4131-b42f-048b55134185" linkText="topology attributes" />,
+					and tools to
+					<link xlink:href="10082986-fc31-4c23-9faf-fe19ff871ac5" linkText="mutate and randomize" />
+					the shapes and arrangements of tiles in a topology.
+				</para>
+				<alert type="note">
+					<para>
+						The Make It Tile library is located within the
+						<codeEntityReference qualifyHint="true">N:Experilous.MakeItTile</codeEntityReference>
+						namespace, with supporting libraries and supplemental utilities in
+						<codeEntityReference qualifyHint="true">N:Experilous.Core</codeEntityReference>,
+						<codeEntityReference qualifyHint="true">N:Experilous.Numerics</codeEntityReference>,
+						<codeEntityReference qualifyHint="true">N:Experilous.Containers</codeEntityReference>,
+						<codeEntityReference qualifyHint="true">N:Experilous.MakeItRandom</codeEntityReference>, and
+						<codeEntityReference qualifyHint="true">N:Experilous.MakeItColorful</codeEntityReference>.
+						Be sure to put the appropriate <codeInline>using</codeInline> directives at the
+						top of your scripts, or explicitly qualify type names within your code.  For namespaces
+						that contain types which might cause name ambiguities with types in Unity or third party
+						assets, consider using <codeInline>using</codeInline> aliases for just the types you
+						need, rather than pulling in an entire namespace, as in the following example:
+					</para>
+					<code><![CDATA[using IntVector2 = Experilous.Numerics.IntVector2;]]></code>
+				</alert>
+			</content>
+		</section>
+		<relatedTopics>
+			<link xlink:href="59aabaa7-214d-462d-a0d0-6463157129d5" /> <!-- Topologies -->
+			<link xlink:href="bc568936-a4aa-4131-b42f-048b55134185" /> <!-- Topology Attributes -->
+			<link xlink:href="c0bb2b58-ff6e-4be1-8d35-a74636aaf262" /> <!-- Surface Manifolds -->
+			<link xlink:href="685165ae-969e-47cf-a277-4b2d54d169d4" /> <!-- Edge Wrap -->
+			<link xlink:href="8c9c513b-f20d-41b0-af60-1b11cd048497" /> <!-- Dynamic Mesh -->
+			<link xlink:href="10082986-fc31-4c23-9faf-fe19ff871ac5" /> <!-- Topology Mutation -->
+			<link xlink:href="085fb9ef-bacc-43a6-8f64-ec0fc464eac4" /> <!-- Spatial Partitioning -->
+			<link xlink:href="e013769f-feee-4a74-9898-7011318c1034" /> <!-- Topology Traversal -->
+			<link xlink:href="0c879b33-6cff-4557-98d1-0794eeb719c8" /> <!-- Example Scenes -->
+			<codeEntityReference linkText="API Reference">R:Project_API_Reference</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>

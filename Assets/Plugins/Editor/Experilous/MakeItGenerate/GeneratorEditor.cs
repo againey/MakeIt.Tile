@@ -39,7 +39,7 @@ namespace Experilous.MakeItGenerate
 
 		[SerializeField] protected OutputEditorStateDictionary _outputEditorStates = new OutputEditorStateDictionary();
 
-		protected void OnEnable()
+		protected virtual void OnEnable()
 		{
 			_generator = (Generator)target;
 			_serializedGenerator = (target != null) ? new SerializedObject(target) : null;
@@ -52,6 +52,8 @@ namespace Experilous.MakeItGenerate
 				outputEditorState.foldoutAnimation = new AnimBool(outputEditorState.foldout);
 				outputEditorState.foldoutAnimation.valueChanged.AddListener(Repaint);
 			}
+
+			if (_generator != null) _generator.Update();
 		}
 
 		private static bool IsInAssetGeneratorSubclass(FieldInfo field)
