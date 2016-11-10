@@ -115,7 +115,7 @@ namespace Experilous.Examples.MakeItTile
 		{
 			var hexGridSurface = RectangularHexGrid.Create(
 				HexGridDescriptor.CreateSideUp(true, HexGridAxisStyles.StaggeredSymmetric),
-				Vector3.zero, Quaternion.identity,
+				Vector3.zero, Quaternion.Euler(90f, 0f, 0f),
 				false, false,
 				new IntVector2(topologyWidth, topologyHeight));
 
@@ -125,7 +125,7 @@ namespace Experilous.Examples.MakeItTile
 			_topology = hexGridSurface.CreateManifold(out vertexPositionsArray);
 			_vertexPositions = vertexPositionsArray.AsVertexAttribute();
 			_facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(_topology.internalFaces, _vertexPositions);
-			_faceCornerBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.faceEdges, _topology.internalFaces, _vertexPositions, _facePositions);
+			_faceCornerBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.internalFaces, _vertexPositions, _facePositions);
 			_faceBlockedStates = new bool[_topology.internalFaces.Count].AsFaceAttribute();
 
 			var triangulation = new SeparatedFacesUmbrellaTriangulation(2,
@@ -150,7 +150,7 @@ namespace Experilous.Examples.MakeItTile
 				});
 
 			_dynamicMesh = DynamicMesh.Create(
-				_topology.internalFaces,
+				_topology.enumerableInternalFaces,
 				DynamicMesh.VertexAttributes.Position |
 				DynamicMesh.VertexAttributes.Normal |
 				DynamicMesh.VertexAttributes.Color,
@@ -163,7 +163,7 @@ namespace Experilous.Examples.MakeItTile
 				meshFilter.transform.SetParent(transform, false);
 			}
 
-			var partioning = UniversalFaceSpatialPartitioning.Create(_topology, _surface, _vertexPositions);
+			var partioning = UniversalFaceSpatialPartitioning.Create(_surface, _topology, _vertexPositions);
 			var picker = GetComponent<FaceSpatialPartitioningPicker>();
 			picker.partitioning = partioning;
 		}
@@ -264,7 +264,7 @@ namespace Experilous.Examples.MakeItTile
 
 		private float Cost(Topology.FaceEdge edge, int pathLength)
 		{
-			if (edge.farFace.isInternal && _faceBlockedStates[edge.farFace] == false)
+			if (edge.face.isInternal && _faceBlockedStates[edge] == false)
 			{
 				return 1f;
 			}
@@ -299,13 +299,7 @@ namespace Experilous.Examples.MakeItTile
 
 					if (visitor.depth < clearRadius)
 					{
-						foreach (var edge in face.edges)
-						{
-							if (edge.farFace.isInternal)
-							{
-								visitor.VisitNeighbor(edge.farFace);
-							}
-						}
+						visitor.VisitInternalNeighbors();
 					}
 				});
 		}

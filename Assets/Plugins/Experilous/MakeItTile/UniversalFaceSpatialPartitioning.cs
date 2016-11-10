@@ -8,6 +8,11 @@ using Experilous.Numerics;
 
 namespace Experilous.MakeItTile
 {
+	/// <summary>
+	/// Class for partitioning the faces of any possible manifold such that queries of face
+	/// ownership or intersection of points or rays can be performed efficiently, typically
+	/// in O(log(n)) time where n is the number of edges in the manifold.
+	/// </summary>
 	public class UniversalFaceSpatialPartitioning : ScriptableObject, IFaceSpatialPartitioning
 	{
 		[Serializable] private struct Partition
@@ -75,19 +80,26 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		[SerializeField] protected Topology _topology;
-		[SerializeField] protected Surface _surface;
+		[SerializeField] private Surface _surface;
+		[SerializeField] private Topology _topology;
 		[SerializeField] private Partition[] _partitionBinaryTree;
 
-		public static UniversalFaceSpatialPartitioning Create(Topology topology, Surface surface, IVertexAttribute<Vector3> vertexPositions)
+		/// <summary>
+		/// Creates a spatial partitioning for the given manifold.
+		/// </summary>
+		/// <param name="surface">The surface describing the overall shape of the manifold.</param>
+		/// <param name="topology">The topological relations of vertices, edges, and faces of the manifold.</param>
+		/// <param name="vertexPositions">The positions of the manifold's vertices.</param>
+		/// <returns>A spatial partitioning for the given manifold.</returns>
+		public static UniversalFaceSpatialPartitioning Create(Surface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions)
 		{
-			return CreateInstance<UniversalFaceSpatialPartitioning>().Initialize(topology, surface, vertexPositions);
+			return CreateInstance<UniversalFaceSpatialPartitioning>().Initialize(surface, topology, vertexPositions);
 		}
 
-		private UniversalFaceSpatialPartitioning Initialize(Topology topology, Surface surface, IVertexAttribute<Vector3> vertexPositions)
+		private UniversalFaceSpatialPartitioning Initialize(Surface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions)
 		{
-			_topology = topology;
 			_surface = surface;
+			_topology = topology;
 
 			var edges = _topology.faceEdges;
 			_partitionBinaryTree = new Partition[edges.Count];
@@ -267,6 +279,21 @@ namespace Experilous.MakeItTile
 			_partitionBinaryTree = truncatedPartitionBinaryTree;
 		}
 
+		/// <summary>
+		/// Finds the face to which the given point belongs.
+		/// </summary>
+		/// <param name="point">The point to use when searching for the corresponding face.</param>
+		/// <returns>The face to which the given point belongs.</returns>
+		/// <remarks><para>Typically, the point will be on or close to the surface of the manifold,
+		/// such that it is clear that it belongs to a particular face.  It does not need to be near
+		/// the surface, however, as each face implicitly defines a volume above and below it, and
+		/// all points within that volume belong to that face.</para>
+		/// <para>Depending on the shape of the manifold, not all faces returned by this method will
+		/// be internal faces.  For example, a rectangular manifold with no wrap-around edges contains
+		/// a single external face that represents all areas outside the rectangle, and any point that
+		/// lies on, above, or below this outer area will map to the external face.  However, an empty
+		/// face is guaranteed to never be returned by this method; every point is mappable to some
+		/// face in the manifold, no matter the shape or topology of the manifold.</para></remarks>
 		public Topology.Face FindFace(Vector3 point)
 		{
 			var partitionIndex = 0;
@@ -284,7 +311,7 @@ namespace Experilous.MakeItTile
 						var edge = _topology.faceEdges[partition._overEdgeIndex];
 						if ((edge.wrap & EdgeWrap.FaceToFace) == EdgeWrap.None || edge.isBoundary)
 						{
-							return _topology.faceEdges[partition._overEdgeIndex].farFace;
+							return _topology.faceEdges[partition._overEdgeIndex].face;
 						}
 						else
 						{
@@ -301,12 +328,17 @@ namespace Experilous.MakeItTile
 					}
 					else
 					{
-						return _topology.faceEdges[partition._underEdgeIndex].farFace;
+						return _topology.faceEdges[partition._underEdgeIndex].face;
 					}
 				}
 			}
 		}
 
+		/// <summary>
+		/// Finds the face with which the given ray intersects.
+		/// </summary>
+		/// <param name="ray">The ray to intersect with the manifold to find which face it intersects.</param>
+		/// <returns>The first face which is intersected by the given ray, or an empty face if the ray does not intersect the manifold at all.</returns>
 		public Topology.Face FindFace(Ray ray)
 		{
 			Vector3 intersection;
@@ -320,6 +352,11 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <summary>
+		/// Finds the face with which the given ray intersects.
+		/// </summary>
+		/// <param name="ray">The ray to intersect with the manifold to find which face it intersects.</param>
+		/// <returns>The first face which is intersected by the given ray, or an empty face if the ray does not intersect the manifold at all.</returns>
 		public Topology.Face FindFace(ScaledRay ray)
 		{
 			Vector3 intersection;

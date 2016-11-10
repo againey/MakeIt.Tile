@@ -11,41 +11,137 @@ using Geometry = Experilous.Numerics.Geometry;
 
 namespace Experilous.MakeItTile
 {
+	/// <summary>
+	/// Basic interface shared by all path instances over any element type.
+	/// </summary>
 	public interface IPath
 	{
+		/// <summary>
+		/// Indicates if the current instance represents a complete path from
+		/// the requested source to the requested target, or if there was no
+		/// complete path found between the two.
+		/// </summary>
 		bool isComplete { get; }
 	}
 
+	/// <summary>
+	/// Interface for paths over vertices, exposed as a list of vertices.
+	/// </summary>
 	public interface IVertexPath : IList<Topology.Vertex>, IPath
 	{
+		/// <summary>
+		/// The source vertex at the beginning of the path.
+		/// </summary>
+		Topology.Vertex source { get; }
+
+		/// <summary>
+		/// The target vertex at the end of the path.
+		/// </summary>
+		Topology.Vertex target { get; }
 	}
 
+	/// <summary>
+	/// Interface for paths over vertices, exposed as a list of vertex edges.
+	/// </summary>
 	public interface IVertexEdgePath : IList<Topology.VertexEdge>, IPath
 	{
+		/// <summary>
+		/// The source vertex at the beginning of the path.
+		/// </summary>
 		Topology.Vertex source { get; }
+
+		/// <summary>
+		/// The target vertex at the end of the path.
+		/// </summary>
 		Topology.Vertex target { get; }
 
+		/// <summary>
+		/// Converts the current instance to a simpler vertex path, exposed as a list of vertices.
+		/// </summary>
+		/// <returns>A vertex path exposed as a list of vertices.</returns>
 		IVertexPath AsVertexPath();
 	}
 
+	/// <summary>
+	/// Interface for paths over faces, exposed as a list of faces.
+	/// </summary>
 	public interface IFacePath : IList<Topology.Face>, IPath
 	{
+		/// <summary>
+		/// The source face at the beginning of the path.
+		/// </summary>
+		Topology.Face source { get; }
+
+		/// <summary>
+		/// The target face at the end of the path.
+		/// </summary>
+		Topology.Face target { get; }
 	}
 
+	/// <summary>
+	/// Interface for paths over faces, exposed as a list of face edges.
+	/// </summary>
 	public interface IFaceEdgePath : IList<Topology.FaceEdge>, IPath
 	{
+		/// <summary>
+		/// The source face at the beginning of the path.
+		/// </summary>
 		Topology.Face source { get; }
+
+		/// <summary>
+		/// The target face at the end of the path.
+		/// </summary>
 		Topology.Face target { get; }
 
+		/// <summary>
+		/// Converts the current instance to a simpler face path, exposed as a list of faces.
+		/// </summary>
+		/// <returns>A face path exposed as a list of faces.</returns>
 		IFacePath AsFacePath();
 	}
 
+	/// <summary>
+	/// A class for finding the shortest or otherwise least costly path between pairs of
+	/// vertices or faces within a topology, implemented using the A* path finding algorithm.
+	/// </summary>
 	public class PathFinder
 	{
+		/// <summary>
+		/// Delegate signature for estimating the cost of the path from the specified source
+		/// vertex to the specified target vertex.
+		/// </summary>
+		/// <param name="source">The source vertex at the beginning of the path segment whose cost is to be estimated.</param>
+		/// <param name="target">The target vertex at the end of the path segment whose cost is to be estimated.</param>
+		/// <param name="pathLength">The length of the overall path so far, from the original source to the source of this call.</param>
+		/// <returns>The estimated cost of pathing from the source to the target.</returns>
 		public delegate float VertexCostHeuristicDelegate(Topology.Vertex source, Topology.Vertex target, int pathLength);
+
+		/// <summary>
+		/// Delegate signature for determining the actual cost of the path along the specified
+		/// vertex edge, from its near vertex to its far vertex.
+		/// </summary>
+		/// <param name="edge">The edge whose path cost is to be determined.</param>
+		/// <param name="pathLength">The length of the overall path so far, from the original source to the near vertex of this call's edge.</param>
+		/// <returns>The actual cost of pathing along the specified edge.</returns>
 		public delegate float VertexCostDelegate(Topology.VertexEdge edge, int pathLength);
 
+		/// <summary>
+		/// Delegate signature for estimating the cost of the path from the specified source
+		/// face to the specified target face.
+		/// </summary>
+		/// <param name="source">The source face at the beginning of the path segment whose cost is to be estimated.</param>
+		/// <param name="target">The target face at the end of the path segment whose cost is to be estimated.</param>
+		/// <param name="pathLength">The length of the overall path so far, from the original source to the source of this call.</param>
+		/// <returns>The estimated cost of pathing from the source to the target.</returns>
 		public delegate float FaceCostHeuristicDelegate(Topology.Face source, Topology.Face target, int pathLength);
+
+		/// <summary>
+		/// Delegate signature for determining the actual cost of the path along the specified
+		/// face edge, from its near face to its far face.
+		/// </summary>
+		/// <param name="edge">The edge whose path cost is to be determined.</param>
+		/// <param name="pathLength">The length of the overall path so far, from the original source to the near face of this call's edge.</param>
+		/// <returns>The actual cost of pathing along the specified edge.</returns>
 		public delegate float FaceCostDelegate(Topology.FaceEdge edge, int pathLength);
 
 		#region Private A* Types and Data
@@ -242,6 +338,10 @@ namespace Experilous.MakeItTile
 
 				public bool isComplete { get { return _vertexEdgePath.isComplete; } }
 
+				public Topology.Vertex source { get { return _vertexEdgePath.source; } }
+
+				public Topology.Vertex target { get { return _vertexEdgePath.target; } }
+
 				#region IList<Topology.Vertex> Implementation
 
 				public bool IsReadOnly { get { return true; } }
@@ -428,6 +528,10 @@ namespace Experilous.MakeItTile
 
 				public bool isComplete { get { return _faceEdgePath.isComplete; } }
 
+				public Topology.Face source { get { return _faceEdgePath.source; } }
+
+				public Topology.Face target { get { return _faceEdgePath.target; } }
+
 				#region IList<Topology.Face> Implementation
 
 				public bool IsReadOnly { get { return true; } }
@@ -539,6 +643,21 @@ namespace Experilous.MakeItTile
 
 		#region A* Implementations
 
+		/// <summary>
+		/// Finds the shortest or otherwise least costly path from the specified source vertex to
+		/// the specified target vertex, using the A* algorithm and the supplied heuristic and cost
+		/// delegates to measure costs between vertices and over vertex edges.
+		/// </summary>
+		/// <param name="source">The source vertex from which the path should start.</param>
+		/// <param name="target">The target vertex that the path should attempt to reach.</param>
+		/// <param name="costHeuristic">Delegate for estimating the cost of the path from the specified source vertex to the specified target vertex.</param>
+		/// <param name="cost">Delegate for determining the actual cost of the path along the specified vertex edge, from its near vertex to its far vertex.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <returns>A vertex edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
+		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
+		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
+		/// allocation to store the path as long as the new path fits inside the capacity already available in the
+		/// existing path.</para></remarks>
 		public IVertexEdgePath FindPath(Topology.Vertex source, Topology.Vertex target, VertexCostHeuristicDelegate costHeuristic, VertexCostDelegate cost, IVertexEdgePath path = null)
 		{
 			if (!source) throw new ArgumentException("The source vertex must be a valid vertex.", "source");
@@ -548,6 +667,10 @@ namespace Experilous.MakeItTile
 			var concretePath = path as VertexEdgePath;
 			if (concretePath == null)
 			{
+				if (path != null)
+				{
+					throw new ArgumentException("The provided pre-allocated path was not an instance of the necessary underlying type recognized by this path finder.", "path");
+				}
 				concretePath = new VertexEdgePath();
 			}
 
@@ -586,25 +709,25 @@ namespace Experilous.MakeItTile
 
 				foreach (var edge in vertex.edges)
 				{
-					if (_closedSet.ContainsKey(edge.farVertex.index)) continue;
+					if (_closedSet.ContainsKey(edge.vertex.index)) continue;
 
 					var g = node._g + cost(edge, node._length);
 
 					if (!float.IsPositiveInfinity(g))
 					{
 						Node neighborNode;
-						if (!_openSet.TryGetValue(edge.farVertex.index, out neighborNode))
+						if (!_openSet.TryGetValue(edge.vertex.index, out neighborNode))
 						{
-							var h = costHeuristic(edge.farVertex, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farVertex.index, edge.index, node._elementIndex, node._length + 1);
+							var h = costHeuristic(edge.vertex, target, node._length);
+							neighborNode = new Node(g + h, g, h, edge.vertex.index, edge.index, node._elementIndex, node._length + 1);
 							_queue.Push(neighborNode);
-							_openSet.Add(edge.farVertex.index, neighborNode);
+							_openSet.Add(edge.vertex.index, neighborNode);
 						}
 						else if (g < neighborNode._g)
 						{
-							var h = costHeuristic(edge.farVertex, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farVertex.index, edge.index, node._elementIndex, node._length + 1);
-							_openSet[edge.farVertex.index] = neighborNode;
+							var h = costHeuristic(edge.vertex, target, node._length);
+							neighborNode = new Node(g + h, g, h, edge.vertex.index, edge.index, node._elementIndex, node._length + 1);
+							_openSet[edge.vertex.index] = neighborNode;
 							_queue.Reprioritize(neighborNode);
 						}
 					}
@@ -614,6 +737,21 @@ namespace Experilous.MakeItTile
 			return concretePath.Rebuild(source, target);
 		}
 
+		/// <summary>
+		/// Finds the shortest or otherwise least costly path from the specified source face to
+		/// the specified target face, using the A* algorithm and the supplied heuristic and cost
+		/// delegates to measure costs between faces and over face edges.
+		/// </summary>
+		/// <param name="source">The source face from which the path should start.</param>
+		/// <param name="target">The target face that the path should attempt to reach.</param>
+		/// <param name="costHeuristic">Delegate for estimating the cost of the path from the specified source face to the specified target face.</param>
+		/// <param name="cost">Delegate for determining the actual cost of the path along the specified face edge, from its near vertex to its far face.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <returns>A face edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
+		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
+		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
+		/// allocation to store the path as long as the new path fits inside the capacity already available in the
+		/// existing path.</para></remarks>
 		public IFaceEdgePath FindPath(Topology.Face source, Topology.Face target, FaceCostHeuristicDelegate costHeuristic, FaceCostDelegate cost, IFaceEdgePath path = null)
 		{
 			if (!source) throw new ArgumentException("The source face must be a valid face.", "source");
@@ -623,6 +761,10 @@ namespace Experilous.MakeItTile
 			var concretePath = path as FaceEdgePath;
 			if (concretePath == null)
 			{
+				if (path != null)
+				{
+					throw new ArgumentException("The provided pre-allocated path was not an instance of the necessary underlying type recognized by this path finder.", "path");
+				}
 				concretePath = new FaceEdgePath();
 			}
 
@@ -661,25 +803,25 @@ namespace Experilous.MakeItTile
 
 				foreach (var edge in face.edges)
 				{
-					if (_closedSet.ContainsKey(edge.farFace.index)) continue;
+					if (_closedSet.ContainsKey(edge.face.index)) continue;
 
 					var g = node._g + cost(edge, node._length);
 
 					if (!float.IsPositiveInfinity(g))
 					{
 						Node neighborNode;
-						if (!_openSet.TryGetValue(edge.farFace.index, out neighborNode))
+						if (!_openSet.TryGetValue(edge.face.index, out neighborNode))
 						{
-							var h = costHeuristic(edge.farFace, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farFace.index, edge.index, node._elementIndex, node._length + 1);
+							var h = costHeuristic(edge.face, target, node._length);
+							neighborNode = new Node(g + h, g, h, edge.face.index, edge.index, node._elementIndex, node._length + 1);
 							_queue.Push(neighborNode);
-							_openSet.Add(edge.farFace.index, neighborNode);
+							_openSet.Add(edge.face.index, neighborNode);
 						}
 						else if (g < neighborNode._g)
 						{
-							var h = costHeuristic(edge.farFace, target, node._length);
-							neighborNode = new Node(g + h, g, h, edge.farFace.index, edge.index, node._elementIndex, node._length + 1);
-							_openSet[edge.farFace.index] = neighborNode;
+							var h = costHeuristic(edge.face, target, node._length);
+							neighborNode = new Node(g + h, g, h, edge.face.index, edge.index, node._elementIndex, node._length + 1);
+							_openSet[edge.face.index] = neighborNode;
 							_queue.Reprioritize(neighborNode);
 						}
 					}
@@ -693,6 +835,20 @@ namespace Experilous.MakeItTile
 
 		#region Helper Utilities
 
+		/// <summary>
+		/// Finds the shortest or path from the specified source vertex to the specified target vertex,
+		/// using the A* algorithm and the supplied vertex positions to measure standard Euclidean
+		/// distance between vertices and over vertex edges.
+		/// </summary>
+		/// <param name="source">The source vertex from which the path should start.</param>
+		/// <param name="target">The target vertex that the path should attempt to reach.</param>
+		/// <param name="vertexPositions">The three dimensional positions of each face in the world.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <returns>A vertex edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
+		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
+		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
+		/// allocation to store the path as long as the new path fits inside the capacity already available in the
+		/// existing path.</para></remarks>
 		public IVertexEdgePath FindEuclideanPath(Topology.Vertex source, Topology.Vertex target, IVertexAttribute<Vector3> vertexPositions, IVertexEdgePath path = null)
 		{
 			return FindPath(source, target,
@@ -707,6 +863,20 @@ namespace Experilous.MakeItTile
 				path);
 		}
 
+		/// <summary>
+		/// Finds the shortest or path from the specified source face to the specified target face,
+		/// using the A* algorithm and the supplied face positions to measure standard Euclidean
+		/// distance between faces and over face edges.
+		/// </summary>
+		/// <param name="source">The source face from which the path should start.</param>
+		/// <param name="target">The target face that the path should attempt to reach.</param>
+		/// <param name="facePositions">The three dimensional positions of each face in the world.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <returns>A face edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
+		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
+		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
+		/// allocation to store the path as long as the new path fits inside the capacity already available in the
+		/// existing path.</para></remarks>
 		public IFaceEdgePath FindEuclideanPath(Topology.Face source, Topology.Face target, IFaceAttribute<Vector3> facePositions, IFaceEdgePath path = null)
 		{
 			return FindPath(source, target,
@@ -722,39 +892,69 @@ namespace Experilous.MakeItTile
 				path);
 		}
 
-		public IVertexEdgePath FindSphericalEuclideanPath(Topology.Vertex source, Topology.Vertex target, IVertexAttribute<Vector3> vertexPositions, float sphereRadius, IVertexEdgePath path = null)
+		/// <summary>
+		/// Finds the shortest or path from the specified source vertex to the specified target vertex,
+		/// using the A* algorithm and the supplied vertex positions to measure spherical arc distance
+		/// between vertices and over vertex edges.
+		/// </summary>
+		/// <param name="source">The source vertex from which the path should start.</param>
+		/// <param name="target">The target vertex that the path should attempt to reach.</param>
+		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
+		/// <param name="vertexPositions">The three dimensional positions of each face in the world.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <returns>A vertex edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
+		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
+		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
+		/// allocation to store the path as long as the new path fits inside the capacity already available in the
+		/// existing path.</para></remarks>
+		public IVertexEdgePath FindSphericalEuclideanPath(Topology.Vertex source, Topology.Vertex target, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions, IVertexEdgePath path = null)
 		{
 			return FindPath(source, target,
 				(Topology.Vertex s, Topology.Vertex t, int pathLength) =>
 				{
 					var sourcePosition = vertexPositions[s];
 					var targetPosition = vertexPositions[t];
-					return Geometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return Geometry.SphericalArcLength(sourcePosition, targetPosition, surface.radius);
 				},
 				(Topology.VertexEdge edge, int pathLength) =>
 				{
 					var sourcePosition = vertexPositions[edge.nearVertex];
 					var targetPosition = vertexPositions[edge.farVertex];
-					return Geometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return Geometry.SphericalArcLength(sourcePosition, targetPosition, surface.radius);
 				},
 				path);
 		}
 
-		public IFaceEdgePath FindSphericalEuclideanPath(Topology.Face source, Topology.Face target, IFaceAttribute<Vector3> facePositions, float sphereRadius, IFaceEdgePath path = null)
+		/// <summary>
+		/// Finds the shortest or path from the specified source face to the specified target face,
+		/// using the A* algorithm and the supplied face positions to measure spherical arc distance
+		/// between faces and over face edges.
+		/// </summary>
+		/// <param name="source">The source face from which the path should start.</param>
+		/// <param name="target">The target face that the path should attempt to reach.</param>
+		/// <param name="surface">The surface describing the overall shape of the spherical manifold.</param>
+		/// <param name="facePositions">The three dimensional positions of each face in the world.</param>
+		/// <param name="path">An optional existing path created by an earlier call to one of the <seealso cref="O:Experilous.MakeItTile.PathFinder.FindPath"/> functions, which will be overwritten with the new path data.</param>
+		/// <returns>A face edge path instance describing the path found from source to target, or an incomplete object if no path was found.</returns>
+		/// <remarks><para>The optional <paramref name="path"/> parameter is useful for reducing allocation activity
+		/// and pressure on the garbage collector.  Reusing an existing path object will not require an additional
+		/// allocation to store the path as long as the new path fits inside the capacity already available in the
+		/// existing path.</para></remarks>
+		public IFaceEdgePath FindSphericalEuclideanPath(Topology.Face source, Topology.Face target, SphericalSurface surface, IFaceAttribute<Vector3> facePositions, IFaceEdgePath path = null)
 		{
 			return FindPath(source, target,
 				(Topology.Face s, Topology.Face t, int pathLength) =>
 				{
 					var sourcePosition = facePositions[s];
 					var targetPosition = facePositions[t];
-					return Geometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return Geometry.SphericalArcLength(sourcePosition, targetPosition, surface.radius);
 				},
 				(Topology.FaceEdge edge, int pathLength) =>
 				{
 					if (edge.isOuterBoundary) return float.PositiveInfinity;
 					var sourcePosition = facePositions[edge.nearFace];
 					var targetPosition = facePositions[edge.farFace];
-					return Geometry.SphericalArcLength(sourcePosition, targetPosition, sphereRadius);
+					return Geometry.SphericalArcLength(sourcePosition, targetPosition, surface.radius);
 				},
 				path);
 		}

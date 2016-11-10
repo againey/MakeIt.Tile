@@ -12,7 +12,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Topology/Randomizer")]
-	public class TopologyRandomizerGenerator : Generator
+	public class TopologyRandomizerGenerator : Generator, ISerializationCallbackReceiver
 	{
 		[AutoSelect] public InputSlot surfaceInputSlot;
 		[AutoSelect] public InputSlot topologyInputSlot;
@@ -65,6 +65,18 @@ namespace Experilous.MakeItTile
 			repairRate = 0.5f;
 		}
 
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IVertexAttribute<Vector3>>(vertexPositionsInputSlot);
+			randomness.ResetIfBroken(this);
+		}
+
+		public void OnBeforeSerialize()
+		{
+		}
+
 		protected override void OnUpdate()
 		{
 			randomness.Update();
@@ -95,7 +107,7 @@ namespace Experilous.MakeItTile
 
 			if (vertexPositions != null)
 			{
-				if (surface is PlanarSurface)
+				if (surface is QuadrilateralSurface)
 				{
 					if (relaxForRegularityWeight >= 1.0f)
 					{
@@ -176,7 +188,7 @@ namespace Experilous.MakeItTile
 
 					repairFunction = () =>
 					{
-						return PlanarManifoldUtility.ValidateAndRepair(topology, vertexPositions, repairRate, lockBoundaryPositions);
+						return PlanarManifoldUtility.ValidateAndRepair(topology, ((QuadrilateralSurface)surface).normal, vertexPositions, repairRate, lockBoundaryPositions);
 					};
 
 					relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(maxRelaxIterations, maxRepairIterations, relaxRelativePrecision, relaxIterationFunction, repairFunction);
@@ -189,7 +201,7 @@ namespace Experilous.MakeItTile
 						var relaxedVertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
 						relaxIterationFunction = () =>
 						{
-							SphericalManifoldUtility.RelaxVertexPositionsForRegularity(topology, vertexPositions, sphericalSurface.radius, lockBoundaryPositions, relaxedVertexPositions);
+							SphericalManifoldUtility.RelaxVertexPositionsForRegularity(sphericalSurface, topology, vertexPositions, lockBoundaryPositions, relaxedVertexPositions);
 							var relaxationAmount = SphericalManifoldUtility.CalculateRelaxationAmount(vertexPositions, relaxedVertexPositions);
 							for (int i = 0; i < vertexPositions.Count; ++i)
 							{
@@ -206,7 +218,7 @@ namespace Experilous.MakeItTile
 						var vertexAreas = new float[topology.vertices.Count].AsVertexAttribute();
 						relaxIterationFunction = () =>
 						{
-							SphericalManifoldUtility.RelaxVertexPositionsForEqualArea(topology, vertexPositions, sphericalSurface.radius, lockBoundaryPositions, relaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
+							SphericalManifoldUtility.RelaxVertexPositionsForEqualArea(sphericalSurface, topology, vertexPositions, lockBoundaryPositions, relaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
 							var relaxationAmount = SphericalManifoldUtility.CalculateRelaxationAmount(vertexPositions, relaxedVertexPositions);
 							for (int i = 0; i < vertexPositions.Count; ++i)
 							{
@@ -228,8 +240,8 @@ namespace Experilous.MakeItTile
 						var vertexAreas = new float[topology.vertices.Count].AsVertexAttribute();
 						relaxIterationFunction = () =>
 						{
-							SphericalManifoldUtility.RelaxVertexPositionsForRegularity(topology, vertexPositions, sphericalSurface.radius, lockBoundaryPositions, regularityRelaxedVertexPositions);
-							SphericalManifoldUtility.RelaxVertexPositionsForEqualArea(topology, vertexPositions, sphericalSurface.radius, lockBoundaryPositions, equalAreaRelaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
+							SphericalManifoldUtility.RelaxVertexPositionsForRegularity(sphericalSurface, topology, vertexPositions, lockBoundaryPositions, regularityRelaxedVertexPositions);
+							SphericalManifoldUtility.RelaxVertexPositionsForEqualArea(sphericalSurface, topology, vertexPositions, lockBoundaryPositions, equalAreaRelaxedVertexPositions, faceCentroids, faceCentroidAngles, vertexAreas);
 							for (int i = 0; i < relaxedVertexPositions.Count; ++i)
 							{
 								relaxedVertexPositions[i] = regularityRelaxedVertexPositions[i] * regularityWeight + equalAreaRelaxedVertexPositions[i] * equalAreaWeight;
@@ -245,7 +257,7 @@ namespace Experilous.MakeItTile
 
 					repairFunction = () =>
 					{
-						return SphericalManifoldUtility.ValidateAndRepair(topology, vertexPositions, sphericalSurface.radius, repairRate, lockBoundaryPositions);
+						return SphericalManifoldUtility.ValidateAndRepair(sphericalSurface, topology, vertexPositions, repairRate, lockBoundaryPositions);
 					};
 
 					relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(maxRelaxIterations, maxRepairIterations, relaxRelativePrecision, relaxIterationFunction, repairFunction);

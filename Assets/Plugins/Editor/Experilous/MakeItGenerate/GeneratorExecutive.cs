@@ -725,7 +725,7 @@ namespace Experilous.MakeItGenerate
 			var generators = GetDependencyOrderedGenerators();
 
 			// Generate all assets, moving or renaming the outputs if necessary.
-			var discreteAssets = new List<Object>();
+			var discreteAssets = new List<object>();
 			foreach (var generator in generators)
 			{
 				yield return UpdateGenerationProgress(++currentStep, string.Format("Generating ({0}/{1})...", currentStep - 4, generators.Count));
@@ -912,7 +912,7 @@ namespace Experilous.MakeItGenerate
 			}
 		}
 
-		private void DestroyLeftoverDiscreteAssets(List<Object> discreteAssets)
+		private void DestroyLeftoverDiscreteAssets(List<object> discreteAssets)
 		{
 			// Destroy any prior discrete objects that are no longer part of the collection.
 			foreach (var priorDiscreteAsset in _assetCollection.discreteAssets)

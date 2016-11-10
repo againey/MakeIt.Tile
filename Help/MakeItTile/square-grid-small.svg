@@ -1,0 +1,246 @@
+<svg viewBox="-20.0 -20.0 340.0 340.0" xmlns="http://www.w3.org/2000/svg">
+	<style>
+		svg
+		{
+			width: 400px;
+			height: 400px;
+		}
+		text.index
+		{
+			font-family: Tahoma, sans-serif;
+		}
+		ellipse.vertex
+		{
+			stroke: black;
+			stroke-width: 1;
+			fill: none;
+		}
+		text.vertex.index
+		{
+			fill: black;
+			text-anchor: middle;
+			dominant-baseline: central;
+			font-size: 12px;
+		}
+		polygon.face
+		{
+			fill: #CCC;
+			stroke: none;
+		}
+		text.face.index
+		{
+			fill: black;
+			text-anchor: middle;
+			dominant-baseline: central;
+			font-size: 24px;
+		}
+		polyline.edge
+		{
+			stroke: black;
+			stroke-width: 1;
+			stroke-linecap: square;
+			stroke-linejoin: miter;
+			fill: none;
+		}
+		text.edge.index
+		{
+			fill: black;
+			text-anchor: middle;
+			dominant-baseline: central;
+			font-size: 10px;
+		}
+
+		.edge.vert-inner
+		{
+			display: none;
+		}
+		.edge.vert-outer
+		{
+			display: none;
+		}
+		.edge.vert-other
+		{
+			display: none;
+		}
+		.edge.face-inner
+		{
+			//display: none;
+		}
+		.edge.face-outer
+		{
+			//display: none;
+		}
+		.edge.face-other
+		{
+			//display: none;
+		}
+		.vertex.other
+		{
+			display: none;
+		}
+		.vertex.focus
+		{
+			//display: none;
+		}
+		.face.other
+		{
+			display: none;
+		}
+		.face.focus
+		{
+			display: none;
+		}
+	</style>
+
+	<!-- Faces -->
+	<polygon class="face other" points="21.2,278.8 21.2,221.2 78.8,221.2 78.8,278.8" />
+	<text class="face index other" x="50.0" y="250.0">0</text>
+	<polygon class="face other" points="121.2,278.8 121.2,221.2 178.8,221.2 178.8,278.8" />
+	<text class="face index other" x="150.0" y="250.0">1</text>
+	<polygon class="face other" points="221.2,278.8 221.2,221.2 278.8,221.2 278.8,278.8" />
+	<text class="face index other" x="250.0" y="250.0">2</text>
+	<polygon class="face other" points="21.2,178.8 21.2,121.2 78.8,121.2 78.8,178.8" />
+	<text class="face index other" x="50.0" y="150.0">3</text>
+	<polygon class="face focus" points="121.2,178.8 121.2,121.2 178.8,121.2 178.8,178.8" />
+	<text class="face index focus" x="150.0" y="150.0">4</text>
+	<polygon class="face other" points="221.2,178.8 221.2,121.2 278.8,121.2 278.8,178.8" />
+	<text class="face index other" x="250.0" y="150.0">5</text>
+	<polygon class="face other" points="21.2,78.8 21.2,21.2 78.8,21.2 78.8,78.8" />
+	<text class="face index other" x="50.0" y="50.0">6</text>
+	<polygon class="face other" points="121.2,78.8 121.2,21.2 178.8,21.2 178.8,78.8" />
+	<text class="face index other" x="150.0" y="50.0">7</text>
+	<polygon class="face other" points="221.2,78.8 221.2,21.2 278.8,21.2 278.8,78.8" />
+	<text class="face index other" x="250.0" y="50.0">8</text>
+
+	<!-- Edges -->
+	<polyline class="edge face-other vert-outer not-wrapped" points="87.0,301.5 13.0,301.5 18.0,304.5" />
+	<text class="edge face-other vert-outer index not-wrapped" x="50.0" y="309.5">0</text>
+	<polyline class="edge face-other vert-outer not-wrapped" points="-1.5,287.0 -1.5,213.0 -4.5,218.0" />
+	<text class="edge face-other vert-outer index not-wrapped" x="-9.5" y="250.0">1</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="13.0,198.5 87.0,198.5 82.0,195.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="50.0" y="190.5">2</text>
+	<polyline class="edge face-outer vert-inner not-wrapped" points="101.5,213.0 101.5,287.0 104.5,282.0" />
+	<text class="edge face-outer vert-inner index not-wrapped" x="109.5" y="250.0">3</text>
+	<polyline class="edge face-other vert-outer not-wrapped" points="187.0,301.5 113.0,301.5 118.0,304.5" />
+	<text class="edge face-other vert-outer index not-wrapped" x="150.0" y="309.5">4</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="98.5,287.0 98.5,213.0 95.5,218.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="90.5" y="250.0">5</text>
+	<polyline class="edge face-other vert-inner not-wrapped" points="113.0,198.5 187.0,198.5 182.0,195.5" />
+	<text class="edge face-other vert-inner index not-wrapped" x="150.0" y="190.5">6</text>
+	<polyline class="edge face-outer vert-outer not-wrapped" points="201.5,213.0 201.5,287.0 204.5,282.0" />
+	<text class="edge face-outer vert-outer index not-wrapped" x="209.5" y="250.0">7</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="287.0,301.5 213.0,301.5 218.0,304.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="250.0" y="309.5">8</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="198.5,287.0 198.5,213.0 195.5,218.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="190.5" y="250.0">9</text>
+	<polyline class="edge face-outer vert-other not-wrapped" points="213.0,198.5 287.0,198.5 282.0,195.5" />
+	<text class="edge face-outer vert-other index not-wrapped" x="250.0" y="190.5">10</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="301.5,213.0 301.5,287.0 304.5,282.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="309.5" y="250.0">11</text>
+	<polyline class="edge face-outer vert-inner not-wrapped" points="87.0,201.5 13.0,201.5 18.0,204.5" />
+	<text class="edge face-outer vert-inner index not-wrapped" x="50.0" y="209.5">12</text>
+	<polyline class="edge face-other vert-outer not-wrapped" points="-1.5,187.0 -1.5,113.0 -4.5,118.0" />
+	<text class="edge face-other vert-outer index not-wrapped" x="-9.5" y="150.0">13</text>
+	<polyline class="edge face-other vert-outer not-wrapped" points="13.0,98.5 87.0,98.5 82.0,95.5" />
+	<text class="edge face-other vert-outer index not-wrapped" x="50.0" y="90.5">14</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="101.5,113.0 101.5,187.0 104.5,182.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="109.5" y="150.0">15</text>
+	<polyline class="edge face-inner vert-other not-wrapped" points="187.0,201.5 113.0,201.5 118.0,204.5" />
+	<text class="edge face-inner vert-other index not-wrapped" x="150.0" y="209.5">16</text>
+	<polyline class="edge face-inner vert-inner not-wrapped" points="98.5,187.0 98.5,113.0 95.5,118.0" />
+	<text class="edge face-inner vert-inner index not-wrapped" x="90.5" y="150.0">17</text>
+	<polyline class="edge face-inner vert-outer not-wrapped" points="113.0,98.5 187.0,98.5 182.0,95.5" />
+	<text class="edge face-inner vert-outer index not-wrapped" x="150.0" y="90.5">18</text>
+	<polyline class="edge face-inner vert-outer not-wrapped" points="201.5,113.0 201.5,187.0 204.5,182.0" />
+	<text class="edge face-inner vert-outer index not-wrapped" x="209.5" y="150.0">19</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="287.0,201.5 213.0,201.5 218.0,204.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="250.0" y="209.5">20</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="198.5,187.0 198.5,113.0 195.5,118.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="190.5" y="150.0">21</text>
+	<polyline class="edge face-outer vert-other not-wrapped" points="213.0,98.5 287.0,98.5 282.0,95.5" />
+	<text class="edge face-outer vert-other index not-wrapped" x="250.0" y="90.5">22</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="301.5,113.0 301.5,187.0 304.5,182.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="309.5" y="150.0">23</text>
+	<polyline class="edge face-outer vert-other not-wrapped" points="87.0,101.5 13.0,101.5 18.0,104.5" />
+	<text class="edge face-outer vert-other index not-wrapped" x="50.0" y="109.5">24</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="-1.5,87.0 -1.5,13.0 -4.5,18.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="-9.5" y="50.0">25</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="13.0,-1.5 87.0,-1.5 82.0,-4.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="50.0" y="-9.5">26</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="101.5,13.0 101.5,87.0 104.5,82.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="109.5" y="50.0">27</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="187.0,101.5 113.0,101.5 118.0,104.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="150.0" y="109.5">28</text>
+	<polyline class="edge face-outer vert-other not-wrapped" points="98.5,87.0 98.5,13.0 95.5,18.0" />
+	<text class="edge face-outer vert-other index not-wrapped" x="90.5" y="50.0">29</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="113.0,-1.5 187.0,-1.5 182.0,-4.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="150.0" y="-9.5">30</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="201.5,13.0 201.5,87.0 204.5,82.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="209.5" y="50.0">31</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="287.0,101.5 213.0,101.5 218.0,104.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="250.0" y="109.5">32</text>
+	<polyline class="edge face-outer vert-other not-wrapped" points="198.5,87.0 198.5,13.0 195.5,18.0" />
+	<text class="edge face-outer vert-other index not-wrapped" x="190.5" y="50.0">33</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="213.0,-1.5 287.0,-1.5 282.0,-4.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="250.0" y="-9.5">34</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="301.5,13.0 301.5,87.0 304.5,82.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="309.5" y="50.0">35</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="13.0,298.5 87.0,298.5 82.0,295.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="50.0" y="290.5">36</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="113.0,298.5 187.0,298.5 182.0,295.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="150.0" y="290.5">38</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="213.0,298.5 287.0,298.5 282.0,295.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="250.0" y="290.5">39</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="298.5,287.0 298.5,213.0 295.5,218.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="290.5" y="250.0">40</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="298.5,187.0 298.5,113.0 295.5,118.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="290.5" y="150.0">42</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="298.5,87.0 298.5,13.0 295.5,18.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="290.5" y="50.0">47</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="287.0,1.5 213.0,1.5 218.0,4.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="250.0" y="9.5">46</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="187.0,1.5 113.0,1.5 118.0,4.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="150.0" y="9.5">45</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="87.0,1.5 13.0,1.5 18.0,4.5" />
+	<text class="edge face-other vert-other index not-wrapped" x="50.0" y="9.5">44</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="1.5,13.0 1.5,87.0 4.5,82.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="9.5" y="50.0">43</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="1.5,113.0 1.5,187.0 4.5,182.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="9.5" y="150.0">41</text>
+	<polyline class="edge face-other vert-other not-wrapped" points="1.5,213.0 1.5,287.0 4.5,282.0" />
+	<text class="edge face-other vert-other index not-wrapped" x="9.5" y="250.0">37</text>
+
+	<!-- Vertices -->
+	<ellipse class="vertex other wrapped-neither" cx="0.0" cy="300.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="0.0" y="300.0">0</text>
+	<ellipse class="vertex other wrapped-neither" cx="100.0" cy="300.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="100.0" y="300.0">1</text>
+	<ellipse class="vertex other wrapped-neither" cx="200.0" cy="300.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="200.0" y="300.0">2</text>
+	<ellipse class="vertex other wrapped-neither" cx="300.0" cy="300.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="300.0" y="300.0">3</text>
+	<ellipse class="vertex other wrapped-neither" cx="0.0" cy="200.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="0.0" y="200.0">4</text>
+	<ellipse class="vertex focus wrapped-neither" cx="100.0" cy="200.0" rx="10.0" ry="10.0" />
+	<text class="vertex focus index wrapped-neither" x="100.0" y="200.0">5</text>
+	<ellipse class="vertex other wrapped-neither" cx="200.0" cy="200.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="200.0" y="200.0">6</text>
+	<ellipse class="vertex other wrapped-neither" cx="300.0" cy="200.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="300.0" y="200.0">7</text>
+	<ellipse class="vertex other wrapped-neither" cx="0.0" cy="100.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="0.0" y="100.0">8</text>
+	<ellipse class="vertex other wrapped-neither" cx="100.0" cy="100.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="100.0" y="100.0">9</text>
+	<ellipse class="vertex other wrapped-neither" cx="200.0" cy="100.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="200.0" y="100.0">10</text>
+	<ellipse class="vertex other wrapped-neither" cx="300.0" cy="100.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="300.0" y="100.0">11</text>
+	<ellipse class="vertex other wrapped-neither" cx="0.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="0.0" y="0.0">12</text>
+	<ellipse class="vertex other wrapped-neither" cx="100.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="100.0" y="0.0">13</text>
+	<ellipse class="vertex other wrapped-neither" cx="200.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="200.0" y="0.0">14</text>
+	<ellipse class="vertex other wrapped-neither" cx="300.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex other index wrapped-neither" x="300.0" y="0.0">15</text>
+</svg>

@@ -157,7 +157,7 @@ namespace Experilous.Examples.MakeItTile
 				horizontalInput /= (zoom * latitudeCosine) + invertedZoom;
 			}
 
-			longitude = (longitude + horizontalInput) % 360f;
+			longitude = Mathf.Repeat(longitude + horizontalInput, 360f);
 			if (longitude < 0) longitude += 360f;
 		}
 	}

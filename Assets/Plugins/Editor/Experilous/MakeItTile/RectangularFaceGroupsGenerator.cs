@@ -12,7 +12,7 @@ using Experilous.Core;
 namespace Experilous.MakeItTile
 {
 	[Generator(typeof(TopologyGeneratorCollection), "Face Group/Rectangular")]
-	public class RectangularFaceGroupsGenerator : Generator
+	public class RectangularFaceGroupsGenerator : Generator, ISerializationCallbackReceiver
 	{
 		public IntVector2 axisDivisions;
 
@@ -27,7 +27,7 @@ namespace Experilous.MakeItTile
 		protected override void Initialize()
 		{
 			// Inputs
-			InputSlot.CreateOrResetRequired<PlanarSurface>(ref surfaceInputSlot, this);
+			InputSlot.CreateOrResetRequired<QuadrilateralSurface>(ref surfaceInputSlot, this);
 			InputSlot.CreateOrResetRequired<Topology>(ref topologyInputSlot, this);
 			InputSlot.CreateOrResetRequired<IFaceAttribute<Vector3>>(ref facePositionsInputSlot, this);
 
@@ -38,6 +38,21 @@ namespace Experilous.MakeItTile
 			OutputSlot.CreateOrResetGrouped<FaceGroupCollection>(ref faceGroupCollectionOutputSlot, this, "Rectangular Face Groups", "Face Groups");
 			OutputSlot.CreateOrResetGrouped<IFaceAttribute<int>>(ref faceGroupIndicesOutputSlot, this, "Rectangular Face Group Indices", "Attributes");
 			faceGroupOutputSlots = new OutputSlot[0];
+		}
+
+		public void OnAfterDeserialize()
+		{
+			InputSlot.ResetAssetTypeIfNull<Surface>(surfaceInputSlot);
+			InputSlot.ResetAssetTypeIfNull<Topology>(topologyInputSlot);
+			InputSlot.ResetAssetTypeIfNull<IFaceAttribute<Vector3>>(facePositionsInputSlot);
+
+			OutputSlot.ResetAssetTypeIfNull<FaceGroupCollection>(faceGroupCollectionOutputSlot);
+			OutputSlot.ResetAssetTypeIfNull<IFaceAttribute<int>>(faceGroupIndicesOutputSlot);
+			foreach (var outputSlot in faceGroupOutputSlots) OutputSlot.ResetAssetTypeIfNull<FaceGroup>(outputSlot);
+		}
+
+		public void OnBeforeSerialize()
+		{
 		}
 
 		public override IEnumerable<InputSlot> inputs
@@ -77,7 +92,7 @@ namespace Experilous.MakeItTile
 
 		public override IEnumerator BeginGeneration()
 		{
-			var surface = surfaceInputSlot.GetAsset<PlanarSurface>();
+			var surface = surfaceInputSlot.GetAsset<QuadrilateralSurface>();
 			var topology = topologyInputSlot.GetAsset<Topology>();
 			var facePositions = facePositionsInputSlot.GetAsset<IFaceAttribute<Vector3>>();
 
@@ -186,6 +201,21 @@ namespace Experilous.MakeItTile
 				return base.canGenerate &&
 					axisDivisions.x >= 1 &&
 					axisDivisions.y >= 1;
+			}
+		}
+
+		public override string canGenerateMessage
+		{
+			get
+			{
+				if (axisDivisions.x < 1 || axisDivisions.y < 1)
+				{
+					return "Axis divisions must be greater than or equal to one.";
+				}
+				else
+				{
+					return base.canGenerateMessage;
+				}
 			}
 		}
 

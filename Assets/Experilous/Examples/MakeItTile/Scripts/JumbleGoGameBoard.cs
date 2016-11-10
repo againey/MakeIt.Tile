@@ -49,7 +49,7 @@ namespace Experilous.Examples.MakeItTile
 			White,
 		}
 
-		private PlanarSurface _surface;
+		private QuadrilateralSurface _surface;
 		private Topology _topology;
 		private PositionalVertexAttribute _vertexPositions;
 		private PositionalFaceAttribute _facePositions;
@@ -85,10 +85,10 @@ namespace Experilous.Examples.MakeItTile
 				_normalFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 					{
-						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 5f - vertexAttributes.position).normalized;
+						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.normal * 5f - vertexAttributes.position).normalized;
 						vertexAttributes.uv = new Vector2(0.25f, 0f);
 						vertexAttributes.Advance();
-						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 5f - vertexAttributes.position).normalized;
+						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.normal * 5f - vertexAttributes.position).normalized;
 						vertexAttributes.uv = new Vector2(0.25f, 0.5f);
 						vertexAttributes.Advance();
 					},
@@ -102,10 +102,10 @@ namespace Experilous.Examples.MakeItTile
 				_selectedFaceTriangulation = new SeparatedFacesUmbrellaTriangulation(
 					(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 					{
-						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 1f - vertexAttributes.position).normalized;
+						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.normal * 1f - vertexAttributes.position).normalized;
 						vertexAttributes.uv = new Vector2(0.75f, 0f);
 						vertexAttributes.Advance();
-						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.surfaceNormal * 1f - vertexAttributes.position).normalized;
+						vertexAttributes.normal = (_facePositions[edge.nearFace] + _surface.normal * 1f - vertexAttributes.position).normalized;
 						vertexAttributes.uv = new Vector2(0.75f, 0.5f);
 						vertexAttributes.Advance();
 					},
@@ -176,9 +176,7 @@ namespace Experilous.Examples.MakeItTile
 				{
 					boardSize = new IntVector2(19, 19);
 				}
-				_surface = RectangularQuadGrid.Create(
-					new PlanarDescriptor(Vector3.right, Vector3.up),
-					boardSize);
+				_surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, boardSize);
 				_topology = ((RectangularQuadGrid)_surface).CreateManifold(out vertexPositionsArray);
 				_vertexPositions = PositionalVertexAttribute.Create(_surface, vertexPositionsArray);
 			}
@@ -264,7 +262,7 @@ namespace Experilous.Examples.MakeItTile
 
 				Func<bool> repairFunction = () =>
 				{
-					return PlanarManifoldUtility.ValidateAndRepair(_topology, _vertexPositions, 0.5f, true);
+					return PlanarManifoldUtility.ValidateAndRepair(_topology, _surface.normal, _vertexPositions, 0.5f, true);
 				};
 
 				Action relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(20, 20, 0.95f, relaxIterationFunction, repairFunction);
@@ -279,7 +277,7 @@ namespace Experilous.Examples.MakeItTile
 			_facePositions = PositionalFaceAttribute.Create(_surface, _topology.internalFaces.Count);
 			FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(_topology.internalFaces, _vertexPositions, _facePositions);
 
-			_innerAngleBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.faceEdges, _topology.internalFaces, _vertexPositions, _facePositions);
+			_innerAngleBisectors = EdgeAttributeUtility.CalculateFaceEdgeBisectorsFromVertexPositions(_topology.internalFaces, PlanarSurface.Create(Vector3.zero, Quaternion.identity), _vertexPositions);
 
 			_faceBoardStates = new BoardState[_topology.internalFaces.Count].AsFaceAttribute();
 
@@ -290,22 +288,22 @@ namespace Experilous.Examples.MakeItTile
 
 			_facePieces = new Transform[_topology.internalFaces.Count].AsFaceAttribute();
 
-			_partitioning = UniversalFaceSpatialPartitioning.Create(_topology, _surface, _vertexPositions);
+			_partitioning = UniversalFaceSpatialPartitioning.Create(_surface, _topology, _vertexPositions);
 			_picker.partitioning = _partitioning;
 			_picker.enabled = true;
 
-			var centerVertexNormal = _surface.surfaceNormal.normalized;
+			var centerVertexNormal = _surface.normal.normalized;
 
 			var triangulation = new SeparatedFacesUmbrellaTriangulation(2,
 				(Topology.FaceEdge edge, DynamicMesh.IIndexedVertexAttributes vertexAttributes) =>
 				{
 					vertexAttributes.position = _vertexPositions[edge];
-					vertexAttributes.normal = (_vertexPositions[edge] + _surface.surfaceNormal * 5f - _facePositions[edge.nearFace]).normalized;
+					vertexAttributes.normal = (_vertexPositions[edge] + _surface.normal * 5f - _facePositions[edge.nearFace]).normalized;
 					vertexAttributes.uv = new Vector2(0.25f, 0f);
 					vertexAttributes.Advance();
 
 					vertexAttributes.position = _vertexPositions[edge] + _innerAngleBisectors[edge] * 0.05f;
-					vertexAttributes.normal = (vertexAttributes.position + _surface.surfaceNormal * 5f - _facePositions[edge.nearFace]).normalized;
+					vertexAttributes.normal = (vertexAttributes.position + _surface.normal * 5f - _facePositions[edge.nearFace]).normalized;
 					vertexAttributes.uv = new Vector2(0.25f, 0.5f);
 					vertexAttributes.Advance();
 				},
@@ -318,7 +316,7 @@ namespace Experilous.Examples.MakeItTile
 				});
 
 			_dynamicMesh = DynamicMesh.Create(
-				_topology.internalFaces,
+				_topology.enumerableInternalFaces,
 				DynamicMesh.VertexAttributes.Position |
 				DynamicMesh.VertexAttributes.Normal |
 				DynamicMesh.VertexAttributes.UV,
@@ -458,13 +456,7 @@ namespace Experilous.Examples.MakeItTile
 				}
 				else if (visitColor == color)
 				{
-					foreach (var edge in face.edges)
-					{
-						if (edge.farFace.isInternal)
-						{
-							visitor.VisitNeighbor(edge.farFace);
-						}
-					}
+					visitor.VisitInternalNeighbors();
 				}
 			});
 
@@ -476,9 +468,7 @@ namespace Experilous.Examples.MakeItTile
 			var color = _faceBoardStates[face];
 			if (color == BoardState.Empty) return;
 
-			SetPiece(face, null);
-			_faceBoardStates[face] = BoardState.Empty;
-			int captureCount = 1;
+			int captureCount = 0;
 
 			TopologyVisitor.VisitFaces(face, (FaceVisitor visitor) =>
 			{
@@ -489,13 +479,7 @@ namespace Experilous.Examples.MakeItTile
 					_faceBoardStates[visitor.face] = BoardState.Empty;
 					++captureCount;
 
-					foreach (var edge in face.edges)
-					{
-						if (edge.farFace.isInternal)
-						{
-							visitor.VisitNeighbor(edge.farFace);
-						}
-					}
+					visitor.VisitInternalNeighbors();
 				}
 			});
 
@@ -527,7 +511,7 @@ namespace Experilous.Examples.MakeItTile
 
 			foreach (var edge in face.edges)
 			{
-				if (edge.isNonBoundary && _faceBoardStates[edge] == opponentColor && !HasLiberties(edge.farFace))
+				if (edge.isNonBoundary && _faceBoardStates[edge] == opponentColor && !HasLiberties(edge.face))
 				{
 					_faceBoardStates[face] = BoardState.Empty;
 					return true;
@@ -563,9 +547,9 @@ namespace Experilous.Examples.MakeItTile
 
 			foreach (var edge in face.edges)
 			{
-				if (edge.isNonBoundary && _faceBoardStates[edge] == opponentColor && !HasLiberties(edge.farFace))
+				if (edge.isNonBoundary && _faceBoardStates[edge] == opponentColor && !HasLiberties(edge.face))
 				{
-					Capture(edge.farFace);
+					Capture(edge.face);
 				}
 			}
 		}

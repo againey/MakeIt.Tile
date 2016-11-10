@@ -36,11 +36,17 @@ namespace Experilous.MakeItGenerate
 		[SerializeField] private GeneratorEditorStateDictionary _editorStates = new GeneratorEditorStateDictionary();
 
 		[System.NonSerialized] private static GUIStyle _generateButtonStyle;
+		[System.NonSerialized] private static GUIStyle _messageBoxStyle;
+		[System.NonSerialized] private static GUIStyle _messageStyle;
+		[System.NonSerialized] private static GUIStyle _messageMoreHideButtonStyle;
 		[System.NonSerialized] private static GUIStyle _generatorHeaderStyle;
 		[System.NonSerialized] private static GUIStyle _generatorHeaderLabelStyle;
 		[System.NonSerialized] private static GUIStyle _generatorHeaderMenuButtonStyle;
 		[System.NonSerialized] private static GUIStyle _addGeneratorButtonStyle;
 		[System.NonSerialized] private static float _sectionEndSpaceHeight;
+
+		[System.NonSerialized] private bool _messageFoldout;
+		[System.NonSerialized] private AnimBool _messageFoldoutAnimation;
 
 		[System.NonSerialized] private Rect _addGeneratorButtonRect;
 		[System.NonSerialized] private Rect _generatorMenuButtonRect;
@@ -61,6 +67,9 @@ namespace Experilous.MakeItGenerate
 				editorState.Value.foldoutAnimation.valueChanged.AddListener(Repaint);
 			}
 
+			_messageFoldoutAnimation = new AnimBool(_messageFoldout);
+			_messageFoldoutAnimation.valueChanged.AddListener(Repaint);
+
 			_sectionEndSpaceHeight = 0f;
 		}
 
@@ -71,6 +80,35 @@ namespace Experilous.MakeItGenerate
 				_generateButtonStyle = new GUIStyle(GUI.skin.button);
 				_generateButtonStyle.padding.top += 4;
 				_generateButtonStyle.padding.bottom += 4;
+			}
+
+			if (_messageBoxStyle == null)
+			{
+				_messageBoxStyle = new GUIStyle(GUI.skin.GetStyle("HelpBox"));
+				_messageBoxStyle.padding.top += 4;
+				_messageBoxStyle.padding.left += 4;
+				_messageBoxStyle.padding.right += 4;
+			}
+
+			if (_messageStyle == null)
+			{
+				var labelStyle = GUI.skin.label;
+				_messageStyle = new GUIStyle(_messageBoxStyle);
+				_messageStyle.border = labelStyle.border;
+				_messageStyle.margin = labelStyle.margin;
+				_messageStyle.padding = labelStyle.padding;
+				_messageStyle.fixedHeight = 0f;
+				_messageStyle.margin.top = 0;
+				_messageStyle.margin.bottom = 0;
+				_messageStyle.padding.top = 0;
+				_messageStyle.padding.bottom = 0;
+				_messageStyle.normal.background = labelStyle.normal.background;
+			}
+
+			if (_messageMoreHideButtonStyle == null)
+			{
+				_messageMoreHideButtonStyle = new GUIStyle(_messageStyle);
+				_messageMoreHideButtonStyle.wordWrap = false;
 			}
 
 			if (_generatorHeaderStyle == null)
@@ -145,12 +183,69 @@ namespace Experilous.MakeItGenerate
 
 			EditorGUILayout.BeginVertical(EditorStyles.inspectorDefaultMargins);
 
-			GUIExtensions.PushEnable(_executive.canGenerate);
+			bool canGenerate = _executive.canGenerate;
+			GUIExtensions.PushEnable(canGenerate);
 			if (GUILayout.Button("Generate", _generateButtonStyle))
 			{
 				_executive.Generate();
 			}
 			GUIExtensions.PopEnable();
+
+			if (!canGenerate)
+			{
+				var priorBackgroundColor = GUI.backgroundColor;
+
+				int count = 0;
+				bool showMore = false;
+				foreach (var generator in _executive.generators)
+				{
+					var message = generator.canGenerateMessage;
+					if (!string.IsNullOrEmpty(message))
+					{
+						if (count == 0)
+						{
+							GUILayout.Space(_sectionEndSpaceHeight / 2);
+							GUI.backgroundColor = Color.Lerp(GUI.color, Color.red, 0.5f);
+							EditorGUILayout.BeginVertical(_messageBoxStyle);
+						}
+						else if (count == 1)
+						{
+							_messageFoldoutAnimation.target = _messageFoldout;
+							showMore = EditorGUILayout.BeginFadeGroup(_messageFoldoutAnimation.faded);
+						}
+
+						if (count == 0 || showMore)
+						{
+							EditorGUILayout.LabelField(new GUIContent(string.Format("{0}: {1}", generator.name, message)), _messageStyle);
+						}
+
+						++count;
+					}
+				}
+
+				if (count > 0)
+				{
+					if (count > 1)
+					{
+						EditorGUILayout.EndFadeGroup();
+
+						EditorGUILayout.BeginHorizontal();
+						{
+							EditorGUILayout.Space();
+							if (GUILayout.Button(new GUIContent(_messageFoldout ? "hide" : "more..."), _messageMoreHideButtonStyle, GUILayout.ExpandWidth(false)))
+							{
+								_messageFoldout = !_messageFoldout;
+							}
+							var rect = GUILayoutUtility.GetLastRect();
+							GUI.Label(rect, new GUIContent("________________"), _messageMoreHideButtonStyle);
+							EditorGUILayout.Space();
+						}
+						EditorGUILayout.EndHorizontal();
+					}
+					EditorGUILayout.EndVertical();
+					GUI.backgroundColor = priorBackgroundColor;
+				}
+			}
 
 			GUILayout.Space(_sectionEndSpaceHeight / 2);
 

@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="bc568936-a4aa-4131-b42f-048b55134185" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				Topology attributes enable any kind of data to be associated with the
+				individual vertices, edges, and faces of a topology.
+			</para>
+		</summary>
+		<introduction>
+			<autoOutline />
+		</introduction>
+		<section address="overview">
+			<title>Overview</title>
+			<content>
+				<para>
+					There are many different kinds of information that could be associated
+					with a topology, depending on the needs of your game or application.
+					Elevation, terrain type, a list of units, movement costs, surface normals,
+					and more.  Attribute collections allow you to store whatever data you
+					need and access it easily using the topology element types
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.Vertex</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.Face</codeEntityReference>, and the three edge types
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.HalfEdge</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference>, and
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>.
+				</para>
+				<para>
+					Vertices, faces, and half-edges all have an associated integer index,
+					and indices within a topology for each of these three elements all start
+					at zero and go up through the number of those elements minus one.  Thus,
+					in the following diagram, you can see that there are 48 vertices, indexed
+					from 0 through 48 - 1 (47).  Likewise, (internal) faces are indexed from
+					0 through 16 - 1 (15).  (External faces always come last, so there's one
+					external face with index 16 in the above topology.)  Edges are indexed
+					from 0 through 126 - 1 (125).  (Each half-edge in a pair has a distinct
+					index, making it easy to store direction data.)
+				</para>
+				<mediaLink>
+					<caption placement="after">A topology with indexable elements.</caption>
+					<image placement="center" xlink:href="hex-grid-1"/>
+				</mediaLink>
+				<para>
+					Because of this indexing scheme, it is very easy to store parallel arrays
+					of any type which correspond to these elements.  The above topology, for
+					example, could have an associated array of <codeEntityReference>T:UnityEngine.Vector3</codeEntityReference>
+					with 48 elements, and could just be used to store the three-dimensional
+					position of each vertex.  To retrieve the position of the vertex with an
+					index of 8, just access the array using the same index.
+				</para>
+				<para>
+					To make the code more intuitive, however, explicit types have been designed
+					which allow vertex, face, and edge types to be used as indices directly.
+					These types all implement one of the following interfaces, depending on
+					which topology elements they store data for:
+					<codeEntityReference>T:Experilous.MakeItTile.IVertexAttribute`1</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.IFaceAttribute`1</codeEntityReference>, and
+					<codeEntityReference>T:Experilous.MakeItTile.IEdgeAttribute`1</codeEntityReference>.
+					Vertex attributes store one value per vertex, face attributes store one value per
+					face, and edge attributes store one value per half-edge.  Positions are a common
+					attribute for vertices.  Unit lists and terrain types are typical for faces.
+					And movement costs or restrictions are likely attributes for edges.
+				</para>
+				<para>
+					Creating an attribute collection is easy.  Just construct an instance of
+					<codeEntityReference>T:Experilous.MakeItTile.VertexAttributeArrayWrapper`1</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.FaceAttributeArrayWrapper`1</codeEntityReference>, or
+					<codeEntityReference>T:Experilous.MakeItTile.EdgeAttributeArrayWrapper`1</codeEntityReference>
+					and pass it the number of elements appropriate.  Or even more easily, construct
+					a new array (or use an existing array) and call one of the extension functions
+					<codeEntityReference linkText="AsVertexAttribute()">M:Experilous.MakeItTile.VertexExtensions.AsVertexAttribute``1(``0[])</codeEntityReference>,
+					<codeEntityReference linkText="AsFaceAttribute()">M:Experilous.MakeItTile.FaceExtensions.AsFaceAttribute``1(``0[])</codeEntityReference>, or
+					<codeEntityReference linkText="AsEdgeAttribute()">M:Experilous.MakeItTile.EdgeExtensions.AsEdgeAttribute``1(``0[])</codeEntityReference>.
+				</para>
+				<code language="C#" title="Constructing Attribute Collections">
+					<![CDATA[
+						Topology topology = ...; // Create a topology.
+						var vertexPositions = new Vector3[topology.vertices.Count].AsVertexAttribute();
+						var faceColors = new FaceAttributeArrayWrapper<Color>(topology.internalFaces.Count);
+						var edgeCosts = new EdgeAttributeArrayWrapper<float>(new float[topology.halfEdges.Count]);
+						
+						foreach (Topology.Vertex vertex in topology.vertices)
+						{
+							vertexPositions[vertex] = ...; // Assign positions to each vertex.
+						}
+						
+						foreach (Topology.Vertex vertex in topology.vertices)
+						{
+							Debug.Log(vertexPositions[vertex]); // Log out the positions of each vertex.
+						}
+					]]>
+				</code>
+			</content>
+		</section>
+		<section address="accessing">
+			<title>Accessing Attributes</title>
+			<content>
+				<para>
+					Once an attribute collection has been created, it can easily be accessed
+					by indexing it with the appropriate type of topology element.  Vertex
+					attributes can be indexed with instances of
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.Vertex</codeEntityReference>,
+					face attributes with instances of
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.Face</codeEntityReference>,
+					and edge attributes with instances of
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.HalfEdge</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference>, or
+					<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>.
+					Additionally, vertex and face attributes also implement the edge attribute
+					interface, so they can also be accessed using edges.  When this is done,
+					it is the target vertex or face of the edge which is ultimately used to
+					do the index lookup.  (In some cases, as will be seen with wrap-around
+					behavior, the particular edge used to access a vertex or face can be
+					relevant, and affect the data returned.)
+				</para>
+				<code language="C#" title="Accessing Attributes">
+					<![CDATA[
+						IVertexAttribute<Vector3> vertexPositions = ...; // Create vertex positions.
+						
+						foreach (Topology.Vertex vertex in topology.vertices)
+						{
+							vertexPositions[vertex] = ...; // Assign positions to each vertex.
+						}
+						
+						foreach (Topology.Vertex vertex in topology.vertices)
+						{
+							Debug.LogFormat("<b>{0}</b>", vertexPositions[vertex]); // Log out the positions of each vertex.
+							
+							// Also log out the positions of each of the vertex's neighboring vertices.
+							foreach (VertexEdge edge in vertex.edges)
+							{
+								// Can use the edge to index directly into vertex positions,
+								// which effectively gets the position of edge.farVertex.
+								Debug.LogFormat("    {0}", vertexPositions[edge]);
+							}
+						}
+					]]>
+				</code>
+			</content>
+		</section>
+		<section address="calculating">
+			<title>Calculating Attributes</title>
+			<content>
+				<para>
+					As noted above, there are a wide variety of attributes that could be
+					stored and used by games and other applications.  Some of them,
+					especially those that are based on regular geometry, are standard
+					enough to include utilities for calculating and working with them.
+					This includes concepts such as distances, surface normals, surface
+					areas, and angles, and these utilities can be foundin the classes
+					<codeEntityReference>T:Experilous.MakeItTile.VertexAttributeUtility</codeEntityReference>,
+					<codeEntityReference>T:Experilous.MakeItTile.FaceAttributeUtility</codeEntityReference>, and
+					<codeEntityReference>T:Experilous.MakeItTile.EdgeAttributeUtility</codeEntityReference>.
+				</para>
+				<para>
+					Most functions in these classes come in two varieties:  one which
+					allocates a new attribute collection for the attributes computed,
+					and one which takes an existing attribute collection and writes the
+					computed values to it.  The former is a bit more convenient, but
+					the latter is of course more efficient in cases where the attribute
+					values need to be computed more than once.
+				</para>
+				<para>
+					The utilities for calculating various vertex and face attributes are
+					generally straight-forward.  Edge attributes, however, don't always
+					conceptually correspond to edges, even though they do map to edges,
+					1-to-1, making edges the natural indexer for such attributes. An
+					example would be the interior angles of face polygons.  Conceptually,
+					these angles apply to the corners of faces, but corners are not a
+					topology element type in Make It Tile.  Vertices cannot be used,
+					because a single vertex is a corner of multiple faces, and each
+					corner could have a different interior angle.  And faces of course
+					cannot work either, as each one has multiple corners, and not always
+					the same number of corners per face in a topology.  An edge, however,
+					has a perfect 1-to-1 mapping to face corners.  Just think of the far
+					vertex of the edge as the corner of the edge's near face.  This
+					mapping can also be used for the very common case of generating a
+					renderable mesh, where vertices need to be duplicated because
+					adjacent triangles don't always share the same vertex attributes.
+					A flat-shaded surface, for example, needs unique normals for each
+					triangle that a vertex belongs to.  Calculate the normals per edge
+					instead of per vertex, and the mesh generation should proceed easily.
+				</para>
+			</content>
+		</section>
+		<relatedTopics>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.Vertex</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.Face</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.HalfEdge</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.VertexEdge</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.Topology.FaceEdge</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.IVertexAttribute`1</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.IFaceAttribute`1</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.IEdgeAttribute`1</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.VertexAttributeArrayWrapper`1</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.FaceAttributeArrayWrapper`1</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.EdgeAttributeArrayWrapper`1</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.VertexAttributeUtility</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.FaceAttributeUtility</codeEntityReference>
+			<codeEntityReference>T:Experilous.MakeItTile.EdgeAttributeUtility</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>

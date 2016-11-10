@@ -9,22 +9,53 @@ using GeneralUtility = Experilous.Core.GeneralUtility;
 
 namespace Experilous.MakeItTile
 {
-	public class RectangularHexGrid : PlanarSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
+	/// <summary>
+	/// A surface with a grid of discrete hexagonal tiles.
+	/// </summary>
+	public class RectangularHexGrid : QuadrilateralSurface, IFaceNeighborIndexer, IFaceIndexer2D, IVertexIndexer2D
 	{
+		/// <summary>
+		/// The vector from the center of each hexagonal tile to the midpoint of one of the edges.
+		/// </summary>
 		public Vector2 midpoint;
+
+		/// <summary>
+		/// The vector from the center of each hexagonal tile to the corner one and a half edges away from the defined edge midpoint.
+		/// </summary>
 		public Vector2 majorCorner;
+
+		/// <summary>
+		/// The vector from the center of each hexagonal tile to one of the major corner's neighboring corners.
+		/// </summary>
 		public Vector2 minorCorner;
 
+		/// <summary>
+		/// Indicates if the midpoint vector is to be used as the first axis, or is instead the second axis.
+		/// </summary>
 		public bool midpointIsFirstAxis;
+
+		/// <summary>
+		/// The styles with which the axes of the hexagonal grid are arranged.
+		/// </summary>
 		public HexGridAxisStyles axisStyle;
 
+		/// <summary>
+		/// The size of the grid, in terms of the number of tiles along the first and second axes of the surface.
+		/// </summary>
 		public IntVector2 size;
+
+		/// <summary>
+		/// The topology defining the vertices, edges, and faces of the grid.
+		/// </summary>
+		/// <remarks><note type="important">This field is not automatically set, and must be filled in manually.
+		/// If not set, most surface functions will still work, but any that return topology objects such as
+		/// <see cref="Topology.Vertex"/> or <see cref="Topology.Face"/> will fail.</note></remarks>
 		public Topology topology;
 
 		[SerializeField] private bool _originIsObtuse;
 
-		[SerializeField] private Vector3 _faceAxis0;
-		[SerializeField] private Vector3 _faceAxis1;
+		[SerializeField] private Vector2 _faceAxis0;
+		[SerializeField] private Vector2 _faceAxis1;
 
 		[SerializeField] private int _vertexCount;
 		[SerializeField] private int _edgeCount;
@@ -74,12 +105,34 @@ namespace Experilous.MakeItTile
 		[SerializeField] private int _vertexInterceptOffsetOdd;
 		[SerializeField] private int _vertexInterceptOffsetLast;
 
-		public static RectangularHexGrid Create(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, IntVector2 size)
+		[SerializeField] private bool _isInverted;
+
+		/// <summary>
+		/// Creates a hexagonally tiled grid surface instance with the given tile shape and arrangement, origin, orientation, wrapping behavior, and grid size.
+		/// </summary>
+		/// <param name="hexDescriptor">The descriptor structure with details about the shape and arrangement of hexagonal tiles.</param>
+		/// <param name="origin">The origin of the plane.</param>
+		/// <param name="orientation">The orientation of the plane.</param>
+		/// <param name="isAxis0Wrapped">Indicates whether the first axis exhibits wrap-around behavior at the grid boundaries.</param>
+		/// <param name="isAxis1Wrapped">Indicates whether the second axis exhibits wrap-around behavior at the grid boundaries.</param>
+		/// <param name="size">The size of the grid, in terms of the number of tiles along the first and second axes of the surface..</param>
+		/// <returns>A hexagonally tiled grid surface.</returns>
+		public static RectangularHexGrid Create(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion orientation, bool isAxis0Wrapped, bool isAxis1Wrapped, IntVector2 size)
 		{
-			return CreateInstance<RectangularHexGrid>().Reset(hexDescriptor, origin, rotation, isAxisWrapped0, isAxisWrapped1, size);
+			return CreateInstance<RectangularHexGrid>().Reset(hexDescriptor, origin, orientation, isAxis0Wrapped, isAxis1Wrapped, size);
 		}
 
-		public RectangularHexGrid Reset(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion rotation, bool isAxisWrapped0, bool isAxisWrapped1, IntVector2 size)
+		/// <summary>
+		/// Resets the current grid surface with new values for the tile shape and arrangement, origin, orientation, wrapping behavior, and grid size.
+		/// </summary>
+		/// <param name="hexDescriptor">The descriptor structure with details about the shape and arrangement of hexagonal tiles.</param>
+		/// <param name="origin">The origin of the plane.</param>
+		/// <param name="orientation">The orientation of the plane.</param>
+		/// <param name="isAxis0Wrapped">Indicates whether the first axis exhibits wrap-around behavior at the grid boundaries.</param>
+		/// <param name="isAxis1Wrapped">Indicates whether the second axis exhibits wrap-around behavior at the grid boundaries.</param>
+		/// <param name="size">The size of the grid, in terms of the number of tiles along the first and second axes of the surface..</param>
+		/// <returns>A reference to the current surface.</returns>
+		public RectangularHexGrid Reset(HexGridDescriptor hexDescriptor, Vector3 origin, Quaternion orientation, bool isAxis0Wrapped, bool isAxis1Wrapped, IntVector2 size)
 		{
 			midpoint = hexDescriptor.midpoint;
 			majorCorner = hexDescriptor.majorCorner;
@@ -114,7 +167,7 @@ namespace Experilous.MakeItTile
 				GeneralUtility.Swap(ref _faceAxis0, ref _faceAxis1);
 			}
 
-			Reset(new PlanarDescriptor(_faceAxis0 * size.x, isAxisWrapped0, _faceAxis1 * size.y, isAxisWrapped1, origin, rotation * Vector3.back));
+			Reset(new WrappableAxis2(_faceAxis0 * size.x, isAxis0Wrapped), new WrappableAxis2(_faceAxis1 * size.y, isAxis1Wrapped), origin, orientation);
 
 			this.size = size;
 			topology = null;
@@ -122,7 +175,7 @@ namespace Experilous.MakeItTile
 			return this;
 		}
 
-		protected void Initialize()
+		private void Initialize()
 		{
 			Validate();
 			InitializeCoreMetrics();
@@ -137,15 +190,10 @@ namespace Experilous.MakeItTile
 			if (size.x <= 0 || size.y <= 0)
 				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have an axis size less than or equal to zero.");
 
-			if (axis0.isWrapped && axisStyle == HexGridAxisStyles.StaggeredSymmetric)
-				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a variable row length and a wrapped straight axis when the other axis is staggered.");
-			if (axis0.isWrapped && axisStyle == HexGridAxisStyles.Staggered)
-			{
-				if (midpointIsFirstAxis && (size.y % 2) != 0 || !midpointIsFirstAxis && (size.y % 2) != 0)
-				{
-					throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a wrapped staggered axis with an odd size.");
-				}
-			}
+			if (axisStyle != HexGridAxisStyles.Straight && (axis0.isWrapped && !midpointIsFirstAxis && (size.x % 2) != 0 || axis1.isWrapped && midpointIsFirstAxis && (size.y % 2) != 0))
+				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a wrapped staggered axis with an odd size.");
+			if (axisStyle == HexGridAxisStyles.StaggeredSymmetric && (axis0.isWrapped && midpointIsFirstAxis || axis1.isWrapped && !midpointIsFirstAxis))
+				throw new InvalidTopologyException("A rectangular hexagonal grid cannot have a wrapped straight symmetric axis when the other axis is staggered.");
 
 			if (Vector3.Cross(axis0.vector, axis1.vector).sqrMagnitude < 0.001f)
 				throw new InvalidTopologyException("A planar surface cannot have nearly colinear axes.");
@@ -158,11 +206,10 @@ namespace Experilous.MakeItTile
 
 		private void InitializeCoreMetrics()
 		{
-			axis0.vector *= size.x;
-			axis1.vector *= size.y;
-
 			if (midpointIsFirstAxis)
 			{
+				_isInverted = Vector3.Dot(Vector3.Cross(majorCorner, midpoint), Vector3.back) < 0f;
+
 				_faceColumnCount = size.x;
 				_faceRowCount = size.y;
 
@@ -170,10 +217,12 @@ namespace Experilous.MakeItTile
 				_wrapCols = axis1.isWrapped;
 
 				_reverseColumnsRows = false;
-				_reverseWindingOrder = isInverted;
+				_reverseWindingOrder = _isInverted;
 			}
 			else
 			{
+				_isInverted = Vector3.Dot(Vector3.Cross(midpoint, majorCorner), Vector3.back) < 0f;
+
 				_faceColumnCount = size.y;
 				_faceRowCount = size.x;
 
@@ -181,7 +230,7 @@ namespace Experilous.MakeItTile
 				_wrapCols = axis0.isWrapped;
 
 				_reverseColumnsRows = true;
-				_reverseWindingOrder = !isInverted;
+				_reverseWindingOrder = !_isInverted;
 			}
 		}
 
@@ -366,11 +415,11 @@ namespace Experilous.MakeItTile
 			}
 			else if (_wrapRows)
 			{
-				_edgeCount = _internalFaceCount * 6 + _faceRowCount * 4;
+				_edgeCount = _internalFaceCount * 6 + _faceColumnCount * 4;
 			}
 			else if (_wrapCols)
 			{
-				_edgeCount = _internalFaceCount * 6 + _faceColumnCount * 4;
+				_edgeCount = _internalFaceCount * 6 + _faceRowCount * 4;
 			}
 			else
 			{
@@ -378,17 +427,45 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <summary>
+		/// The number of topology vertices defined by the grid.
+		/// </summary>
 		public int vertexCount { get { return _vertexCount; } }
+
+		/// <summary>
+		/// The number of topology edges defined by the grid.
+		/// </summary>
 		public int edgeCount { get { return _edgeCount; } }
+
+		/// <summary>
+		/// The number of topology faces defined by the grid.
+		/// </summary>
 		public int faceCount { get { return _internalFaceCount + _externalFaceCount; } }
+
+		/// <summary>
+		/// The number of internal topology faces defined by the grid.
+		/// </summary>
 		public int internalFaceCount { get { return _internalFaceCount; } }
+
+		/// <summary>
+		/// The number of external topology faces defined by the grid.
+		/// </summary>
 		public int externalFaceCount { get { return _externalFaceCount; } }
 
+		/// <summary>
+		/// Creates a topology from the grid specifications of the current surface.
+		/// </summary>
+		/// <returns>A topology corresponding to the grid specifications of the surface.</returns>
 		public Topology CreateTopology()
 		{
 			return TopologyUtility.BuildTopology(this);
 		}
 
+		/// <summary>
+		/// Creates a manifold, consisting of a topology plus vertex positions, from the grid specifications of the current surface.
+		/// </summary>
+		/// <param name="vertexPositions">The vertex positions of the manifold corresponding to the grid specifications of the surface.</param>
+		/// <returns>A topology corresponding to the grid specifications of the surface.</returns>
 		public Topology CreateManifold(out Vector3[] vertexPositions)
 		{
 			vertexPositions = new Vector3[vertexCount];
@@ -396,7 +473,7 @@ namespace Experilous.MakeItTile
 			Vector3 rowAxis;
 			Vector3 columnAxisDouble;
 
-			Vector3 evenCorner = _originIsObtuse ? minorCorner - majorCorner : -minorCorner;
+			Vector3 evenCorner = _originIsObtuse ? -minorCorner - midpoint  * 2f : -minorCorner;
 			Vector3 oddCorner = -majorCorner;
 			Vector3 oddRowOffset;
 
@@ -422,11 +499,18 @@ namespace Experilous.MakeItTile
 				}
 			}
 
+			rowAxis = orientation * rowAxis;
+			columnAxisDouble = orientation * columnAxisDouble;
+			oddCorner = orientation * oddCorner;
+			evenCorner = orientation * evenCorner;
+			oddRowOffset = orientation * oddRowOffset;
+
 			for (int i = 0; i < vertexCount; ++i)
 			{
 				int col, row;
 				GetVertexColRow(i, out col, out row);
-				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble + (Numerics.Math.IsOdd(col) ? oddCorner : evenCorner);
+				var vertexPosition = origin + (col >> 1) * rowAxis + (row >> 1) * columnAxisDouble;
+				if (Numerics.Math.IsOdd(col)) vertexPosition += oddCorner - evenCorner;
 				if (Numerics.Math.IsOdd(row)) vertexPosition += oddRowOffset;
 				vertexPositions[i] = vertexPosition;
 			}
@@ -436,6 +520,7 @@ namespace Experilous.MakeItTile
 
 		#region IFaceNeighborIndexer Methods
 
+		/// <inheritdoc/>
 		public ushort GetNeighborCount(int faceIndex)
 		{
 			if (faceIndex < 0 || faceIndex >= _internalFaceCount) throw new ArgumentOutOfRangeException("faceIndex");
@@ -443,6 +528,7 @@ namespace Experilous.MakeItTile
 			return 6;
 		}
 
+		/// <inheritdoc/>
 		public int GetNeighborVertexIndex(int faceIndex, int neighborIndex)
 		{
 			if (faceIndex < 0 || faceIndex >= _internalFaceCount) throw new ArgumentOutOfRangeException("faceIndex");
@@ -462,6 +548,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		/// <inheritdoc/>
 		public EdgeWrap GetEdgeWrap(int faceIndex, int neighborIndex)
 		{
 			if (faceIndex < 0 || faceIndex >= _internalFaceCount) throw new ArgumentOutOfRangeException("faceIndex");
@@ -531,6 +618,20 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		private int GetFaceIndexFromColRow(int col, int row)
+		{
+			if (axisStyle != HexGridAxisStyles.StaggeredSymmetric)
+			{
+				return col + row * _faceColumnCount;
+			}
+			else
+			{
+				var adjustedIndex = col * 2 + row * _faceColumnCountPair;
+				return (adjustedIndex - _faceOffset) / 2;
+			}
+		}
+
+		/// <inheritdoc/>
 		public IntVector2 GetFaceIndex2D(int internalFaceIndex)
 		{
 			IntVector2 index2D;
@@ -545,33 +646,53 @@ namespace Experilous.MakeItTile
 			return index2D;
 		}
 
+		/// <inheritdoc/>
 		public int GetFaceIndex(int x, int y)
 		{
-			throw new NotImplementedException();
+			if (!_reverseColumnsRows)
+			{
+				return GetFaceIndexFromColRow(x, y);
+			}
+			else
+			{
+				return GetFaceIndexFromColRow(y, x);
+			}
 		}
 
+		/// <inheritdoc/>
 		public int FaceWrapX(int x)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <inheritdoc/>
 		public int FaceWrapY(int y)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <inheritdoc/>
 		public Topology.Face GetFace(IntVector2 index) { return topology.faces[GetFaceIndex(index.x, index.y)]; }
+		/// <inheritdoc/>
 		public Topology.Face GetFace(int x, int y) { return topology.faces[GetFaceIndex(x, y)]; }
+		/// <inheritdoc/>
 		public int GetFaceIndex(IntVector2 index) { return GetFaceIndex(index.x, index.y); }
 
+		/// <inheritdoc/>
 		public IntVector2 GetFaceIndex2D(Topology.Face internalFace) { return GetFaceIndex2D(internalFace.index); }
 
+		/// <inheritdoc/>
 		public IntVector2 FaceWrap(int x, int y) { return new IntVector2(FaceWrapX(x), FaceWrapY(y)); }
+		/// <inheritdoc/>
 		public IntVector2 FaceWrap(IntVector2 index) { return new IntVector2(FaceWrapX(index.x), FaceWrapY(index.y)); }
 
+		/// <inheritdoc/>
 		public Topology.Face GetWrappedFace(IntVector2 index) { return GetFace(FaceWrap(index)); }
+		/// <inheritdoc/>
 		public Topology.Face GetWrappedFace(int x, int y) { return GetFace(FaceWrap(x, y)); }
+		/// <inheritdoc/>
 		public int GetWrappedFaceIndex(IntVector2 index) { return GetFaceIndex(FaceWrap(index)); }
+		/// <inheritdoc/>
 		public int GetWrappedFaceIndex(int x, int y) { return GetFaceIndex(FaceWrap(x, y)); }
 
 		#endregion
@@ -597,6 +718,23 @@ namespace Experilous.MakeItTile
 			}
 		}
 
+		private int GetVertexIndexFromColRow(int col, int row)
+		{
+			if (row == 0)
+			{
+				return col + _vertexInterceptOffsetFirst;
+			}
+			else if (row == _vertexRowCount - 1)
+			{
+				return col + (_vertexColumnCount * row + _vertexInterceptOffsetLast);
+			}
+			else
+			{
+				return col + (_vertexColumnCount * row + (Numerics.Math.IsEven(row) ? _vertexInterceptOffsetEven : _vertexInterceptOffsetOdd));
+			}
+		}
+
+		/// <inheritdoc/>
 		public IntVector2 GetVertexIndex2D(int vertexIndex)
 		{
 			IntVector2 index2D;
@@ -611,33 +749,53 @@ namespace Experilous.MakeItTile
 			return index2D;
 		}
 
+		/// <inheritdoc/>
 		public int GetVertexIndex(int x, int y)
 		{
-			throw new NotImplementedException();
+			if (!_reverseColumnsRows)
+			{
+				return GetVertexIndexFromColRow(x, y);
+			}
+			else
+			{
+				return GetVertexIndexFromColRow(y, x);
+			}
 		}
 
+		/// <inheritdoc/>
 		public int VertexWrapX(int x)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <inheritdoc/>
 		public int VertexWrapY(int y)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <inheritdoc/>
 		public Topology.Vertex GetVertex(IntVector2 index) { return topology.vertices[GetVertexIndex(index.x, index.y)]; }
+		/// <inheritdoc/>
 		public Topology.Vertex GetVertex(int x, int y) { return topology.vertices[GetVertexIndex(x, y)]; }
+		/// <inheritdoc/>
 		public int GetVertexIndex(IntVector2 index) { return GetVertexIndex(index.x, index.y); }
 
+		/// <inheritdoc/>
 		public IntVector2 GetVertexIndex2D(Topology.Vertex vertex) { return GetVertexIndex2D(vertex.index); }
 
+		/// <inheritdoc/>
 		public IntVector2 VertexWrap(int x, int y) { return new IntVector2(VertexWrapX(x), VertexWrapY(y)); }
+		/// <inheritdoc/>
 		public IntVector2 VertexWrap(IntVector2 index) { return new IntVector2(VertexWrapX(index.x), VertexWrapY(index.y)); }
 
+		/// <inheritdoc/>
 		public Topology.Vertex GetWrappedVertex(IntVector2 index) { return GetVertex(VertexWrap(index)); }
+		/// <inheritdoc/>
 		public Topology.Vertex GetWrappedVertex(int x, int y) { return GetVertex(VertexWrap(x, y)); }
+		/// <inheritdoc/>
 		public int GetWrappedVertexIndex(IntVector2 index) { return GetVertexIndex(VertexWrap(index)); }
+		/// <inheritdoc/>
 		public int GetWrappedVertexIndex(int x, int y) { return GetVertexIndex(VertexWrap(x, y)); }
 
 		#endregion
@@ -784,22 +942,64 @@ namespace Experilous.MakeItTile
 		#endregion
 	}
 
+	/// <summary>
+	/// The styles with which the axes of a hexagonal grid can be arranged.
+	/// </summary>
 	public enum HexGridAxisStyles
 	{
+		/// <summary>
+		/// Both axes follow a straight sequence of hexagonal tiles.  This leads to a skewed world if regular hexagons are used.
+		/// </summary>
 		Straight,
+		/// <summary>
+		/// One axis follows a staggered sequence of hexagonal tiles.  This allows for a rectangular world if regular hexagons are used.
+		/// </summary>
 		Staggered,
+		/// <summary>
+		/// One axis follws a staggered sequence of hexagonal tiles, and the number of tiles on the other axis alternates so that the staggered axis exhibits mirror symmetry.
+		/// </summary>
 		StaggeredSymmetric,
 	}
 
+	/// <summary>
+	/// A struct for describing the shape and arrangement of hexagonal tiles.
+	/// </summary>
 	public struct HexGridDescriptor
 	{
+		/// <summary>
+		/// The vector from the center of each hexagonal tile to the midpoint of one of the edges.
+		/// </summary>
 		public Vector2 midpoint;
+
+		/// <summary>
+		/// The vector from the center of each hexagonal tile to the corner one and a half edges away from the defined edge midpoint.
+		/// </summary>
 		public Vector2 majorCorner;
+
+		/// <summary>
+		/// The vector from the center of each hexagonal tile to one of the major corner's neighboring corners.
+		/// </summary>
 		public Vector2 minorCorner;
 
+		/// <summary>
+		/// Indicates if the midpoint vector is to be used as the first axis, or is instead the second axis.
+		/// </summary>
 		public bool midpointIsFirstAxis;
+
+		/// <summary>
+		/// The styles with which the axes of the hexagonal grid should be arranged.
+		/// </summary>
 		public HexGridAxisStyles axisStyle;
 
+		/// <summary>
+		/// Creates a descriptor of the shape and arrangment of hexagonal tiles.
+		/// </summary>
+		/// <param name="midpoint">The vector from the center of each hexagonal tile to the midpoint of one of the edges.</param>
+		/// <param name="majorCorner">The vector from the center of each hexagonal tile to the corner one and a half edges away from the defined edge midpoint.</param>
+		/// <param name="minorCorner">The vector from the center of each hexagonal tile to one of the major corner's neighboring corners</param>
+		/// <param name="midpointIsFirstAxis">Indicates if the midpoint vector is to be used as the first axis, or is instead the second axis.</param>
+		/// <param name="axisStyle">The styles with which the axes of the hexagonal grid should be arranged.</param>
+		/// <returns>A hexagonal tile descriptor.</returns>
 		public HexGridDescriptor(Vector2 midpoint, Vector2 majorCorner, Vector2 minorCorner, bool midpointIsFirstAxis, HexGridAxisStyles axisStyle)
 		{
 			this.midpoint = midpoint;
@@ -809,29 +1009,46 @@ namespace Experilous.MakeItTile
 			this.axisStyle = axisStyle;
 		}
 
-		public const float sqrtThree = 1.732050808f;
-		public const float halfSqrtThree = 0.8660254038f;
-		public const float oneOverSqrtThree = 0.5773502692f;
-		public const float twoOverSqrtThree = 1.154700538f;
+		private const float _oneOverSqrtThree = 0.5773502692f;
+		private const float _halfOverSqrtThree = 0.2886751346f;
 
+		/// <summary>
+		/// A standard descriptor for regular hexagonal tiles with a "pointy side up" orientation.
+		/// </summary>
 		public static HexGridDescriptor standardCornerUp { get { return CreateCornerUp(true, HexGridAxisStyles.Staggered); } }
+
+		/// <summary>
+		/// A standard descriptor for regular hexagonal tiles with a "flat side up" orientation.
+		/// </summary>
 		public static HexGridDescriptor standardSideUp { get { return CreateSideUp(true, HexGridAxisStyles.Staggered); } }
 
+		/// <summary>
+		/// Creates a descriptorfor regular hexagonal tiles with a "pointy side up" orientation, and the given additional arrangement details.
+		/// </summary>
+		/// <param name="originIsObtuse">Indicates if second tile along the first axis and the second tile along the second axis form an obtuse or acute angle relative to the first tile.</param>
+		/// <param name="axisStyle">The styles with which the axes of the hexagonal grid should be arranged.</param>
+		/// <returns>A hexagonal tile descriptor.</returns>
 		public static HexGridDescriptor CreateCornerUp(bool originIsObtuse, HexGridAxisStyles axisStyle)
 		{
 			return new HexGridDescriptor(
 				new Vector2(0.5f, 0f),
-				new Vector2(0f, oneOverSqrtThree),
-				new Vector2(originIsObtuse ? -0.5f : 0.5f, oneOverSqrtThree * 0.5f),
+				new Vector2(0f, _oneOverSqrtThree),
+				new Vector2(originIsObtuse ? -0.5f : 0.5f, _halfOverSqrtThree),
 				true, axisStyle);
 		}
 
+		/// <summary>
+		/// Creates a descriptorfor regular hexagonal tiles with a "flat side up" orientation, and the given additional arrangement details.
+		/// </summary>
+		/// <param name="originIsObtuse">Indicates if second tile along the first axis and the second tile along the second axis form an obtuse or acute angle relative to the first tile.</param>
+		/// <param name="axisStyle">The styles with which the axes of the hexagonal grid should be arranged.</param>
+		/// <returns>A hexagonal tile descriptor.</returns>
 		public static HexGridDescriptor CreateSideUp(bool originIsObtuse, HexGridAxisStyles axisStyle)
 		{
 			return new HexGridDescriptor(
 				new Vector2(0f, 0.5f),
-				new Vector2(oneOverSqrtThree, 0f),
-				new Vector2(oneOverSqrtThree * 0.5f, originIsObtuse ? -0.5f : 0.5f),
+				new Vector2(_oneOverSqrtThree, 0f),
+				new Vector2(_halfOverSqrtThree, originIsObtuse ? -0.5f : 0.5f),
 				false, axisStyle);
 		}
 	}

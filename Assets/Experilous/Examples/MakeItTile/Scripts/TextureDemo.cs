@@ -5,6 +5,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
 using Experilous.MakeItRandom;
 using Experilous.MakeItTile;
 using Experilous.Numerics;
@@ -65,9 +66,7 @@ namespace Experilous.Examples.MakeItTile
 		private void CreateSquareGrid(out Topology topology, out IVertexAttribute<Vector3> vertexPositions)
 		{
 			Vector3[] vertexPositionsArray;
-			var surface = RectangularQuadGrid.Create(
-				new PlanarDescriptor(Vector3.right, Vector3.up),
-				new IntVector2(10, 10));
+			var surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, new IntVector2(10, 10));
 			topology = surface.CreateManifold(out vertexPositionsArray);
 			vertexPositions = PositionalVertexAttribute.Create(surface, vertexPositionsArray);
 		}
@@ -146,7 +145,7 @@ namespace Experilous.Examples.MakeItTile
 
 			Func<bool> repairFunction = () =>
 			{
-				return PlanarManifoldUtility.ValidateAndRepair(localTopology, localVertexPositions, 0.5f, false);
+				return PlanarManifoldUtility.ValidateAndRepair(localTopology, surface.normal, localVertexPositions, 0.5f, false);
 			};
 
 			Action relaxationLoopFunction = TopologyRandomizer.CreateRelaxationLoopFunction(20, 20, 0.95f, relaxIterationFunction, repairFunction);
@@ -183,7 +182,7 @@ namespace Experilous.Examples.MakeItTile
 			facePositions = FaceAttributeUtility.CalculateFaceCentroidsFromVertexPositions(topology.internalFaces, vertexPositions);
 		}
 
-		private void CreateMesh(Topology.FacesIndexer faces, DynamicMesh.ITriangulation triangulation, MeshFilter meshPrefab)
+		private void CreateMesh(IEnumerable<Topology.Face> faces, DynamicMesh.ITriangulation triangulation, MeshFilter meshPrefab)
 		{
 			var dynamicMesh = DynamicMesh.Create(
 				faces,
@@ -243,7 +242,7 @@ namespace Experilous.Examples.MakeItTile
 					vertexAttributes.Advance();
 				});
 
-			CreateMesh(topology.internalFaces, triangulation, largeTextureMeshPrefab);
+			CreateMesh(topology.enumerableInternalFaces, triangulation, largeTextureMeshPrefab);
 			CenterCamera(vertexPositions);
 		}
 
@@ -266,7 +265,7 @@ namespace Experilous.Examples.MakeItTile
 					vertexAttributes.Advance();
 				});
 
-			CreateMesh(topology.internalFaces, triangulation, largeTextureMeshPrefab);
+			CreateMesh(topology.enumerableInternalFaces, triangulation, largeTextureMeshPrefab);
 			CenterCamera(vertexPositions);
 		}
 
@@ -289,7 +288,7 @@ namespace Experilous.Examples.MakeItTile
 					vertexAttributes.Advance();
 				});
 
-			CreateMesh(topology.internalFaces, triangulation, smallTextureMeshPrefab);
+			CreateMesh(topology.enumerableInternalFaces, triangulation, smallTextureMeshPrefab);
 			CenterCamera(vertexPositions);
 		}
 
@@ -312,7 +311,7 @@ namespace Experilous.Examples.MakeItTile
 					vertexAttributes.Advance();
 				});
 
-			CreateMesh(topology.internalFaces, triangulation, smallTextureMeshPrefab);
+			CreateMesh(topology.enumerableInternalFaces, triangulation, smallTextureMeshPrefab);
 			CenterCamera(vertexPositions);
 		}
 
@@ -335,7 +334,7 @@ namespace Experilous.Examples.MakeItTile
 					vertexAttributes.Advance();
 				});
 
-			CreateMesh(topology.internalFaces, triangulation, smallTextureMeshPrefab);
+			CreateMesh(topology.enumerableInternalFaces, triangulation, smallTextureMeshPrefab);
 			CenterCamera(vertexPositions);
 		}
 
@@ -358,7 +357,7 @@ namespace Experilous.Examples.MakeItTile
 					vertexAttributes.Advance();
 				});
 
-			CreateMesh(topology.internalFaces, triangulation, smallTextureMeshPrefab);
+			CreateMesh(topology.enumerableInternalFaces, triangulation, smallTextureMeshPrefab);
 			CenterCamera(vertexPositions);
 		}
 	}

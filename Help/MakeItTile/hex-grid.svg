@@ -1,0 +1,439 @@
+<svg viewBox="-70.0 -48.9 640.0 328.7" xmlns="http://www.w3.org/2000/svg">
+	<style>
+		svg
+		{
+			width: 800px;
+			height: 400px;
+		}
+		text.index
+		{
+			font-family: Tahoma, sans-serif;
+		}
+		ellipse.vertex
+		{
+			stroke: black;
+			stroke-width: 1;
+			fill: none;
+		}
+		text.vertex.index
+		{
+			fill: black;
+			text-anchor: middle;
+			dominant-baseline: central;
+			font-size: 12px;
+		}
+		polygon.face
+		{
+			fill: #CCC;
+			stroke: none;
+		}
+		text.face.index
+		{
+			fill: black;
+			text-anchor: middle;
+			dominant-baseline: central;
+			font-size: 24px;
+		}
+		polyline.edge
+		{
+			stroke: black;
+			stroke-width: 1;
+			stroke-linecap: square;
+			stroke-linejoin: miter;
+			fill: none;
+		}
+		text.edge.index
+		{
+			fill: black;
+			text-anchor: middle;
+			dominant-baseline: central;
+			font-size: 10px;
+		}
+	</style>
+
+	<!-- Faces -->
+	<polygon class="face" points="17.3,220.9 17.3,183.2 50.0,164.3 82.7,183.2 82.7,220.9 50.0,239.8" />
+	<text class="face index" x="50.0" y="202.1">0</text>
+	<polygon class="face" points="117.3,220.9 117.3,183.2 150.0,164.3 182.7,183.2 182.7,220.9 150.0,239.8" />
+	<text class="face index" x="150.0" y="202.1">1</text>
+	<polygon class="face" points="217.3,220.9 217.3,183.2 250.0,164.3 282.7,183.2 282.7,220.9 250.0,239.8" />
+	<text class="face index" x="250.0" y="202.1">2</text>
+	<polygon class="face" points="317.3,220.9 317.3,183.2 350.0,164.3 382.7,183.2 382.7,220.9 350.0,239.8" />
+	<text class="face index" x="350.0" y="202.1">3</text>
+	<polygon class="face" points="417.3,220.9 417.3,183.2 450.0,164.3 482.7,183.2 482.7,220.9 450.0,239.8" />
+	<text class="face index" x="450.0" y="202.1">4</text>
+	<polygon class="face" points="-32.7,134.3 -32.7,96.6 0.0,77.7 32.7,96.6 32.7,134.3 0.0,153.2" />
+	<text class="face index" x="0.0" y="115.5">5</text>
+	<polygon class="face" points="67.3,134.3 67.3,96.6 100.0,77.7 132.7,96.6 132.7,134.3 100.0,153.2" />
+	<text class="face index" x="100.0" y="115.5">6</text>
+	<polygon class="face" points="167.3,134.3 167.3,96.6 200.0,77.7 232.7,96.6 232.7,134.3 200.0,153.2" />
+	<text class="face index" x="200.0" y="115.5">7</text>
+	<polygon class="face" points="267.3,134.3 267.3,96.6 300.0,77.7 332.7,96.6 332.7,134.3 300.0,153.2" />
+	<text class="face index" x="300.0" y="115.5">8</text>
+	<polygon class="face" points="367.3,134.3 367.3,96.6 400.0,77.7 432.7,96.6 432.7,134.3 400.0,153.2" />
+	<text class="face index" x="400.0" y="115.5">9</text>
+	<polygon class="face" points="467.3,134.3 467.3,96.6 500.0,77.7 532.7,96.6 532.7,134.3 500.0,153.2" />
+	<text class="face index" x="500.0" y="115.5">10</text>
+	<polygon class="face" points="17.3,47.7 17.3,10.0 50.0,-8.9 82.7,10.0 82.7,47.7 50.0,66.6" />
+	<text class="face index" x="50.0" y="28.9">11</text>
+	<polygon class="face" points="117.3,47.7 117.3,10.0 150.0,-8.9 182.7,10.0 182.7,47.7 150.0,66.6" />
+	<text class="face index" x="150.0" y="28.9">12</text>
+	<polygon class="face" points="217.3,47.7 217.3,10.0 250.0,-8.9 282.7,10.0 282.7,47.7 250.0,66.6" />
+	<text class="face index" x="250.0" y="28.9">13</text>
+	<polygon class="face" points="317.3,47.7 317.3,10.0 350.0,-8.9 382.7,10.0 382.7,47.7 350.0,66.6" />
+	<text class="face index" x="350.0" y="28.9">14</text>
+	<polygon class="face" points="417.3,47.7 417.3,10.0 450.0,-8.9 482.7,10.0 482.7,47.7 450.0,66.6" />
+	<text class="face index" x="450.0" y="28.9">15</text>
+
+	<!-- Edges -->
+	<polyline class="edge" points="38.0,254.6 10.5,238.7 13.3,243.8" />
+	<text class="edge index" x="20.3" y="253.6">0</text>
+	<polyline class="edge" points="-1.5,217.9 -1.5,186.2 -4.5,191.2" />
+	<text class="edge index" x="-9.5" y="202.1">1</text>
+	<polyline class="edge" points="10.5,165.4 38.0,149.5 32.2,149.4" />
+	<text class="edge index" x="20.3" y="150.5">2</text>
+	<polyline class="edge" points="62.0,149.5 89.5,165.4 86.7,160.3" />
+	<text class="edge index" x="79.8" y="150.5">3</text>
+	<polyline class="edge" points="101.5,186.2 101.5,217.9 104.5,212.9" />
+	<text class="edge index" x="109.5" y="202.1">4</text>
+	<polyline class="edge" points="89.5,238.7 62.0,254.6 67.8,254.7" />
+	<text class="edge index" x="79.8" y="253.6">5</text>
+	<polyline class="edge" points="138.0,254.6 110.5,238.7 113.3,243.8" />
+	<text class="edge index" x="120.3" y="253.6">6</text>
+	<polyline class="edge" points="98.5,217.9 98.5,186.2 95.5,191.2" />
+	<text class="edge index" x="90.5" y="202.1">7</text>
+	<polyline class="edge" points="110.5,165.4 138.0,149.5 132.2,149.4" />
+	<text class="edge index" x="120.3" y="150.5">8</text>
+	<polyline class="edge" points="162.0,149.5 189.5,165.4 186.7,160.3" />
+	<text class="edge index" x="179.8" y="150.5">9</text>
+	<polyline class="edge" points="201.5,186.2 201.5,217.9 204.5,212.9" />
+	<text class="edge index" x="209.5" y="202.1">10</text>
+	<polyline class="edge" points="189.5,238.7 162.0,254.6 167.8,254.7" />
+	<text class="edge index" x="179.8" y="253.6">11</text>
+	<polyline class="edge" points="238.0,254.6 210.5,238.7 213.3,243.8" />
+	<text class="edge index" x="220.3" y="253.6">12</text>
+	<polyline class="edge" points="198.5,217.9 198.5,186.2 195.5,191.2" />
+	<text class="edge index" x="190.5" y="202.1">13</text>
+	<polyline class="edge" points="210.5,165.4 238.0,149.5 232.2,149.4" />
+	<text class="edge index" x="220.3" y="150.5">14</text>
+	<polyline class="edge" points="262.0,149.5 289.5,165.4 286.7,160.3" />
+	<text class="edge index" x="279.8" y="150.5">15</text>
+	<polyline class="edge" points="301.5,186.2 301.5,217.9 304.5,212.9" />
+	<text class="edge index" x="309.5" y="202.1">16</text>
+	<polyline class="edge" points="289.5,238.7 262.0,254.6 267.8,254.7" />
+	<text class="edge index" x="279.8" y="253.6">17</text>
+	<polyline class="edge" points="338.0,254.6 310.5,238.7 313.3,243.8" />
+	<text class="edge index" x="320.3" y="253.6">18</text>
+	<polyline class="edge" points="298.5,217.9 298.5,186.2 295.5,191.2" />
+	<text class="edge index" x="290.5" y="202.1">19</text>
+	<polyline class="edge" points="310.5,165.4 338.0,149.5 332.2,149.4" />
+	<text class="edge index" x="320.3" y="150.5">20</text>
+	<polyline class="edge" points="362.0,149.5 389.5,165.4 386.7,160.3" />
+	<text class="edge index" x="379.8" y="150.5">21</text>
+	<polyline class="edge" points="401.5,186.2 401.5,217.9 404.5,212.9" />
+	<text class="edge index" x="409.5" y="202.1">22</text>
+	<polyline class="edge" points="389.5,238.7 362.0,254.6 367.8,254.7" />
+	<text class="edge index" x="379.8" y="253.6">23</text>
+	<polyline class="edge" points="438.0,254.6 410.5,238.7 413.3,243.8" />
+	<text class="edge index" x="420.3" y="253.6">24</text>
+	<polyline class="edge" points="398.5,217.9 398.5,186.2 395.5,191.2" />
+	<text class="edge index" x="390.5" y="202.1">25</text>
+	<polyline class="edge" points="410.5,165.4 438.0,149.5 432.2,149.4" />
+	<text class="edge index" x="420.3" y="150.5">26</text>
+	<polyline class="edge" points="462.0,149.5 489.5,165.4 486.7,160.3" />
+	<text class="edge index" x="479.8" y="150.5">27</text>
+	<polyline class="edge" points="501.5,186.2 501.5,217.9 504.5,212.9" />
+	<text class="edge index" x="509.5" y="202.1">28</text>
+	<polyline class="edge" points="489.5,238.7 462.0,254.6 467.8,254.7" />
+	<text class="edge index" x="479.8" y="253.6">29</text>
+	<polyline class="edge" points="-12.0,168.0 -39.5,152.1 -36.7,157.2" />
+	<text class="edge index" x="-29.8" y="167.0">30</text>
+	<polyline class="edge" points="-51.5,131.3 -51.5,99.6 -54.5,104.6" />
+	<text class="edge index" x="-59.5" y="115.5">31</text>
+	<polyline class="edge" points="-39.5,78.8 -12.0,62.9 -17.8,62.8" />
+	<text class="edge index" x="-29.8" y="63.9">32</text>
+	<polyline class="edge" points="12.0,62.9 39.5,78.8 36.7,73.7" />
+	<text class="edge index" x="29.8" y="63.9">33</text>
+	<polyline class="edge" points="51.5,99.6 51.5,131.3 54.5,126.3" />
+	<text class="edge index" x="59.5" y="115.5">34</text>
+	<polyline class="edge" points="39.5,152.1 12.0,168.0 17.8,168.1" />
+	<text class="edge index" x="29.8" y="167.0">35</text>
+	<polyline class="edge" points="88.0,168.0 60.5,152.1 63.3,157.2" />
+	<text class="edge index" x="70.3" y="167.0">36</text>
+	<polyline class="edge" points="48.5,131.3 48.5,99.6 45.5,104.6" />
+	<text class="edge index" x="40.5" y="115.5">37</text>
+	<polyline class="edge" points="60.5,78.8 88.0,62.9 82.2,62.8" />
+	<text class="edge index" x="70.3" y="63.9">38</text>
+	<polyline class="edge" points="112.0,62.9 139.5,78.8 136.7,73.7" />
+	<text class="edge index" x="129.8" y="63.9">39</text>
+	<polyline class="edge" points="151.5,99.6 151.5,131.3 154.5,126.3" />
+	<text class="edge index" x="159.5" y="115.5">40</text>
+	<polyline class="edge" points="139.5,152.1 112.0,168.0 117.8,168.1" />
+	<text class="edge index" x="129.8" y="167.0">41</text>
+	<polyline class="edge" points="188.0,168.0 160.5,152.1 163.3,157.2" />
+	<text class="edge index" x="170.3" y="167.0">42</text>
+	<polyline class="edge" points="148.5,131.3 148.5,99.6 145.5,104.6" />
+	<text class="edge index" x="140.5" y="115.5">43</text>
+	<polyline class="edge" points="160.5,78.8 188.0,62.9 182.2,62.8" />
+	<text class="edge index" x="170.3" y="63.9">44</text>
+	<polyline class="edge" points="212.0,62.9 239.5,78.8 236.7,73.7" />
+	<text class="edge index" x="229.8" y="63.9">45</text>
+	<polyline class="edge" points="251.5,99.6 251.5,131.3 254.5,126.3" />
+	<text class="edge index" x="259.5" y="115.5">46</text>
+	<polyline class="edge" points="239.5,152.1 212.0,168.0 217.8,168.1" />
+	<text class="edge index" x="229.8" y="167.0">47</text>
+	<polyline class="edge" points="288.0,168.0 260.5,152.1 263.3,157.2" />
+	<text class="edge index" x="270.3" y="167.0">48</text>
+	<polyline class="edge" points="248.5,131.3 248.5,99.6 245.5,104.6" />
+	<text class="edge index" x="240.5" y="115.5">49</text>
+	<polyline class="edge" points="260.5,78.8 288.0,62.9 282.2,62.8" />
+	<text class="edge index" x="270.3" y="63.9">50</text>
+	<polyline class="edge" points="312.0,62.9 339.5,78.8 336.7,73.7" />
+	<text class="edge index" x="329.8" y="63.9">51</text>
+	<polyline class="edge" points="351.5,99.6 351.5,131.3 354.5,126.3" />
+	<text class="edge index" x="359.5" y="115.5">52</text>
+	<polyline class="edge" points="339.5,152.1 312.0,168.0 317.8,168.1" />
+	<text class="edge index" x="329.8" y="167.0">53</text>
+	<polyline class="edge" points="388.0,168.0 360.5,152.1 363.3,157.2" />
+	<text class="edge index" x="370.3" y="167.0">54</text>
+	<polyline class="edge" points="348.5,131.3 348.5,99.6 345.5,104.6" />
+	<text class="edge index" x="340.5" y="115.5">55</text>
+	<polyline class="edge" points="360.5,78.8 388.0,62.9 382.2,62.8" />
+	<text class="edge index" x="370.3" y="63.9">56</text>
+	<polyline class="edge" points="412.0,62.9 439.5,78.8 436.7,73.7" />
+	<text class="edge index" x="429.8" y="63.9">57</text>
+	<polyline class="edge" points="451.5,99.6 451.5,131.3 454.5,126.3" />
+	<text class="edge index" x="459.5" y="115.5">58</text>
+	<polyline class="edge" points="439.5,152.1 412.0,168.0 417.8,168.1" />
+	<text class="edge index" x="429.8" y="167.0">59</text>
+	<polyline class="edge" points="488.0,168.0 460.5,152.1 463.3,157.2" />
+	<text class="edge index" x="470.3" y="167.0">60</text>
+	<polyline class="edge" points="448.5,131.3 448.5,99.6 445.5,104.6" />
+	<text class="edge index" x="440.5" y="115.5">61</text>
+	<polyline class="edge" points="460.5,78.8 488.0,62.9 482.2,62.8" />
+	<text class="edge index" x="470.3" y="63.9">62</text>
+	<polyline class="edge" points="512.0,62.9 539.5,78.8 536.7,73.7" />
+	<text class="edge index" x="529.8" y="63.9">63</text>
+	<polyline class="edge" points="551.5,99.6 551.5,131.3 554.5,126.3" />
+	<text class="edge index" x="559.5" y="115.5">64</text>
+	<polyline class="edge" points="539.5,152.1 512.0,168.0 517.8,168.1" />
+	<text class="edge index" x="529.8" y="167.0">65</text>
+	<polyline class="edge" points="38.0,81.4 10.5,65.5 13.3,70.6" />
+	<text class="edge index" x="20.3" y="80.4">66</text>
+	<polyline class="edge" points="-1.5,44.7 -1.5,13.0 -4.5,18.0" />
+	<text class="edge index" x="-9.5" y="28.9">67</text>
+	<polyline class="edge" points="10.5,-7.8 38.0,-23.7 32.2,-23.8" />
+	<text class="edge index" x="20.3" y="-22.7">68</text>
+	<polyline class="edge" points="62.0,-23.7 89.5,-7.8 86.7,-12.9" />
+	<text class="edge index" x="79.8" y="-22.7">69</text>
+	<polyline class="edge" points="101.5,13.0 101.5,44.7 104.5,39.7" />
+	<text class="edge index" x="109.5" y="28.9">70</text>
+	<polyline class="edge" points="89.5,65.5 62.0,81.4 67.8,81.5" />
+	<text class="edge index" x="79.8" y="80.4">71</text>
+	<polyline class="edge" points="138.0,81.4 110.5,65.5 113.3,70.6" />
+	<text class="edge index" x="120.3" y="80.4">72</text>
+	<polyline class="edge" points="98.5,44.7 98.5,13.0 95.5,18.0" />
+	<text class="edge index" x="90.5" y="28.9">73</text>
+	<polyline class="edge" points="110.5,-7.8 138.0,-23.7 132.2,-23.8" />
+	<text class="edge index" x="120.3" y="-22.7">74</text>
+	<polyline class="edge" points="162.0,-23.7 189.5,-7.8 186.7,-12.9" />
+	<text class="edge index" x="179.8" y="-22.7">75</text>
+	<polyline class="edge" points="201.5,13.0 201.5,44.7 204.5,39.7" />
+	<text class="edge index" x="209.5" y="28.9">76</text>
+	<polyline class="edge" points="189.5,65.5 162.0,81.4 167.8,81.5" />
+	<text class="edge index" x="179.8" y="80.4">77</text>
+	<polyline class="edge" points="238.0,81.4 210.5,65.5 213.3,70.6" />
+	<text class="edge index" x="220.3" y="80.4">78</text>
+	<polyline class="edge" points="198.5,44.7 198.5,13.0 195.5,18.0" />
+	<text class="edge index" x="190.5" y="28.9">79</text>
+	<polyline class="edge" points="210.5,-7.8 238.0,-23.7 232.2,-23.8" />
+	<text class="edge index" x="220.3" y="-22.7">80</text>
+	<polyline class="edge" points="262.0,-23.7 289.5,-7.8 286.7,-12.9" />
+	<text class="edge index" x="279.8" y="-22.7">81</text>
+	<polyline class="edge" points="301.5,13.0 301.5,44.7 304.5,39.7" />
+	<text class="edge index" x="309.5" y="28.9">82</text>
+	<polyline class="edge" points="289.5,65.5 262.0,81.4 267.8,81.5" />
+	<text class="edge index" x="279.8" y="80.4">83</text>
+	<polyline class="edge" points="338.0,81.4 310.5,65.5 313.3,70.6" />
+	<text class="edge index" x="320.3" y="80.4">84</text>
+	<polyline class="edge" points="298.5,44.7 298.5,13.0 295.5,18.0" />
+	<text class="edge index" x="290.5" y="28.9">85</text>
+	<polyline class="edge" points="310.5,-7.8 338.0,-23.7 332.2,-23.8" />
+	<text class="edge index" x="320.3" y="-22.7">86</text>
+	<polyline class="edge" points="362.0,-23.7 389.5,-7.8 386.7,-12.9" />
+	<text class="edge index" x="379.8" y="-22.7">87</text>
+	<polyline class="edge" points="401.5,13.0 401.5,44.7 404.5,39.7" />
+	<text class="edge index" x="409.5" y="28.9">88</text>
+	<polyline class="edge" points="389.5,65.5 362.0,81.4 367.8,81.5" />
+	<text class="edge index" x="379.8" y="80.4">89</text>
+	<polyline class="edge" points="438.0,81.4 410.5,65.5 413.3,70.6" />
+	<text class="edge index" x="420.3" y="80.4">90</text>
+	<polyline class="edge" points="398.5,44.7 398.5,13.0 395.5,18.0" />
+	<text class="edge index" x="390.5" y="28.9">91</text>
+	<polyline class="edge" points="410.5,-7.8 438.0,-23.7 432.2,-23.8" />
+	<text class="edge index" x="420.3" y="-22.7">92</text>
+	<polyline class="edge" points="462.0,-23.7 489.5,-7.8 486.7,-12.9" />
+	<text class="edge index" x="479.8" y="-22.7">93</text>
+	<polyline class="edge" points="501.5,13.0 501.5,44.7 504.5,39.7" />
+	<text class="edge index" x="509.5" y="28.9">94</text>
+	<polyline class="edge" points="489.5,65.5 462.0,81.4 467.8,81.5" />
+	<text class="edge index" x="479.8" y="80.4">95</text>
+	<polyline class="edge" points="12.0,236.1 39.5,252.0 36.7,246.9" />
+	<text class="edge index" x="29.8" y="237.1">96</text>
+	<polyline class="edge" points="60.5,252.0 88.0,236.1 82.2,236.0" />
+	<text class="edge index" x="70.3" y="237.1">98</text>
+	<polyline class="edge" points="112.0,236.1 139.5,252.0 136.7,246.9" />
+	<text class="edge index" x="129.8" y="237.1">99</text>
+	<polyline class="edge" points="160.5,252.0 188.0,236.1 182.2,236.0" />
+	<text class="edge index" x="170.3" y="237.1">100</text>
+	<polyline class="edge" points="212.0,236.1 239.5,252.0 236.7,246.9" />
+	<text class="edge index" x="229.8" y="237.1">101</text>
+	<polyline class="edge" points="260.5,252.0 288.0,236.1 282.2,236.0" />
+	<text class="edge index" x="270.3" y="237.1">102</text>
+	<polyline class="edge" points="312.0,236.1 339.5,252.0 336.7,246.9" />
+	<text class="edge index" x="329.8" y="237.1">103</text>
+	<polyline class="edge" points="360.5,252.0 388.0,236.1 382.2,236.0" />
+	<text class="edge index" x="370.3" y="237.1">104</text>
+	<polyline class="edge" points="412.0,236.1 439.5,252.0 436.7,246.9" />
+	<text class="edge index" x="429.8" y="237.1">105</text>
+	<polyline class="edge" points="460.5,252.0 488.0,236.1 482.2,236.0" />
+	<text class="edge index" x="470.3" y="237.1">107</text>
+	<polyline class="edge" points="498.5,217.9 498.5,186.2 495.5,191.2" />
+	<text class="edge index" x="490.5" y="202.1">106</text>
+	<polyline class="edge" points="510.5,165.4 538.0,149.5 532.2,149.4" />
+	<text class="edge index" x="520.3" y="150.5">113</text>
+	<polyline class="edge" points="548.5,131.3 548.5,99.6 545.5,104.6" />
+	<text class="edge index" x="540.5" y="115.5">112</text>
+	<polyline class="edge" points="538.0,81.4 510.5,65.5 513.3,70.6" />
+	<text class="edge index" x="520.3" y="80.4">111</text>
+	<polyline class="edge" points="498.5,44.7 498.5,13.0 495.5,18.0" />
+	<text class="edge index" x="490.5" y="28.9">125</text>
+	<polyline class="edge" points="488.0,-5.2 460.5,-21.1 463.3,-16.0" />
+	<text class="edge index" x="470.3" y="-6.2">124</text>
+	<polyline class="edge" points="439.5,-21.1 412.0,-5.2 417.8,-5.1" />
+	<text class="edge index" x="429.8" y="-6.2">123</text>
+	<polyline class="edge" points="388.0,-5.2 360.5,-21.1 363.3,-16.0" />
+	<text class="edge index" x="370.3" y="-6.2">122</text>
+	<polyline class="edge" points="339.5,-21.1 312.0,-5.2 317.8,-5.1" />
+	<text class="edge index" x="329.8" y="-6.2">121</text>
+	<polyline class="edge" points="288.0,-5.2 260.5,-21.1 263.3,-16.0" />
+	<text class="edge index" x="270.3" y="-6.2">120</text>
+	<polyline class="edge" points="239.5,-21.1 212.0,-5.2 217.8,-5.1" />
+	<text class="edge index" x="229.8" y="-6.2">119</text>
+	<polyline class="edge" points="188.0,-5.2 160.5,-21.1 163.3,-16.0" />
+	<text class="edge index" x="170.3" y="-6.2">118</text>
+	<polyline class="edge" points="139.5,-21.1 112.0,-5.2 117.8,-5.1" />
+	<text class="edge index" x="129.8" y="-6.2">117</text>
+	<polyline class="edge" points="88.0,-5.2 60.5,-21.1 63.3,-16.0" />
+	<text class="edge index" x="70.3" y="-6.2">116</text>
+	<polyline class="edge" points="39.5,-21.1 12.0,-5.2 17.8,-5.1" />
+	<text class="edge index" x="29.8" y="-6.2">115</text>
+	<polyline class="edge" points="1.5,13.0 1.5,44.7 4.5,39.7" />
+	<text class="edge index" x="9.5" y="28.9">114</text>
+	<polyline class="edge" points="-10.5,65.5 -38.0,81.4 -32.2,81.5" />
+	<text class="edge index" x="-20.3" y="80.4">110</text>
+	<polyline class="edge" points="-48.5,99.6 -48.5,131.3 -45.5,126.3" />
+	<text class="edge index" x="-40.5" y="115.5">109</text>
+	<polyline class="edge" points="-38.0,149.5 -10.5,165.4 -13.3,160.3" />
+	<text class="edge index" x="-20.3" y="150.5">108</text>
+	<polyline class="edge" points="1.5,186.2 1.5,217.9 4.5,212.9" />
+	<text class="edge index" x="9.5" y="202.1">97</text>
+
+	<!-- Vertices -->
+	<ellipse class="vertex" cx="0.0" cy="230.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="0.0" y="230.9">0</text>
+	<ellipse class="vertex" cx="50.0" cy="259.8" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="50.0" y="259.8">1</text>
+	<ellipse class="vertex" cx="100.0" cy="230.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="100.0" y="230.9">2</text>
+	<ellipse class="vertex" cx="150.0" cy="259.8" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="150.0" y="259.8">3</text>
+	<ellipse class="vertex" cx="200.0" cy="230.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="200.0" y="230.9">4</text>
+	<ellipse class="vertex" cx="250.0" cy="259.8" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="250.0" y="259.8">5</text>
+	<ellipse class="vertex" cx="300.0" cy="230.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="300.0" y="230.9">6</text>
+	<ellipse class="vertex" cx="350.0" cy="259.8" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="350.0" y="259.8">7</text>
+	<ellipse class="vertex" cx="400.0" cy="230.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="400.0" y="230.9">8</text>
+	<ellipse class="vertex" cx="450.0" cy="259.8" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="450.0" y="259.8">9</text>
+	<ellipse class="vertex" cx="500.0" cy="230.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="500.0" y="230.9">10</text>
+	<ellipse class="vertex" cx="-50.0" cy="144.3" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="-50.0" y="144.3">11</text>
+	<ellipse class="vertex" cx="0.0" cy="173.2" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="0.0" y="173.2">12</text>
+	<ellipse class="vertex" cx="50.0" cy="144.3" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="50.0" y="144.3">13</text>
+	<ellipse class="vertex" cx="100.0" cy="173.2" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="100.0" y="173.2">14</text>
+	<ellipse class="vertex" cx="150.0" cy="144.3" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="150.0" y="144.3">15</text>
+	<ellipse class="vertex" cx="200.0" cy="173.2" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="200.0" y="173.2">16</text>
+	<ellipse class="vertex" cx="250.0" cy="144.3" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="250.0" y="144.3">17</text>
+	<ellipse class="vertex" cx="300.0" cy="173.2" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="300.0" y="173.2">18</text>
+	<ellipse class="vertex" cx="350.0" cy="144.3" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="350.0" y="144.3">19</text>
+	<ellipse class="vertex" cx="400.0" cy="173.2" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="400.0" y="173.2">20</text>
+	<ellipse class="vertex" cx="450.0" cy="144.3" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="450.0" y="144.3">21</text>
+	<ellipse class="vertex" cx="500.0" cy="173.2" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="500.0" y="173.2">22</text>
+	<ellipse class="vertex" cx="550.0" cy="144.3" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="550.0" y="144.3">23</text>
+	<ellipse class="vertex" cx="-50.0" cy="86.6" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="-50.0" y="86.6">24</text>
+	<ellipse class="vertex" cx="0.0" cy="57.7" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="0.0" y="57.7">25</text>
+	<ellipse class="vertex" cx="50.0" cy="86.6" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="50.0" y="86.6">26</text>
+	<ellipse class="vertex" cx="100.0" cy="57.7" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="100.0" y="57.7">27</text>
+	<ellipse class="vertex" cx="150.0" cy="86.6" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="150.0" y="86.6">28</text>
+	<ellipse class="vertex" cx="200.0" cy="57.7" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="200.0" y="57.7">29</text>
+	<ellipse class="vertex" cx="250.0" cy="86.6" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="250.0" y="86.6">30</text>
+	<ellipse class="vertex" cx="300.0" cy="57.7" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="300.0" y="57.7">31</text>
+	<ellipse class="vertex" cx="350.0" cy="86.6" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="350.0" y="86.6">32</text>
+	<ellipse class="vertex" cx="400.0" cy="57.7" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="400.0" y="57.7">33</text>
+	<ellipse class="vertex" cx="450.0" cy="86.6" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="450.0" y="86.6">34</text>
+	<ellipse class="vertex" cx="500.0" cy="57.7" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="500.0" y="57.7">35</text>
+	<ellipse class="vertex" cx="550.0" cy="86.6" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="550.0" y="86.6">36</text>
+	<ellipse class="vertex" cx="0.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="0.0" y="0.0">37</text>
+	<ellipse class="vertex" cx="50.0" cy="-28.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="50.0" y="-28.9">38</text>
+	<ellipse class="vertex" cx="100.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="100.0" y="0.0">39</text>
+	<ellipse class="vertex" cx="150.0" cy="-28.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="150.0" y="-28.9">40</text>
+	<ellipse class="vertex" cx="200.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="200.0" y="0.0">41</text>
+	<ellipse class="vertex" cx="250.0" cy="-28.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="250.0" y="-28.9">42</text>
+	<ellipse class="vertex" cx="300.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="300.0" y="0.0">43</text>
+	<ellipse class="vertex" cx="350.0" cy="-28.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="350.0" y="-28.9">44</text>
+	<ellipse class="vertex" cx="400.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="400.0" y="0.0">45</text>
+	<ellipse class="vertex" cx="450.0" cy="-28.9" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="450.0" y="-28.9">46</text>
+	<ellipse class="vertex" cx="500.0" cy="0.0" rx="10.0" ry="10.0" />
+	<text class="vertex index" x="500.0" y="0.0">47</text>
+</svg>

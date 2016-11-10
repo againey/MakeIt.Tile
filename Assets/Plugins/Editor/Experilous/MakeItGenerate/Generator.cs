@@ -160,6 +160,22 @@ namespace Experilous.MakeItGenerate
 			}
 		}
 
+		public virtual string canGenerateMessage
+		{
+			get
+			{
+				foreach (var input in activeInputs)
+				{
+					if (!input.isOptional && input.source == null)
+					{
+						return "One or more inputs must be set.";
+					}
+				}
+
+				return null;
+			}
+		}
+
 		public virtual float estimatedGenerationTime
 		{
 			get
