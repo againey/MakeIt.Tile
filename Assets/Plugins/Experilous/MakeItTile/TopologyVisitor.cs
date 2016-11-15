@@ -323,6 +323,42 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
+		public static void VisitFaces<TState>(Topology.Face rootFace, FaceVisitor<TState>.VisitDelegate visitDelegate)
+		{
+			FaceVisitor<TState>.Visit(rootFace, new LifoQueue<FaceVisitor<TState>.QueueItem>(), visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
+		public static void VisitFaces<TState>(Topology.Face rootFace, TState rootState, FaceVisitor<TState>.VisitDelegate visitDelegate)
+		{
+			FaceVisitor<TState>.Visit(rootFace, rootState, new LifoQueue<FaceVisitor<TState>.QueueItem>(), visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="LifoQueue{T}"/>
+		public static void VisitFaces<TState>(FaceVisitor<TState>.FaceStatePair rootFace, FaceVisitor<TState>.VisitDelegate visitDelegate)
+		{
+			FaceVisitor<TState>.Visit(rootFace, new LifoQueue<FaceVisitor<TState>.QueueItem>(), visitDelegate);
+		}
+
+		/// <summary>
 		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate.
 		/// </summary>
 		/// <param name="rootFaces">The collection of faces to visit first.</param>
@@ -335,87 +371,55 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
-		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate.
+		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate.
 		/// </summary>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
-		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor"/>
 		/// <seealso cref="LifoQueue{T}"/>
-		public static void VisitFaces<TState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFaces<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TState>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor.Visit(rootFace, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, state);
+			FaceVisitor<TState>.Visit(rootFaces, new LifoQueue<FaceVisitor<TState>.QueueItem>(), visitDelegate);
 		}
 
 		/// <summary>
 		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate.
 		/// </summary>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
-		/// <param name="rootFaces">The collection of faces to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="LifoQueue{T}"/>
-		public static void VisitFaces<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state)
-		{
-			FaceVisitor.Visit(rootFaces, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, state);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <param name="rootFace">The face to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="LifoQueue{T}"/>
-		public static void VisitFaces<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
-		{
-			FaceVisitor<TDistance>.Visit(rootFace, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
 		/// <param name="rootFaces">The collection of faces to visit first.</param>
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <seealso cref="FaceVisitor"/>
 		/// <seealso cref="LifoQueue{T}"/>
-		public static void VisitFaces<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
+		public static void VisitFaces<TState>(IEnumerable<FaceVisitor<TState>.FaceStatePair> rootFaces, FaceVisitor<TState>.VisitDelegate visitDelegate)
 		{
-			FaceVisitor<TDistance>.Visit(rootFaces, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate);
+			FaceVisitor<TState>.Visit(rootFaces, new LifoQueue<FaceVisitor<TState>.QueueItem>(), visitDelegate);
 		}
 
 		/// <summary>
-		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate.
 		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <typeparam name="TSharedState">The type of the custom state object.</typeparam>
 		/// <param name="rootFace">The face to visit first.</param>
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor"/>
 		/// <seealso cref="LifoQueue{T}"/>
-		public static void VisitFaces<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFaces<TSharedState>(Topology.Face rootFace, FaceVisitor.VisitDelegate<TSharedState> visitDelegate, TSharedState sharedState)
 		{
-			FaceVisitor<TDistance>.Visit(rootFace, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			FaceVisitor.Visit(rootFace, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, sharedState);
 		}
 
 		/// <summary>
-		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
+		/// Visits adjacent topology faces in no particular order, starting with the specified root faces, using the supplied visit delegate.
 		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <typeparam name="TSharedState">The type of the custom state object.</typeparam>
 		/// <param name="rootFaces">The collection of faces to visit first.</param>
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
 		/// <seealso cref="FaceVisitor"/>
 		/// <seealso cref="LifoQueue{T}"/>
-		public static void VisitFaces<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
+		public static void VisitFaces<TSharedState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TSharedState> visitDelegate, TSharedState sharedState)
 		{
-			FaceVisitor<TDistance>.Visit(rootFaces, new LifoQueue<FaceVisitor<TDistance>.QueueItem>(), visitDelegate, state);
+			FaceVisitor.Visit(rootFaces, new LifoQueue<FaceVisitor.QueueItem>(), visitDelegate, sharedState);
 		}
 
 		/// <summary>
@@ -767,6 +771,30 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
+		public static void VisitFacesInBreadthFirstOrder<TState>(Topology.Face rootFace, FaceVisitor<TState>.VisitDelegate visitDelegate)
+		{
+			FaceVisitor<TState>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TState>.QueueItem>(FaceVisitor<TState>.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
+		public static void VisitFacesInBreadthFirstOrder<TState>(Topology.Face rootFace, TState rootState, FaceVisitor<TState>.VisitDelegate visitDelegate)
+		{
+			FaceVisitor<TState>.Visit(rootFace, rootState, new DelegateOrderedPriorityQueue<FaceVisitor<TState>.QueueItem>(FaceVisitor<TState>.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		/// <summary>
 		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate.
 		/// </summary>
 		/// <param name="rootFaces">The collection of faces to visit first.</param>
@@ -776,6 +804,30 @@ namespace Experilous.MakeItTile
 		public static void VisitFacesInBreadthFirstOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate)
 		{
 			FaceVisitor.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
+		public static void VisitFacesInBreadthFirstOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TState>.VisitDelegate visitDelegate)
+		{
+			FaceVisitor<TState>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TState>.QueueItem>(FaceVisitor<TState>.AreOrderedBreadthFirst), visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
+		public static void VisitFacesInBreadthFirstOrder<TState>(IEnumerable<FaceVisitor<TState>.FaceStatePair> rootFaces, FaceVisitor<TState>.VisitDelegate visitDelegate)
+		{
+			FaceVisitor<TState>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TState>.QueueItem>(FaceVisitor<TState>.AreOrderedBreadthFirst), visitDelegate);
 		}
 
 		/// <summary>
@@ -805,63 +857,6 @@ namespace Experilous.MakeItTile
 		{
 			FaceVisitor.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor.QueueItem>(FaceVisitor.AreOrderedBreadthFirst), visitDelegate, state);
 		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <param name="rootFace">The face to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInBreadthFirstOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
-		{
-			FaceVisitor<TDistance>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <param name="rootFaces">The collection of faces to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInBreadthFirstOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate)
-		{
-			FaceVisitor<TDistance>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
-		/// <param name="rootFace">The face to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
-		{
-			FaceVisitor<TDistance>.Visit(rootFace, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
-		/// <param name="rootFaces">The collection of faces to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="DelegateOrderedPriorityQueue{T}"/>
-		public static void VisitFacesInBreadthFirstOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state)
-		{
-			FaceVisitor<TDistance>.Visit(rootFaces, new DelegateOrderedPriorityQueue<FaceVisitor<TDistance>.QueueItem>(FaceVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
-		}
-
 		/// <summary>
 		/// Visits adjacent topology face edges in breadth-first order based on depth, starting with the specified root edge, using the supplied visit delegate.
 		/// </summary>
@@ -1470,7 +1465,7 @@ namespace Experilous.MakeItTile
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<int>.QueueItem lhs, FaceVisitor<int>.QueueItem rhs)
 		{
-			return lhs.distance <= rhs.distance;
+			return lhs.state <= rhs.state;
 		}
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceEdgeVisitor<int>.QueueItem lhs, FaceEdgeVisitor<int>.QueueItem rhs)
@@ -1480,7 +1475,7 @@ namespace Experilous.MakeItTile
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<uint>.QueueItem lhs, FaceVisitor<uint>.QueueItem rhs)
 		{
-			return lhs.distance <= rhs.distance;
+			return lhs.state <= rhs.state;
 		}
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceEdgeVisitor<uint>.QueueItem lhs, FaceEdgeVisitor<uint>.QueueItem rhs)
@@ -1490,7 +1485,7 @@ namespace Experilous.MakeItTile
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<float>.QueueItem lhs, FaceVisitor<float>.QueueItem rhs)
 		{
-			return lhs.distance <= rhs.distance;
+			return lhs.state <= rhs.state;
 		}
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceEdgeVisitor<float>.QueueItem lhs, FaceEdgeVisitor<float>.QueueItem rhs)
@@ -1500,7 +1495,7 @@ namespace Experilous.MakeItTile
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<double>.QueueItem lhs, FaceVisitor<double>.QueueItem rhs)
 		{
-			return lhs.distance <= rhs.distance;
+			return lhs.state <= rhs.state;
 		}
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceEdgeVisitor<double>.QueueItem lhs, FaceEdgeVisitor<double>.QueueItem rhs)
@@ -2438,7 +2433,7 @@ namespace Experilous.MakeItTile
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<int>.QueueItem lhs, FaceVisitor<int>.QueueItem rhs)
 		{
-			return lhs.distance >= rhs.distance;
+			return lhs.state >= rhs.state;
 		}
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceEdgeVisitor<int>.QueueItem lhs, FaceEdgeVisitor<int>.QueueItem rhs)
@@ -2448,7 +2443,7 @@ namespace Experilous.MakeItTile
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<uint>.QueueItem lhs, FaceVisitor<uint>.QueueItem rhs)
 		{
-			return lhs.distance >= rhs.distance;
+			return lhs.state >= rhs.state;
 		}
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceEdgeVisitor<uint>.QueueItem lhs, FaceEdgeVisitor<uint>.QueueItem rhs)
@@ -2458,7 +2453,7 @@ namespace Experilous.MakeItTile
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<float>.QueueItem lhs, FaceVisitor<float>.QueueItem rhs)
 		{
-			return lhs.distance >= rhs.distance;
+			return lhs.state >= rhs.state;
 		}
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceEdgeVisitor<float>.QueueItem lhs, FaceEdgeVisitor<float>.QueueItem rhs)
@@ -2468,7 +2463,7 @@ namespace Experilous.MakeItTile
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<double>.QueueItem lhs, FaceVisitor<double>.QueueItem rhs)
 		{
-			return lhs.distance >= rhs.distance;
+			return lhs.state >= rhs.state;
 		}
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceEdgeVisitor<double>.QueueItem lhs, FaceEdgeVisitor<double>.QueueItem rhs)
@@ -3860,6 +3855,32 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
+		public static void VisitFacesInRandomOrder<TState>(Topology.Face rootFace, TState state, FaceVisitor<TState>.VisitDelegate visitDelegate, IRandom random)
+		{
+			FaceVisitor<TState>.Visit(rootFace, state, new RandomOrderQueue<FaceVisitor<TState>.QueueItem>(random), visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
+		public static void VisitFacesInRandomOrder<TState>(FaceVisitor<TState>.FaceStatePair rootFace, FaceVisitor<TState>.VisitDelegate visitDelegate, IRandom random)
+		{
+			FaceVisitor<TState>.Visit(rootFace, new RandomOrderQueue<FaceVisitor<TState>.QueueItem>(random), visitDelegate);
+		}
+
+		/// <summary>
 		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate.
 		/// </summary>
 		/// <param name="rootFaces">The collection of faces to visit first.</param>
@@ -3870,6 +3891,34 @@ namespace Experilous.MakeItTile
 		public static void VisitFacesInRandomOrder(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate visitDelegate, IRandom random)
 		{
 			FaceVisitor.Visit(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
+		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TState>.VisitDelegate visitDelegate, IRandom random)
+		{
+			FaceVisitor<TState>.Visit(rootFaces, new RandomOrderQueue<FaceVisitor<TState>.QueueItem>(random), visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
+		/// <seealso cref="FaceVisitor"/>
+		/// <seealso cref="RandomOrderQueue{T}"/>
+		public static void VisitFacesInRandomOrder<TState>(IEnumerable<FaceVisitor<TState>.FaceStatePair> rootFaces, FaceVisitor<TState>.VisitDelegate visitDelegate, IRandom random)
+		{
+			FaceVisitor<TState>.Visit(rootFaces, new RandomOrderQueue<FaceVisitor<TState>.QueueItem>(random), visitDelegate);
 		}
 
 		/// <summary>
@@ -3900,66 +3949,6 @@ namespace Experilous.MakeItTile
 		public static void VisitFacesInRandomOrder<TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
 		{
 			FaceVisitor.Visit(rootFaces, new RandomOrderQueue<FaceVisitor.QueueItem>(random), visitDelegate, state);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <param name="rootFace">The face to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="RandomOrderQueue{T}"/>
-		public static void VisitFacesInRandomOrder<TDistance>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
-		{
-			FaceVisitor<TDistance>.Visit(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <param name="rootFaces">The collection of faces to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="RandomOrderQueue{T}"/>
-		public static void VisitFacesInRandomOrder<TDistance>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate visitDelegate, IRandom random)
-		{
-			FaceVisitor<TDistance>.Visit(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
-		/// <param name="rootFace">The face to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
-		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="RandomOrderQueue{T}"/>
-		public static void VisitFacesInRandomOrder<TDistance, TState>(Topology.Face rootFace, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
-		{
-			FaceVisitor<TDistance>.Visit(rootFace, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
-		}
-
-		/// <summary>
-		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root faces, using the supplied visit delegate and keeping track of a custom distance metric along the way.
-		/// </summary>
-		/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
-		/// <param name="rootFaces">The collection of faces to visit first.</param>
-		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
-		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
-		/// <param name="random">The random engine that determines the order in which faces are popped from the queue of faces to visit.</param>
-		/// <seealso cref="FaceVisitor"/>
-		/// <seealso cref="RandomOrderQueue{T}"/>
-		public static void VisitFacesInRandomOrder<TDistance, TState>(IEnumerable<Topology.Face> rootFaces, FaceVisitor<TDistance>.VisitDelegate<TState> visitDelegate, TState state, IRandom random)
-		{
-			FaceVisitor<TDistance>.Visit(rootFaces, new RandomOrderQueue<FaceVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
 		/// <summary>
@@ -5928,7 +5917,7 @@ namespace Experilous.MakeItTile
 	/// Class for visiting the faces of a topology, one at a time in some connected order,
 	/// while keeping track of a custom distance metric along the way.
 	/// </summary>
-	/// <typeparam name="TDistance">The type of the distance metric.</typeparam>
+	/// <typeparam name="TState">The type of the distance metric.</typeparam>
 	/// <remarks><para>A visitor is an object that maintains a queue of elements ready to
 	/// be visited, and a memory of which elements have already been visited.  When a
 	/// visitation process is executed, the visitor repeatedly pops one element at a time
@@ -5937,7 +5926,7 @@ namespace Experilous.MakeItTile
 	/// then up to the visit delegate to push any new elements into the visitors queue,
 	/// typically all or some of the immediate neighbors of the element currently being
 	/// visited.</para></remarks>
-	public class FaceVisitor<TDistance> : TopologyVisitor
+	public class FaceVisitor<TState> : TopologyVisitor
 	{
 		/// <summary>
 		/// The data that needs to be stored in a queue for the visitor to know which
@@ -5961,7 +5950,7 @@ namespace Experilous.MakeItTile
 			/// The total distance accumulated during visitation from the root face
 			/// to the face of this queue item.
 			/// </summary>
-			public TDistance distance;
+			public TState state;
 
 			/// <summary>
 			/// Constructs a queue item with the given face index, visitation depth, and visitation distance.
@@ -5969,11 +5958,11 @@ namespace Experilous.MakeItTile
 			/// <param name="faceIndex">The index of the face to be visited.</param>
 			/// <param name="depth">The depth of visitation.</param>
 			/// <param name="distance">The distance of visitation.</param>
-			public QueueItem(int faceIndex, int depth, TDistance distance)
+			public QueueItem(int faceIndex, int depth, TState state)
 			{
 				this.faceIndex = faceIndex;
 				this.depth = depth;
-				this.distance = distance;
+				this.state = state;
 			}
 
 			/// <summary>
@@ -5987,25 +5976,43 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		/// <summary>
-		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
-		/// </summary>
-		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
-		public delegate void VisitDelegate(FaceVisitor<TDistance> visitor);
+		public struct FaceStatePair
+		{
+			public Topology.Face face;
+			public TState state;
+
+			public FaceStatePair(Topology.Face face)
+			{
+				this.face = face;
+				state = default(TState);
+			}
+
+			public FaceStatePair(Topology.Face face, TState state)
+			{
+				this.face = face;
+				this.state = state;
+			}
+		}
 
 		/// <summary>
 		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
 		/// </summary>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
+		public delegate void VisitDelegate(FaceVisitor<TState> visitor);
+
+		/// <summary>
+		/// A delegate signature which the visitor uses to inform the consumer of each face visited.
+		/// </summary>
+		/// <typeparam name="TSharedState">The type of the custom state object.</typeparam>
 		/// <param name="visitor">The visitor executing the visitation, which stores the current state of visitation.</param>
 		/// <param name="state">The custom state object which was supplied at the beginning of visitation.  Ideally a class or immutable struct.</param>
-		public delegate void VisitDelegate<TState>(FaceVisitor<TDistance> visitor, TState state);
+		public delegate void VisitDelegate<TSharedState>(FaceVisitor<TState> visitor, TSharedState sharedState);
 
 		private IQueue<QueueItem> _queue;
 		private BitArray _visitedFaces;
 
 		private Topology.Face _face;
-		private TDistance _distance;
+		private TState _state;
 
 		/// <summary>
 		/// The face currently being visited.
@@ -6016,7 +6023,7 @@ namespace Experilous.MakeItTile
 		/// The total distance accumulated during visitation from the root face
 		/// to the face currently being visited.
 		/// </summary>
-		public TDistance distance { get { return _distance; } }
+		public TState state { get { return _state; } }
 
 		/// <summary>
 		/// Checks if the specified face has already been visited.
@@ -6041,11 +6048,11 @@ namespace Experilous.MakeItTile
 		/// popped from the queue, and it will only be visited if it has still not yet been visited.
 		/// This can be useful when <see cref="RevisitNeighbor"/> is sometimes called on faces, but this
 		/// particular visitation could take precedence depending on the queue pop order.</para></remarks>
-		public void VisitNeighbor(Topology.Face face, TDistance distance, bool includeVisited = false)
+		public void VisitNeighbor(Topology.Face face, TState state, bool includeVisited = false)
 		{
 			if (includeVisited || !_visitedFaces[face.index])
 			{
-				_queue.Push(new QueueItem(face.index, _depth + 1, distance));
+				_queue.Push(new QueueItem(face.index, _depth + 1, state));
 			}
 		}
 
@@ -6057,10 +6064,146 @@ namespace Experilous.MakeItTile
 		/// <param name="distance">The total visitation distance to the specified face, as computed by the visitor consumer.</param>
 		/// <remarks><note type="caution">One must be be cautious with this function, as it can lead to an infinite
 		/// visitation cycle that never exits.</note></remarks>
-		public void RevisitNeighbor(Topology.Face face, TDistance distance)
+		public void RevisitNeighbor(Topology.Face face, TState state)
 		{
 			_visitedFaces[face.index] = false;
-			_queue.Push(new QueueItem(face.index, _depth + 1, distance));
+			_queue.Push(new QueueItem(face.index, _depth + 1, state));
+		}
+
+		/// <summary>
+		/// Adds all neighbor faces of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the face should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitAllNeighbors(TState state, bool includeVisited = false)
+		{
+			foreach (var edge in _face.edges)
+			{
+				if (includeVisited || !_visitedFaces[edge.face.index])
+				{
+					VisitNeighbor(edge.face, state);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all neighbor faces of the face currently being visited to the visitation queue, except for the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		public void VisitAllNeighborsExcept(TState state, Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _face.edges)
+			{
+				if (edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face, state);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal neighbor faces of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the face should be added to the queue even if it has already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		/// <seealso cref="Topology.Face.isInternal"/>
+		public void VisitInternalNeighbors(TState state, bool includeVisited = false)
+		{
+			foreach (var edge in _face.edges)
+			{
+				if (!edge.isExternal && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face, state);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal neighbor faces of the face currently being visited to the visitation queue, except for the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.edges"/>
+		/// <seealso cref="Topology.Face.isInternal"/>
+		public void VisitInternalNeighborsExcept(TState state, Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _face.edges)
+			{
+				if (!edge.isExternal && edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face, state);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor faces of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitAllOuterNeighbors(TState state, bool includeVisited = false)
+		{
+			foreach (var edge in _face.outerEdges)
+			{
+				if (includeVisited || !_visitedFaces[edge.face.index])
+				{
+					VisitNeighbor(edge.face, state);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all outer neighbor faces of the face currently being visited to the visitation queue, except for the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The outer neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		public void VisitAllOuterNeighborsExcept(TState state, Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _face.outerEdges)
+			{
+				if (edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face, state);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal outer neighbor faces of the face currently being visited to the visitation queue.
+		/// </summary>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		/// <seealso cref="Topology.Face.isInternal"/>
+		public void VisitInternalOuterNeighbors(TState state, bool includeVisited = false)
+		{
+			foreach (var edge in _face.outerEdges)
+			{
+				if (!edge.isExternal && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face, state);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds all internal outer neighbor faces of the face currently being visited to the visitation queue, except for the face specified.
+		/// </summary>
+		/// <param name="excludedFace">The outer neighbor face that should not be added to the visitation queue.</param>
+		/// <param name="includeVisited">Indicates if the faces should be added to the queue even if they have already been visited.  Possibly useful in the presence of calls to <see cref="RevisitNeighbor"/>.</param>
+		/// <seealso cref="Topology.Face.outerEdges"/>
+		/// <seealso cref="Topology.Face.isInternal"/>
+		public void VisitInternalOuterNeighbors(TState state, Topology.Face excludedFace, bool includeVisited = false)
+		{
+			foreach (var edge in _face.outerEdges)
+			{
+				if (!edge.isExternal && edge.face != excludedFace && (includeVisited || !_visitedFaces[edge.face.index]))
+				{
+					VisitNeighbor(edge.face, state);
+				}
+			}
 		}
 
 		/// <summary>
@@ -6104,6 +6247,28 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		public static void Visit(Topology.Face rootFace, TState state, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		{
+			Visit(InitializeQueue(rootFace, state, queue), queue, visitDelegate);
+		}
+
+		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root face, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFace">The face to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		public static void Visit(FaceStatePair rootFace, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		{
+			Visit(InitializeQueue(rootFace.face, rootFace.state, queue), queue, visitDelegate);
+		}
+
+		/// <summary>
 		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root faces, using the supplied visit delegate.
 		/// </summary>
 		/// <param name="rootFaces">The collection of faces to visit first.</param>
@@ -6115,34 +6280,51 @@ namespace Experilous.MakeItTile
 		}
 
 		/// <summary>
+		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root faces, using the supplied visit delegate.
+		/// </summary>
+		/// <param name="rootFaces">The collection of faces to visit first.</param>
+		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
+		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
+		public static void Visit(IEnumerable<FaceStatePair> rootFaces, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
+		{
+			Visit(InitializeQueue(rootFaces, queue), queue, visitDelegate);
+		}
+
+		/// <summary>
 		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root face, using the supplied visit delegate.
 		/// </summary>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <typeparam name="TSharedState">The type of the custom state object.</typeparam>
 		/// <param name="rootFace">The face to visit first.</param>
 		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
-		public static void Visit<TState>(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		public static void Visit<TSharedState>(Topology.Face rootFace, IQueue<QueueItem> queue, VisitDelegate<TSharedState> visitDelegate, TSharedState sharedState)
 		{
-			Visit(InitializeQueue(rootFace, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootFace, queue), queue, visitDelegate, sharedState);
 		}
 
 		/// <summary>
 		/// Visits adjacent topology faces in the order determined by the provided queue, starting with the specified root faces, using the supplied visit delegate.
 		/// </summary>
-		/// <typeparam name="TState">The type of the custom state object.</typeparam>
+		/// <typeparam name="TSharedState">The type of the custom state object.</typeparam>
 		/// <param name="rootFaces">The collection of faces to visit first.</param>
 		/// <param name="queue">The queue that will determine the order in which faces are popped and visited.</param>
 		/// <param name="visitDelegate">The delegate that will be called for each face that is visited.</param>
 		/// <param name="state">The custom state object which will be passed to the delegate along with the visitor.  Ideally a class or immutable struct.</param>
-		public static void Visit<TState>(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		public static void Visit<TSharedState>(IEnumerable<Topology.Face> rootFaces, IQueue<QueueItem> queue, VisitDelegate<TSharedState> visitDelegate, TSharedState sharedState)
 		{
-			Visit(InitializeQueue(rootFaces, queue), queue, visitDelegate, state);
+			Visit(InitializeQueue(rootFaces, queue), queue, visitDelegate, sharedState);
 		}
 
 		private static Topology InitializeQueue(Topology.Face rootFace, IQueue<QueueItem> queue)
 		{
-			queue.Push(new QueueItem(rootFace.index, 0, default(TDistance)));
+			queue.Push(new QueueItem(rootFace.index, 0, default(TState)));
+			return rootFace.topology;
+		}
+
+		private static Topology InitializeQueue(Topology.Face rootFace, TState state, IQueue<QueueItem> queue)
+		{
+			queue.Push(new QueueItem(rootFace.index, 0, state));
 			return rootFace.topology;
 		}
 
@@ -6155,7 +6337,23 @@ namespace Experilous.MakeItTile
 
 			do
 			{
-				queue.Push(new QueueItem(rootFacesEnumerator.Current.index, 0, default(TDistance)));
+				queue.Push(new QueueItem(rootFacesEnumerator.Current.index, 0, default(TState)));
+			} while (rootFacesEnumerator.MoveNext());
+
+			return topology;
+		}
+
+		private static Topology InitializeQueue(IEnumerable<FaceStatePair> rootFaces, IQueue<QueueItem> queue)
+		{
+			var rootFacesEnumerator = rootFaces.GetEnumerator();
+			if (!rootFacesEnumerator.MoveNext()) return null;
+
+			var topology = rootFacesEnumerator.Current.face.topology;
+
+			do
+			{
+				var faceStatePair = rootFacesEnumerator.Current;
+				queue.Push(new QueueItem(faceStatePair.face.index, 0, faceStatePair.state));
 			} while (rootFacesEnumerator.MoveNext());
 
 			return topology;
@@ -6164,15 +6362,15 @@ namespace Experilous.MakeItTile
 		private static void Visit(Topology topology, IQueue<QueueItem> queue, VisitDelegate visitDelegate)
 		{
 			if (topology == null) return;
-			var visitor = new FaceVisitor<TDistance>(topology, queue);
+			var visitor = new FaceVisitor<TState>(topology, queue);
 			visitor.Visit(visitDelegate);
 		}
 
-		private static void Visit<TState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TState> visitDelegate, TState state)
+		private static void Visit<TSharedState>(Topology topology, IQueue<QueueItem> queue, VisitDelegate<TSharedState> visitDelegate, TSharedState sharedState)
 		{
 			if (topology == null) return;
-			var visitor = new FaceVisitor<TDistance>(topology, queue);
-			visitor.Visit(visitDelegate, state);
+			var visitor = new FaceVisitor<TState>(topology, queue);
+			visitor.Visit(visitDelegate, sharedState);
 		}
 
 		private void Visit(VisitDelegate visitDelegate)
@@ -6187,7 +6385,7 @@ namespace Experilous.MakeItTile
 				// Visit the face and get the list of adjacent neighbors.
 				_face = new Topology.Face(_topology, queueItem.faceIndex);
 				_depth = queueItem.depth;
-				_distance = queueItem.distance;
+				_state = queueItem.state;
 				_break = _ignore = false;
 				visitDelegate(this);
 
@@ -6197,7 +6395,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		private void Visit<TState>(VisitDelegate<TState> visitDelegate, TState state)
+		private void Visit<TSharedState>(VisitDelegate<TSharedState> visitDelegate, TSharedState sharedState)
 		{
 			while (_queue.isEmpty == false)
 			{
@@ -6209,9 +6407,9 @@ namespace Experilous.MakeItTile
 				// Visit the face and get the list of adjacent neighbors.
 				_face = new Topology.Face(_topology, queueItem.faceIndex);
 				_depth = queueItem.depth;
-				_distance = queueItem.distance;
+				_state = queueItem.state;
 				_break = _ignore = false;
-				visitDelegate(this, state);
+				visitDelegate(this, sharedState);
 
 				// Check the visitation action and respond accordingly.
 				if (_break) return;

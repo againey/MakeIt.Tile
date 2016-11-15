@@ -107,6 +107,22 @@ namespace Experilous.MakeItTile
 			return vertexEdgeMidpoints;
 		}
 
+		public static IEdgeAttribute<Vector3> CalculateSphericalVertexEdgeMidpointsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions)
+		{
+			return CalculateSphericalVertexEdgeMidpointsFromVertexPositions(vertexEdges, surface, vertexPositions, new Vector3[vertexEdges.Count].AsEdgeAttribute());
+		}
+
+		public static IEdgeAttribute<Vector3> CalculateSphericalVertexEdgeMidpointsFromVertexPositions(Topology.VertexEdgesIndexer vertexEdges, SphericalSurface surface, IVertexAttribute<Vector3> vertexPositions, IEdgeAttribute<Vector3> vertexEdgeMidpoints)
+		{
+			foreach (var vertexEdge in vertexEdges)
+			{
+				var midpoint = vertexPositions[vertexEdge.nearVertex] + vertexPositions[vertexEdge.farVertex];
+				vertexEdgeMidpoints[vertexEdge] = midpoint * (surface.radius / midpoint.magnitude);
+			}
+
+			return vertexEdgeMidpoints;
+		}
+
 		#endregion
 
 		#region Calculate[FaceEdgeAttribute]...(...)
