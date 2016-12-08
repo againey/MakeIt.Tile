@@ -38,6 +38,7 @@ namespace Experilous.Examples.MakeItTile
 
 		public void Generate()
 		{
+#if false
 			var surface = _hexGridGenerator.surface;
 			var topology = _hexGridGenerator.topology;
 			var vertexPositions = _hexGridGenerator.vertexPositions;
@@ -197,6 +198,7 @@ namespace Experilous.Examples.MakeItTile
 			}
 
 			CreateMesh(positionSum / positionCount, meshTriangles, meshVertexPositions, meshVertexColors);
+#endif
 		}
 
 		private void CreateMesh(Vector3 meshCenter, List<int> triangles, List<Vector3> vertexPositions, List<Color> vertexColors)

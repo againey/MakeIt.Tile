@@ -3,7 +3,7 @@
 \******************************************************************************/
 
 using UnityEngine;
-
+#if false
 namespace Experilous.MakeItCurve
 {
 	public enum ContourState
@@ -154,3 +154,4 @@ namespace Experilous.MakeItCurve
 		}
 	}
 }
+#endif
