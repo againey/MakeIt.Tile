@@ -18,6 +18,7 @@ syntax: regexp
 ^Assets/Experilous/Packages/
 ^Assets/Experilous/Packages.meta
 ^obj/
+^Experilous/
 ^[^/]*\.sln$
 ^[^/]*\.csproj$
 \~\$[^/]*\.docx$
