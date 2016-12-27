@@ -277,7 +277,7 @@ namespace Experilous.MakeItTile
 		/// <param name="subdividedVertexPositions">The positions of the subdivided vertices.</param>
 		public static void Subdivide(Topology topology, IVertexAttribute<Vector3> vertexPositions, int degree, Func<Vector3, Vector3, float, Vector3> interpolator, out Topology subdividedTopology, out Vector3[] subdividedVertexPositions)
 		{
-			if (degree < 0) throw new ArgumentOutOfRangeException("Topology subdivision degree cannot be negative.");
+			if (degree < 0) throw new ArgumentOutOfRangeException("degree", degree, "Topology subdivision degree cannot be negative.");
 			if (degree == 0)
 			{
 				subdividedTopology = (Topology)topology.Clone();
