@@ -13,7 +13,7 @@ syntax: regexp
 ^Miscellaneous/.*\.pov\.bak$
 ^Library/
 ^Temp/
-^Build/
+^Build/.+/
 ^Packages/
 ^Assets/Experilous/Packages/
 ^Assets/Experilous/Packages.meta
@@ -35,3 +35,4 @@ syntax: regexp
 ^Miscellaneous/C\+\+/.*/[^/]*\.user$
 ^Miscellaneous/Archive
 ^Help/.*/Build
+^AssetStoreTools.dll$
