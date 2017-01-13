@@ -11,7 +11,7 @@ namespace Experilous.MakeItTile.Tests
 {
 	class TopologyNavigationTests
 	{
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void FaceNeighborFaces()
 		{
 			var surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, new IntVector2(3, 3));
@@ -31,7 +31,7 @@ namespace Experilous.MakeItTile.Tests
 			Assert.False(neighborFaceEdges.MoveNext());
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void FaceOuterVertexEdgeFaces()
 		{
 			var surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, new IntVector2(3, 3));
@@ -59,7 +59,7 @@ namespace Experilous.MakeItTile.Tests
 			Assert.False(neighborFaceEdges.MoveNext());
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void VertexNeighborVertices()
 		{
 			var surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, new IntVector2(2, 2));
@@ -79,7 +79,7 @@ namespace Experilous.MakeItTile.Tests
 			Assert.False(neighborVertexEdges.MoveNext());
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void VertexOuterFaceEdgeVertices()
 		{
 			var surface = RectangularQuadGrid.Create(Vector2.right, Vector2.up, Vector3.zero, Quaternion.identity, false, false, new IntVector2(2, 2));

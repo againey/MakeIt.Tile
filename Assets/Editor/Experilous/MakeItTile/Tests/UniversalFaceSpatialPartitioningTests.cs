@@ -208,105 +208,105 @@ namespace Experilous.MakeItTile.Tests
 
 		#region FaceCenterIntersections
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallQuadGridFaceCenterIntersections()
 		{
 			CreateQuadGrid(2, 2);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeQuadGridFaceCenterIntersections()
 		{
 			CreateQuadGrid(8, 8);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallHexGridFaceCenterIntersections()
 		{
 			CreateHexGrid(2, 2);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeHexGridFaceCenterIntersections()
 		{
 			CreateHexGrid(8, 8);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallDistortedQuadGridFaceCenterIntersections()
 		{
 			CreateDistortedQuadGrid(2, 2, 1);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeDistortedQuadGridFaceCenterIntersections()
 		{
 			CreateDistortedQuadGrid(8, 8, 1);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallDistortedHexGridFaceCenterIntersections()
 		{
 			CreateDistortedHexGrid(2, 2, 1);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeDistortedHexGridFaceCenterIntersections()
 		{
 			CreateDistortedHexGrid(8, 8, 1);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void TetrahedronFaceCenterIntersections()
 		{
 			CreateTetrahedron(1f);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void CubeFaceCenterIntersections()
 		{
 			CreateCube(1f);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void OctahedronFaceCenterIntersections()
 		{
 			CreateOctahedron(1f);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void DodecahedronFaceCenterIntersections()
 		{
 			CreateDodecahedron(1f);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void IcosahedronFaceCenterIntersections()
 		{
 			CreateIcosahedron(1f);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SubdividedDodecahedronFaceCenterIntersections()
 		{
 			CreateSubdividedDodecahedron(1f);
 			FaceCenterIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SubdividedIcosahedronFaceCenterIntersections()
 		{
 			CreateSubdividedIcosahedron(1f);
@@ -317,105 +317,105 @@ namespace Experilous.MakeItTile.Tests
 
 		#region FaceVertexWeightedIntersections
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallQuadGridFaceVertexWeightedIntersections()
 		{
 			CreateQuadGrid(2, 2);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeQuadGridFaceVertexWeightedIntersections()
 		{
 			CreateQuadGrid(8, 8);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallHexGridFaceVertexWeightedIntersections()
 		{
 			CreateHexGrid(2, 2);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeHexGridFaceVertexWeightedIntersections()
 		{
 			CreateHexGrid(8, 8);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallDistortedQuadGridFaceVertexWeightedIntersections()
 		{
 			CreateDistortedQuadGrid(2, 2, 1);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeDistortedQuadGridFaceVertexWeightedIntersections()
 		{
 			CreateDistortedQuadGrid(8, 8, 1);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallDistortedHexGridFaceVertexWeightedIntersections()
 		{
 			CreateDistortedHexGrid(2, 2, 1);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeDistortedHexGridFaceVertexWeightedIntersections()
 		{
 			CreateDistortedHexGrid(8, 8, 1);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void TetrahedronFaceVertexWeightedIntersections()
 		{
 			CreateTetrahedron(1f);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void CubeFaceVertexWeightedIntersections()
 		{
 			CreateCube(1f);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void OctahedronFaceVertexWeightedIntersections()
 		{
 			CreateOctahedron(1f);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void DodecahedronFaceVertexWeightedIntersections()
 		{
 			CreateDodecahedron(1f);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void IcosahedronFaceVertexWeightedIntersections()
 		{
 			CreateIcosahedron(1f);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SubdividedDodecahedronFaceVertexWeightedIntersections()
 		{
 			CreateSubdividedDodecahedron(1f);
 			FaceVertexWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SubdividedIcosahedronFaceVertexWeightedIntersections()
 		{
 			CreateSubdividedIcosahedron(1f);
@@ -426,7 +426,7 @@ namespace Experilous.MakeItTile.Tests
 
 		#region FaceEdgeMidpointWeightedIntersections
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallQuadGridFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateQuadGrid(2, 2);
@@ -434,7 +434,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeQuadGridFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateQuadGrid(8, 8);
@@ -442,7 +442,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallHexGridFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateHexGrid(2, 2);
@@ -450,7 +450,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeHexGridFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateHexGrid(8, 8);
@@ -458,7 +458,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallDistortedQuadGridFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateDistortedQuadGrid(2, 2, 1);
@@ -466,7 +466,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeDistortedQuadGridFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateDistortedQuadGrid(8, 8, 1);
@@ -474,7 +474,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SmallDistortedHexGridFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateDistortedHexGrid(2, 2, 1);
@@ -482,7 +482,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void LargeDistortedHexGridFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateDistortedHexGrid(8, 8, 1);
@@ -490,7 +490,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void TetrahedronFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateTetrahedron(1f);
@@ -498,7 +498,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void CubeFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateCube(1f);
@@ -506,7 +506,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void OctahedronFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateOctahedron(1f);
@@ -514,7 +514,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void DodecahedronFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateDodecahedron(1f);
@@ -522,7 +522,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void IcosahedronFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateIcosahedron(1f);
@@ -530,7 +530,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SubdividedDodecahedronFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateSubdividedDodecahedron(1f);
@@ -538,7 +538,7 @@ namespace Experilous.MakeItTile.Tests
 			FaceEdgeMidpointWeightedIntersections();
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SubdividedIcosahedronFaceEdgeMidpointWeightedIntersections()
 		{
 			CreateSubdividedIcosahedron(1f);
