@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Experilous.MakeItRandom;
 using Experilous.Numerics;
 using Experilous.MakeItTile;
+using Experilous.Topologies;
 
 namespace Experilous.Examples.MakeItTile
 {
@@ -46,7 +47,6 @@ namespace Experilous.Examples.MakeItTile
 		{
 			var surface = _sphereGenerator.surface;
 			var topology = _sphereGenerator.topology;
-			var vertexPositions = _sphereGenerator.vertexPositions;
 			var faceCentroids = _sphereGenerator.faceCentroids;
 			
 			var faceTectonicPlateMotions = _planetGenerator.faceTectonicPlateMotions;

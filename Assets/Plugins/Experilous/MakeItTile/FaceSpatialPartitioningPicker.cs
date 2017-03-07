@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using System;
+using Experilous.Topologies;
 using GeneralUtility = Experilous.Core.GeneralUtility;
 using Geometry = Experilous.Numerics.Geometry;
 

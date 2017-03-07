@@ -2,11 +2,13 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
+#if false
+
 using UnityEngine;
 using System;
 using GeneralUtility = Experilous.Core.GeneralUtility;
 
-namespace Experilous.MakeItTile
+namespace Experilous.Topologies
 {
 	/// <summary>
 	/// A basic representation of a topology of vertices, connected by edges, delimiting the corners of faces.
@@ -645,3 +647,5 @@ namespace Experilous.MakeItTile
 		}
 	}
 }
+
+#endif

@@ -2,9 +2,11 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
+#if false
+
 using System;
 
-namespace Experilous.MakeItTile
+namespace Experilous.Topologies
 {
 	/// <summary>
 	/// Static utility class providing functions for creating and validating topologies.
@@ -294,3 +296,5 @@ namespace Experilous.MakeItTile
 		#endregion
 	}
 }
+
+#endif

@@ -3,6 +3,7 @@
 \******************************************************************************/
 
 using UnityEngine;
+using Experilous.Topologies;
 using ScaledRay = Experilous.Numerics.ScaledRay;
 
 namespace Experilous.MakeItTile

@@ -4,6 +4,7 @@
 
 using UnityEngine;
 using Experilous.Numerics;
+using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
 {

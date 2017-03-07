@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System;
+using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
 {

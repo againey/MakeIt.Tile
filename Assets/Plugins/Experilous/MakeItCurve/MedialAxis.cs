@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using System.Collections.Generic;
 using Experilous.Numerics;
@@ -1216,3 +1216,4 @@ namespace Experilous.MakeItCurve
 		}
 	}
 }
+#endif

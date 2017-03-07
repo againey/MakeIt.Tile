@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if false
+using UnityEngine;
 using System.Collections.Generic;
 using Experilous.MakeItCurve;
 using Experilous.MakeItTile;
@@ -256,3 +257,4 @@ namespace Experilous.Examples.MakeItTile
 	}
 #endif
 }
+#endif

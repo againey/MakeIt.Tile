@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Experilous.MakeItGenerate;
 using Experilous.Core;
+using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
 {

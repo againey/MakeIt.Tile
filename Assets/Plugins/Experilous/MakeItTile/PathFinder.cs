@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using Experilous.Containers;
+using Experilous.Topologies;
 using Geometry = Experilous.Numerics.Geometry;
 
 namespace Experilous.MakeItTile

@@ -3,6 +3,7 @@
 \******************************************************************************/
 
 using Experilous.MakeItRandom;
+using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
 {

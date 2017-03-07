@@ -5,6 +5,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Experilous.Topologies;
 using ThreadUtility = Experilous.Core.ThreadUtility;
 
 namespace Experilous.MakeItTile

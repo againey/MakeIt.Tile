@@ -6,6 +6,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Experilous.Numerics;
+using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
 {

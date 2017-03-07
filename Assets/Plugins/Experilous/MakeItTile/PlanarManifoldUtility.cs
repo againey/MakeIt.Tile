@@ -3,6 +3,7 @@
 \******************************************************************************/
 
 using UnityEngine;
+using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
 {

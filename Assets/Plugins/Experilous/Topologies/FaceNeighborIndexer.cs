@@ -2,15 +2,17 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
+#if false
+
 using System;
 
-namespace Experilous.MakeItTile
+namespace Experilous.Topologies
 {
 	/// <summary>
 	/// An interface for providing a fairly minimal and simple description of a topology
 	/// from which the full topology data structure can be generated.
 	/// </summary>
-	/// <seealso cref="TopologyUtility"/>
+	/// <seealso cref="Topologies.TopologyUtility"/>
 	/// <seealso cref="ManualFaceNeighborIndexer"/>
 	public interface IFaceNeighborIndexer
 	{
@@ -72,7 +74,7 @@ namespace Experilous.MakeItTile
 	/// A class for manually providing a fairly minimal and simple description of
 	/// a topology from which the full topology data structure can be generated.
 	/// </summary>
-	/// <seealso cref="TopologyUtility"/>
+	/// <seealso cref="Topologies.TopologyUtility"/>
 	public class ManualFaceNeighborIndexer : IFaceNeighborIndexer
 	{
 		private int _vertexCount;
@@ -362,3 +364,5 @@ namespace Experilous.MakeItTile
 		}
 	}
 }
+
+#endif

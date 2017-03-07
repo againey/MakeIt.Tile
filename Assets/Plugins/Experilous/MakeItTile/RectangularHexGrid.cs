@@ -5,6 +5,7 @@
 using UnityEngine;
 using System;
 using Experilous.Numerics;
+using Experilous.Topologies;
 using GeneralUtility = Experilous.Core.GeneralUtility;
 
 namespace Experilous.MakeItTile

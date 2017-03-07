@@ -2,7 +2,7 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
-namespace Experilous.MakeItTile
+namespace Experilous.Topologies
 {
 	/// <summary>
 	/// Static utility class for working with edge wrap data.

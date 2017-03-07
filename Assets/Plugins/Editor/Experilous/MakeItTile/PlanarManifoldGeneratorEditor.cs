@@ -5,6 +5,7 @@
 using UnityEngine;
 using UnityEditor;
 using Experilous.MakeItGenerate;
+using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
 {

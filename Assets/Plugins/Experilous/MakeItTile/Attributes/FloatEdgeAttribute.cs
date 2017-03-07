@@ -2,6 +2,8 @@
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
 
+using Experilous.Topologies;
+
 namespace Experilous.MakeItTile
 {
 	/// <summary>

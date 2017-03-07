@@ -8,6 +8,7 @@ using System;
 using Experilous.MakeItRandom;
 using Experilous.MakeItTile;
 using Experilous.Numerics;
+using Experilous.Topologies;
 
 namespace Experilous.Examples.MakeItTile
 {

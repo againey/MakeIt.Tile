@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 using Experilous.MakeItRandom;
 using Experilous.Numerics;
 using Experilous.MakeItTile;
 using Experilous.MakeItColorful;
-using System;
+using Experilous.Topologies;
 
 namespace Experilous.Examples.MakeItTile
 {
