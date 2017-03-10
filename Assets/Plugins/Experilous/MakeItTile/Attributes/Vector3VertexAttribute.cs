@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Topologies;
 
@@ -31,3 +31,4 @@ namespace Experilous.MakeItTile
 		public static Vector3VertexAttribute Create(int vertexCount) { return CreateDerived<Vector3VertexAttribute>(vertexCount); }
 	}
 }
+#endif

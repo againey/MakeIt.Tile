@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using System;
 using Experilous.Numerics;
@@ -14,7 +14,7 @@ namespace Experilous.MakeItTile
 	/// </summary>
 	public static class SphericalManifoldUtility
 	{
-		#region Generation
+#region Generation
 
 		/// <summary>
 		/// Creates a manifold, consisting of a topology and vertex positions, in the shape of a tetrahedron.
@@ -268,9 +268,9 @@ namespace Experilous.MakeItTile
 			topology = TopologyUtility.BuildTopology(indexer);
 		}
 
-		#endregion
+#endregion
 
-		#region Modification
+#region Modification
 
 		/// <summary>
 		/// Reverses the roles of vertices and faces, as when taking the dual of a polyhedron.
@@ -530,6 +530,7 @@ namespace Experilous.MakeItTile
 			return !repaired;
 		}
 
-		#endregion
+#endregion
 	}
 }
+#endif

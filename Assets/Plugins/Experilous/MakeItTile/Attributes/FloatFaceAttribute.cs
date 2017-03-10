@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
@@ -30,3 +30,4 @@ namespace Experilous.MakeItTile
 		public static FloatFaceAttribute Create(int faceCount) { return CreateDerived<FloatFaceAttribute>(faceCount); }
 	}
 }
+#endif

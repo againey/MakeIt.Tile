@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -37,3 +37,4 @@ namespace Experilous.Topologies
 		T this[Topology.Face f] { get; set; }
 	}
 }
+#endif

@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Topologies;
 
@@ -12,7 +12,7 @@ namespace Experilous.MakeItTile
 	/// </summary>
 	public static class PlanarManifoldUtility
 	{
-		#region Modification
+#region Modification
 
 		/// <summary>
 		/// Reverses the roles of vertices and faces, as when taking the dual of a polyhedron.
@@ -242,6 +242,7 @@ namespace Experilous.MakeItTile
 			return !repaired;
 		}
 
-		#endregion
+#endregion
 	}
 }
+#endif

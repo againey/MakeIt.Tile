@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Numerics;
 using Experilous.Topologies;
@@ -174,3 +174,4 @@ namespace Experilous.MakeItTile
 		public int GetWrappedVertexIndex(int x, int y) { return GetVertexIndex(VertexWrap(x, y)); }
 	}
 }
+#endif

@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using Experilous.Topologies;
 
 namespace Experilous.MakeItTile
@@ -30,3 +30,4 @@ namespace Experilous.MakeItTile
 		public static FloatVertexAttribute Create(int vertexCount) { return CreateDerived<FloatVertexAttribute>(vertexCount); }
 	}
 }
+#endif

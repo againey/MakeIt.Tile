@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Numerics;
 using Experilous.Topologies;
@@ -13,7 +13,7 @@ namespace Experilous.MakeItTile
 	/// </summary>
 	public static class FaceAttributeUtility
 	{
-		#region IFaceAttribute<Vector3> CacluateFaceCentroids...(...)
+#region IFaceAttribute<Vector3> CacluateFaceCentroids...(...)
 
 		/// <summary>
 		/// Calculates face centroids based on the positions of their neighboring vertices.
@@ -83,9 +83,9 @@ namespace Experilous.MakeItTile
 			return faceCentroids;
 		}
 
-		#endregion
+#endregion
 
-		#region IFaceAttribute<Vector3> CalculateFaceNormals...(...)
+#region IFaceAttribute<Vector3> CalculateFaceNormals...(...)
 
 		/// <summary>
 		/// Calculates face normals using the surface normal reported by the given surface based on the position of each face.
@@ -301,9 +301,9 @@ namespace Experilous.MakeItTile
 			return faceNormals;
 		}
 
-		#endregion
+#endregion
 
-		#region IFaceAttribute<float> CalculateFaceAreas...(...)
+#region IFaceAttribute<float> CalculateFaceAreas...(...)
 
 		/// <summary>
 		/// Calculates the planar surface area of each face, based on the positions of their neighboring vertices.  For non-flat surfaces, the calculated areas are only approximate.
@@ -385,7 +385,7 @@ namespace Experilous.MakeItTile
 			return faceAreas;
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Calculates the circumference of each face, based on the positions of their neighboring vertices.
@@ -461,7 +461,7 @@ namespace Experilous.MakeItTile
 			return faceCircumferences;
 		}
 
-		#region CalculateMinAndRangeValues...(...)
+#region CalculateMinAndRangeValues...(...)
 
 		/// <summary>
 		/// Determines the minimum value and the range between the minimum and maximum values of an arbitrary edge attribute for the neighbors of each face.
@@ -647,9 +647,9 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region CalculateCenteredMinAndRangeValues...(...)
+#region CalculateCenteredMinAndRangeValues...(...)
 
 		/// <summary>
 		/// Determines the minimum value and the range between the minimum and maximum values of an arbitrary edge attribute for the neighbors of each face, with the minimums and ranges adjusted to maintain the center values of the faces.
@@ -883,11 +883,11 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region CalculateGlobalUVs...(...)
+#region CalculateGlobalUVs...(...)
 
-		#region CalculateGlobalPlanarUVs...(...)
+#region CalculateGlobalPlanarUVs...(...)
 
 		/// <summary>
 		/// Calculates the UV coordinates of each face, based on the planar UV space indicated.
@@ -961,9 +961,9 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#endregion
+#endregion
 
-		#region CalculateGlobalSphericalUVs...(...)
+#region CalculateGlobalSphericalUVs...(...)
 
 		/// <summary>
 		/// Calculates the UV coordinates of each face, based on the spherical longitude/latitude UV space indicated.
@@ -1001,9 +1001,9 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Calculates the local UV coordinates of each face, based on the positions and already computed UV frames of the faces.
@@ -1038,7 +1038,7 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#region CalculatePerFace...UVsFromFaceUVMinAndRange(...)
+#region CalculatePerFace...UVsFromFaceUVMinAndRange(...)
 
 		/// <summary>
 		/// Calculates the local UV coordinates of each face, based on the minimum and range of unnormalized UV coordinates already calculated, such that the UVs of every face have the same scale.
@@ -1069,7 +1069,7 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Calculates orthonormal UV frames of the faces, based on the normals of the faces relative to a spherical longitiude/latitude frame of reference.
@@ -1123,3 +1123,4 @@ namespace Experilous.MakeItTile
 		}
 	}
 }
+#endif

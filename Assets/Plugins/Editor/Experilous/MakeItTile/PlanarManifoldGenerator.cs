@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
@@ -438,7 +438,7 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		#region Version Upgrades
+#region Version Upgrades
 
 		private void Updgrade_From_1_0_To_1_1()
 		{
@@ -725,9 +725,9 @@ namespace Experilous.MakeItTile
 			_version = "1.1";
 		}
 
-		#endregion
+#endregion
 
-		#region Deprecated Fields
+#region Deprecated Fields
 
 		[SerializeField] private PlanarTileShapes planarTileShape;
 		[SerializeField] private HorizontalAxisOptions quadGridHorizontalAxisOptions;
@@ -745,9 +745,9 @@ namespace Experilous.MakeItTile
 		[SerializeField] private Vector3 normal;
 		[SerializeField] private WrapOptions wrapOptions;
 
-		#endregion
+#endregion
 
-		#region Deprecated Enumerations
+#region Deprecated Enumerations
 
 		public enum PlanarTileShapes
 		{
@@ -808,6 +808,7 @@ namespace Experilous.MakeItTile
 			Custom,
 		}
 
-		#endregion
+#endregion
 	}
 }
+#endif

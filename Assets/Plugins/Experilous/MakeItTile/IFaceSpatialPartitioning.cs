@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Topologies;
 using ScaledRay = Experilous.Numerics.ScaledRay;
@@ -45,3 +45,4 @@ namespace Experilous.MakeItTile
 		Topology.Face FindFace(ScaledRay ray);
 	}
 }
+#endif

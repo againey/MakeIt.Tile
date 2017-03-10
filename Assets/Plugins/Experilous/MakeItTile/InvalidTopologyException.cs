@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using System;
 using System.Runtime.Serialization;
 
@@ -42,3 +42,4 @@ namespace Experilous.MakeItTile
 			: base(info, context) { }
 	}
 }
+#endif

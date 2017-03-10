@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Numerics;
 using Experilous.Topologies;
@@ -293,3 +293,4 @@ namespace Experilous.MakeItTile
 		public virtual Vector3 ReverseOffsetFaceToFaceAttribute(Vector3 position, EdgeWrap edgeWrap) { return position; }
 	}
 }
+#endif

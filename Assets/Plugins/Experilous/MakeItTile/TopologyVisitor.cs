@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -87,9 +87,9 @@ namespace Experilous.MakeItTile
 			_topology = topology;
 		}
 
-		#region Arbitrary Order Visitation
+#region Arbitrary Order Visitation
 
-		#region Vertices
+#region Vertices
 
 		/// <summary>
 		/// Visits adjacent topology vertices in no particular order, starting with the specified root vertex, using the supplied visit delegate.
@@ -307,9 +307,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new LifoQueue<VertexEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Faces
+#region Faces
 
 		/// <summary>
 		/// Visits adjacent topology faces in no particular order, starting with the specified root face, using the supplied visit delegate.
@@ -531,13 +531,13 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new LifoQueue<FaceEdgeVisitor<TDistance>.QueueItem>(), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Breadth First Visitation
+#region Breadth First Visitation
 
-		#region Vertices
+#region Vertices
 
 		/// <summary>
 		/// Visits adjacent topology vertices in breadth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate.
@@ -755,9 +755,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Faces
+#region Faces
 
 		/// <summary>
 		/// Visits adjacent topology faces in breadth-first order based on depth, starting with the specified root face, using the supplied visit delegate.
@@ -966,13 +966,13 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedBreadthFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Depth First Visitation
+#region Depth First Visitation
 
-		#region Vertices
+#region Vertices
 
 		/// <summary>
 		/// Visits adjacent topology vertices in depth-first order based on depth, starting with the specified root vertex, using the supplied visit delegate.
@@ -1190,9 +1190,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(VertexEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Faces
+#region Faces
 
 		/// <summary>
 		/// Visits adjacent topology faces in depth-first order based on depth, starting with the specified root face, using the supplied visit delegate.
@@ -1410,15 +1410,15 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(FaceEdgeVisitor<TDistance>.AreOrderedDepthFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Shortest Distance First Visitation
+#region Shortest Distance First Visitation
 
-		#region Distance Comparisons
+#region Distance Comparisons
 
-		#region Vertices
+#region Vertices
 
 		private static bool AreOrderedByShortestDistanceFirst(VertexVisitor<int>.QueueItem lhs, VertexVisitor<int>.QueueItem rhs)
 		{
@@ -1460,9 +1460,9 @@ namespace Experilous.MakeItTile
 			return lhs.distance <= rhs.distance;
 		}
 
-		#endregion
+#endregion
 
-		#region Faces
+#region Faces
 
 		private static bool AreOrderedByShortestDistanceFirst(FaceVisitor<int>.QueueItem lhs, FaceVisitor<int>.QueueItem rhs)
 		{
@@ -1504,13 +1504,13 @@ namespace Experilous.MakeItTile
 			return lhs.distance <= rhs.distance;
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Vertices
+#region Vertices
 
-		#region Int32
+#region Int32
 
 		/// <summary>
 		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
@@ -1616,9 +1616,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region UInt32
+#region UInt32
 
 		/// <summary>
 		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
@@ -1724,9 +1724,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Single
+#region Single
 
 		/// <summary>
 		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
@@ -1832,9 +1832,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Double
+#region Double
 
 		/// <summary>
 		/// Visits adjacent topology vertices in breadth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
@@ -1940,13 +1940,13 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Faces
+#region Faces
 
-		#region Int32
+#region Int32
 
 		/// <summary>
 		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
@@ -2052,9 +2052,9 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region UInt32
+#region UInt32
 
 		/// <summary>
 		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
@@ -2160,9 +2160,9 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Single
+#region Single
 
 		/// <summary>
 		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
@@ -2268,9 +2268,9 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Double
+#region Double
 
 		/// <summary>
 		/// Visits adjacent topology faces in breadth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
@@ -2376,17 +2376,17 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByShortestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Longest Distance First Visitation
+#region Longest Distance First Visitation
 
-		#region Distance Comparisons
+#region Distance Comparisons
 
-		#region Vertices
+#region Vertices
 
 		private static bool AreOrderedByLongestDistanceFirst(VertexVisitor<int>.QueueItem lhs, VertexVisitor<int>.QueueItem rhs)
 		{
@@ -2428,9 +2428,9 @@ namespace Experilous.MakeItTile
 			return lhs.distance >= rhs.distance;
 		}
 
-		#endregion
+#endregion
 
-		#region Faces
+#region Faces
 
 		private static bool AreOrderedByLongestDistanceFirst(FaceVisitor<int>.QueueItem lhs, FaceVisitor<int>.QueueItem rhs)
 		{
@@ -2472,13 +2472,13 @@ namespace Experilous.MakeItTile
 			return lhs.distance >= rhs.distance;
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Vertices
+#region Vertices
 
-		#region Int32
+#region Int32
 
 		/// <summary>
 		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
@@ -2584,9 +2584,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region UInt32
+#region UInt32
 
 		/// <summary>
 		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
@@ -2692,9 +2692,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Single
+#region Single
 
 		/// <summary>
 		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
@@ -2800,9 +2800,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Double
+#region Double
 
 		/// <summary>
 		/// Visits adjacent topology vertices in depth-first order based on distance, starting with the specified root vertex, using the supplied visit delegate.
@@ -2908,13 +2908,13 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Faces
+#region Faces
 
-		#region Int32
+#region Int32
 
 		/// <summary>
 		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
@@ -3020,9 +3020,9 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<int>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<int>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region UInt32
+#region UInt32
 
 		/// <summary>
 		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
@@ -3128,9 +3128,9 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<uint>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<uint>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Single
+#region Single
 
 		/// <summary>
 		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
@@ -3236,9 +3236,9 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<float>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<float>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Double
+#region Double
 
 		/// <summary>
 		/// Visits adjacent topology faces in depth-first order based on distance, starting with the specified root face, using the supplied visit delegate.
@@ -3344,15 +3344,15 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<double>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<double>.QueueItem>(AreOrderedByLongestDistanceFirst), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Delegate Order Visitation
+#region Delegate Order Visitation
 
-		#region Vertex
+#region Vertex
 
 		/// <summary>
 		/// Visits adjacent topology vertices in an order determined by the supplied comparison delegate, starting with the specified root vertex, using the supplied visit delegate.
@@ -3474,9 +3474,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<VertexEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Face
+#region Face
 
 		/// <summary>
 		/// Visits adjacent topology faces in an order determined by the supplied comparison delegate, starting with the specified root face, using the supplied visit delegate.
@@ -3598,13 +3598,13 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new DelegateOrderedPriorityQueue<FaceEdgeVisitor<TDistance>.QueueItem>(areOrderedDelegate), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Random Order Visitation
+#region Random Order Visitation
 
-		#region Vertices
+#region Vertices
 
 		/// <summary>
 		/// Visits adjacent topology vertices in a uniformly random order driven by the supplied random engine, starting with the specified root vertex, using the supplied visit delegate.
@@ -3838,9 +3838,9 @@ namespace Experilous.MakeItTile
 			VertexEdgeVisitor<TDistance>.Visit(rootEdges, new RandomOrderQueue<VertexEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#region Faces
+#region Faces
 
 		/// <summary>
 		/// Visits adjacent topology faces in a uniformly random order driven by the supplied random engine, starting with the specified root face, using the supplied visit delegate.
@@ -4068,12 +4068,12 @@ namespace Experilous.MakeItTile
 			FaceEdgeVisitor<TDistance>.Visit(rootEdges, new RandomOrderQueue<FaceEdgeVisitor<TDistance>.QueueItem>(random), visitDelegate, state);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 	}
 
-	#region Vertex Visitors
+#region Vertex Visitors
 
 	/// <summary>
 	/// Class for visiting the vertices of a topology, one at a time in some connected order.
@@ -5499,9 +5499,9 @@ namespace Experilous.MakeItTile
 		}
 	}
 
-	#endregion
+#endregion
 
-	#region Face Visitors
+#region Face Visitors
 
 	/// <summary>
 	/// Class for visiting the faces of a topology, one at a time in some connected order.
@@ -7348,5 +7348,6 @@ namespace Experilous.MakeItTile
 		}
 	}
 
-	#endregion
+#endregion
 }
+#endif

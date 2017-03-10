@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -391,7 +391,7 @@ namespace Experilous.MakeItTile
 			Subdivide(topology, vertexPositions, degree, (Vector3 p0, Vector3 p1, float t) => { return Geometry.LerpUnclamped(p0, p1, t); }, out subdividedTopology, out subdividedVertexPositions);
 		}
 
-		#region Export
+#region Export
 
 		/// <summary>
 		/// Helper class for <see cref="ExportToSVG"/> to define the style used by the resulting SVG file.
@@ -795,6 +795,7 @@ namespace Experilous.MakeItTile
 			writer.WriteLine("</svg>");
 		}
 
-		#endregion
+#endregion
 	}
 }
+#endif

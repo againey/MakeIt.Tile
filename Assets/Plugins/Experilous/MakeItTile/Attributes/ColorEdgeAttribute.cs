@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Topologies;
 
@@ -31,3 +31,4 @@ namespace Experilous.MakeItTile
 		public static ColorEdgeAttribute Create(int edgeCount) { return CreateDerived<ColorEdgeAttribute>(edgeCount); }
 	}
 }
+#endif

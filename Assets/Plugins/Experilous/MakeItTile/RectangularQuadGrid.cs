@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using System;
 using Experilous.Numerics;
@@ -172,7 +172,7 @@ namespace Experilous.MakeItTile
 			return CreateTopology();
 		}
 
-		#region IFaceNeighborIndexer Methods
+#region IFaceNeighborIndexer Methods
 
 		/// <inheritdoc/>
 		public ushort GetNeighborCount(int faceIndex)
@@ -246,9 +246,9 @@ namespace Experilous.MakeItTile
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region IFaceIndexer2D Methods
+#region IFaceIndexer2D Methods
 
 		/// <inheritdoc/>
 		public IntVector2 GetFaceIndex2D(int internalFaceIndex)
@@ -300,9 +300,9 @@ namespace Experilous.MakeItTile
 		/// <inheritdoc/>
 		public int GetWrappedFaceIndex(int x, int y) { return GetFaceIndex(FaceWrap(x, y)); }
 
-		#endregion
+#endregion
 
-		#region IVertexIndexer2D Methods
+#region IVertexIndexer2D Methods
 
 		/// <inheritdoc/>
 		public IntVector2 GetVertexIndex2D(int vertexIndex)
@@ -354,9 +354,9 @@ namespace Experilous.MakeItTile
 		/// <inheritdoc/>
 		public int GetWrappedVertexIndex(int x, int y) { return GetVertexIndex(VertexWrap(x, y)); }
 
-		#endregion
+#endregion
 
-		#region Private Helper Methods
+#region Private Helper Methods
 
 		private int ConditionalInvert(int neighborIndex, int neighborCount, bool invert)
 		{
@@ -423,6 +423,7 @@ namespace Experilous.MakeItTile
 			return axis1.isWrapped && IsOnSidePosAxis1(internalFaceIndex);
 		}
 
-		#endregion
+#endregion
 	}
 }
+#endif

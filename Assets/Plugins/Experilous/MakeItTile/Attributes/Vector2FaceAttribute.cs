@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Topologies;
 
@@ -31,3 +31,4 @@ namespace Experilous.MakeItTile
 		public static Vector2FaceAttribute Create(int faceCount) { return CreateDerived<Vector2FaceAttribute>(faceCount); }
 	}
 }
+#endif

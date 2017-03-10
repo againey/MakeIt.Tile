@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using UnityEditor;
 using Experilous.MakeItGenerate;
@@ -39,3 +39,4 @@ namespace Experilous.MakeItTile
 		}
 	}
 }
+#endif

@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Numerics;
 using Experilous.Topologies;
@@ -13,7 +13,7 @@ namespace Experilous.MakeItTile
 	/// </summary>
 	public static class EdgeAttributeUtility
 	{
-		#region Calculate[VertexEdgeAttribute]...(...)
+#region Calculate[VertexEdgeAttribute]...(...)
 
 		/// <summary>
 		/// Calculates the angles, as radians, between the vectors from vertex positions to the positions of neighboring pairs of vertices.
@@ -124,9 +124,9 @@ namespace Experilous.MakeItTile
 			return vertexEdgeMidpoints;
 		}
 
-		#endregion
+#endregion
 
-		#region Calculate[FaceEdgeAttribute]...(...)
+#region Calculate[FaceEdgeAttribute]...(...)
 
 		/// <summary>
 		/// Calculates the angles, as radians, between the vectors from the positions of neighboring vertices to the positions of the previous and next neighboring vertices.
@@ -683,11 +683,11 @@ namespace Experilous.MakeItTile
 			return edgeNormals;
 		}
 
-		#region CalculateUVs...(...)
+#region CalculateUVs...(...)
 
-		#region CalculateGlobalUVs...(...)
+#region CalculateGlobalUVs...(...)
 
-		#region CalculateGlobalPanarUVs...(...)
+#region CalculateGlobalPanarUVs...(...)
 
 		/// <summary>
 		/// Calculates the UV coordinates of each face edge, corresponding to its next vertex, based on the planar UV space indicated.
@@ -831,13 +831,13 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region CalculatePerFaceUVs...(...)
+#region CalculatePerFaceUVs...(...)
 
-		#region CalculatePerFaceUnnormalizedUVs...(...)
+#region CalculatePerFaceUnnormalizedUVs...(...)
 
 		/// <summary>
 		/// Calculates the UV coordinates of each face edge, corresponding to its next vertex, based on the positions of vertices and the already computed UV frames of the faces.
@@ -881,9 +881,9 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#endregion
+#endregion
 
-		#region CalculatePerFace...UVsFromUnnormalizedUVs(...)
+#region CalculatePerFace...UVsFromUnnormalizedUVs(...)
 
 		/// <summary>
 		/// Calculates the normalized UV coordinates of the corners of each face, such that the UVs of every face have the same scale and individually fit the UV bounds (0, 0) to (1, 1).
@@ -1132,9 +1132,9 @@ namespace Experilous.MakeItTile
 			return edgeUVs;
 		}
 
-		#endregion
+#endregion
 
-		#region CalculatePerFace...UVsFromFaceUVMinAndRange(...)
+#region CalculatePerFace...UVsFromFaceUVMinAndRange(...)
 
 		/// <summary>
 		/// Calculates the normalized UV coordinates of the corners of each face, such that the UVs of every face have the same scale, based on the per-face UV bounds already calculated.
@@ -1168,11 +1168,11 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#endregion
+#endregion
 
-		#region CalculatePerFacePlanarUVs...(...)
+#region CalculatePerFacePlanarUVs...(...)
 
-		#region CaclulatePerFacePlanarUniformlyNormalizedUVs...(...)
+#region CaclulatePerFacePlanarUniformlyNormalizedUVs...(...)
 
 		/// <summary>
 		/// Calculates the normalized UV coordinates of the corners of each face based on the planar UV space indicated, such that the UVs of every face have the same scale and individually fit the UV bounds (0, 0) to (1, 1).
@@ -1306,9 +1306,9 @@ namespace Experilous.MakeItTile
 			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude), aspectRatioPreservation, uvs);
 		}
 
-		#endregion
+#endregion
 
-		#region CalculatePerFacePlanarVariablyNormalizedUVs...(...)
+#region CalculatePerFacePlanarVariablyNormalizedUVs...(...)
 
 		/// <summary>
 		/// Calculates the normalized UV coordinates of the corners of each face, such that the UVs of every face individually fit the UV bounds (0, 0) to (1, 1), based on the planar UV space indicated.
@@ -1442,11 +1442,11 @@ namespace Experilous.MakeItTile
 			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, Mathf.Sqrt(uAxis.sqrMagnitude / vAxis.sqrMagnitude), aspectRatioPreservation, uvs);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region CalculatePerFaceUniformlyNormalizedUVs...(...)
+#region CalculatePerFaceUniformlyNormalizedUVs...(...)
 
 		/// <summary>
 		/// Calculates the normalized UV coordinates of the corners of each face, based on the positions of vertices and the already computed UV frames of the faces, such that the UVs of every face have the same scale and individually fit the UV bounds (0, 0) to (1, 1).
@@ -1596,9 +1596,9 @@ namespace Experilous.MakeItTile
 			return CalculatePerFaceUniformlyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, targetAspectRatio, aspectRatioPreservation, uvs);
 		}
 
-		#endregion
+#endregion
 
-		#region CalculatePerFaceVariablyNormalizedUVs...(...)
+#region CalculatePerFaceVariablyNormalizedUVs...(...)
 
 		/// <summary>
 		/// Calculates the normalized UV coordinates of the corners of each face, based on the positions of vertices and the already computed UV frames of the faces, such that the UVs of every face individually fit the UV bounds (0, 0) to (1, 1).
@@ -1748,12 +1748,13 @@ namespace Experilous.MakeItTile
 			return CalculatePerFaceVariablyNormalizedUVsFromUnnormalizedUVs(faces, uvs, faceUVs, targetAspectRatio, aspectRatioPreservation, uvs);
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 	}
 }
+#endif

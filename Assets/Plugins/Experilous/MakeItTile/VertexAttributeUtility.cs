@@ -1,7 +1,7 @@
 ﻿/******************************************************************************\
 * Copyright Andy Gainey                                                        *
 \******************************************************************************/
-
+#if false
 using UnityEngine;
 using Experilous.Numerics;
 using Experilous.Topologies;
@@ -13,7 +13,7 @@ namespace Experilous.MakeItTile
 	/// </summary>
 	public static class VertexAttributeUtility
 	{
-		#region IVertexAttribute<Vector3> CalculateVertexNormals...(...)
+#region IVertexAttribute<Vector3> CalculateVertexNormals...(...)
 
 		/// <summary>
 		/// Calculates vertex normals using the surface normal reported by the given surface based on the position of each vertex.
@@ -205,9 +205,9 @@ namespace Experilous.MakeItTile
 			return vertexNormals;
 		}
 
-		#endregion
+#endregion
 
-		#region IVertexAttribute<float> CalculateVertexAreas...(...)
+#region IVertexAttribute<float> CalculateVertexAreas...(...)
 
 		/// <summary>
 		/// Calculates the planar surface area around each vertex that is closest to that vertex, based on the centroid positions of their neighboring faces.  For non-flat surfaces, the calculated areas are only approximate.
@@ -337,13 +337,13 @@ namespace Experilous.MakeItTile
 			return vertexAreas;
 		}
 
-		#endregion
+#endregion
 
-		#region CalculateUVs...(...)
+#region CalculateUVs...(...)
 
-		#region CalculateGlobalUVs...(...)
+#region CalculateGlobalUVs...(...)
 
-		#region CacluateGlobalPlanarUVs...(...)
+#region CacluateGlobalPlanarUVs...(...)
 
 		/// <summary>
 		/// Calculates the UV coordinates of each vertex, based on the planar UV space indicated.
@@ -469,9 +469,9 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#endregion
+#endregion
 
-		#region CalculateGlobalSphericalUVs...(...)
+#region CalculateGlobalSphericalUVs...(...)
 
 		/// <summary>
 		/// Calculates the UV coordinates of each vertex, based on the spherical longitude/latitude UV space indicated.
@@ -509,10 +509,11 @@ namespace Experilous.MakeItTile
 			return uvs;
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 	}
 }
+#endif

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Experilous.Numerics;
 
 namespace Experilous.Topologies
 {
@@ -179,155 +180,14 @@ namespace Experilous.Topologies
 			}
 		}
 
-		private abstract class EdgeGeometry
-		{
-			public float tStart;
-
-			protected EdgeGeometry(float tStart)
-			{
-				this.tStart = tStart;
-			}
-
-			public abstract Vector2 GetPosition(float t);
-			public abstract float GetDistance(float t);
-			public abstract bool Intersect(EdgeGeometry other, out float tThis, out float tOther);
-			public abstract bool Intersect(StraightEdgeGeometry other, out float tThis, out float tOther);
-			public abstract bool Intersect(ParabolicEdgeGeometry other, out float tThis, out float tOther);
-		}
-
-		private abstract class StraightEdgeGeometry : EdgeGeometry
-		{
-			public Vector2 p;
-			public Vector2 v;
-
-			protected StraightEdgeGeometry(Vector2 p, Vector2 v, float tStart = 0f)
-				: base(tStart)
-			{
-				this.p = p;
-				this.v = v;
-			}
-
-			public override Vector2 GetPosition(float t)
-			{
-				return v * t + p;
-			}
-
-			public override bool Intersect(EdgeGeometry other, out float tThis, out float tOther)
-			{
-				return other.Intersect(this, out tOther, out tThis);
-			}
-
-			public override bool Intersect(StraightEdgeGeometry other, out float tThis, out float tOther)
-			{
-				float denom = Numerics.Geometry.DotPerpendicularCCW(v, other.v);
-				if (denom == 0f)
-				{
-					tThis = tOther = float.NaN;
-					return false;
-				}
-				
-				var delta = other.p - p;
-				tThis = Numerics.Geometry.DotPerpendicularCCW(delta, other.v) / denom;
-				tOther = Numerics.Geometry.DotPerpendicularCCW(delta, v) / denom;
-				return true;
-			}
-
-			public override bool Intersect(ParabolicEdgeGeometry other,out float tThis, out float tOther)
-			{
-				return other.Intersect(this, out tOther, out tThis);
-			}
-		}
-
-		private class ScaledStraightEdgeGeometry : StraightEdgeGeometry
-		{
-			public ScaledStraightEdgeGeometry(Vector2 p, Vector2 v, float tStart = 0f)
-				: base(p, v, tStart)
-			{
-			}
-
-			public override float GetDistance(float t)
-			{
-				return t;
-			}
-		}
-
-		private class OffsetStraightEdgeGeometry : StraightEdgeGeometry
-		{
-			public float offsetSqr;
-
-			public OffsetStraightEdgeGeometry(Vector2 p, Vector2 v, float offsetSqr, float tStart = 0f)
-				: base(p, v, tStart)
-			{
-				this.offsetSqr = offsetSqr;
-			}
-
-			public override float GetDistance(float t)
-			{
-				return Mathf.Sqrt(t * t + offsetSqr);
-			}
-		}
-
-		private class ParabolicEdgeGeometry : EdgeGeometry
-		{
-			public Vector2 p;
-			public Vector2 v;
-			public float s;
-			public float d;
-
-			public ParabolicEdgeGeometry(Vector2 p, Vector2 u, Vector2 v, float tStart = 0f)
-				: base(tStart)
-			{
-				this.p = p;
-				this.u = u;
-				this.v = v;
-			}
-
-			public override Vector2 GetPosition(float t)
-			{
-				return (Mathf.Abs(s) * v * t + s * Numerics.Geometry.PerpendicularCW(v)) * t + p;
-			}
-
-			public override float GetDistance(float t)
-			{
-				return Mathf.Abs(s) * (t + 1f) * t + d;
-			}
-
-			public override bool Intersect(EdgeGeometry other, out float tThis, out float tOther)
-			{
-				return other.Intersect(this, out tOther, out tThis);
-			}
-
-			public override bool Intersect(StraightEdgeGeometry other, out float tThis, out float tOther)
-			{
-				var delta = other.p - p;
-				var uSqrMagnitude = u.sqrMagnitude;
-				float a = Vector2.Dot(delta, u) / uSqrMagnitude;
-				float b = Vector2.Dot(delta, v) / uSqrMagnitude;
-				float c = Vector2.Dot(other.v, u) / uSqrMagnitude;
-				float d = Vector2.Dot(other.v, v) / uSqrMagnitude;
-
-				float denom = Numerics.Geometry.DotPerpendicularCCW(v, other.v);
-				if (denom == 0f)
-				{
-					tThis = tOther = float.NaN;
-					return false;
-				}
-				
-				var delta = other.p - p;
-				tThis = Numerics.Geometry.DotPerpendicularCCW(delta, other.v) / denom;
-				tOther = Numerics.Geometry.DotPerpendicularCCW(delta, v) / denom;
-				return true;
-			}
-
-			public override bool Intersect(ParabolicEdgeGeometry other,out float tThis, out float tOther)
-			{
-				return other.Intersect(this, out tOther, out tThis);
-			}
-		}
+		private Vector3 _origin;
+		private Vector3 _right;
+		private Vector3 _up;
 
 		private IGraph _siteGraph;
-		private IGraphNodeData<Vector3> _pointSitePositions;
 		//TODO: private IGraphEdgeData<???> _edgeSiteArcData;
+
+		private GraphNodeDataList<Vector2> _pointSitePositions = new GraphNodeDataList<Vector2>();
 
 		private SplitEventPriorityQueue _splitEventQueue;
 		private MergeEventPriorityQueue _mergeEventQueue;
@@ -341,16 +201,10 @@ namespace Experilous.Topologies
 		private List<DirectedEdge> _orderedLineSites = new List<DirectedEdge>();
 		private List<DirectedEdge> _directedEdgePool = new List<DirectedEdge>();
 
-		private Vector3 _origin;
-		private Vector3 _forward;
-		private Vector3 _up;
-
 		private float _sweep;
 
 		private DynamicGraph _voronoiGraph = new DynamicGraph();
 		private GraphNodeDataList<Vector2> _voronoiNodePositions = new GraphNodeDataList<Vector2>();
-		private GraphEdgeDataList<Vector3> _voronoiEdgeStuff;
-		private GraphEdgeDataList<EdgeGeometry> _voronoiEdgeGeometry = new GraphEdgeDataList<EdgeGeometry>();
 
 		private float _errorMargin;
 
@@ -362,14 +216,13 @@ namespace Experilous.Topologies
 			_mergeEventQueue = new MergeEventPriorityQueue(_errorMargin);
 		}
 
-		public void SetSites(IGraph siteGraph, IGraphNodeData<Vector3> pointSitePositions, Vector3 origin, Vector3 forward, Vector3 up)
+		public void SetSites(IGraph siteGraph, IGraphNodeData<Vector3> pointSitePositions, Vector3 origin, Vector3 right, Vector3 up)
 		{
 			_siteGraph = siteGraph;
-			_pointSitePositions = pointSitePositions;
 
 			_origin = origin;
-			_forward = forward.normalized;
-			_up = Vector3.Cross(forward, Vector3.Cross(up, forward)).normalized;
+			_right = right.normalized;
+			_up = Vector3.Cross(right, Vector3.Cross(up, right)).normalized;
 
 			_splitEventQueue.Clear();
 			_mergeEventQueue.Clear();
@@ -381,11 +234,14 @@ namespace Experilous.Topologies
 			_voronoiGraph.Clear();
 			_voronoiNodePositions.Clear();
 
+			_pointSitePositions.Clear();
+
 			foreach (var pointSite in _siteGraph.nodes)
 			{
-				var position = _pointSitePositions[pointSite];
-				float x = Vector3.Dot(_forward, position);
+				var position = pointSitePositions[pointSite];
+				float x = Vector3.Dot(_right, position);
 				float y = Vector3.Dot(_up, position);
+				_pointSitePositions.Add(new Vector2(x, y));
 				_splitEventQueue.Push(new SplitEvent(x, y, pointSite.index));
 			}
 		}
@@ -398,10 +254,11 @@ namespace Experilous.Topologies
 			for (int i = 0; i < _voronoiNodePositions.Count; ++i)
 			{
 				var position = _voronoiNodePositions[i];
-				convertedNodePositions[i] = position.x * _forward + position.y * _up;
+				convertedNodePositions[i] = _origin + position.x * _right + position.y * _up;
 			}
 
-			return new VoronoiDiagram(new FixedSizeTopology(_voronoiGraph), convertedNodePositions);
+			throw new NotImplementedException();
+			//return new VoronoiDiagram(new FixedSizeTopology(_voronoiGraph), convertedNodePositions);
 		}
 
 		private BeachSegment CreateBeachSegment(BeachSegment prevSegment, BeachSegment nextSegment, int prevEdgeIndex, int nextEdgeIndex)
@@ -561,7 +418,8 @@ namespace Experilous.Topologies
 
 				foreach (var edge in pointSite.edges)
 				{
-					InsertOrdered(_orderedLineSites, CreateDirectedEdge(GetReframedVector(edge).normalized, edge.index));
+					var direction = (_pointSitePositions[edge.targetNode] - _pointSitePositions[edge.sourceNode]).normalized;
+					InsertOrdered(_orderedLineSites, CreateDirectedEdge(direction, edge.index));
 				}
 
 				incomingLineCount = _orderedLineSites.Count;
@@ -736,9 +594,9 @@ namespace Experilous.Topologies
 					return segment;
 				}
 
-				float y = GetSegmentUpperBound(segment);
+				float x = GetSegmentRightBound(segment);
 
-				if (!float.IsNaN(y) && position.y <= y)
+				if (!float.IsNaN(x) && position.x <= x)
 				{
 					return segment;
 				}
@@ -749,7 +607,7 @@ namespace Experilous.Topologies
 			return segment;
 		}
 
-		private float GetSegmentUpperBound(BeachSegment segment)
+		private float GetSegmentRightBound(BeachSegment segment)
 		{
 			var nextSegment = segment.nextSegment;
 			switch (segment.siteType)
@@ -758,14 +616,16 @@ namespace Experilous.Topologies
 					switch (nextSegment.siteType)
 					{
 						case VoronoiSiteType.Point:
-							return GetSegmentUpperBound_PointPoint(
-								GetReframedPosition(segment.siteIndex),
-								GetReframedPosition(segment.siteIndex));
+							return VoronoiUtility.GetSegmentRightBound_PointPoint(
+								_pointSitePositions[segment.siteIndex],
+								_pointSitePositions[nextSegment.siteIndex],
+								_sweep, _errorMargin);
 						case VoronoiSiteType.Line:
-							return GetSegmentUpperBound_PointLine(
-								GetReframedPosition(segment.siteIndex),
-								GetReframedSourcePosition(nextSegment.siteIndex),
-								GetReframedTargetPosition(nextSegment.siteIndex));
+							return VoronoiUtility.GetSegmentRightBound_PointLine(
+								_pointSitePositions[segment.siteIndex],
+								_pointSitePositions[_siteGraph.GetEdgeTargetNodeIndex(nextSegment.siteIndex ^ 1)],
+								_pointSitePositions[_siteGraph.GetEdgeTargetNodeIndex(nextSegment.siteIndex)],
+								_sweep, _errorMargin);
 						case VoronoiSiteType.None:
 						default: throw new NotImplementedException();
 					}
@@ -773,16 +633,18 @@ namespace Experilous.Topologies
 					switch (nextSegment.siteType)
 					{
 						case VoronoiSiteType.Point:
-							return GetSegmentUpperBound_PointLine(
-								GetReframedPosition(nextSegment.siteIndex),
-								GetReframedSourcePosition(segment.siteIndex),
-								GetReframedTargetPosition(segment.siteIndex));
+							return VoronoiUtility.GetSegmentRightBound_PointLine(
+								_pointSitePositions[nextSegment.siteIndex],
+								_pointSitePositions[_siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1)],
+								_pointSitePositions[_siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex)],
+								_sweep, _errorMargin); //TODO: Reverse this?  Somehow get the other intersection.
 						case VoronoiSiteType.Line:
-							return GetSegmentUpperBound_LineLine(
-								GetReframedSourcePosition(segment.siteIndex),
-								GetReframedTargetPosition(segment.siteIndex),
-								GetReframedSourcePosition(nextSegment.siteIndex),
-								GetReframedTargetPosition(nextSegment.siteIndex));
+							return VoronoiUtility.GetSegmentRightBound_LineLine(
+								_pointSitePositions[_siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1)],
+								_pointSitePositions[_siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex)],
+								_pointSitePositions[_siteGraph.GetEdgeTargetNodeIndex(nextSegment.siteIndex ^ 1)],
+								_pointSitePositions[_siteGraph.GetEdgeTargetNodeIndex(nextSegment.siteIndex)],
+								_sweep, _errorMargin);
 						case VoronoiSiteType.None:
 						default: throw new NotImplementedException();
 					}
@@ -796,18 +658,6 @@ namespace Experilous.Topologies
 					}
 				default: throw new NotImplementedException();
 			}
-		}
-
-		private float GetSegmentUpperBound_PointPoint(Vector2 position0, Vector2 position1)
-		{
-		}
-
-		private float GetSegmentUpperBound_PointLine(Vector2 position0, Vector2 position1a, Vector2 position1b)
-		{
-		}
-
-		private float GetSegmentUpperBound_LineLine(Vector2 position0a, Vector2 position0b, Vector2 position1a, Vector2 position1b)
-		{
 		}
 
 		private Vector2 ProjectOntoBeachSegment(BeachSegment segment, Vector2 position)
@@ -923,49 +773,263 @@ namespace Experilous.Topologies
 			if (ReferenceEquals(segment.prevSegment, segment.nextSegment)) return;
 			if (segment.prevEdgeIndex == -1 || segment.nextEdgeIndex == -1) return;
 
-			var prevEdgeGeometry = _voronoiEdgeGeometry[segment.prevEdgeIndex];
-			var nextEdgeGeometry = _voronoiEdgeGeometry[segment.nextEdgeIndex];
-
-			if (prevEdgeGeometry != null && nextEdgeGeometry != null)
+			switch (segment.prevSegment.siteType)
 			{
-				float tPrev, tNext;
-				if (prevEdgeGeometry.Intersect(nextEdgeGeometry, out tPrev, out tNext))
-				{
-					if (tPrev - prevEdgeGeometry.tStart > _errorMargin && tNext - nextEdgeGeometry.tStart < -_errorMargin)
+				case VoronoiSiteType.Point:
+					switch (segment.siteType)
 					{
-						Vector2 position = prevEdgeGeometry.GetPosition(tPrev);
-						float distance = prevEdgeGeometry.GetDistance(tPrev);
-						float mergeSweep = position.x + distance;
-						if (mergeSweep - _sweep > -_errorMargin)
-						{
-							segment.mergeEvent = CreateMergeEvent(position.x, position.y, position, segment);
-							_mergeEventQueue.Push(segment.mergeEvent);
-						}
+						case VoronoiSiteType.Point:
+							switch (segment.nextSegment.siteType)
+							{
+								case VoronoiSiteType.Point:
+									CheckForMergeEvent_PPP(segment);
+									break;
+								case VoronoiSiteType.Line:
+									CheckForMergeEvent_PPL(segment);
+									break;
+							}
+							break;
+						case VoronoiSiteType.Line:
+							switch (segment.nextSegment.siteType)
+							{
+								case VoronoiSiteType.Point:
+									CheckForMergeEvent_PLP(segment);
+									break;
+								case VoronoiSiteType.Line:
+									CheckForMergeEvent_PLL(segment);
+									break;
+							}
+							break;
 					}
-				}
+					break;
+				case VoronoiSiteType.Line:
+					switch (segment.siteType)
+					{
+						case VoronoiSiteType.Point:
+							switch (segment.nextSegment.siteType)
+							{
+								case VoronoiSiteType.Point:
+									CheckForMergeEvent_LPP(segment);
+									break;
+								case VoronoiSiteType.Line:
+									CheckForMergeEvent_LPL(segment);
+									break;
+							}
+							break;
+						case VoronoiSiteType.Line:
+							switch (segment.nextSegment.siteType)
+							{
+								case VoronoiSiteType.Point:
+									CheckForMergeEvent_LLP(segment);
+									break;
+								case VoronoiSiteType.Line:
+									CheckForMergeEvent_LLL(segment);
+									break;
+							}
+							break;
+					}
+					break;
 			}
-			else if (prevEdgeGeometry is StraightEdgeGeometry)
+		}
+
+		private void CheckForMergeEvent_PPP(BeachSegment segment)
+		{
+			var p0 = _pointSitePositions[segment.prevSegment.siteIndex];
+			var p1 = _pointSitePositions[segment.siteIndex];
+			var p2 = _pointSitePositions[segment.nextSegment.siteIndex];
+
+			var v0 = p1 - p0;
+			var v2 = p1 - p2;
+
+			float determinant = Geometry.DotPerpendicularCCW(v0, v2);
+			if (determinant > 0f)
 			{
-				var straightEdgeGeometry = (StraightEdgeGeometry)prevEdgeGeometry;
-				if (Vector2.Dot(straightEdgeGeometry.v.normalized, _forward) > 1f - _errorMargin)
-				{
-					segment.mergeEvent = CreateMergeEvent(_sweep, straightEdgeGeometry.p.y, segment);
-					_mergeEventQueue.Push(segment.mergeEvent);
-				}
+				float lenSqr0 = v0.sqrMagnitude;
+				float lenSqr2 = v2.sqrMagnitude;
+				float cx = 0.5f * (v2.y * lenSqr0 - v0.y * lenSqr2) / determinant;
+				float cy = 0.5f * (v0.x * lenSqr2 - v2.x * lenSqr0) / determinant;
+
+				var mergeOffset = new Vector2(cx, cy);
+				float radius = mergeOffset.magnitude;
+				var mergePosition = p1 + mergeOffset;
+
+				_mergeEventQueue.Push(CreateMergeEvent(mergePosition.x + radius, mergePosition.y, mergePosition, segment));
 			}
-			else if (nextEdgeGeometry is StraightEdgeGeometry)
+		}
+
+		private void CheckForMergeEvent_PPL(BeachSegment segment)
+		{
+			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
+			if (segment.prevSegment.siteIndex == targetNodeIndex)
 			{
-				var straightEdgeGeometry = (StraightEdgeGeometry)nextEdgeGeometry;
-				if (Vector2.Dot(straightEdgeGeometry.v.normalized, _forward) > 1f - _errorMargin)
-				{
-					segment.mergeEvent = CreateMergeEvent(_sweep, straightEdgeGeometry.p.y, segment);
-					_mergeEventQueue.Push(segment.mergeEvent);
-				}
+			}
+			else if (segment.siteIndex == targetNodeIndex)
+			{
 			}
 			else
 			{
-				throw new InvalidOperationException();
 			}
+		}
+
+		private void CheckForMergeEvent_PLP(BeachSegment segment)
+		{
+			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
+			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
+
+			var p1 = _pointSitePositions[sourceNodeIndex];
+			var v1 = _pointSitePositions[targetNodeIndex] - p1;
+			var n1 = v1.PerpendicularCCW();
+			var vSqrLen = v1.sqrMagnitude;
+
+			var p0 = _pointSitePositions[segment.nextSegment.siteIndex];
+			var p2 = _pointSitePositions[segment.prevSegment.siteIndex];
+			var d0 = p0 - p1;
+			var d2 = p2 - p1;
+
+			var q0 = new Vector2(Vector2.Dot(d0, v1), Vector2.Dot(d0, n1)) / vSqrLen;
+			var q2 = new Vector2(Vector2.Dot(d2, v1), Vector2.Dot(d2, n1)) / vSqrLen;
+
+			float qDeltaY = q2.y - q0.y;
+
+			float x, y;
+
+			if (segment.prevSegment.siteIndex == sourceNodeIndex)
+			{
+				if (segment.nextSegment.siteIndex != targetNodeIndex)
+				{
+					x = Geometry.DotPerpendicularCW(q0, q2) / qDeltaY;
+					var dx = x - q2.x;
+					y = (dx * dx / q2.y + q2.y) / 2f;
+				}
+				else
+				{
+					return;
+				}
+			}
+			else if (segment.nextSegment.siteIndex == targetNodeIndex)
+			{
+				x = Geometry.DotPerpendicularCW(q0, q2) / qDeltaY;
+				var dx = x - q0.x;
+				y = (dx * dx / q0.y + q0.y) / 2f;
+			}
+			else
+			{
+				if (Mathf.Abs(qDeltaY) >= _errorMargin)
+				{
+					float qProductY = q0.y * q2.y;
+					if (qProductY >= _errorMargin)
+					{
+						var dq = q2 - q0;
+						x = (Geometry.DotPerpendicularCW(q0, q2) + Mathf.Sqrt(dq.sqrMagnitude * qProductY) * Mathf.Sign(qDeltaY)) / qDeltaY;
+						y = (((q0.y + q2.y) * x + (q0.x * q2.y + q0.y * q2.x)) * x + (q0.sqrMagnitude * q2.y + q2.sqrMagnitude * q0.y)) / (4f * qProductY);
+					}
+					else if (qProductY > -_errorMargin)
+					{
+						x = Geometry.DotPerpendicularCW(q0, q2) / qDeltaY;
+
+						float absY0 = Mathf.Abs(q0.y);
+						float absY2 = Mathf.Abs(q2.y);
+						if (absY0 > _errorMargin && absY0 > absY2)
+						{
+							var dx = x - q0.x;
+							y = (dx * dx / q0.y + q0.y) / 2f;
+						}
+						else if (absY2 > _errorMargin && absY2 > absY0)
+						{
+							var dx = x - q2.x;
+							y = (dx * dx / q2.y + q2.y) / 2f;
+						}
+						else
+						{
+							return;
+						}
+					}
+					else
+					{
+						return;
+					}
+				}
+				else
+				{
+					x = (q0.x + q2.x) / 2f;
+					y = ((2f * x + q0.x + q2.x) * x + q0.sqrMagnitude + q2.sqrMagnitude) / (2f * (q0.y + q2.y));
+				}
+			}
+
+			var radius = Mathf.Sqrt(vSqrLen) * y;
+			var mergePosition = p1 + v1 * x + n1 * y;
+			_mergeEventQueue.Push(CreateMergeEvent(mergePosition.x + radius, mergePosition.y, mergePosition, segment));
+		}
+
+		private Vector2 IntersectParabolaWithVertical(Vector2 directrix, Vector2 normal, Vector2 endPointToFocus)
+		{
+			float a = Vector2.Dot(directrix, directrix);
+			float b = Vector2.Dot(endPointToFocus, directrix);
+			float c = Vector2.Dot(endPointToFocus, normal);
+			float t = (b * b / c + c) / (2f * a);
+			return normal * t;
+		}
+
+		private void CheckForMergeEvent_PLL(BeachSegment segment)
+		{
+			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
+			if (segment.prevSegment.siteIndex == targetNodeIndex)
+			{
+			}
+			else
+			{
+			}
+		}
+
+		private void CheckForMergeEvent_LPP(BeachSegment segment)
+		{
+			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
+			if (segment.siteIndex == sourceNodeIndex)
+			{
+			}
+			else if (segment.nextSegment.siteIndex == sourceNodeIndex)
+			{
+			}
+			else
+			{
+			}
+		}
+
+		private void CheckForMergeEvent_LPL(BeachSegment segment)
+		{
+			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
+			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
+			if (segment.siteIndex == sourceNodeIndex)
+			{
+				if (segment.siteIndex == targetNodeIndex)
+				{
+				}
+				else
+				{
+				}
+			}
+			else if (segment.siteIndex == targetNodeIndex)
+			{
+			}
+			else
+			{
+			}
+		}
+
+		private void CheckForMergeEvent_LLP(BeachSegment segment)
+		{
+			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
+			if (segment.nextSegment.siteIndex == sourceNodeIndex)
+			{
+			}
+			else
+			{
+			}
+		}
+
+		private void CheckForMergeEvent_LLL(BeachSegment segment)
+		{
+
 		}
 
 		private void CollapseBeachSegment(BeachSegment segment, Vector2 position)
@@ -1037,9 +1101,9 @@ namespace Experilous.Topologies
 
 		private void RemapEdgeData(int toEdgeIndex, int toTwinIndex, int fromEdgeIndex, int fromTwinIndex)
 		{
-			_voronoiEdgeStuff[toEdgeIndex] = _voronoiEdgeStuff[fromEdgeIndex];
-			_voronoiEdgeStuff[toTwinIndex] = _voronoiEdgeStuff[fromTwinIndex];
-			_voronoiEdgeStuff.RemoveRange(fromEdgeIndex & ~1, 2);
+			//_voronoiEdgeStuff[toEdgeIndex] = _voronoiEdgeStuff[fromEdgeIndex];
+			//_voronoiEdgeStuff[toTwinIndex] = _voronoiEdgeStuff[fromTwinIndex];
+			//_voronoiEdgeStuff.RemoveRange(fromEdgeIndex & ~1, 2);
 		}
 
 		private static void InsertOrdered(List<DirectedEdge> list, DirectedEdge item)
@@ -1053,29 +1117,6 @@ namespace Experilous.Topologies
 				}
 			}
 			list.Add(item);
-		}
-
-		private Vector2 GetReframedPosition(int nodeIndex)
-		{
-			var position = _pointSitePositions[nodeIndex] - _origin;
-			return new Vector2(
-				Vector3.Dot(_forward, position),
-				Vector3.Dot(_up, position));
-		}
-
-		private Vector2 GetReframedSourcePosition(int edgeIndex)
-		{
-			return GetReframedPosition(new GraphEdge(_siteGraph, edgeIndex).sourceNode.index);
-		}
-
-		private Vector2 GetReframedTargetPosition(int edgeIndex)
-		{
-			return GetReframedPosition(new GraphEdge(_siteGraph, edgeIndex).targetNode.index);
-		}
-
-		private Vector2 GetReframedVector(GraphEdge edge)
-		{
-			return GetReframedPosition(edge.targetNode.index) - GetReframedPosition(edge.sourceNode.index);
 		}
 	}
 
