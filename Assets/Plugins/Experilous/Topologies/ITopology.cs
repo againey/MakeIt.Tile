@@ -709,7 +709,7 @@ namespace Experilous.Topologies
 		public TopologyEdge left { get { return new TopologyEdge(_topology, _topology.GetEdgeNextChainedEdgeIndex(_index ^ 1)); } }
 		public TopologyEdge right { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index)); } }
 
-		public TopologyEdge back { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index) ^ 1); } }
+		public TopologyEdge backward { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index) ^ 1); } }
 		public TopologyEdge forward { get { return new TopologyEdge(_topology, _topology.GetEdgeNextChainedEdgeIndex(_index)); } }
 
 		public TopologyNode node { get { return new TopologyNode(_topology, _topology.GetEdgeTargetNodeIndex(_index)); } }
@@ -875,7 +875,7 @@ namespace Experilous.Topologies
 		public TopologyEdge left { get { return new TopologyEdge(_topology, _topology.GetEdgeNextChainedEdgeIndex(_index ^ 1)); } }
 		public TopologyEdge right { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index)); } }
 
-		public TopologyEdge back { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index) ^ 1); } }
+		public TopologyEdge backward { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index) ^ 1); } }
 		public TopologyEdge forward { get { return new TopologyEdge(_topology, _topology.GetEdgeNextChainedEdgeIndex(_index)); } }
 
 		public TopologyNode node { get { return new TopologyNode(_topology, _topology.GetEdgeTargetNodeIndex(_index)); } }
@@ -1038,7 +1038,7 @@ namespace Experilous.Topologies
 		public TopologyEdge left { get { return new TopologyEdge(_topology, _topology.GetEdgeNextChainedEdgeIndex(_index ^ 1)); } }
 		public TopologyEdge right { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index)); } }
 
-		public TopologyEdge back { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index) ^ 1); } }
+		public TopologyEdge backward { get { return new TopologyEdge(_topology, _topology.GetEdgeNextLateralEdgeIndex(_index) ^ 1); } }
 		public TopologyEdge forward { get { return new TopologyEdge(_topology, _topology.GetEdgeNextChainedEdgeIndex(_index)); } }
 
 		public TopologyFace face { get { return new TopologyFace(_topology, _topology.GetEdgeTargetFaceIndex(_index)); } }

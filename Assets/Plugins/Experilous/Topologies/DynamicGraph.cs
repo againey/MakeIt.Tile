@@ -576,5 +576,34 @@ namespace Experilous.Topologies
 		}
 
 		#endregion
+
+		#region Graph Data Copy
+
+		public int[] GetNodeNeighborCounts()
+		{
+			return _nodeNeighborCounts.ToArray();
+		}
+
+		public int[] GetNodeFirstEdgeIndices()
+		{
+			return _nodeFirstEdgeIndices.ToArray();
+		}
+
+		public int[] GetEdgeNextChainedEdgeIndices()
+		{
+			return _edgeNextChainedEdgeIndices.ToArray();
+		}
+
+		public int[] GetEdgeNextLateralEdgeIndices()
+		{
+			return _edgeNextLateralEdgeIndices.ToArray();
+		}
+
+		public int[] GetEdgeTargetNodeIndices()
+		{
+			return _edgeTargetNodeIndices.ToArray();
+		}
+
+		#endregion
 	}
 }

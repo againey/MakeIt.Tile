@@ -284,5 +284,54 @@ namespace Experilous.Topologies
 		//TODO: Not sure of a good interface for this, as I can't easily allow disconnected edges and free-floating nodes the way I do for graphs.
 
 		#endregion
+
+		#region Topology Data Copy
+
+		public int[] GetNodeNeighborCounts()
+		{
+			return _nodeNeighborCounts.ToArray();
+		}
+
+		public int[] GetNodeFirstEdgeIndices()
+		{
+			return _nodeFirstEdgeIndices.ToArray();
+		}
+
+		public int[] GetFaceNeighborCounts()
+		{
+			return _faceNeighborCounts.ToArray();
+		}
+
+		public int[] GetFaceFirstEdgeIndices()
+		{
+			return _faceFirstEdgeIndices.ToArray();
+		}
+
+		public int[] GetEdgeNextChainedEdgeIndices()
+		{
+			return _edgeNextChainedEdgeIndices.ToArray();
+		}
+
+		public int[] GetEdgeNextLateralEdgeIndices()
+		{
+			return _edgeNextLateralEdgeIndices.ToArray();
+		}
+
+		public int[] GetEdgeTargetNodeIndices()
+		{
+			return _edgeTargetNodeIndices.ToArray();
+		}
+
+		public int[] GetEdgeTargetFaceIndices()
+		{
+			return _edgeTargetFaceIndices.ToArray();
+		}
+
+		public EdgeWrap[] GetEdgeWrapData()
+		{
+			return _edgeWrapData.ToArray();
+		}
+
+		#endregion
 	}
 }

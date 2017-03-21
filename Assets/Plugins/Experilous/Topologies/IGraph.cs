@@ -298,7 +298,7 @@ namespace Experilous.Topologies
 		public GraphEdge right { get { return new GraphEdge(_graph, _graph.GetEdgeNextLateralEdgeIndex(_index)); } }
 
 		public GraphEdge forward { get { return new GraphEdge(_graph, _graph.GetEdgeNextChainedEdgeIndex(_index)); } }
-		public GraphEdge back { get { return new GraphEdge(_graph, _graph.GetEdgeNextLateralEdgeIndex(_index) ^ 1); } }
+		public GraphEdge backward { get { return new GraphEdge(_graph, _graph.GetEdgeNextLateralEdgeIndex(_index) ^ 1); } }
 
 		public GraphNode node { get { return new GraphNode(_graph, _graph.GetEdgeTargetNodeIndex(_index)); } }
 		public GraphNode targetNode { get { return new GraphNode(_graph, _graph.GetEdgeTargetNodeIndex(_index)); } }

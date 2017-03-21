@@ -38,6 +38,19 @@ namespace Experilous.Topologies
 			}
 		}
 
+		public FixedSizeGraph(int[] nodeNeighborCounts, int[] nodeFirstEdgeIndices, int[] edgeNextChainedEdgeIndices, int[] edgeNextLateralEdgeIndices, int[] edgeTargetNodeIndices)
+		{
+			_nodeNeighborCounts = nodeNeighborCounts;
+			_nodeFirstEdgeIndices = nodeFirstEdgeIndices;
+			_edgeNextChainedEdgeIndices = edgeNextChainedEdgeIndices;
+			_edgeNextLateralEdgeIndices = edgeNextLateralEdgeIndices;
+			_edgeTargetNodeIndices = edgeTargetNodeIndices;
+
+			UnityEngine.Debug.Assert(_nodeNeighborCounts.Length == _nodeFirstEdgeIndices.Length);
+			UnityEngine.Debug.Assert(_edgeNextChainedEdgeIndices.Length == _edgeNextLateralEdgeIndices.Length);
+			UnityEngine.Debug.Assert(_edgeNextChainedEdgeIndices.Length == _edgeTargetNodeIndices.Length);
+		}
+
 		public FixedSizeGraph(IGraph graph)
 		{
 			_nodeNeighborCounts = new int[graph.nodeCount];

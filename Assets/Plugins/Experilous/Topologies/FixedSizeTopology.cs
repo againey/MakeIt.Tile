@@ -36,6 +36,19 @@ namespace Experilous.Topologies
 			}
 		}
 
+		public FixedSizeTopology(int[] nodeNeighborCounts, int[] nodeFirstEdgeIndices, int[] faceNeighborCounts, int[] faceFirstEdgeIndices, int[] edgeNextChainedEdgeIndices, int[] edgeNextLateralEdgeIndices, int[] edgeTargetNodeIndices, int[] edgeTargetFaceIndices, EdgeWrap[] edgeWrapData)
+			: base(nodeNeighborCounts, nodeFirstEdgeIndices, edgeNextChainedEdgeIndices, edgeNextLateralEdgeIndices, edgeTargetNodeIndices)
+		{
+			_faceNeighborCounts = faceNeighborCounts;
+			_faceFirstEdgeIndices = faceFirstEdgeIndices;
+			_edgeTargetFaceIndices = edgeTargetFaceIndices;
+			_edgeWrapData = edgeWrapData;
+
+			UnityEngine.Debug.Assert(_faceNeighborCounts.Length == _faceFirstEdgeIndices.Length);
+			UnityEngine.Debug.Assert(_edgeNextChainedEdgeIndices.Length == _edgeTargetFaceIndices.Length);
+			UnityEngine.Debug.Assert(_edgeNextChainedEdgeIndices.Length == _edgeWrapData.Length);
+		}
+
 		public FixedSizeTopology(ITopology topology)
 			: base(topology)
 		{

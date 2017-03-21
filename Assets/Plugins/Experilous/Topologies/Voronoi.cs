@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Experilous.Numerics;
+using Experilous.Topologies.Detail;
 
 namespace Experilous.Topologies
 {
@@ -39,14 +40,13 @@ namespace Experilous.Topologies
 		private class MergeEvent : IEquatable<MergeEvent>
 		{
 			public Vector2 position;
-			public Vector2 mergePosition;
+			public float distance;
 			public BeachSegment segment;
 
-			public MergeEvent(float x, float y, Vector2 mergePosition, BeachSegment segment)
+			public MergeEvent(Vector2 position, float distance, BeachSegment segment)
 			{
-				position.x = x;
-				position.y = y;
-				this.mergePosition = mergePosition;
+				this.position = position;
+				this.distance = distance;
 				this.segment = segment;
 			}
 
@@ -110,38 +110,10 @@ namespace Experilous.Topologies
 			public DirectedEdge(Vector2 direction, int edgeIndex)
 			{
 				this.direction = direction;
-				order = ComputeOrder(direction);
+				order = VoronoiUtility.ComputeDirectionalOrder(direction);
 				this.edgeIndex = edgeIndex;
 			}
 
-			public static float ComputeOrder(Vector2 direction)
-			{
-				var sum = direction.x + direction.y;
-				var sub = direction.x - direction.y;
-				var mul = sum * sub;
-				if (direction.x <= 0f)
-				{
-					if (direction.y <= 0f)
-					{
-						return -3f + mul; // bottom-left quadrant, -4 to -2
-					}
-					else
-					{
-						return -1f - mul; // top-left quadrant, -2 to 0
-					}
-				}
-				else
-				{
-					if (direction.y >= 0f)
-					{
-						return 1f + mul; // top-right quadrant, 0 to +2
-					}
-					else
-					{
-						return 3f - mul; // bottom-right quadrant, +2 to +4
-					}
-				}
-			}
 		}
 
 		private static bool CompareEventPositions(Vector2 lhs, Vector2 rhs, float errorMargin)
@@ -187,6 +159,10 @@ namespace Experilous.Topologies
 		private IGraph _siteGraph;
 		//TODO: private IGraphEdgeData<???> _edgeSiteArcData;
 
+		private GraphNodeDataArray<int> _siteNodeFirstVoronoiEdgeIndices;
+		private GraphEdgeDataArray<int> _siteEdgeFirstVoronoiEdgeIndices;
+		private int _externalSiteFirstVoronoiEdgeIndex;
+
 		private GraphNodeDataList<Vector2> _pointSitePositions = new GraphNodeDataList<Vector2>();
 
 		private SplitEventPriorityQueue _splitEventQueue;
@@ -220,21 +196,27 @@ namespace Experilous.Topologies
 		{
 			_siteGraph = siteGraph;
 
+			_siteNodeFirstVoronoiEdgeIndices = new GraphNodeDataArray<int>(_siteGraph.nodeCount);
+			for (int i = 0; i < _siteNodeFirstVoronoiEdgeIndices.Count; ++i)
+			{
+				_siteNodeFirstVoronoiEdgeIndices[i] = -1;
+			}
+
+			_siteEdgeFirstVoronoiEdgeIndices = new GraphEdgeDataArray<int>(_siteGraph.edgeCount);
+			for (int i = 0; i < _siteEdgeFirstVoronoiEdgeIndices.Count; ++i)
+			{
+				_siteEdgeFirstVoronoiEdgeIndices[i] = -1;
+			}
+
+			_externalSiteFirstVoronoiEdgeIndex = -1;
+
 			_origin = origin;
 			_right = right.normalized;
 			_up = Vector3.Cross(right, Vector3.Cross(up, right)).normalized;
 
-			_splitEventQueue.Clear();
-			_mergeEventQueue.Clear();
-
 			_firstBeachSegment = _lastBeachSegment = CreateBeachSegment(null, null, -1, -1);
 
 			_sweep = float.NegativeInfinity;
-
-			_voronoiGraph.Clear();
-			_voronoiNodePositions.Clear();
-
-			_pointSitePositions.Clear();
 
 			foreach (var pointSite in _siteGraph.nodes)
 			{
@@ -257,9 +239,130 @@ namespace Experilous.Topologies
 				convertedNodePositions[i] = _origin + position.x * _right + position.y * _up;
 			}
 
-			throw new NotImplementedException();
-			//return new VoronoiDiagram(new FixedSizeTopology(_voronoiGraph), convertedNodePositions);
+			var voronoiDiagram = FinalizeVoronoiDiagram();
+
+			_firstBeachSegment = _lastBeachSegment = null;
+
+			_siteNodeFirstVoronoiEdgeIndices = null;
+			_siteEdgeFirstVoronoiEdgeIndices = null;
+
+			_splitEventQueue.Clear();
+			_mergeEventQueue.Clear();
+
+			_voronoiGraph.Clear();
+			_voronoiNodePositions.Clear();
+
+			_pointSitePositions.Clear();
+
+			return voronoiDiagram;
 		}
+
+		private VoronoiDiagram FinalizeVoronoiDiagram()
+		{
+			int voronoiPointSiteFaceCount = 0;
+			for (int i = 0; i < _siteNodeFirstVoronoiEdgeIndices.Count; ++i)
+			{
+				if (_siteNodeFirstVoronoiEdgeIndices[i] != -1) ++voronoiPointSiteFaceCount;
+			}
+
+			int voronoiLineSiteFaceCount = 0;
+			for (int i = 0; i < _siteEdgeFirstVoronoiEdgeIndices.Count; ++i)
+			{
+				if (_siteEdgeFirstVoronoiEdgeIndices[i] != -1) ++voronoiLineSiteFaceCount;
+			}
+
+			int faceCount = voronoiPointSiteFaceCount + voronoiLineSiteFaceCount + 1;
+			var faceNeighborCounts = new int[faceCount];
+			var faceFirstEdgeIndices = new int[faceCount];
+			var edgeTargetFaceIndices = new int[_voronoiGraph.edgeCount];
+
+			int faceIndex = 0;
+
+			Action<int> initializeVoronoiFace = (int firstEdgeIndex) =>
+			{
+				if (firstEdgeIndex != -1)
+				{
+					faceFirstEdgeIndices[faceIndex] = firstEdgeIndex;
+
+					int neighborCount = 0;
+					var edgeIndex = firstEdgeIndex;
+					do
+					{
+						edgeTargetFaceIndices[edgeIndex ^ 1] = faceIndex;
+						++neighborCount;
+						edgeIndex = _voronoiGraph.GetEdgeNextChainedEdgeIndex(edgeIndex);
+					} while (edgeIndex != firstEdgeIndex);
+
+					faceNeighborCounts[faceIndex] = neighborCount;
+
+					++faceIndex;
+				}
+			};
+
+			for (int i = 0; i < _siteNodeFirstVoronoiEdgeIndices.Count; ++i)
+			{
+				initializeVoronoiFace(_siteNodeFirstVoronoiEdgeIndices[i]);
+			}
+
+			for (int i = 0; i < _siteEdgeFirstVoronoiEdgeIndices.Count; ++i)
+			{
+				initializeVoronoiFace(_siteEdgeFirstVoronoiEdgeIndices[i]);
+			}
+
+			initializeVoronoiFace(_externalSiteFirstVoronoiEdgeIndex);
+
+			var voronoiTopology = new FixedSizeTopology(
+				_voronoiGraph.GetNodeNeighborCounts(),
+				_voronoiGraph.GetNodeFirstEdgeIndices(),
+				faceNeighborCounts,
+				faceFirstEdgeIndices,
+				_voronoiGraph.GetEdgeNextChainedEdgeIndices(),
+				_voronoiGraph.GetEdgeNextLateralEdgeIndices(),
+				_voronoiGraph.GetEdgeTargetNodeIndices(),
+				edgeTargetFaceIndices,
+				new EdgeWrap[_voronoiGraph.edgeCount]);
+
+			var finalVoronoiPositions = new TopologyNodeDataArray<Vector3>(_voronoiNodePositions.Count);
+			for (int i = 0; i < _voronoiNodePositions.Count; ++i)
+			{
+				finalVoronoiPositions[i] = _voronoiNodePositions[i].x * _right + _voronoiNodePositions[i].y * _up;
+			}
+
+			var voronoiFaceSiteTypes = new TopologyFaceDataArray<VoronoiSiteType>(voronoiTopology.faceCount);
+			var voronoiFaceSiteIndices = new TopologyFaceDataArray<int>(voronoiTopology.faceCount);
+
+			for (int i = 0; i < voronoiTopology.faceCount; ++i)
+			{
+				voronoiFaceSiteTypes[i] = VoronoiSiteType.None;
+				voronoiFaceSiteIndices[i] = -1;
+			}
+
+			for (int i = 0; i < _siteGraph.nodeCount; ++i)
+			{
+				int edgeIndex = _siteNodeFirstVoronoiEdgeIndices[i];
+				if (edgeIndex != -1)
+				{
+					int siteFaceEdge = voronoiTopology.GetEdgeTargetFaceIndex(edgeIndex ^ 1);
+					voronoiFaceSiteTypes[siteFaceEdge] = VoronoiSiteType.Point;
+					voronoiFaceSiteIndices[siteFaceEdge] = i;
+				}
+			}
+
+			for (int i = 0; i < _siteGraph.edgeCount; ++i)
+			{
+				int edgeIndex = _siteEdgeFirstVoronoiEdgeIndices[i];
+				if (edgeIndex != -1)
+				{
+					int siteFaceEdge = voronoiTopology.GetEdgeTargetFaceIndex(edgeIndex ^ 1);
+					voronoiFaceSiteTypes[siteFaceEdge] = VoronoiSiteType.Line;
+					voronoiFaceSiteIndices[siteFaceEdge] = i;
+				}
+			}
+
+			return new VoronoiDiagram(_siteGraph, voronoiTopology, _siteNodeFirstVoronoiEdgeIndices, _siteEdgeFirstVoronoiEdgeIndices, finalVoronoiPositions, voronoiFaceSiteTypes, voronoiFaceSiteIndices);
+		}
+
+		#region Pooled Object Management
 
 		private BeachSegment CreateBeachSegment(BeachSegment prevSegment, BeachSegment nextSegment, int prevEdgeIndex, int nextEdgeIndex)
 		{
@@ -311,28 +414,23 @@ namespace Experilous.Topologies
 			_splitEventPool.Add(ev);
 		}
 
-		private MergeEvent CreateMergeEvent(float x, float y, Vector2 mergePosition, BeachSegment segment)
+		private MergeEvent CreateMergeEvent(Vector2 mergePosition, float distance, BeachSegment segment)
 		{
 			if (_mergeEventPool.Count > 0)
 			{
 				int lastIndex = _mergeEventPool.Count - 1;
 				var ev = _mergeEventPool[lastIndex];
 				_mergeEventPool.RemoveAt(lastIndex);
-				ev.position.x = x;
-				ev.position.y = y;
-				ev.mergePosition = mergePosition;
+				ev.position.x = mergePosition.x;
+				ev.position.y = mergePosition.y + distance;
+				ev.distance = distance;
 				ev.segment = segment;
 				return ev;
 			}
 			else
 			{
-				return new MergeEvent(x, y, mergePosition, segment);
+				return new MergeEvent(new Vector2(mergePosition.x, mergePosition.y + distance), distance, segment);
 			}
-		}
-
-		private MergeEvent CreateMergeEvent(float x, float y, BeachSegment segment)
-		{
-			return CreateMergeEvent(x, y, new Vector2(float.NaN, float.NaN), segment);
 		}
 
 		private void DestroyMergeEvent(MergeEvent ev)
@@ -348,7 +446,7 @@ namespace Experilous.Topologies
 				var directedEdge = _directedEdgePool[lastIndex];
 				_directedEdgePool.RemoveAt(lastIndex);
 				directedEdge.direction = direction;
-				directedEdge.order = DirectedEdge.ComputeOrder(direction);
+				directedEdge.order = VoronoiUtility.ComputeDirectionalOrder(direction);
 				directedEdge.edgeIndex = edgeIndex;
 				return directedEdge;
 			}
@@ -368,6 +466,8 @@ namespace Experilous.Topologies
 			_directedEdgePool.AddRange(_orderedLineSites);
 			_orderedLineSites.Clear();
 		}
+
+		#endregion
 
 		private bool Step()
 		{
@@ -440,22 +540,17 @@ namespace Experilous.Topologies
 			bool prevConcavity = false;
 			bool nextConcavity = false;
 
-			Vector2 splitPoint = new Vector2(float.NaN, float.NaN);
-
 			if (incomingLineCount == 0)
 			{
 				// This point site does not have any incoming line segments from point sites already processed.
 				// Assert(prevSegment.siteType != VoronoiSiteType.Line || new GraphEdge(_siteGraph, prevSegment.siteIndex).sourceNode != ev.siteIndex);
 
-				splitPoint = ProjectOntoBeachSegment(prevSegment, ev.position);
 				nextSegment = SplitBeachSegment(prevSegment);
 			}
 			else
 			{
 				// This point site has one or more incoming line segments from point sites already processed.
 				// Assert(prevSegment.siteType == VoronoiSiteType.Line && new GraphEdge(_siteGraph, prevSegment.siteIndex).sourceNode == ev.siteIndex);
-
-				splitPoint = Vector2.zero;
 
 				var lastIncomingLine = _orderedLineSites[incomingLineCount - 1];
 				while (nextSegment.siteType != VoronoiSiteType.Line || nextSegment.siteIndex != lastIncomingLine.edgeIndex)
@@ -483,17 +578,20 @@ namespace Experilous.Topologies
 				{
 					DivideAdjacentSegments(prevSegment);
 					_voronoiGraph.AttachEdgeToSourceNodeBefore(prevSegment.nextEdgeIndex, voronoiNode.firstEdge.index);
+					_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextEdgeIndex ^ 1;
 				}
 				else
 				{
 					var newSegment = InsertBeachSegmentAfter(pointSite, prevSegment);
-					DivideSeparatedSegments(prevSegment, nextSegment, splitPoint);
+					DivideSeparatedSegments(prevSegment, nextSegment);
 
 					if (incomingLineCount > 0)
 					{
 						_voronoiGraph.AttachEdgeToSourceNodeBefore(prevSegment.nextEdgeIndex, voronoiNode.firstEdge.index);
 						_voronoiGraph.AttachEdgeToSourceNodeBefore(newSegment.nextEdgeIndex, prevSegment.nextEdgeIndex);
 					}
+
+					_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextEdgeIndex ^ 1;
 				}
 			}
 			else
@@ -511,7 +609,7 @@ namespace Experilous.Topologies
 					var outgoingEdge = new GraphEdge(_siteGraph, _orderedLineSites[i].edgeIndex);
 
 					bool wasFirst = ReferenceEquals(insertAfterSegment, prevSegment);
-					insertAfterSegment = InsertBeachSegmentAfter(outgoingEdge.twin, insertAfterSegment);
+					var insertedSegment = InsertBeachSegmentAfter(outgoingEdge.twin, insertAfterSegment);
 					if (!wasFirst)
 					{
 						DivideAdjacentSegments(insertAfterSegment);
@@ -519,27 +617,47 @@ namespace Experilous.Topologies
 						insertBeforeEdgeIndex = insertAfterSegment.nextEdgeIndex;
 					}
 
-					insertAfterSegment = InsertBeachSegmentAfter(outgoingEdge, insertAfterSegment);
+					insertAfterSegment = insertedSegment;
+
+					insertedSegment = InsertBeachSegmentAfter(outgoingEdge, insertAfterSegment);
 
 					DivideAdjacentSegments(insertAfterSegment);
 					_voronoiGraph.AttachEdgeToSourceNodeBefore(insertAfterSegment.nextEdgeIndex, insertBeforeEdgeIndex);
 					insertBeforeEdgeIndex = insertAfterSegment.nextEdgeIndex;
+					insertAfterSegment = insertedSegment;
+
+					_siteEdgeFirstVoronoiEdgeIndices[outgoingEdge.twin] = insertedSegment.prevEdgeIndex;
+					_siteEdgeFirstVoronoiEdgeIndices[outgoingEdge] = insertedSegment.prevEdgeIndex ^ 1;
 				}
 
 				if (!nextConcavity)
 				{
-					insertAfterSegment = InsertBeachSegmentAfter(pointSite, insertAfterSegment);
-					DivideAdjacentSegments(insertAfterSegment);
+					var insertedSegment = InsertBeachSegmentAfter(pointSite, insertAfterSegment);
+					DivideAdjacentSegments(insertAfterSegment.prevSegment);
 					_voronoiGraph.AttachEdgeToSourceNodeBefore(insertAfterSegment.nextEdgeIndex, insertBeforeEdgeIndex);
 					insertBeforeEdgeIndex = insertAfterSegment.nextEdgeIndex;
+					insertAfterSegment = insertedSegment;
 				}
 
-				DivideSeparatedSegments(prevSegment, nextSegment, splitPoint);
+				DivideSeparatedSegments(prevSegment, nextSegment);
 
 				if (incomingLineCount > 0)
 				{
 					_voronoiGraph.AttachEdgeToSourceNodeBefore(prevSegment.nextEdgeIndex, insertBeforeEdgeIndex);
 					_voronoiGraph.AttachEdgeToSourceNodeBefore(insertAfterSegment.nextEdgeIndex, insertBeforeEdgeIndex);
+
+					if (prevConcavity)
+					{
+						_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextSegment.nextEdgeIndex;
+					}
+					else if (nextConcavity)
+					{
+						_siteNodeFirstVoronoiEdgeIndices[pointSite] = _voronoiGraph.GetEdgeNextChainedEdgeIndex(nextSegment.prevSegment.prevEdgeIndex);
+					}
+				}
+				else if (prevConcavity || nextConcavity)
+				{
+					_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextSegment.nextEdgeIndex;
 				}
 			}
 
@@ -660,31 +778,19 @@ namespace Experilous.Topologies
 			}
 		}
 
-		private Vector2 ProjectOntoBeachSegment(BeachSegment segment, Vector2 position)
-		{
-			switch (segment.siteType)
-			{
-				case VoronoiSiteType.Point:
-				case VoronoiSiteType.Line:
-				case VoronoiSiteType.None:
-				default: throw new NotImplementedException();
-			}
-		}
-
 		private void DivideAdjacentSegments(BeachSegment prevSegment)
 		{
-			DivideAdjacentSegments(prevSegment, new Vector2(float.NaN, float.NaN));
+			int edgeIndex;
+			_voronoiGraph.AddEdgePair(out edgeIndex);
+			prevSegment.nextEdgeIndex = edgeIndex ^ 1;
+			prevSegment.nextSegment.prevEdgeIndex = edgeIndex;
 		}
 
-		private void DivideAdjacentSegments(BeachSegment prevSegment, Vector2 position)
-		{
-		}
-
-		private void DivideSeparatedSegments(BeachSegment prevSegment, BeachSegment nextSegment, Vector2 position)
+		private void DivideSeparatedSegments(BeachSegment prevSegment, BeachSegment nextSegment)
 		{
 			if (BeachSegment.SitesAreEqual(prevSegment, nextSegment))
 			{
-				DivideAdjacentSegments(prevSegment, position);
+				DivideAdjacentSegments(prevSegment);
 				nextSegment.prevEdgeIndex = prevSegment.nextEdgeIndex;
 				nextSegment.prevSegment.nextEdgeIndex = nextSegment.prevEdgeIndex ^ 1;
 			}
@@ -758,14 +864,14 @@ namespace Experilous.Topologies
 
 			if (segment.siteType == VoronoiSiteType.None)
 			{
-				segment.mergeEvent = CreateMergeEvent(_sweep, float.NegativeInfinity, new Vector2(float.PositiveInfinity, float.PositiveInfinity), segment);
+				segment.mergeEvent = CreateMergeEvent(new Vector2(float.NegativeInfinity, _sweep), float.PositiveInfinity, segment);
 				_mergeEventQueue.Push(segment.mergeEvent);
 				return;
 			}
 
 			if (ReferenceEquals(segment.prevSegment, _firstBeachSegment))
 			{
-				segment.mergeEvent = CreateMergeEvent(float.PositiveInfinity, float.NegativeInfinity, segment);
+				segment.mergeEvent = CreateMergeEvent(new Vector2(float.NegativeInfinity, float.PositiveInfinity), float.NaN, segment);
 				_mergeEventQueue.Push(segment.mergeEvent);
 				return;
 			}
@@ -782,10 +888,10 @@ namespace Experilous.Topologies
 							switch (segment.nextSegment.siteType)
 							{
 								case VoronoiSiteType.Point:
-									CheckForMergeEvent_PPP(segment);
+									CheckForMergeEvent_PointPointPoint(segment);
 									break;
 								case VoronoiSiteType.Line:
-									CheckForMergeEvent_PPL(segment);
+									CheckForMergeEvent_PointPointLine(segment);
 									break;
 							}
 							break;
@@ -793,10 +899,10 @@ namespace Experilous.Topologies
 							switch (segment.nextSegment.siteType)
 							{
 								case VoronoiSiteType.Point:
-									CheckForMergeEvent_PLP(segment);
+									CheckForMergeEvent_PointLinePoint(segment);
 									break;
 								case VoronoiSiteType.Line:
-									CheckForMergeEvent_PLL(segment);
+									CheckForMergeEvent_PointLineLine(segment);
 									break;
 							}
 							break;
@@ -809,10 +915,10 @@ namespace Experilous.Topologies
 							switch (segment.nextSegment.siteType)
 							{
 								case VoronoiSiteType.Point:
-									CheckForMergeEvent_LPP(segment);
+									CheckForMergeEvent_LinePointPoint(segment);
 									break;
 								case VoronoiSiteType.Line:
-									CheckForMergeEvent_LPL(segment);
+									CheckForMergeEvent_LinePointLine(segment);
 									break;
 							}
 							break;
@@ -820,10 +926,10 @@ namespace Experilous.Topologies
 							switch (segment.nextSegment.siteType)
 							{
 								case VoronoiSiteType.Point:
-									CheckForMergeEvent_LLP(segment);
+									CheckForMergeEvent_LineLinePoint(segment);
 									break;
 								case VoronoiSiteType.Line:
-									CheckForMergeEvent_LLL(segment);
+									CheckForMergeEvent_LineLineLine(segment);
 									break;
 							}
 							break;
@@ -832,204 +938,246 @@ namespace Experilous.Topologies
 			}
 		}
 
-		private void CheckForMergeEvent_PPP(BeachSegment segment)
+		private void CheckForMergeEvent_PointPointPoint(BeachSegment segment)
 		{
 			var p0 = _pointSitePositions[segment.prevSegment.siteIndex];
 			var p1 = _pointSitePositions[segment.siteIndex];
 			var p2 = _pointSitePositions[segment.nextSegment.siteIndex];
 
-			var v0 = p1 - p0;
-			var v2 = p1 - p2;
-
-			float determinant = Geometry.DotPerpendicularCCW(v0, v2);
-			if (determinant > 0f)
+			Vector2 mergePosition;
+			float distance;
+			if (VoronoiUtility.CheckForMergeEvent_PointPointPoint(p0, p1, p2, out mergePosition, out distance))
 			{
-				float lenSqr0 = v0.sqrMagnitude;
-				float lenSqr2 = v2.sqrMagnitude;
-				float cx = 0.5f * (v2.y * lenSqr0 - v0.y * lenSqr2) / determinant;
-				float cy = 0.5f * (v0.x * lenSqr2 - v2.x * lenSqr0) / determinant;
-
-				var mergeOffset = new Vector2(cx, cy);
-				float radius = mergeOffset.magnitude;
-				var mergePosition = p1 + mergeOffset;
-
-				_mergeEventQueue.Push(CreateMergeEvent(mergePosition.x + radius, mergePosition.y, mergePosition, segment));
+				_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
 			}
 		}
 
-		private void CheckForMergeEvent_PPL(BeachSegment segment)
+		private void CheckForMergeEvent_PointPointLine(BeachSegment segment)
 		{
 			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
-			if (segment.prevSegment.siteIndex == targetNodeIndex)
+			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex ^ 1);
+
+			var p0 = _pointSitePositions[segment.prevSegment.siteIndex];
+			var p1 = _pointSitePositions[segment.siteIndex];
+			var p2a = _pointSitePositions[sourceNodeIndex];
+			var p2b = _pointSitePositions[targetNodeIndex];
+
+			Vector2 mergePosition;
+			float distance;
+
+			if (segment.siteIndex == targetNodeIndex)
 			{
-			}
-			else if (segment.siteIndex == targetNodeIndex)
-			{
+				if (VoronoiUtility.CheckForMergeEvent_PointTargetPointLine(p0, p2a, p2b, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
 			}
 			else
 			{
+				if (VoronoiUtility.CheckForMergeEvent_PointPointLine(p0, p1, p2a, p2b, _errorMargin, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
 			}
 		}
 
-		private void CheckForMergeEvent_PLP(BeachSegment segment)
+		private void CheckForMergeEvent_PointLinePoint(BeachSegment segment)
 		{
 			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
 			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
 
-			var p1 = _pointSitePositions[sourceNodeIndex];
-			var v1 = _pointSitePositions[targetNodeIndex] - p1;
-			var n1 = v1.PerpendicularCCW();
-			var vSqrLen = v1.sqrMagnitude;
+			var p0 = _pointSitePositions[segment.prevSegment.siteIndex];
+			var p1a = _pointSitePositions[sourceNodeIndex];
+			var p1b = _pointSitePositions[targetNodeIndex];
+			var p2 = _pointSitePositions[segment.nextSegment.siteIndex];
 
-			var p0 = _pointSitePositions[segment.nextSegment.siteIndex];
-			var p2 = _pointSitePositions[segment.prevSegment.siteIndex];
-			var d0 = p0 - p1;
-			var d2 = p2 - p1;
-
-			var q0 = new Vector2(Vector2.Dot(d0, v1), Vector2.Dot(d0, n1)) / vSqrLen;
-			var q2 = new Vector2(Vector2.Dot(d2, v1), Vector2.Dot(d2, n1)) / vSqrLen;
-
-			float qDeltaY = q2.y - q0.y;
-
-			float x, y;
+			Vector2 mergePosition;
+			float distance;
 
 			if (segment.prevSegment.siteIndex == sourceNodeIndex)
 			{
 				if (segment.nextSegment.siteIndex != targetNodeIndex)
 				{
-					x = Geometry.DotPerpendicularCW(q0, q2) / qDeltaY;
-					var dx = x - q2.x;
-					y = (dx * dx / q2.y + q2.y) / 2f;
-				}
-				else
-				{
-					return;
+					if (VoronoiUtility.CheckForMergeEvent_SourcePointLinePoint(p1a, p1b, p2, out mergePosition, out distance))
+					{
+						_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+					}
 				}
 			}
 			else if (segment.nextSegment.siteIndex == targetNodeIndex)
 			{
-				x = Geometry.DotPerpendicularCW(q0, q2) / qDeltaY;
-				var dx = x - q0.x;
-				y = (dx * dx / q0.y + q0.y) / 2f;
-			}
-			else
-			{
-				if (Mathf.Abs(qDeltaY) >= _errorMargin)
+				if (VoronoiUtility.CheckForMergeEvent_PointLineTargetPoint(p0, p1a, p1b, out mergePosition, out distance))
 				{
-					float qProductY = q0.y * q2.y;
-					if (qProductY >= _errorMargin)
-					{
-						var dq = q2 - q0;
-						x = (Geometry.DotPerpendicularCW(q0, q2) + Mathf.Sqrt(dq.sqrMagnitude * qProductY) * Mathf.Sign(qDeltaY)) / qDeltaY;
-						y = (((q0.y + q2.y) * x + (q0.x * q2.y + q0.y * q2.x)) * x + (q0.sqrMagnitude * q2.y + q2.sqrMagnitude * q0.y)) / (4f * qProductY);
-					}
-					else if (qProductY > -_errorMargin)
-					{
-						x = Geometry.DotPerpendicularCW(q0, q2) / qDeltaY;
-
-						float absY0 = Mathf.Abs(q0.y);
-						float absY2 = Mathf.Abs(q2.y);
-						if (absY0 > _errorMargin && absY0 > absY2)
-						{
-							var dx = x - q0.x;
-							y = (dx * dx / q0.y + q0.y) / 2f;
-						}
-						else if (absY2 > _errorMargin && absY2 > absY0)
-						{
-							var dx = x - q2.x;
-							y = (dx * dx / q2.y + q2.y) / 2f;
-						}
-						else
-						{
-							return;
-						}
-					}
-					else
-					{
-						return;
-					}
-				}
-				else
-				{
-					x = (q0.x + q2.x) / 2f;
-					y = ((2f * x + q0.x + q2.x) * x + q0.sqrMagnitude + q2.sqrMagnitude) / (2f * (q0.y + q2.y));
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
 				}
 			}
-
-			var radius = Mathf.Sqrt(vSqrLen) * y;
-			var mergePosition = p1 + v1 * x + n1 * y;
-			_mergeEventQueue.Push(CreateMergeEvent(mergePosition.x + radius, mergePosition.y, mergePosition, segment));
-		}
-
-		private Vector2 IntersectParabolaWithVertical(Vector2 directrix, Vector2 normal, Vector2 endPointToFocus)
-		{
-			float a = Vector2.Dot(directrix, directrix);
-			float b = Vector2.Dot(endPointToFocus, directrix);
-			float c = Vector2.Dot(endPointToFocus, normal);
-			float t = (b * b / c + c) / (2f * a);
-			return normal * t;
-		}
-
-		private void CheckForMergeEvent_PLL(BeachSegment segment)
-		{
-			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
-			if (segment.prevSegment.siteIndex == targetNodeIndex)
+			else
 			{
+				if (VoronoiUtility.CheckForMergeEvent_PointLinePoint(p0, p1a, p1b, p2, _errorMargin, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
+			}
+		}
+
+		private void CheckForMergeEvent_PointLineLine(BeachSegment segment)
+		{
+			int targetNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
+			int sourceNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
+			int targetNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
+			int sourceNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex ^ 1);
+
+			var p0 = _pointSitePositions[segment.prevSegment.siteIndex];
+			var p1a = _pointSitePositions[sourceNodeIndex1];
+			var p1b = _pointSitePositions[targetNodeIndex1];
+			var p2a = _pointSitePositions[sourceNodeIndex2];
+			var p2b = _pointSitePositions[targetNodeIndex2];
+
+			Vector2 mergePosition;
+			float distance;
+
+			if (segment.prevSegment.siteIndex == sourceNodeIndex1)
+			{
+				if (VoronoiUtility.CheckForMergeEvent_SourcePointLineLine(p1a, p1b, p2a, p2b, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
 			}
 			else
 			{
+				if (VoronoiUtility.CheckForMergeEvent_PointLineLine(p0, p1a, p1b, p2a, p2b, _errorMargin, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
 			}
 		}
 
-		private void CheckForMergeEvent_LPP(BeachSegment segment)
+		private void CheckForMergeEvent_LinePointPoint(BeachSegment segment)
 		{
-			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
-			if (segment.siteIndex == sourceNodeIndex)
-			{
-			}
-			else if (segment.nextSegment.siteIndex == sourceNodeIndex)
-			{
-			}
-			else
-			{
-			}
-		}
-
-		private void CheckForMergeEvent_LPL(BeachSegment segment)
-		{
+			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex);
 			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
-			int targetNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
+
+			var p0a = _pointSitePositions[sourceNodeIndex];
+			var p0b = _pointSitePositions[targetNodeIndex];
+			var p1 = _pointSitePositions[segment.siteIndex];
+			var p2 = _pointSitePositions[segment.nextSegment.siteIndex];
+
+			Vector2 mergePosition;
+			float distance;
+
 			if (segment.siteIndex == sourceNodeIndex)
 			{
-				if (segment.siteIndex == targetNodeIndex)
+				if (VoronoiUtility.CheckForMergeEvent_LineSourcePointPoint(p0a, p0b, p2, out mergePosition, out distance))
 				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
 				}
-				else
-				{
-				}
-			}
-			else if (segment.siteIndex == targetNodeIndex)
-			{
 			}
 			else
 			{
+				if (VoronoiUtility.CheckForMergeEvent_LinePointPoint(p0a, p0b, p1, p2, _errorMargin, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
 			}
 		}
 
-		private void CheckForMergeEvent_LLP(BeachSegment segment)
+		private void CheckForMergeEvent_LinePointLine(BeachSegment segment)
 		{
-			int sourceNodeIndex = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
-			if (segment.nextSegment.siteIndex == sourceNodeIndex)
+			int targetNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex);
+			int sourceNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
+			int targetNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
+			int sourceNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex ^ 1);
+
+			var p0a = _pointSitePositions[sourceNodeIndex0];
+			var p0b = _pointSitePositions[targetNodeIndex0];
+			var p1 = _pointSitePositions[segment.siteIndex];
+			var p2a = _pointSitePositions[sourceNodeIndex2];
+			var p2b = _pointSitePositions[targetNodeIndex2];
+
+			Vector2 mergePosition;
+			float distance;
+
+			if (targetNodeIndex0 == segment.siteIndex)
 			{
+				if (segment.siteIndex != sourceNodeIndex2)
+				{
+					if (VoronoiUtility.CheckForMergeEvent_LineTargetPointLine(p0a, p0b, p2a, p2b, out mergePosition, out distance))
+					{
+						_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+					}
+				}
+			}
+			else if (segment.siteIndex == sourceNodeIndex2)
+			{
+				if (VoronoiUtility.CheckForMergeEvent_LineSourcePointLine(p0a, p0b, p2a, p2b, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
 			}
 			else
 			{
+				if (VoronoiUtility.CheckForMergeEvent_LinePointLine(p0a, p0b, p1, p2a, p2b, _errorMargin, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
 			}
 		}
 
-		private void CheckForMergeEvent_LLL(BeachSegment segment)
+		private void CheckForMergeEvent_LineLinePoint(BeachSegment segment)
 		{
+			int targetNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex);
+			int sourceNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
+			int targetNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
+			int sourceNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
 
+			var p0a = _pointSitePositions[sourceNodeIndex0];
+			var p0b = _pointSitePositions[targetNodeIndex0];
+			var p1a = _pointSitePositions[sourceNodeIndex1];
+			var p1b = _pointSitePositions[targetNodeIndex1];
+			var p2 = _pointSitePositions[segment.nextSegment.siteIndex];
+
+			Vector2 mergePosition;
+			float distance;
+
+			if (targetNodeIndex1 == segment.nextSegment.siteIndex)
+			{
+				if (VoronoiUtility.CheckForMergeEvent_LineLineTargetPoint(p0a, p0b, p1a, p1b, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
+			}
+			else
+			{
+				if (VoronoiUtility.CheckForMergeEvent_LineLinePoint(p0a, p0b, p1a, p1b, p2, _errorMargin, out mergePosition, out distance))
+				{
+					_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+				}
+			}
+		}
+
+		private void CheckForMergeEvent_LineLineLine(BeachSegment segment)
+		{
+			int targetNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex);
+			int sourceNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
+			int targetNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
+			int sourceNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
+			int targetNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
+			int sourceNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
+
+			var p0a = _pointSitePositions[sourceNodeIndex0];
+			var p0b = _pointSitePositions[targetNodeIndex0];
+			var p1a = _pointSitePositions[sourceNodeIndex1];
+			var p1b = _pointSitePositions[targetNodeIndex1];
+			var p2a = _pointSitePositions[sourceNodeIndex2];
+			var p2b = _pointSitePositions[targetNodeIndex2];
+
+			Vector2 mergePosition;
+			float distance;
+
+			if (VoronoiUtility.CheckForMergeEvent_LineLineLine(p0a, p0b, p1a, p1b, p2a, p2b, _errorMargin, out mergePosition, out distance))
+			{
+				_mergeEventQueue.Push(CreateMergeEvent(mergePosition, distance, segment));
+			}
 		}
 
 		private void CollapseBeachSegment(BeachSegment segment, Vector2 position)
@@ -1050,7 +1198,7 @@ namespace Experilous.Topologies
 			{
 				nextSegment.prevSegment = prevSegment;
 				prevSegment.nextSegment = nextSegment;
-				DivideAdjacentSegments(prevSegment, position);
+				DivideAdjacentSegments(prevSegment);
 				edgeIndex2 = prevSegment.nextEdgeIndex;
 			}
 
@@ -1122,8 +1270,23 @@ namespace Experilous.Topologies
 
 	public class VoronoiDiagram
 	{
-		public VoronoiDiagram(ITopology topology, ITopologyNodeData<Vector3> vertexPositions)
+		private IGraph _siteGraph;
+		private ITopology _voronoiTopology;
+		private IGraphNodeData<int> _siteNodeFirstVoronoiEdgeIndices;
+		private IGraphEdgeData<int> _siteEdgeFirstVoronoiEdgeIndices;
+		private ITopologyNodeData<Vector3> _voronoiNodePositions;
+		private ITopologyFaceData<VoronoiSiteType> _voronoiFaceSiteTypes;
+		private ITopologyFaceData<int> _voronoiFaceSiteIndices;
+
+		public VoronoiDiagram(IGraph siteGraph, ITopology voronoiTopology, IGraphNodeData<int> siteNodeFirstVoronoiEdgeIndices, IGraphEdgeData<int> siteEdgeFirstVoronoiEdgeIndices, ITopologyNodeData<Vector3> voronoiNodePositions, ITopologyFaceData<VoronoiSiteType> voronoiFaceSiteTypes, ITopologyFaceData<int> voronoiFaceSiteIndices)
 		{
+			_siteGraph = siteGraph;
+			_voronoiTopology = voronoiTopology;
+			_siteNodeFirstVoronoiEdgeIndices = siteNodeFirstVoronoiEdgeIndices;
+			_siteEdgeFirstVoronoiEdgeIndices = siteEdgeFirstVoronoiEdgeIndices;
+			_voronoiNodePositions = voronoiNodePositions;
+			_voronoiFaceSiteTypes = voronoiFaceSiteTypes;
+			_voronoiFaceSiteIndices = voronoiFaceSiteIndices;
 		}
 	}
 }
