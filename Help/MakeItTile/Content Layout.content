@@ -9,7 +9,8 @@
   <Topic id="10082986-fc31-4c23-9faf-fe19ff871ac5" visible="True" title="Topology Mutation" />
   <Topic id="085fb9ef-bacc-43a6-8f64-ec0fc464eac4" visible="True" title="Spatial Partitioning" />
   <Topic id="e013769f-feee-4a74-9898-7011318c1034" visible="True" title="Topology Traversal" />
-  <Topic id="e3de994d-c467-48b8-8adc-04cbc7c281bd" visible="True" isSelected="true" title="In-Editor Generation" />
+  <Topic id="e3de994d-c467-48b8-8adc-04cbc7c281bd" visible="True" title="In-Editor Generation" />
   <Topic id="0c879b33-6cff-4557-98d1-0794eeb719c8" visible="True" title="Example Scenes" />
+  <Topic id="074fcfe3-3d40-40ea-8bbc-ecfd6a811489" visible="True" isSelected="true" title="Version History" />
   <Topic id="4005b8fd-1388-4363-b826-6e79cbce3cef" visible="True" apiParentMode="InsertAfter" title="Third Party Licenses" />
 </Topics>
