@@ -19,8 +19,9 @@
     <Language>en-US</Language>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Temp\UnityVS_bin\Debug\UnityEngine.dll" />
-<DocumentationSource sourceFile="..\Temp\UnityVS_bin\Debug\UnityEditor.dll" />
-<DocumentationSource sourceFile="..\Temp\UnityVS_bin\Debug\UnityEngine.UI.dll" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\Temp\UnityVS_bin\Debug\UnityEditor.dll" />
+      <DocumentationSource sourceFile="..\Temp\UnityVS_bin\Debug\UnityEngine.UI.dll" />
+    </DocumentationSources>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />
 <Filter entryType="Namespace" fullName="AOT" isExposed="False" />
@@ -50,6 +51,7 @@
 <Filter entryType="Namespace" fullName="UnityEditorInternal.VersionControl" isExposed="False" />
 <Filter entryType="Namespace" fullName="UnityEditorInternal.VR" isExposed="False" />
 <Filter entryType="Namespace" fullName="UnityEngine" isExposed="False">
+  <Filter entryType="Class" fullName="UnityEngine.AnimationCurve" filterName="AnimationCurve" isExposed="True" />
   <Filter entryType="Class" fullName="UnityEngine.Behaviour" filterName="Behaviour" isExposed="True" />
   <Filter entryType="Structure" fullName="UnityEngine.Bounds" filterName="Bounds" isExposed="True" />
   <Filter entryType="Class" fullName="UnityEngine.Camera" filterName="Camera" isExposed="True" />
@@ -60,6 +62,7 @@
   <Filter entryType="Class" fullName="UnityEngine.GUIContent" filterName="GUIContent" isExposed="True" />
   <Filter entryType="Class" fullName="UnityEngine.GUILayoutOption" filterName="GUILayoutOption" isExposed="True" />
   <Filter entryType="Interface" fullName="UnityEngine.ISerializationCallbackReceiver" filterName="ISerializationCallbackReceiver" isExposed="True" />
+  <Filter entryType="Structure" fullName="UnityEngine.Keyframe" filterName="Keyframe" isExposed="True" />
   <Filter entryType="Structure" fullName="UnityEngine.Mathf" filterName="Mathf" isExposed="True" />
   <Filter entryType="Class" fullName="UnityEngine.Mesh" filterName="Mesh" isExposed="True" />
   <Filter entryType="Class" fullName="UnityEngine.MonoBehaviour" filterName="MonoBehaviour" isExposed="True" />

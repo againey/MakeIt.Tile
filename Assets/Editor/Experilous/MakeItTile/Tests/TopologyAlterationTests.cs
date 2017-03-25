@@ -10,7 +10,7 @@ namespace Experilous.MakeItTile.Tests
 {
 	class TopologyAlterationTests
 	{
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SpinEdgeForwardThrowsOnBoundaryVerticesWithTwoNeighbors()
 		{
 			var indexer = new ManualFaceNeighborIndexer(3, 6, 1, 1);
@@ -23,7 +23,7 @@ namespace Experilous.MakeItTile.Tests
 			}
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SpinEdgeBackwardThrowsOnBoundaryVerticesWithTwoNeighbors()
 		{
 			var indexer = new ManualFaceNeighborIndexer(3, 6, 1, 1);
@@ -36,7 +36,7 @@ namespace Experilous.MakeItTile.Tests
 			}
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SpinEdgeForwardThrowsOnInteriorVerticesWithTwoNeighbors()
 		{
 			var indexer = new ManualFaceNeighborIndexer(5, 12, 2, 1);
@@ -48,7 +48,7 @@ namespace Experilous.MakeItTile.Tests
 			Assert.Throws<InvalidOperationException>(() => { topology.SpinEdgeForward(topology.vertices[4].firstEdge.next); });
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SpinEdgeBackwardThrowsOnInteriorVerticesWithTwoNeighbors()
 		{
 			var indexer = new ManualFaceNeighborIndexer(5, 12, 2, 1);
@@ -60,7 +60,7 @@ namespace Experilous.MakeItTile.Tests
 			Assert.Throws<InvalidOperationException>(() => { topology.SpinEdgeBackward(topology.vertices[4].firstEdge.next); });
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SpinEdgeBetweenTrianglesForward()
 		{
 			//   1         1
@@ -110,7 +110,7 @@ namespace Experilous.MakeItTile.Tests
 			Assert.AreEqual(topology.vertices[0], edgeToSpin.twin.faceEdge.next.next.next.nextVertex);
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SpinEdgeBetweenTrianglesBackward()
 		{
 			//   1         1
@@ -160,7 +160,7 @@ namespace Experilous.MakeItTile.Tests
 			Assert.AreEqual(topology.vertices[3], edgeToSpin.twin.faceEdge.next.next.next.nextVertex);
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SpinEdgeBetweenSquaresForward()
 		{
 			// 0---1     0---1
@@ -214,7 +214,7 @@ namespace Experilous.MakeItTile.Tests
 			Assert.AreEqual(topology.vertices[0], edgeToSpin.twin.faceEdge.next.next.next.next.nextVertex);
 		}
 
-		[Test]
+		[TestCase(Category = "Normal")]
 		public void SpinEdgeBetweenSquaresBackward()
 		{
 			// 0---1     0---1

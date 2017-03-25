@@ -124,9 +124,9 @@
 						
 						foreach (Topology.Vertex vertex in topology.vertices)
 						{
-							Debug.LogFormat("<b>{0}</b>", vertexPositions[vertex]); // Log out the positions of each vertex.
+							Debug.LogFormat("<b>{0}</b>", vertexPositions[vertex]); // Log out the position of each vertex.
 							
-							// Also log out the positions of each of the vertex's neighboring vertices.
+							// Also log out the position of each of the vertex's neighboring vertices.
 							foreach (VertexEdge edge in vertex.edges)
 							{
 								// Can use the edge to index directly into vertex positions,

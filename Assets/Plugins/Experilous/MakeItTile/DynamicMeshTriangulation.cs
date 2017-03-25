@@ -58,7 +58,7 @@ namespace Experilous.MakeItTile
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
 		public SeparatedFacesStripTriangulation(int ringDepth, Action<Topology.FaceEdge, DynamicMesh.IIndexedVertexAttributes> addRingVertices)
 		{
-			if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
+			if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth", ringDepth, "Ring depth cannot be less than one, as there must be at least one outer ring of vertices.");
 			_ringDepth = ringDepth;
 			_addRingVertices = addRingVertices;
 		}
@@ -202,7 +202,7 @@ namespace Experilous.MakeItTile
 		/// <seealso cref="DynamicMesh.IIndexedVertexAttributes"/>
 		public SeparatedFacesFanTriangulation(int ringDepth, Action<Topology.FaceEdge, DynamicMesh.IIndexedVertexAttributes> addRingVertices)
 		{
-			if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
+			if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth", ringDepth, "Ring depth cannot be less than one, as there must be at least one outer ring of vertices.");
 			_ringDepth = ringDepth;
 			_addRingVertices = addRingVertices;
 		}
@@ -347,7 +347,7 @@ namespace Experilous.MakeItTile
 			Action<Topology.FaceEdge, DynamicMesh.IIndexedVertexAttributes> addRingVertices,
 			Action<Topology.Face, DynamicMesh.IIndexedVertexAttributes> addCenterVertex)
 		{
-			if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth");
+			if (ringDepth < 1) throw new ArgumentOutOfRangeException("ringDepth", ringDepth, "Ring depth cannot be less than one, as there must be at least one outer ring of vertices.");
 			_ringDepth = ringDepth;
 			_addRingVertices = addRingVertices;
 			_addCenterVertex = addCenterVertex;
