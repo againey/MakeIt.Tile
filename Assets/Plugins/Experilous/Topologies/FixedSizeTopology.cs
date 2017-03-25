@@ -179,5 +179,25 @@ namespace Experilous.Topologies
 			if (edgeIndex == -1) return EdgeWrap.None;
 			return _edgeWrapData[edgeIndex];
 		}
+
+		public void SetNodeNeighbors(int nodeIndex, int firstEdgeIndex, int neighborCount)
+		{
+			_nodeFirstEdgeIndices[nodeIndex] = firstEdgeIndex;
+			_nodeNeighborCounts[nodeIndex] = neighborCount;
+		}
+
+		public void SetFaceNeighbors(int faceIndex, int firstEdgeIndex, int neighborCount)
+		{
+			_faceFirstEdgeIndices[faceIndex] = firstEdgeIndex;
+			_faceNeighborCounts[faceIndex] = neighborCount;
+		}
+
+		public void SetEdgeNeighbors(int edgeIndex, int targetNodeIndex, int targetFaceIndex, int nextChainedEdgeIndex, int nextLateralEdgeIndex)
+		{
+			_edgeTargetNodeIndices[edgeIndex] = targetNodeIndex;
+			_edgeTargetFaceIndices[edgeIndex] = targetFaceIndex;
+			_edgeNextChainedEdgeIndices[edgeIndex] = nextChainedEdgeIndex;
+			_edgeNextLateralEdgeIndices[edgeIndex] = nextLateralEdgeIndex;
+		}
 	}
 }
