@@ -225,7 +225,9 @@ namespace Experilous.Topologies
 				_topology = topology;
 			}
 
-			public int Count { get { return _topology.faceCount; } }
+			public int Count { get { return _topology.nodeCount; } }
+
+			public TopologyNode this[int nodeIndex] { get { return new TopologyNode(_topology, nodeIndex); } }
 
 			public struct NodeEnumerator : IEnumerator<TopologyNode>
 			{
@@ -242,9 +244,9 @@ namespace Experilous.Topologies
 
 				public bool MoveNext()
 				{
-					if (_currentNodeIndex < _topology.faceCount)
+					if (_currentNodeIndex < _topology.nodeCount)
 					{
-						return ++_currentNodeIndex < _topology.faceCount;
+						return ++_currentNodeIndex < _topology.nodeCount;
 					}
 					else
 					{
@@ -517,6 +519,8 @@ namespace Experilous.Topologies
 
 			public int Count { get { return _topology.faceCount; } }
 
+			public TopologyFace this[int faceIndex] { get { return new TopologyFace(_topology, faceIndex); } }
+
 			public struct FaceEnumerator : IEnumerator<TopologyFace>
 			{
 				private ITopology _topology;
@@ -696,8 +700,11 @@ namespace Experilous.Topologies
 		public int index { get { return _index; } }
 		public static implicit operator bool(TopologyEdge edge) { return edge._topology != null && edge._index >= 0; }
 
-		public static explicit operator TopologyNodeEdge(TopologyEdge edge) { return new TopologyNodeEdge(edge._topology, edge._index); }
-		public static explicit operator TopologyFaceEdge(TopologyEdge edge) { return new TopologyFaceEdge(edge._topology, edge._index); }
+		public static implicit operator TopologyNodeEdge(TopologyEdge edge) { return new TopologyNodeEdge(edge._topology, edge._index); }
+		public static implicit operator TopologyFaceEdge(TopologyEdge edge) { return new TopologyFaceEdge(edge._topology, edge._index); }
+
+		public TopologyNodeEdge nodeEdge { get { return new TopologyNodeEdge(_topology, _index); } }
+		public TopologyFaceEdge faceEdge { get { return new TopologyFaceEdge(_topology, _index); } }
 
 		public TopologyEdge twin { get { return new TopologyEdge(_topology, _index ^ 1); } }
 		public TopologyEdge firstTwin { get { return new TopologyEdge(_topology, _index & ~1); } }
@@ -743,6 +750,8 @@ namespace Experilous.Topologies
 			}
 
 			public int Count { get { return _topology.edgeCount; } }
+
+			public TopologyEdge this[int edgeIndex] { get { return new TopologyEdge(_topology, edgeIndex); } }
 
 			public struct EdgeEnumerator : IEnumerator<TopologyEdge>
 			{
@@ -859,8 +868,10 @@ namespace Experilous.Topologies
 		public int index { get { return _index; } }
 		public static implicit operator bool(TopologyNodeEdge edge) { return edge._topology != null && edge._index >= 0; }
 
-		public static explicit operator TopologyEdge(TopologyNodeEdge edge) { return new TopologyEdge(edge._topology, edge._index); }
-		public static explicit operator TopologyFaceEdge(TopologyNodeEdge edge) { return new TopologyFaceEdge(edge._topology, edge._index); }
+		public static implicit operator TopologyEdge(TopologyNodeEdge edge) { return new TopologyEdge(edge._topology, edge._index); }
+		public static implicit operator TopologyFaceEdge(TopologyNodeEdge edge) { return new TopologyFaceEdge(edge._topology, edge._index); }
+
+		public TopologyFaceEdge faceEdge { get { return new TopologyFaceEdge(_topology, _index); } }
 
 		public TopologyNodeEdge twin { get { return new TopologyNodeEdge(_topology, _index ^ 1); } }
 		public TopologyNodeEdge firstTwin { get { return new TopologyNodeEdge(_topology, _index & ~1); } }
@@ -906,6 +917,8 @@ namespace Experilous.Topologies
 			}
 
 			public int Count { get { return _topology.edgeCount; } }
+
+			public TopologyNodeEdge this[int edgeIndex] { get { return new TopologyNodeEdge(_topology, edgeIndex); } }
 
 			public struct EdgeEnumerator : IEnumerator<TopologyNodeEdge>
 			{
@@ -1022,8 +1035,10 @@ namespace Experilous.Topologies
 		public int index { get { return _index; } }
 		public static implicit operator bool(TopologyFaceEdge edge) { return edge._topology != null && edge._index >= 0; }
 
-		public static explicit operator TopologyEdge(TopologyFaceEdge edge) { return new TopologyEdge(edge._topology, edge._index); }
-		public static explicit operator TopologyNodeEdge(TopologyFaceEdge edge) { return new TopologyNodeEdge(edge._topology, edge._index); }
+		public static implicit operator TopologyEdge(TopologyFaceEdge edge) { return new TopologyEdge(edge._topology, edge._index); }
+		public static implicit operator TopologyNodeEdge(TopologyFaceEdge edge) { return new TopologyNodeEdge(edge._topology, edge._index); }
+
+		public TopologyNodeEdge nodeEdge { get { return new TopologyNodeEdge(_topology, _index); } }
 
 		public TopologyFaceEdge twin { get { return new TopologyFaceEdge(_topology, _index ^ 1); } }
 		public TopologyFaceEdge firstTwin { get { return new TopologyFaceEdge(_topology, _index & ~1); } }
@@ -1072,6 +1087,8 @@ namespace Experilous.Topologies
 			}
 
 			public int Count { get { return _topology.edgeCount; } }
+
+			public TopologyFaceEdge this[int edgeIndex] { get { return new TopologyFaceEdge(_topology, edgeIndex); } }
 
 			public struct EdgeEnumerator : IEnumerator<TopologyFaceEdge>
 			{

@@ -137,6 +137,8 @@ namespace Experilous.Topologies
 
 			public int Count { get { return _graph.nodeCount; } }
 
+			public GraphNode this[int nodeIndex] { get { return new GraphNode(_graph, nodeIndex); } }
+
 			public struct NodeEnumerator : IEnumerator<GraphNode>
 			{
 				private IGraph _graph;
@@ -314,6 +316,8 @@ namespace Experilous.Topologies
 			}
 
 			public int Count { get { return _graph.edgeCount; } }
+
+			public GraphEdge this[int edgeIndex] { get { return new GraphEdge(_graph, edgeIndex); } }
 
 			public struct EdgeEnumerator : IEnumerator<GraphEdge>
 			{
