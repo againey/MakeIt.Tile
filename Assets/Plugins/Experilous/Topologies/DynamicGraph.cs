@@ -172,20 +172,28 @@ namespace Experilous.Topologies
 
 			DetachNodeFromAllEdges(nodeIndex);
 
+			DeleteNode(nodeIndex, remap);
+		}
+
+		private void DeleteNode(int nodeIndex, Action<int, int> remap)
+		{
 			int lastNodeIndex = _nodeNeighborCounts.Count - 1;
 
-			for (int i = 0; i < _edgeTargetNodeIndices.Count; ++i)
+			if (lastNodeIndex != nodeIndex)
 			{
-				if (_edgeTargetNodeIndices[i] == lastNodeIndex) _edgeTargetNodeIndices[i] = nodeIndex;
+				for (int i = 0; i < _edgeTargetNodeIndices.Count; ++i)
+				{
+					if (_edgeTargetNodeIndices[i] == lastNodeIndex) _edgeTargetNodeIndices[i] = nodeIndex;
+				}
+
+				_nodeNeighborCounts[nodeIndex] = _nodeNeighborCounts[lastNodeIndex];
+				_nodeFirstEdgeIndices[nodeIndex] = _nodeFirstEdgeIndices[lastNodeIndex];
 			}
 
-			_nodeNeighborCounts[nodeIndex] = _nodeNeighborCounts[lastNodeIndex];
-			_nodeFirstEdgeIndices[nodeIndex] = _nodeFirstEdgeIndices[lastNodeIndex];
+			if (remap != null) remap(nodeIndex, lastNodeIndex);
 
 			_nodeNeighborCounts.RemoveAt(lastNodeIndex);
 			_nodeFirstEdgeIndices.RemoveAt(lastNodeIndex);
-
-			if (remap != null) remap(nodeIndex, lastNodeIndex);
 		}
 
 		public void Remove(GraphNode node)
@@ -341,39 +349,48 @@ namespace Experilous.Topologies
 			DetachEdgeFromSourceNode(edgeIndex);
 			DetachEdgeFromSourceNode(twinIndex);
 
+			DeleteEdge(edgeIndex, twinIndex, remap);
+		}
+
+		private void DeleteEdge(int edgeIndex, int twinIndex, Action<int, int, int, int> remap)
+		{
 			int lastEdgeIndex = (_edgeNextChainedEdgeIndices.Count - 2) | (edgeIndex & 1);
 			int lastTwinIndex = lastEdgeIndex ^ 1;
 
-			for (int i = 0; i < _nodeFirstEdgeIndices.Count; ++i)
+			if (lastEdgeIndex != edgeIndex)
 			{
-				if (_nodeFirstEdgeIndices[i] == lastEdgeIndex) _nodeFirstEdgeIndices[i] = edgeIndex;
-				else if (_nodeFirstEdgeIndices[i] == lastTwinIndex) _nodeFirstEdgeIndices[i] = twinIndex;
+
+				for (int i = 0; i < _nodeFirstEdgeIndices.Count; ++i)
+				{
+					if (_nodeFirstEdgeIndices[i] == lastEdgeIndex) _nodeFirstEdgeIndices[i] = edgeIndex;
+					else if (_nodeFirstEdgeIndices[i] == lastTwinIndex) _nodeFirstEdgeIndices[i] = twinIndex;
+				}
+
+				for (int i = 0; i < _edgeNextChainedEdgeIndices.Count; ++i)
+				{
+					if (_edgeNextChainedEdgeIndices[i] == lastEdgeIndex) _edgeNextChainedEdgeIndices[i] = edgeIndex;
+					else if (_edgeNextChainedEdgeIndices[i] == lastTwinIndex) _edgeNextChainedEdgeIndices[i] = twinIndex;
+
+					if (_edgeNextLateralEdgeIndices[i] == lastEdgeIndex) _edgeNextLateralEdgeIndices[i] = edgeIndex;
+					else if (_edgeNextLateralEdgeIndices[i] == lastTwinIndex) _edgeNextLateralEdgeIndices[i] = twinIndex;
+				}
+
+				_edgeNextChainedEdgeIndices[edgeIndex] = _edgeNextChainedEdgeIndices[lastEdgeIndex];
+				_edgeNextChainedEdgeIndices[twinIndex] = _edgeNextChainedEdgeIndices[lastTwinIndex];
+
+				_edgeNextLateralEdgeIndices[edgeIndex] = _edgeNextLateralEdgeIndices[lastEdgeIndex];
+				_edgeNextLateralEdgeIndices[twinIndex] = _edgeNextLateralEdgeIndices[lastTwinIndex];
+
+				_edgeTargetNodeIndices[edgeIndex] = _edgeTargetNodeIndices[lastEdgeIndex];
+				_edgeTargetNodeIndices[twinIndex] = _edgeTargetNodeIndices[lastTwinIndex];
 			}
 
-			for (int i = 0; i < _edgeNextChainedEdgeIndices.Count; ++i)
-			{
-				if (_edgeNextChainedEdgeIndices[i] == lastEdgeIndex) _edgeNextChainedEdgeIndices[i] = edgeIndex;
-				else if (_edgeNextChainedEdgeIndices[i] == lastTwinIndex) _edgeNextChainedEdgeIndices[i] = twinIndex;
-
-				if (_edgeNextLateralEdgeIndices[i] == lastEdgeIndex) _edgeNextLateralEdgeIndices[i] = edgeIndex;
-				else if (_edgeNextLateralEdgeIndices[i] == lastTwinIndex) _edgeNextLateralEdgeIndices[i] = twinIndex;
-			}
-
-			_edgeNextChainedEdgeIndices[edgeIndex] = _edgeNextChainedEdgeIndices[lastEdgeIndex];
-			_edgeNextChainedEdgeIndices[twinIndex] = _edgeNextChainedEdgeIndices[lastTwinIndex];
-
-			_edgeNextLateralEdgeIndices[edgeIndex] = _edgeNextLateralEdgeIndices[lastEdgeIndex];
-			_edgeNextLateralEdgeIndices[twinIndex] = _edgeNextLateralEdgeIndices[lastTwinIndex];
-
-			_edgeTargetNodeIndices[edgeIndex] = _edgeTargetNodeIndices[lastEdgeIndex];
-			_edgeTargetNodeIndices[twinIndex] = _edgeTargetNodeIndices[lastTwinIndex];
+			if (remap != null) remap(edgeIndex, twinIndex, lastEdgeIndex, lastTwinIndex);
 
 			lastEdgeIndex = lastEdgeIndex & ~1;
 			_edgeNextChainedEdgeIndices.RemoveRange(lastEdgeIndex, 2);
 			_edgeNextLateralEdgeIndices.RemoveRange(lastEdgeIndex, 2);
 			_edgeTargetNodeIndices.RemoveRange(lastEdgeIndex, 2);
-
-			if (remap != null) remap(edgeIndex, twinIndex, lastEdgeIndex, lastTwinIndex);
 		}
 
 		public void Remove(GraphEdge edge)
@@ -467,17 +484,17 @@ namespace Experilous.Topologies
 
 		public void CollapseEdge(int edgeIndex, Action<int, int> remapNode = null, Action<int, int, int, int> remapEdges = null)
 		{
-			int sourceNodeIndex = _edgeTargetNodeIndices[edgeIndex ^ 1];
+			int twinIndex = edgeIndex ^ 1;
+
+			int sourceNodeIndex = _edgeTargetNodeIndices[twinIndex];
 			int targetNodeIndex = _edgeTargetNodeIndices[edgeIndex];
 
-			int retargetingEdgeIndex = _edgeNextLateralEdgeIndices[edgeIndex];
-			while (retargetingEdgeIndex != edgeIndex)
+			int sourceEdgeIndex = _edgeNextLateralEdgeIndices[edgeIndex];
+			while (sourceEdgeIndex != edgeIndex)
 			{
-				_edgeTargetNodeIndices[retargetingEdgeIndex] = targetNodeIndex;
-				retargetingEdgeIndex = _edgeNextLateralEdgeIndices[retargetingEdgeIndex];
+				_edgeTargetNodeIndices[sourceEdgeIndex ^ 1] = targetNodeIndex;
+				sourceEdgeIndex = _edgeNextLateralEdgeIndices[sourceEdgeIndex];
 			}
-
-			int twinIndex = edgeIndex ^ 1;
 
 			_edgeNextChainedEdgeIndices[_edgeNextLateralEdgeIndices[edgeIndex] ^ 1] = _edgeNextChainedEdgeIndices[edgeIndex];
 			_edgeNextChainedEdgeIndices[_edgeNextLateralEdgeIndices[twinIndex] ^ 1] = _edgeNextChainedEdgeIndices[twinIndex];
@@ -485,8 +502,10 @@ namespace Experilous.Topologies
 			_edgeNextLateralEdgeIndices[_edgeNextChainedEdgeIndices[edgeIndex]] = _edgeNextLateralEdgeIndices[edgeIndex];
 			_edgeNextLateralEdgeIndices[_edgeNextChainedEdgeIndices[twinIndex]] = _edgeNextLateralEdgeIndices[twinIndex];
 
-			RemoveEdge(edgeIndex, remapEdges);
-			RemoveNode(sourceNodeIndex, remapNode);
+			_nodeNeighborCounts[targetNodeIndex] += _nodeNeighborCounts[sourceNodeIndex] - 2;
+
+			DeleteEdge(edgeIndex, twinIndex, remapEdges);
+			DeleteNode(sourceNodeIndex, remapNode);
 		}
 
 		public void Collapse(GraphEdge edge, Action<int, int> remapNode = null, Action<int, int, int, int> remapEdges = null)
