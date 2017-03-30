@@ -382,9 +382,9 @@ namespace Experilous.Topologies
 				int edgeIndex = _siteNodeFirstVoronoiEdgeIndices[i];
 				if (edgeIndex != -1)
 				{
-					int siteFaceEdge = voronoiTopology.GetEdgeTargetFaceIndex(edgeIndex ^ 1);
-					voronoiFaceSiteTypes[siteFaceEdge] = VoronoiSiteType.Point;
-					voronoiFaceSiteIndices[siteFaceEdge] = i;
+					int siteFaceIndex = voronoiTopology.GetEdgeTargetFaceIndex(edgeIndex ^ 1);
+					voronoiFaceSiteTypes[siteFaceIndex] = VoronoiSiteType.Point;
+					voronoiFaceSiteIndices[siteFaceIndex] = i;
 				}
 			}
 
@@ -393,9 +393,9 @@ namespace Experilous.Topologies
 				int edgeIndex = _siteEdgeFirstVoronoiEdgeIndices[i];
 				if (edgeIndex != -1)
 				{
-					int siteFaceEdge = voronoiTopology.GetEdgeTargetFaceIndex(edgeIndex ^ 1);
-					voronoiFaceSiteTypes[siteFaceEdge] = VoronoiSiteType.Line;
-					voronoiFaceSiteIndices[siteFaceEdge] = i;
+					int siteFaceIndex = voronoiTopology.GetEdgeTargetFaceIndex(edgeIndex ^ 1);
+					voronoiFaceSiteTypes[siteFaceIndex] = VoronoiSiteType.Line;
+					voronoiFaceSiteIndices[siteFaceIndex] = i;
 				}
 			}
 
@@ -600,17 +600,24 @@ namespace Experilous.Topologies
 					nextSegment = nextSegment.nextSegment;
 				}
 
-				nextSegment = nextSegment.nextSegment;
+				var segment = nextSegment;
+				while (true)
+				{
+					_voronoiGraph.AttachEdgeToSourceNode(segment.prevEdgeIndex, voronoiNode.index);
+					segment = segment.prevSegment;
+					if (ReferenceEquals(segment, prevSegment)) break;
+					segment = segment.prevSegment;
+				}
 
 				if (outgoingLineCount > 0)
 				{
-					var lastOutgoingDirection = _orderedLineSites[_orderedLineSites.Count - 1].direction;
 					var firstIncomingDirection = _orderedLineSites[0].direction;
-					prevConcavity = Vector2.Dot(lastOutgoingDirection, firstIncomingDirection) < _errorMargin;
+					var firstOutgoingDirection = _orderedLineSites[_orderedLineSites.Count - 1].direction;
+					prevConcavity = Geometry.DotPerpendicularCCW(firstIncomingDirection, firstOutgoingDirection) < _errorMargin;
 
 					var lastIncomingDirection = _orderedLineSites[incomingLineCount - 1].direction;
-					var firstOutgoingDirection = _orderedLineSites[incomingLineCount].direction;
-					nextConcavity = Vector2.Dot(lastIncomingDirection, firstOutgoingDirection) < _errorMargin;
+					var lastOutgoingDirection = _orderedLineSites[incomingLineCount].direction;
+					nextConcavity = Geometry.DotPerpendicularCCW(lastOutgoingDirection, lastIncomingDirection) < _errorMargin;
 				}
 			}
 
@@ -629,8 +636,8 @@ namespace Experilous.Topologies
 
 					if (incomingLineCount > 0)
 					{
-						_voronoiGraph.AttachEdgeToSourceNodeBefore(prevSegment.nextEdgeIndex, voronoiNode.firstEdge.index);
-						_voronoiGraph.AttachEdgeToSourceNodeBefore(newSegment.nextEdgeIndex, prevSegment.nextEdgeIndex);
+						_voronoiGraph.AttachEdgeToSourceNode(prevSegment.nextEdgeIndex, voronoiNode.index);
+						_voronoiGraph.AttachEdgeToSourceNode(newSegment.nextEdgeIndex, voronoiNode.index);
 					}
 
 					_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextEdgeIndex;
@@ -639,45 +646,42 @@ namespace Experilous.Topologies
 			else
 			{
 				var insertAfterSegment = prevSegment;
-				int insertBeforeEdgeIndex = voronoiNode.firstEdge.index;
 
 				if (!prevConcavity)
 				{
 					insertAfterSegment = InsertBeachSegmentAfter(pointSite, insertAfterSegment);
 				}
 
-				for (int i = incomingLineCount; i < _orderedLineSites.Count; ++i)
+				for (int i = _orderedLineSites.Count - 1; i >= incomingLineCount; --i)
 				{
 					var outgoingEdge = new GraphEdge(_siteGraph, _orderedLineSites[i].edgeIndex);
 
 					bool wasFirst = ReferenceEquals(insertAfterSegment, prevSegment);
-					var insertedSegment = InsertBeachSegmentAfter(outgoingEdge.twin, insertAfterSegment);
+					var insertedSegment = InsertBeachSegmentAfter(outgoingEdge, insertAfterSegment);
 					if (!wasFirst)
 					{
 						DivideAdjacentSegments(insertAfterSegment);
-						_voronoiGraph.AttachEdgeToSourceNodeBefore(insertAfterSegment.nextEdgeIndex, insertBeforeEdgeIndex);
-						insertBeforeEdgeIndex = insertAfterSegment.nextEdgeIndex;
+						_voronoiGraph.AttachEdgeToSourceNode(insertAfterSegment.nextEdgeIndex, voronoiNode.index);
 					}
 
 					insertAfterSegment = insertedSegment;
 
-					insertedSegment = InsertBeachSegmentAfter(outgoingEdge, insertAfterSegment);
+					insertedSegment = InsertBeachSegmentAfter(outgoingEdge.twin, insertAfterSegment);
 
 					DivideAdjacentSegments(insertAfterSegment);
-					_voronoiGraph.AttachEdgeToSourceNodeBefore(insertAfterSegment.nextEdgeIndex, insertBeforeEdgeIndex);
-					insertBeforeEdgeIndex = insertAfterSegment.nextEdgeIndex;
-					insertAfterSegment = insertedSegment;
+					_voronoiGraph.AttachEdgeToSourceNode(insertAfterSegment.nextEdgeIndex, voronoiNode.index);
 
-					_siteEdgeFirstVoronoiEdgeIndices[outgoingEdge.twin] = insertedSegment.prevEdgeIndex;
-					_siteEdgeFirstVoronoiEdgeIndices[outgoingEdge] = insertedSegment.prevEdgeIndex ^ 1;
+					_siteEdgeFirstVoronoiEdgeIndices[outgoingEdge] = insertedSegment.prevEdgeIndex;
+					_siteEdgeFirstVoronoiEdgeIndices[outgoingEdge.twin] = insertAfterSegment.nextEdgeIndex;
+
+					insertAfterSegment = insertedSegment;
 				}
 
 				if (!nextConcavity)
 				{
 					var insertedSegment = InsertBeachSegmentAfter(pointSite, insertAfterSegment);
-					DivideAdjacentSegments(insertAfterSegment.prevSegment);
-					_voronoiGraph.AttachEdgeToSourceNodeBefore(insertAfterSegment.nextEdgeIndex, insertBeforeEdgeIndex);
-					insertBeforeEdgeIndex = insertAfterSegment.nextEdgeIndex;
+					DivideAdjacentSegments(insertAfterSegment);
+					_voronoiGraph.AttachEdgeToSourceNode(insertAfterSegment.nextEdgeIndex, voronoiNode.index);
 					insertAfterSegment = insertedSegment;
 				}
 
@@ -685,21 +689,25 @@ namespace Experilous.Topologies
 
 				if (incomingLineCount > 0)
 				{
-					_voronoiGraph.AttachEdgeToSourceNodeBefore(prevSegment.nextEdgeIndex, insertBeforeEdgeIndex);
-					_voronoiGraph.AttachEdgeToSourceNodeBefore(insertAfterSegment.nextEdgeIndex, insertBeforeEdgeIndex);
+					_voronoiGraph.AttachEdgeToSourceNode(prevSegment.nextEdgeIndex, voronoiNode.index);
+					_voronoiGraph.AttachEdgeToSourceNode(insertAfterSegment.nextEdgeIndex, voronoiNode.index);
 
 					if (prevConcavity)
 					{
-						_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextSegment.nextEdgeIndex;
+						_siteNodeFirstVoronoiEdgeIndices[pointSite] = nextSegment.prevEdgeIndex ^ 1;
 					}
 					else if (nextConcavity)
 					{
-						_siteNodeFirstVoronoiEdgeIndices[pointSite] = _voronoiGraph.GetEdgeNextChainedEdgeIndex(nextSegment.prevSegment.prevEdgeIndex);
+						_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextEdgeIndex;
 					}
 				}
 				else if (prevConcavity || nextConcavity)
 				{
-					_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextSegment.nextEdgeIndex;
+					_siteNodeFirstVoronoiEdgeIndices[pointSite] = prevSegment.nextEdgeIndex;
+				}
+				else
+				{
+					_siteNodeFirstVoronoiEdgeIndices[pointSite] = nextSegment.prevSegment.prevEdgeIndex ^ 1;
 				}
 			}
 
@@ -1082,6 +1090,8 @@ namespace Experilous.Topologies
 
 		private void CheckForMergeEvent_PointLineLine(BeachSegment segment)
 		{
+			if (segment.siteIndex == (segment.nextSegment.siteIndex ^ 1)) return;
+
 			int targetNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
 			int sourceNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
 			int targetNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
@@ -1143,6 +1153,8 @@ namespace Experilous.Topologies
 
 		private void CheckForMergeEvent_LinePointLine(BeachSegment segment)
 		{
+			if (segment.prevSegment.siteIndex == (segment.nextSegment.siteIndex ^ 1)) return;
+
 			int targetNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex);
 			int sourceNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
 			int targetNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
@@ -1185,6 +1197,8 @@ namespace Experilous.Topologies
 
 		private void CheckForMergeEvent_LineLinePoint(BeachSegment segment)
 		{
+			if (segment.prevSegment.siteIndex == (segment.siteIndex ^ 1)) return;
+
 			int targetNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex);
 			int sourceNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
 			int targetNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
@@ -1217,6 +1231,10 @@ namespace Experilous.Topologies
 
 		private void CheckForMergeEvent_LineLineLine(BeachSegment segment)
 		{
+			if (segment.prevSegment.siteIndex == (segment.siteIndex ^ 1)) return;
+			if (segment.prevSegment.siteIndex == (segment.nextSegment.siteIndex ^ 1)) return;
+			if (segment.siteIndex == (segment.nextSegment.siteIndex ^ 1)) return;
+
 			int targetNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex);
 			int sourceNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
 			int targetNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);

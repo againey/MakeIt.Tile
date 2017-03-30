@@ -20,24 +20,24 @@ namespace Experilous.Topologies.Detail
 			var mul = sum * sub;
 			if (direction.y <= 0f)
 			{
-				if (direction.x > 0f)
+				if (direction.x < 0f)
 				{
-					return -3f - mul; // first quadrant (bottom-right), [+1, -1) -> [-4, -2)
+					return -3f - mul; // first quadrant (bottom-left), [+1, -1) -> [-4, -2)
 				}
 				else
 				{
-					return -1f + mul; // second quadrant (bottom-left), [-1, +1) -> [-2, 0)
+					return -1f + mul; // second quadrant (bottom-right), [-1, +1) -> [-2, -0)
 				}
 			}
 			else
 			{
-				if (direction.x < 0f)
+				if (direction.x > 0f)
 				{
-					return +1f - mul; // third quadrant (top-left), [+1, -1) -> [0, +2)
+					return +1f - mul; // third quadrant (top-right), [+1, -1) -> [+0, +2)
 				}
 				else
 				{
-					return +3f + mul; // fourth quadrant (top-right), [-1, +1) -> [+2, +4)
+					return +3f + mul; // fourth quadrant (top-left), [-1, +1) -> [+2, +4)
 				}
 			}
 		}
