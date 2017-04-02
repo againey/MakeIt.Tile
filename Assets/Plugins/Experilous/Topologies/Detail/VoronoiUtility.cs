@@ -11,33 +11,418 @@ namespace Experilous.Topologies.Detail
 {
 	public static class VoronoiUtility
 	{
-		#region ComputeDirectionalOrder
+		#region Voronoi Event
 
-		public static float ComputeDirectionalOrder(Vector2 direction)
+		public abstract class VoronoiEvent
 		{
-			var sum = direction.x + direction.y;
-			var sub = direction.x - direction.y;
-			var mul = sum * sub;
-			if (direction.y <= 0f)
+			public Vector2 position;
+
+			public bool IsBefore(VoronoiEvent otherEvent, float errorMargin)
 			{
-				if (direction.x < 0f)
+				if (float.IsInfinity(position.y) || float.IsInfinity(otherEvent.position.y))
 				{
-					return -3f - mul; // first quadrant (bottom-left), [+1, -1) -> [-4, -2)
+					return position.y < otherEvent.position.y || position.y == otherEvent.position.y && position.x < otherEvent.position.x;
 				}
 				else
 				{
-					return -1f + mul; // second quadrant (bottom-right), [-1, +1) -> [-2, -0)
+					float yDelta = otherEvent.position.y - position.y;
+					return yDelta >= errorMargin || yDelta > -errorMargin && otherEvent.position.x - position.x > yDelta;
 				}
 			}
-			else
+		}
+
+		#endregion
+
+		#region Split Event
+
+		public class SplitEvent : VoronoiEvent, IEquatable<SplitEvent>
+		{
+			public int nodeIndex;
+
+			public SplitEvent(Vector2 position, int nodeIndex)
 			{
-				if (direction.x > 0f)
+				this.position = position;
+				this.nodeIndex = nodeIndex;
+			}
+
+			public bool Equals(SplitEvent other)
+			{
+				return nodeIndex == other.nodeIndex;
+			}
+		}
+
+		public class SplitEventQueue
+		{
+			private class PriorityQueue : Containers.PriorityQueue<SplitEvent>
+			{
+				private float _errorMargin = 0.0001f;
+
+				public PriorityQueue(float errorMargin)
 				{
-					return +1f - mul; // third quadrant (top-right), [+1, -1) -> [+0, +2)
+					_errorMargin = errorMargin;
+				}
+
+				protected override bool AreOrdered(SplitEvent lhs, SplitEvent rhs)
+				{
+					return lhs.IsBefore(rhs, _errorMargin);
+				}
+			}
+
+			private readonly PriorityQueue _queue;
+			private readonly List<SplitEvent> _pool = new List<SplitEvent>();
+
+			public SplitEventQueue(float errorMargin)
+			{
+				_queue = new PriorityQueue(errorMargin);
+				_pool = new List<SplitEvent>();
+			}
+
+			public SplitEvent Push(Vector2 splitPosition, int nodeIndex)
+			{
+				SplitEvent ev;
+				if (_pool.Count > 0)
+				{
+					int lastIndex = _pool.Count - 1;
+					ev = _pool[lastIndex];
+					_pool.RemoveAt(lastIndex);
+					ev.position = splitPosition;
+					ev.nodeIndex = nodeIndex;
 				}
 				else
 				{
-					return +3f + mul; // fourth quadrant (top-left), [-1, +1) -> [+2, +4)
+					ev = new SplitEvent(splitPosition, nodeIndex);
+				}
+				_queue.Push(ev);
+				return ev;
+			}
+
+			public SplitEvent Pop()
+			{
+				var ev = _queue.Pop();
+				_pool.Add(ev);
+				return ev;
+			}
+
+			public SplitEvent Peek()
+			{
+				return _queue.Peek();
+			}
+
+			public void Clear()
+			{
+				_queue.Clear();
+			}
+
+			public bool isEmpty { get { return _queue.isEmpty; } }
+		}
+
+		#endregion
+
+		#region Merge Event
+
+		public class MergeEvent : VoronoiEvent, IEquatable<MergeEvent>
+		{
+			public float distance;
+			public BeachSegment segment;
+
+			public MergeEvent(Vector2 position, float distance, BeachSegment segment)
+			{
+				this.position = position;
+				this.distance = distance;
+				this.segment = segment;
+			}
+
+			public bool Equals(MergeEvent other)
+			{
+				return ReferenceEquals(segment, other.segment);
+			}
+
+			public bool isValid
+			{
+				get
+				{
+					return segment != null;
+				}
+			}
+		}
+
+		public class MergeEventQueue
+		{
+			private class PriorityQueue : Containers.PriorityQueue<MergeEvent>
+			{
+				private float _errorMargin = 0.0001f;
+
+				public PriorityQueue(float errorMargin)
+				{
+					_errorMargin = errorMargin;
+				}
+
+				protected override bool AreOrdered(MergeEvent lhs, MergeEvent rhs)
+				{
+					return lhs.IsBefore(rhs, _errorMargin);
+				}
+			}
+
+			private readonly PriorityQueue _queue;
+			private readonly List<MergeEvent> _pool = new List<MergeEvent>();
+
+			public MergeEventQueue(float errorMargin)
+			{
+				_queue = new PriorityQueue(errorMargin);
+				_pool = new List<MergeEvent>();
+			}
+
+			public MergeEvent Push(Vector2 mergePosition, float distance, BeachSegment segment)
+			{
+				MergeEvent ev;
+				var eventPosition = new Vector2(mergePosition.x, mergePosition.y + distance);
+				if (_pool.Count > 0)
+				{
+					int lastIndex = _pool.Count - 1;
+					ev = _pool[lastIndex];
+					_pool.RemoveAt(lastIndex);
+					ev.position = eventPosition;
+					ev.distance = distance;
+				}
+				else
+				{
+					ev = new MergeEvent(eventPosition, distance, segment);
+				}
+				segment.SetMergeEvent(ev);
+				_queue.Push(ev);
+				return ev;
+			}
+
+			public MergeEvent Pop()
+			{
+				var ev = _queue.Pop();
+				_pool.Add(ev);
+				return ev;
+			}
+
+			public MergeEvent Peek()
+			{
+				return _queue.Peek();
+			}
+
+			public void Clear()
+			{
+				_queue.Clear();
+			}
+
+			public bool isEmpty { get { return _queue.isEmpty; } }
+		}
+
+		#endregion
+
+		#region Beach Segment
+
+		public class BeachSegment
+		{
+			public BeachSegment prevSegment;
+			public BeachSegment nextSegment;
+			public int prevEdgeIndex;
+			public int nextEdgeIndex;
+			public VoronoiSiteType siteType;
+			public int siteIndex;
+			public MergeEvent mergeEvent;
+
+			public BeachSegment()
+			{
+				siteType = VoronoiSiteType.None;
+				siteIndex = -1;
+			}
+
+			public BeachSegment(BeachSegment prevSegment, BeachSegment nextSegment, int prevEdgeIndex, int nextEdgeIndex)
+			{
+				this.prevSegment = prevSegment;
+				this.nextSegment = nextSegment;
+				this.prevEdgeIndex = prevEdgeIndex;
+				this.nextEdgeIndex = nextEdgeIndex;
+				siteType = VoronoiSiteType.None;
+				siteIndex = -1;
+			}
+
+			public static bool SitesAreEqual(BeachSegment lhs, BeachSegment rhs)
+			{
+				return lhs.siteType == rhs.siteType && lhs.siteIndex == rhs.siteIndex;
+			}
+
+			public bool SiteEquals(GraphNode pointSite)
+			{
+				return siteType == VoronoiSiteType.Point && siteIndex == pointSite.index;
+			}
+
+			public bool SiteEquals(GraphEdge edgeSite)
+			{
+				return siteType == VoronoiSiteType.Line && siteIndex == edgeSite.index;
+			}
+
+			public void SetMergeEvent(MergeEvent mergeEvent)
+			{
+				if (this.mergeEvent != null)
+				{
+					this.mergeEvent.segment = null;
+				}
+
+				this.mergeEvent = mergeEvent;
+
+				if (this.mergeEvent != null)
+				{
+					this.mergeEvent.segment = this;
+				}
+			}
+		}
+
+		public class Beach
+		{
+			private BeachSegment _head;
+			private readonly List<BeachSegment> _pool = new List<BeachSegment>();
+
+			public Beach()
+			{
+				Reset();
+			}
+
+			public void Reset()
+			{
+				while (_head != null)
+				{
+					ReturnSegment(_head);
+					_head = _head.nextSegment;
+				}
+
+				_head = GetSegment(null, null, -1, -1);
+			}
+
+			public BeachSegment head { get { return _head; } }
+
+			public BeachSegment Split(BeachSegment segment)
+			{
+				var nextSegment = GetSegment(segment, segment.nextSegment, -1, segment.nextEdgeIndex);
+
+				nextSegment.siteType = segment.siteType;
+				nextSegment.siteIndex = segment.siteIndex;
+
+				segment.nextSegment = nextSegment;
+				segment.nextEdgeIndex = -1;
+
+				if (nextSegment.nextSegment != null)
+				{
+					nextSegment.nextSegment.prevSegment = nextSegment;
+				}
+
+				return nextSegment;
+			}
+
+			public BeachSegment InsertAfter(VoronoiSiteType siteType, int siteIndex, BeachSegment segment)
+			{
+				var nextSegment = GetSegment(segment, segment.nextSegment, -1, -1);
+
+				nextSegment.siteType = siteType;
+				nextSegment.siteIndex = siteIndex;
+
+				segment.nextSegment = nextSegment;
+
+				if (nextSegment.nextSegment != null)
+				{
+					nextSegment.nextSegment.prevSegment = nextSegment;
+				}
+
+				return nextSegment;
+			}
+
+			public BeachSegment InsertAfter(GraphNode pointSite, BeachSegment segment)
+			{
+				return InsertAfter(VoronoiSiteType.Point, pointSite.index, segment);
+			}
+
+			public BeachSegment InsertAfter(GraphEdge edgeSite, BeachSegment segment)
+			{
+				return InsertAfter(VoronoiSiteType.Line, edgeSite.index, segment);
+			}
+
+			public void Remove(BeachSegment segment)
+			{
+				segment.nextSegment.prevSegment = segment.prevSegment;
+				segment.prevSegment.nextSegment = segment.nextSegment;
+
+				_pool.Add(segment);
+			}
+
+			private BeachSegment GetSegment(BeachSegment prevSegment, BeachSegment nextSegment, int prevEdgeIndex, int nextEdgeIndex)
+			{
+				BeachSegment segment;
+				if (_pool.Count > 0)
+				{
+					int lastIndex = _pool.Count - 1;
+					segment = _pool[lastIndex];
+					_pool.RemoveAt(lastIndex);
+					segment.prevSegment = prevSegment;
+					segment.nextSegment = nextSegment;
+					segment.prevEdgeIndex = prevEdgeIndex;
+					segment.nextEdgeIndex = nextEdgeIndex;
+					segment.siteType = VoronoiSiteType.None;
+					segment.siteIndex = -1;
+					segment.mergeEvent = null;
+				}
+				else
+				{
+					segment = new BeachSegment(prevSegment, nextSegment, prevEdgeIndex, nextEdgeIndex);
+				}
+				return segment;
+			}
+
+			private void ReturnSegment(BeachSegment segment)
+			{
+				segment.SetMergeEvent(null);
+				_pool.Add(segment);
+			}
+		}
+
+		#endregion
+
+		#region Directed Edge
+
+		public class DirectedEdge
+		{
+			public Vector2 direction;
+			public float order;
+			public int edgeIndex;
+
+			public DirectedEdge(Vector2 direction, int edgeIndex)
+			{
+				this.direction = direction;
+				order = ComputeOrder(direction);
+				this.edgeIndex = edgeIndex;
+			}
+
+			public static float ComputeOrder(Vector2 direction)
+			{
+				var sum = direction.x + direction.y;
+				var sub = direction.x - direction.y;
+				var mul = sum * sub;
+				if (direction.y <= 0f)
+				{
+					if (direction.x < 0f)
+					{
+						return -3f - mul; // first quadrant (bottom-left), [+1, -1) -> [-4, -2)
+					}
+					else
+					{
+						return -1f + mul; // second quadrant (bottom-right), [-1, +1) -> [-2, -0)
+					}
+				}
+				else
+				{
+					if (direction.x > 0f)
+					{
+						return +1f - mul; // third quadrant (top-right), [+1, -1) -> [+0, +2)
+					}
+					else
+					{
+						return +3f + mul; // fourth quadrant (top-left), [-1, +1) -> [+2, +4)
+					}
 				}
 			}
 		}
@@ -158,14 +543,7 @@ namespace Experilous.Topologies.Detail
 
 		#region CheckForMergeEvent
 
-		private static bool CheckForMergeEvent_NoMerge(out Vector2 mergePosition, out float distance)
-		{
-			mergePosition = new Vector2(float.NaN, float.NaN);
-			distance = 0f;
-			return false;
-		}
-
-		public static bool CheckForMergeEvent_PointPointPoint(Vector2 p0, Vector2 p1, Vector2 p2, out Vector2 mergePosition, out float distance)
+		private static void CheckForMergeEvent_PointPointPoint(Vector2 p0, Vector2 p1, Vector2 p2, BeachSegment segment, MergeEventQueue queue)
 		{
 			var v0 = p1 - p0;
 			var v2 = p1 - p2;
@@ -179,17 +557,11 @@ namespace Experilous.Topologies.Detail
 				float cy = 0.5f * (v0.x * lenSqr2 - v2.x * lenSqr0) / determinant;
 
 				var mergeOffset = new Vector2(cx, cy);
-				distance = mergeOffset.magnitude;
-				mergePosition = p1 + mergeOffset;
-				return true;
-			}
-			else
-			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+				queue.Push(p1 + mergeOffset, mergeOffset.magnitude, segment);
 			}
 		}
 
-		private static bool CheckForMergeEvent_PointLinePoint(Vector2 p0, Vector2 p1a, Vector2 p1b, Vector2 p2, float errorMargin, bool lineInMiddle, out Vector2 mergePosition, out float distance)
+		private static void CheckForMergeEvent_PointLinePoint(Vector2 p0, Vector2 p1a, Vector2 p1b, Vector2 p2, float errorMargin, bool lineInMiddle, BeachSegment segment, MergeEventQueue queue)
 		{
 			var v1 = p1b - p1a;
 			var n1 = v1.PerpendicularCCW();
@@ -232,12 +604,12 @@ namespace Experilous.Topologies.Detail
 					}
 					else
 					{
-						return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+						return;
 					}
 				}
 				else
 				{
-					return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+					return;
 				}
 			}
 			else if (lineInMiddle)
@@ -247,15 +619,13 @@ namespace Experilous.Topologies.Detail
 			}
 			else
 			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+				return;
 			}
 
-			distance = Mathf.Sqrt(vSqrLen) * Mathf.Abs(y);
-			mergePosition = p1a + v1 * x + n1 * y;
-			return true;
+			queue.Push(p1a + v1 * x + n1 * y, Mathf.Sqrt(vSqrLen) * Mathf.Abs(y), segment);
 		}
 
-		private static bool CheckForMergeEvent_PointLineNormal(Vector2 p0, Vector2 p1, Vector2 v1, Vector2 n1, out Vector2 mergePosition, out float distance)
+		private static void CheckForMergeEvent_PointLineNormal(Vector2 p0, Vector2 p1, Vector2 v1, Vector2 n1, BeachSegment segment, MergeEventQueue queue)
 		{
 			var vSqrLen = v1.sqrMagnitude;
 
@@ -264,12 +634,10 @@ namespace Experilous.Topologies.Detail
 
 			float y = (q0.x * q0.x / q0.y + q0.y) / 2f;
 
-			distance = Mathf.Sqrt(vSqrLen) * y;
-			mergePosition = p1 + n1 * y;
-			return true;
+			queue.Push(p1 + n1 * y, Mathf.Sqrt(vSqrLen) * y, segment);
 		}
 
-		private static bool CheckForMergeEvent_LinePointLine(Vector2 p0a, Vector2 p0b, Vector2 p1, Vector2 p2a, Vector2 p2b, float errorMargin, bool pointInMiddle, out Vector2 mergePosition, out float distance)
+		private static void CheckForMergeEvent_LinePointLine(Vector2 p0a, Vector2 p0b, Vector2 p1, Vector2 p2a, Vector2 p2b, float errorMargin, bool pointInMiddle, BeachSegment segment, MergeEventQueue queue)
 		{
 			Vector2 q0a = p0a - p1;
 			Vector2 q2a = p2a - p1;
@@ -299,21 +667,15 @@ namespace Experilous.Topologies.Detail
 					float sqr = b * b - 4f * a * c;
 					if (sqr >= errorMargin)
 					{
-						distance = (-b + Mathf.Sqrt(sqr) * Mathf.Sign(Geometry.DotPerpendicularCW(v0, v2)) * (pointInMiddle ? +1f : -1f)) / (2f * a);
-						mergePosition.x = p1.x + gx * distance + hx;
-						mergePosition.y = p1.y + gy * distance + hy;
-						return true;
+						var distance = (-b + Mathf.Sqrt(sqr) * Mathf.Sign(Geometry.DotPerpendicularCW(v0, v2)) * (pointInMiddle ? +1f : -1f)) / (2f * a);
+						var mergePosition = new Vector2(p1.x + gx * distance + hx, p1.y + gy * distance + hy);
+						queue.Push(mergePosition, distance, segment);
 					}
 					else if (sqr > -errorMargin)
 					{
-						distance = -0.5f * b / a;
-						mergePosition.x = p1.x + gx * distance + hx;
-						mergePosition.y = p1.y + gy * distance + hy;
-						return true;
-					}
-					else
-					{
-						return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+						var distance = -0.5f * b / a;
+						var mergePosition = new Vector2(p1.x + gx * distance + hx, p1.y + gy * distance + hy);
+						queue.Push(mergePosition, distance, segment);
 					}
 				}
 				else
@@ -329,35 +691,32 @@ namespace Experilous.Topologies.Detail
 			}
 		}
 
-		private static bool CheckForMergeEvent_NormalLineLine(Vector2 p1, Vector2 v1, Vector2 p2, Vector2 v2, Vector2 n2, float errorMargin, out Vector2 mergePosition, out float distance)
+		private static void CheckForMergeEvent_NormalLineLine(Vector2 p1, Vector2 v1, Vector2 p2, Vector2 v2, Vector2 n2, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
-			if (Vector3.Dot(v1, n2) > -errorMargin)
+			if (Vector3.Dot(v1, n2) < errorMargin)
 			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+				Vector2 q2 = p2 - p1;
+				float len1 = v1.magnitude;
+				float len2 = v2.magnitude;
+
+				float f2 = Vector2.Dot(n2, q2);
+				float determinant = -Vector2.Dot(v1, n2);
+
+				float gx = (len1 * v2.x - len2 * v1.x) / determinant;
+				float gy = (len1 * v2.y - len2 * v1.y) / determinant;
+				float hx = -f2 * v1.x / determinant;
+				float hy = -f2 * v1.y / determinant;
+
+				float a = gx * gx + gy * gy - 1f;
+				float b = 2f * (gx * hx + gy * hy);
+
+				var distance = -0.5f * b / a;
+				var mergePosition = new Vector2(p1.x + gx * distance + hx, p1.y + gy * distance + hy);
+				queue.Push(mergePosition, distance, segment);
 			}
-
-			Vector2 q2 = p2 - p1;
-			float len1 = v1.magnitude;
-			float len2 = v2.magnitude;
-
-			float f2 = Vector2.Dot(n2, q2);
-			float determinant = -Vector2.Dot(v1, n2);
-
-			float gx = (len1 * v2.x - len2 * v1.x) / determinant;
-			float gy = (len1 * v2.y - len2 * v1.y) / determinant;
-			float hx = -f2 * v1.x / determinant;
-			float hy = -f2 * v1.y / determinant;
-
-			float a = gx * gx + gy * gy - 1f;
-			float b = 2f * (gx * hx + gy * hy);
-
-			distance = -0.5f * b / a;
-			mergePosition.x = p1.x + gx * distance + hx;
-			mergePosition.y = p1.y + gy * distance + hy;
-			return true;
 		}
 
-		public static bool CheckForMergeEvent_LineLineLine(Vector2 p0a, Vector2 p0b, Vector2 p1a, Vector2 p1b, Vector2 p2a, Vector2 p2b, float errorMargin, out Vector2 mergePosition, out float distance)
+		private static void CheckForMergeEvent_LineLineLine(Vector2 p0a, Vector2 p0b, Vector2 p1a, Vector2 p1b, Vector2 p2a, Vector2 p2b, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			Vector2 q0a = p0a - p1a;
 			Vector2 q2a = p2a - p1a;
@@ -377,22 +736,17 @@ namespace Experilous.Topologies.Detail
 			float hx = (f0 * v2.x - f2 * v0.x) / determinant;
 			float hy = (f0 * v2.y - f2 * v0.y) / determinant;
 
-			distance = (v1.y * hx - v1.x * hy) / (v1.x * gy - v1.y * gx - len1);
-			mergePosition.x = p1a.x + gx * distance + hx;
-			mergePosition.y = p1a.y + gy * distance + hy;
-			return true;
+			var distance = (v1.y * hx - v1.x * hy) / (v1.x * gy - v1.y * gx - len1);
+			var mergePosition = new Vector2(p1a.x + gx * distance + hx, p1a.y + gy * distance + hy);
+			queue.Push(mergePosition, distance, segment);
 		}
 
-
-
-
-
-		public static bool CheckForMergeEvent_PointPointPoint(int i0, int i1, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, out Vector2 mergePosition, out float distance)
+		public static void CheckForMergeEvent_PointPointPoint(int i0, int i1, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
-			return CheckForMergeEvent_PointPointPoint(nodePositions[i0], nodePositions[i1], nodePositions[i2], out mergePosition, out distance);
+			CheckForMergeEvent_PointPointPoint(nodePositions[i0], nodePositions[i1], nodePositions[i2], segment, queue);
 		}
 
-		public static bool CheckForMergeEvent_PointPointLine(int i0, int i1, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, out Vector2 mergePosition, out float distance)
+		public static void CheckForMergeEvent_PointPointLine(int i0, int i1, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			var p2a = nodePositions[i2a];
 			var p2b = nodePositions[i2b];
@@ -400,7 +754,7 @@ namespace Experilous.Topologies.Detail
 			{
 				var v1 = p2a - p2b;
 				var n1 = v1.PerpendicularCW();
-				return CheckForMergeEvent_PointLineNormal(nodePositions[i0], p2b, v1, n1, out mergePosition, out distance);
+				CheckForMergeEvent_PointLineNormal(nodePositions[i0], p2b, v1, n1, segment, queue);
 			}
 			else
 			{
@@ -408,47 +762,39 @@ namespace Experilous.Topologies.Detail
 				var p1 = nodePositions[i1];
 				if (Geometry.DotPerpendicularCW(p2b - p2a, p0 - p1) > errorMargin)
 				{
-					return CheckForMergeEvent_PointLinePoint(p0, p2a, p2b, p1, errorMargin, false, out mergePosition, out distance);
-				}
-				else
-				{
-					return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+					CheckForMergeEvent_PointLinePoint(p0, p2a, p2b, p1, errorMargin, false, segment, queue);
 				}
 			}
 		}
 
-		public static bool CheckForMergeEvent_PointLinePoint(int i0, int i1a, int i1b, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, out Vector2 mergePosition, out float distance)
+		public static void CheckForMergeEvent_PointLinePoint(int i0, int i1a, int i1b, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			var p1a = nodePositions[i1a];
 			var p1b = nodePositions[i1b];
 			if (i0 == i1a)
 			{
-				if (i2 == i1b)
-				{
-					return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
-				}
-				else
+				if (i2 != i1b)
 				{
 					var v1 = p1b - p1a;
 					var n1 = v1.PerpendicularCCW();
-					return CheckForMergeEvent_PointLineNormal(nodePositions[i2], p1a, v1, n1, out mergePosition, out distance);
+					CheckForMergeEvent_PointLineNormal(nodePositions[i2], p1a, v1, n1, segment, queue);
 				}
 			}
 			else if (i2 == i1b)
 			{
 				var v1 = p1a - p1b;
 				var n1 = v1.PerpendicularCW();
-				return CheckForMergeEvent_PointLineNormal(nodePositions[i0], p1b, v1, n1, out mergePosition, out distance);
+				CheckForMergeEvent_PointLineNormal(nodePositions[i0], p1b, v1, n1, segment, queue);
 			}
 			else
 			{
 				var p0 = nodePositions[i0];
 				var p2 = nodePositions[i2];
-				return CheckForMergeEvent_PointLinePoint(p0, p1a, p1b, p2, errorMargin, true, out mergePosition, out distance);
+				CheckForMergeEvent_PointLinePoint(p0, p1a, p1b, p2, errorMargin, true, segment, queue);
 			}
 		}
 
-		public static bool CheckForMergeEvent_LinePointPoint(int i0a, int i0b, int i1, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, out Vector2 mergePosition, out float distance)
+		public static void CheckForMergeEvent_LinePointPoint(int i0a, int i0b, int i1, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			var p0a = nodePositions[i0a];
 			var p0b = nodePositions[i0b];
@@ -456,7 +802,7 @@ namespace Experilous.Topologies.Detail
 			{
 				var v1 = p0b - p0a;
 				var n1 = v1.PerpendicularCCW();
-				return CheckForMergeEvent_PointLineNormal(nodePositions[i2], p0a, v1, n1, out mergePosition, out distance);
+				CheckForMergeEvent_PointLineNormal(nodePositions[i2], p0a, v1, n1, segment, queue);
 			}
 			else
 			{
@@ -464,233 +810,106 @@ namespace Experilous.Topologies.Detail
 				var p2 = nodePositions[i2];
 				if (Geometry.DotPerpendicularCW(p0b - p0a, p2 - p1) > errorMargin)
 				{
-					return CheckForMergeEvent_PointLinePoint(p2, p0b, p0a, p1, errorMargin, false, out mergePosition, out distance);
-				}
-				else
-				{
-					return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+					CheckForMergeEvent_PointLinePoint(p2, p0b, p0a, p1, errorMargin, false, segment, queue);
 				}
 			}
 		}
 
-		public static bool CheckForMergeEvent_PointLineLine(int i0, int i1a, int i1b, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, out Vector2 mergePosition, out float distance)
+		public static void CheckForMergeEvent_PointLineLine(int i0, int i1a, int i1b, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
-			if (i1a == i2b && i1b == i2a)
+			if (i1a != i2b || i1b != i2a)
 			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
-			}
+				var p1a = nodePositions[i1a];
+				var p1b = nodePositions[i1b];
+				var p2a = nodePositions[i2a];
+				var p2b = nodePositions[i2b];
 
-			var p1a = nodePositions[i1a];
-			var p1b = nodePositions[i1b];
-			var p2a = nodePositions[i2a];
-			var p2b = nodePositions[i2b];
-
-			if (i0 == i1a)
-			{
-				var v1 = p1b - p1a;
-				var v2 = p2b - p2a;
-				var n2 = v2.PerpendicularCCW();
-				return CheckForMergeEvent_NormalLineLine(p1a, v1, p2a, v2, n2, errorMargin, out mergePosition, out distance);
-			}
-			else
-			{
-				var p0 = nodePositions[i0];
-				return CheckForMergeEvent_LinePointLine(p1a, p1b, p0, p2a, p2b, errorMargin, false, out mergePosition, out distance);
-			}
-		}
-
-		public static bool CheckForMergeEvent_LinePointLine(int i0a, int i0b, int i1, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			if ((i0a == i2a && i0b == i2b) || (i0a == i2b && i0b == i2a))
-			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
-			}
-			
-			var p0a = nodePositions[i0a];
-			var p0b = nodePositions[i0b];
-			var p2a = nodePositions[i2a];
-			var p2b = nodePositions[i2b];
-
-			if (i0b == i1)
-			{
-				if (i1 == i2a)
+				if (i0 == i1a)
 				{
-					return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
+					var v1 = p1b - p1a;
+					var v2 = p2b - p2a;
+					var n2 = v2.PerpendicularCCW();
+					CheckForMergeEvent_NormalLineLine(p1a, v1, p2a, v2, n2, errorMargin, segment, queue);
 				}
 				else
 				{
-					var v1 = p2a - p2b;
+					var p0 = nodePositions[i0];
+					CheckForMergeEvent_LinePointLine(p1a, p1b, p0, p2a, p2b, errorMargin, false, segment, queue);
+				}
+			}
+		}
+
+		public static void CheckForMergeEvent_LinePointLine(int i0a, int i0b, int i1, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		{
+			if ((i0a != i2a || i0b != i2b) && (i0a != i2b || i0b != i2a))
+			{
+				var p0a = nodePositions[i0a];
+				var p0b = nodePositions[i0b];
+				var p2a = nodePositions[i2a];
+				var p2b = nodePositions[i2b];
+
+				if (i0b == i1)
+				{
+					if (i1 != i2a)
+					{
+						var v1 = p2a - p2b;
+						var v0 = p0a - p0b;
+						var n0 = v0.PerpendicularCW();
+						CheckForMergeEvent_NormalLineLine(p2b, v1, p0b, v0, n0, errorMargin, segment, queue);
+					}
+				}
+				else if (i1 == i2a)
+				{
+					var v1 = p0b - p0a;
+					var v2 = p2b - p2a;
+					var n2 = v2.PerpendicularCCW();
+					CheckForMergeEvent_NormalLineLine(p0a, v1, p2a, v2, n2, errorMargin, segment, queue);
+				}
+				else
+				{
+					var p1 = nodePositions[i1];
+					CheckForMergeEvent_LinePointLine(p0a, p0b, p1, p2a, p2b, errorMargin, true, segment, queue);
+				}
+			}
+		}
+
+		public static void CheckForMergeEvent_LineLinePoint(int i0a, int i0b, int i1a, int i1b, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		{
+			if (i0a != i1b || i0b != i1a)
+			{
+				var p0a = nodePositions[i0a];
+				var p0b = nodePositions[i0b];
+				var p1a = nodePositions[i1a];
+				var p1b = nodePositions[i1b];
+
+				if (i1b == i2)
+				{
+					var v1 = p1a - p1b;
 					var v0 = p0a - p0b;
 					var n0 = v0.PerpendicularCW();
-					return CheckForMergeEvent_NormalLineLine(p2b, v1, p0b, v0, n0, errorMargin, out mergePosition, out distance);
+					CheckForMergeEvent_NormalLineLine(p1b, v1, p0b, v0, n0, errorMargin, segment, queue);
+				}
+				else
+				{
+					var p2 = nodePositions[i2];
+					CheckForMergeEvent_LinePointLine(p0a, p0b, p2, p1a, p1b, errorMargin, false, segment, queue);
 				}
 			}
-			else if (i1 == i2a)
+		}
+
+		public static void CheckForMergeEvent_LineLineLine(int i0a, int i0b, int i1a, int i1b, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		{
+			if ((i0a != i1b || i0b != i1a) && (i1a != i2b || i1b != i2a))
 			{
-				var v1 = p0b - p0a;
-				var v2 = p2b - p2a;
-				var n2 = v2.PerpendicularCCW();
-				return CheckForMergeEvent_NormalLineLine(p0a, v1, p2a, v2, n2, errorMargin, out mergePosition, out distance);
+				var p0a = nodePositions[i0a];
+				var p0b = nodePositions[i0b];
+				var p1a = nodePositions[i1a];
+				var p1b = nodePositions[i1b];
+				var p2a = nodePositions[i2a];
+				var p2b = nodePositions[i2b];
+
+				CheckForMergeEvent_LineLineLine(p0a, p0b, p1a, p1b, p2a, p2b, errorMargin, segment, queue);
 			}
-			else
-			{
-				var p1 = nodePositions[i1];
-				return CheckForMergeEvent_LinePointLine(p0a, p0b, p1, p2a, p2b, errorMargin, true, out mergePosition, out distance);
-			}
-		}
-
-		public static bool CheckForMergeEvent_LineLinePoint(int i0a, int i0b, int i1a, int i1b, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			if (i0a == i1b && i0b == i1a)
-			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
-			}
-
-			var p0a = nodePositions[i0a];
-			var p0b = nodePositions[i0b];
-			var p1a = nodePositions[i1a];
-			var p1b = nodePositions[i1b];
-
-			if (i1b == i2)
-			{
-				var v1 = p1a - p1b;
-				var v0 = p0a - p0b;
-				var n0 = v0.PerpendicularCW();
-				return CheckForMergeEvent_NormalLineLine(p1b, v1, p0b, v0, n0, errorMargin, out mergePosition, out distance);
-			}
-			else
-			{
-				var p2 = nodePositions[i2];
-				return CheckForMergeEvent_LinePointLine(p0a, p0b, p2, p1a, p1b, errorMargin, false, out mergePosition, out distance);
-			}
-		}
-
-		public static bool CheckForMergeEvent_LineLineLine(int i0a, int i0b, int i1a, int i1b, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			if ((i0a == i1b && i0b == i1a) || (i1a == i2b && i1b == i2a))
-			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
-			}
-			
-			var p0a = nodePositions[i0a];
-			var p0b = nodePositions[i0b];
-			var p1a = nodePositions[i1a];
-			var p1b = nodePositions[i1b];
-			var p2a = nodePositions[i2a];
-			var p2b = nodePositions[i2b];
-
-			return CheckForMergeEvent_LineLineLine(p0a, p0b, p1a, p1b, p2a, p2b, errorMargin, out mergePosition, out distance);
-		}
-
-
-
-
-
-
-
-
-		public static bool CheckForMergeEvent_PointPointLine(Vector2 p0, Vector2 p1, Vector2 p2a, Vector2 p2b, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			if (Geometry.DotPerpendicularCW(p2b - p2a, p0 - p1) > errorMargin)
-			{
-				return CheckForMergeEvent_PointLinePoint(p0, p2a, p2b, p1, errorMargin, false, out mergePosition, out distance);
-			}
-			else
-			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
-			}
-		}
-
-		public static bool CheckForMergeEvent_PointTargetPointLine(Vector2 p0, Vector2 p2a, Vector2 p2b, out Vector2 mergePosition, out float distance)
-		{
-			var v1 = p2a - p2b;
-			var n1 = v1.PerpendicularCW();
-			return CheckForMergeEvent_PointLineNormal(p0, p2b, v1, n1, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_PointLinePoint(Vector2 p0, Vector2 p1a, Vector2 p1b, Vector2 p2, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			return CheckForMergeEvent_PointLinePoint(p0, p1a, p1b, p2, errorMargin, true, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_SourcePointLinePoint(Vector2 p1a, Vector2 p1b, Vector2 p2, out Vector2 mergePosition, out float distance)
-		{
-			var v1 = p1b - p1a;
-			var n1 = v1.PerpendicularCCW();
-			return CheckForMergeEvent_PointLineNormal(p2, p1a, v1, n1, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_PointLineTargetPoint(Vector2 p0, Vector2 p1a, Vector2 p1b, out Vector2 mergePosition, out float distance)
-		{
-			var v1 = p1a - p1b;
-			var n1 = v1.PerpendicularCW();
-			return CheckForMergeEvent_PointLineNormal(p0, p1b, v1, n1, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_PointLineLine(Vector2 p0, Vector2 p1a, Vector2 p1b, Vector2 p2a, Vector2 p2b, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			return CheckForMergeEvent_LinePointLine(p1a, p1b, p0, p2a, p2b, errorMargin, false, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_SourcePointLineLine(Vector2 p1a, Vector2 p1b, Vector2 p2a, Vector2 p2b, out Vector2 mergePosition, out float distance)
-		{
-			var v1 = p1b - p1a;
-			var v2 = p2b - p2a;
-			var n2 = v2.PerpendicularCCW();
-			return CheckForMergeEvent_NormalLineLine(p1a, v1, p2a, v2, n2, 0.0001f, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_LineSourcePointPoint(Vector2 p0a, Vector2 p0b, Vector2 p2, out Vector2 mergePosition, out float distance)
-		{
-			var v1 = p0b - p0a;
-			var n1 = v1.PerpendicularCCW();
-			return CheckForMergeEvent_PointLineNormal(p2, p0a, v1, n1, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_LinePointPoint(Vector2 p0a, Vector2 p0b, Vector2 p1, Vector2 p2, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			if (Geometry.DotPerpendicularCW(p0b - p0a, p2 - p1) > errorMargin)
-			{
-				return CheckForMergeEvent_PointLinePoint(p2, p0b, p0a, p1, errorMargin, false, out mergePosition, out distance);
-			}
-			else
-			{
-				return CheckForMergeEvent_NoMerge(out mergePosition, out distance);
-			}
-		}
-
-		public static bool CheckForMergeEvent_LinePointLine(Vector2 p0a, Vector2 p0b, Vector2 p1, Vector2 p2a, Vector2 p2b, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			return CheckForMergeEvent_LinePointLine(p0a, p0b, p1, p2a, p2b, errorMargin, true, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_LineTargetPointLine(Vector2 p0a, Vector2 p0b, Vector2 p2a, Vector2 p2b, out Vector2 mergePosition, out float distance)
-		{
-			var v1 = p2a - p2b;
-			var v0 = p0a - p0b;
-			var n0 = v0.PerpendicularCW();
-			return CheckForMergeEvent_NormalLineLine(p2b, v1, p0b, v0, n0, 0.0001f, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_LineSourcePointLine(Vector2 p0a, Vector2 p0b, Vector2 p2a, Vector2 p2b, out Vector2 mergePosition, out float distance)
-		{
-			var v1 = p0b - p0a;
-			var v2 = p2b - p2a;
-			var n2 = v2.PerpendicularCCW();
-			return CheckForMergeEvent_NormalLineLine(p0a, v1, p2a, v2, n2, 0.0001f, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_LineLinePoint(Vector2 p0a, Vector2 p0b, Vector2 p1a, Vector2 p1b, Vector2 p2, float errorMargin, out Vector2 mergePosition, out float distance)
-		{
-			return CheckForMergeEvent_LinePointLine(p0a, p0b, p2, p1a, p1b, errorMargin, false, out mergePosition, out distance);
-		}
-
-		public static bool CheckForMergeEvent_LineLineTargetPoint(Vector2 p0a, Vector2 p0b, Vector2 p1a, Vector2 p1b, out Vector2 mergePosition, out float distance)
-		{
-			var v1 = p1a - p1b;
-			var v0 = p0a - p0b;
-			var n0 = v0.PerpendicularCW();
-			return CheckForMergeEvent_NormalLineLine(p1b, v1, p0b, v0, n0, 0.0001f, out mergePosition, out distance);
 		}
 
 		#endregion
