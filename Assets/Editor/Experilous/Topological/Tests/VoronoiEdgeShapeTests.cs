@@ -1040,6 +1040,30 @@ namespace Experilous.Topologies.Tests
 			AssertIsNaN(t0);
 			AssertIsNaN(t1);
 		}
+
+		[Test]
+		public void ParabolaCurvature_ClockwiseReverse()
+		{
+			var edgeShape = VoronoiEdgeShape.FromPointLine(new Vector3(0f, 0f, 0f), new Vector3(-7f, -1f, 0f), new Vector3(+8f, -6f, 0f), new Vector3(-7f, -1f, 0f), new Vector3(1f, -7f, 0f), Vector3.back);
+
+			AssertApproximatelyEqual(Mathf.Sqrt(5f) / 125f, edgeShape.GetCurvature(-2f, Vector3.back), 0.0001f);
+			AssertApproximatelyEqual(Mathf.Sqrt(2f) / 20f, edgeShape.GetCurvature(-1f, Vector3.back), 0.0001f);
+			AssertApproximatelyEqual(2f / 10f, edgeShape.GetCurvature(0f, Vector3.back), 0.0001f);
+			AssertApproximatelyEqual(Mathf.Sqrt(2f) / 20f, edgeShape.GetCurvature(+1f, Vector3.back), 0.0001f);
+			AssertApproximatelyEqual(Mathf.Sqrt(5f) / 125f, edgeShape.GetCurvature(+2f, Vector3.back), 0.0001f);
+		}
+
+		[Test]
+		public void ParabolaCurvature_CounterClockwise()
+		{
+			var edgeShape = VoronoiEdgeShape.FromLinePoint(new Vector3(-7f, -1f, 0f), new Vector3(+8f, -6f, 0f), new Vector3(0f, 0f, 0f), new Vector3(-7f, -1f, 0f), new Vector3(1f, -7f, 0f), Vector3.back);
+
+			AssertApproximatelyEqual(-Mathf.Sqrt(5f) / 125f, edgeShape.GetCurvature(-2f, Vector3.back), 0.0001f);
+			AssertApproximatelyEqual(-Mathf.Sqrt(2f) / 20f, edgeShape.GetCurvature(-1f, Vector3.back), 0.0001f);
+			AssertApproximatelyEqual(-2f / 10f, edgeShape.GetCurvature(0f, Vector3.back), 0.0001f);
+			AssertApproximatelyEqual(-Mathf.Sqrt(2f) / 20f, edgeShape.GetCurvature(+1f, Vector3.back), 0.0001f);
+			AssertApproximatelyEqual(-Mathf.Sqrt(5f) / 125f, edgeShape.GetCurvature(+2f, Vector3.back), 0.0001f);
+		}
 	}
 }
 #endif

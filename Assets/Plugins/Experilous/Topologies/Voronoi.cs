@@ -910,7 +910,7 @@ namespace Experilous.Topologies
 
 		public VoronoiEdgeShapeType type;
 
-		private VoronoiEdgeShape(VoronoiEdgeShapeType type)
+		public VoronoiEdgeShape(VoronoiEdgeShapeType type)
 		{
 			this.type = type;
 
@@ -922,7 +922,7 @@ namespace Experilous.Topologies
 			s = 0f;
 		}
 
-		private VoronoiEdgeShape(VoronoiEdgeShapeType type, Vector3 v, Vector3 p, float t0, float t1)
+		public VoronoiEdgeShape(VoronoiEdgeShapeType type, Vector3 v, Vector3 p, float t0, float t1)
 		{
 			this.type = type;
 
@@ -934,7 +934,7 @@ namespace Experilous.Topologies
 			s = 0f;
 		}
 
-		private VoronoiEdgeShape(VoronoiEdgeShapeType type, Vector3 v, Vector3 p, float s, float t0, float t1)
+		public VoronoiEdgeShape(VoronoiEdgeShapeType type, Vector3 v, Vector3 p, float s, float t0, float t1)
 		{
 			this.type = type;
 
@@ -946,7 +946,7 @@ namespace Experilous.Topologies
 			this.s = s;
 		}
 
-		private VoronoiEdgeShape(VoronoiEdgeShapeType type, Vector3 u, Vector3 v, Vector3 p, float s, float t0, float t1)
+		public VoronoiEdgeShape(VoronoiEdgeShapeType type, Vector3 u, Vector3 v, Vector3 p, float s, float t0, float t1)
 		{
 			this.type = type;
 
@@ -1156,8 +1156,14 @@ namespace Experilous.Topologies
 		{
 			var p = p0 + v0 / 2f;
 			var v = -v0.normalized;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.ParallelLine, v, p, 0f, Project(p, v, q0), Project(p, v, q1));
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.ParallelLine, v, p, 0f, Project(p, v, q1), Project(p, v, q0));
 		}
+
+		public bool isStraight { get { return type != VoronoiEdgeShapeType.Infinite && type != VoronoiEdgeShapeType.Parabola; } }
+		public bool isCurved { get { return type == VoronoiEdgeShapeType.Parabola; } }
+
+		public bool isFinite { get { return type != VoronoiEdgeShapeType.Infinite; } }
+		public bool isInfinite { get { return type == VoronoiEdgeShapeType.Infinite; } }
 
 		public VoronoiEdgeShape reversed
 		{
@@ -1234,6 +1240,133 @@ namespace Experilous.Topologies
 					return v;
 				case VoronoiEdgeShapeType.Parabola:
 					return (2f * u * t + v).normalized;
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		public float GetCurvature(float t, Vector3 up)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					return float.NaN;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+				case VoronoiEdgeShapeType.ParallelLine:
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					return 0f;
+				case VoronoiEdgeShapeType.Parabola:
+					{
+						float hSquared = t * t + 1f;
+						return Numerics.Math.ZeroExclusiveSign(Vector3.Dot(Vector3.Cross(v, u), up)) / (2f * s * hSquared * Mathf.Sqrt(hSquared));
+					}
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		public float GetCurvatureSum(float t0, float t1)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					return float.NaN;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+				case VoronoiEdgeShapeType.ParallelLine:
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					return 0f;
+				case VoronoiEdgeShapeType.Parabola:
+						return t1 / (2f * s * Mathf.Sqrt(t1 * t1 + 1f)) - t0 / (2f * s * Mathf.Sqrt(t0 * t0 + 1f));
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		public float GetCurvatureSumOffset(float t0, float curvatureSum)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					return float.NaN;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+				case VoronoiEdgeShapeType.ParallelLine:
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					return (curvatureSum == 0f) ? t0 : (curvatureSum > 0f) ? float.PositiveInfinity : float.NegativeInfinity;
+				case VoronoiEdgeShapeType.Parabola:
+					{
+						var c0 = t0 / (2f * s * Mathf.Sqrt(t0 * t0 + 1f));
+						var c1 = c0 + curvatureSum;
+						var a = s * c1;
+						return 2f * s * c1 / Mathf.Sqrt(1f - 4f * a * a);
+					}
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		public float GetArcLength(float t0, float t1)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					return float.NaN;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+				case VoronoiEdgeShapeType.ParallelLine:
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					return t1 - t0;
+				case VoronoiEdgeShapeType.Parabola:
+					{
+						float q0 = Mathf.Sqrt(s * s + t0 * t0 / 4f);
+						float q1 = Mathf.Sqrt(s * s + t1 * t1 / 4f);
+						return (t1 * q1 - t0 * q0) / (2f * s) + s * Mathf.Log((t1 / 2f + q1) / (t0 / 2f + q0));
+					}
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		public float GetDistanceDerivative(float t)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					return float.NaN;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+					return s;
+				case VoronoiEdgeShapeType.HalfAngleLine:
+					return 1f / s;
+				case VoronoiEdgeShapeType.ParallelLine:
+					return 0f;
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					return t / Mathf.Sqrt(s + t * t);
+				case VoronoiEdgeShapeType.Parabola:
+					return 8f * s * t;
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		public float GetDistanceSecondDerivative(float t)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					return float.NaN;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+				case VoronoiEdgeShapeType.ParallelLine:
+					return 0f;
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					{
+						var hSquared = s + t * t;
+						return s / (hSquared * Mathf.Sqrt(hSquared));
+					}
+				case VoronoiEdgeShapeType.Parabola:
+					return 8f * s;
 				default:
 					throw new NotImplementedException();
 			}
@@ -1427,6 +1560,94 @@ namespace Experilous.Topologies
 				default:
 					throw new NotImplementedException();
 			}
+		}
+
+		public float IntersectEntranceUnclamped(float distance)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					break;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+					if (s > 0f)
+					{
+						return distance * s;
+					}
+					break;
+				case VoronoiEdgeShapeType.ParallelLine:
+					if (distance == s)
+					{
+						return t0;
+					}
+					break;
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					{
+						float distanceSquared = distance * distance;
+						if (distanceSquared >= s)
+						{
+							return Mathf.Sqrt(distanceSquared - s);
+						}
+						break;
+					}
+				case VoronoiEdgeShapeType.Parabola:
+					{
+						float distanceOverS = distance / s;
+						if (distanceOverS >= 1f)
+						{
+							return Mathf.Sqrt(distanceOverS - 1f) / 2f;
+						}
+					}
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+
+			return float.NaN;
+		}
+
+		public float IntersectExitUnclamped(float distance)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					break;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+					if (s < 0f)
+					{
+						return distance * s;
+					}
+					break;
+				case VoronoiEdgeShapeType.ParallelLine:
+					if (distance == s)
+					{
+						return t1;
+					}
+					break;
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					{
+						float distanceSquared = distance * distance;
+						if (distanceSquared >= s)
+						{
+							return -Mathf.Sqrt(distanceSquared - s);
+						}
+						break;
+					}
+				case VoronoiEdgeShapeType.Parabola:
+					{
+						float distanceOverS = distance / s;
+						if (distanceOverS >= 1f)
+						{
+							return -Mathf.Sqrt(distanceOverS - 1f) / 2f;
+						}
+					}
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+
+			return float.NaN;
 		}
 	}
 
