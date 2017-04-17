@@ -1004,8 +1004,8 @@ namespace Experilous.Topologies.Tests
 			var edgeShape = VoronoiEdgeShape.FromTwinLines(
 				new Vector3(0f, 0f, 0f),
 				new Vector3(4f, 3f, 0f),
-				new Vector3(4f, 3f, 0f),
-				new Vector3(0f, 0f, 0f));
+				new Vector3(0f, 0f, 0f),
+				new Vector3(4f, 3f, 0f));
 
 			Assert.AreEqual(VoronoiEdgeShapeType.ParallelLine, edgeShape.type);
 			AssertApproximatelyEqual(new Vector3(0f, 0f, 0f), edgeShape.u, 0.0001f);

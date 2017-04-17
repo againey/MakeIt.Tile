@@ -246,7 +246,7 @@ namespace Experilous.Topologies
 			var voronoiEdgeShapes = new TopologyEdgeDataArray<VoronoiEdgeShape>(voronoiTopology.edgeCount);
 			for (int i = 0; i < voronoiTopology.edgeCount; ++i)
 			{
-				voronoiEdgeShapes[i] = VoronoiEdgeShape.FromVoronoiEdge(new TopologyEdge(voronoiTopology, i), _siteGraph, voronoiFaceSiteTypes, voronoiFaceSiteIndices, finalVoronoiPositions, _originalPointSitePositions, _up);
+				voronoiEdgeShapes[i] = VoronoiEdgeShape.FromVoronoiEdge(new TopologyEdge(voronoiTopology, i), _siteGraph, voronoiFaceSiteTypes, voronoiFaceSiteIndices, finalVoronoiPositions, _originalPointSitePositions, Vector3.Cross(_up, _right));
 			}
 
 			return new VoronoiDiagram(_siteGraph, _originalPointSitePositions, voronoiTopology, _siteNodeFirstVoronoiEdgeIndices, _siteEdgeFirstVoronoiEdgeIndices, finalVoronoiPositions, voronoiFaceSiteTypes, voronoiFaceSiteIndices, voronoiEdgeShapes);
@@ -374,13 +374,13 @@ namespace Experilous.Topologies
 					nextSegment = nextSegment.nextSegment;
 				}
 
-				var segment = nextSegment;
-				while (true)
+				_voronoiGraph.AttachEdgeToSourceNode(nextSegment.prevEdgeIndex, voronoiNode.index);
+				var segment = nextSegment.prevSegment;
+				while (!ReferenceEquals(segment, prevSegment))
 				{
 					_voronoiGraph.AttachEdgeToSourceNode(segment.prevEdgeIndex, voronoiNode.index);
 					segment = segment.prevSegment;
-					if (ReferenceEquals(segment, prevSegment)) break;
-					segment = segment.prevSegment;
+					_beach.Remove(segment.nextSegment);
 				}
 
 				if (outgoingLineCount > 0)
@@ -786,8 +786,8 @@ namespace Experilous.Topologies
 			int sourceNodeIndex0 = _siteGraph.GetEdgeTargetNodeIndex(segment.prevSegment.siteIndex ^ 1);
 			int targetNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
 			int sourceNodeIndex1 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
-			int targetNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex);
-			int sourceNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.siteIndex ^ 1);
+			int targetNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex);
+			int sourceNodeIndex2 = _siteGraph.GetEdgeTargetNodeIndex(segment.nextSegment.siteIndex ^ 1);
 
 			VoronoiUtility.CheckForMergeEvent_LineLineLine(sourceNodeIndex0, targetNodeIndex0, sourceNodeIndex1, targetNodeIndex1, sourceNodeIndex2, targetNodeIndex2, _pointSitePositions, _errorMargin, segment, _mergeEventQueue);
 		}
@@ -958,7 +958,7 @@ namespace Experilous.Topologies
 			this.s = s;
 		}
 
-		public static VoronoiEdgeShape FromVoronoiEdge(TopologyEdge edge, IGraph siteGraph, ITopologyFaceData<VoronoiSiteType> voronoiFaceSiteTypes, ITopologyFaceData<int> voronoiFaceSiteIndices, ITopologyNodeData<Vector3> voronoiNodePositions, IGraphNodeData<Vector3> pointSitePositions, Vector3 up, float errorMargin = 0.0001f)
+		public static VoronoiEdgeShape FromVoronoiEdge(TopologyEdge edge, IGraph siteGraph, ITopologyFaceData<VoronoiSiteType> voronoiFaceSiteTypes, ITopologyFaceData<int> voronoiFaceSiteIndices, ITopologyNodeData<Vector3> voronoiNodePositions, IGraphNodeData<Vector3> pointSitePositions, Vector3 normal, float errorMargin = 0.0001f)
 		{
 			var site0Type = voronoiFaceSiteTypes[edge.twin];
 			int site0Index = voronoiFaceSiteIndices[edge.twin];
@@ -979,7 +979,7 @@ namespace Experilous.Topologies
 							case VoronoiSiteType.Point:
 								{
 									var p1 = pointSitePositions[site1Index];
-									return FromPointPoint(p0, p1, q0, q1, up);
+									return FromPointPoint(p0, p1, q0, q1, normal);
 								}
 							case VoronoiSiteType.Line:
 								{
@@ -990,15 +990,15 @@ namespace Experilous.Topologies
 
 									if (site0Index == site1aIndex)
 									{
-										return FromSourcePointLine(p0, p1b - p0, q0, q1, up);
+										return FromSourcePointLine(p0, p1b - p0, q0, q1, normal);
 									}
 									else if(site0Index == site1bIndex)
 									{
-										return FromTargetPointLine(p0, p1a - p0, q0, q1, up);
+										return FromTargetPointLine(p0, p1a - p0, q0, q1, normal);
 									}
 									else
 									{
-										return FromPointLine(p0, p1a, p1b - p1a, q0, q1, up);
+										return FromPointLine(p0, p1a, p1b - p1a, q0, q1, normal);
 									}
 								}
 							case VoronoiSiteType.None:
@@ -1021,20 +1021,20 @@ namespace Experilous.Topologies
 
 									if (site0aIndex == site1Index)
 									{
-										return FromLineSourcePoint(p0b - p0a, p1, q0, q1, up);
+										return FromLineSourcePoint(p0b - p0a, p1, q0, q1, normal);
 									}
 									else if (site0bIndex == site1Index)
 									{
-										return FromLineTargetPoint(p0b - p0a, p1, q0, q1, up);
+										return FromLineTargetPoint(p0b - p0a, p1, q0, q1, normal);
 									}
 									else
 									{
-										return FromLinePoint(p0a, p0b - p0a, p1, q0, q1, up);
+										return FromLinePoint(p0a, p0b - p0a, p1, q0, q1, normal);
 									}
 								}
 							case VoronoiSiteType.Line:
 								{
-									if (site0Index != (site1Index ^ 1))
+									if (site0Index == (site1Index ^ 1))
 									{
 										return FromTwinLines(p0a, p0b - p0a, q0, q1);
 									}
@@ -1045,7 +1045,7 @@ namespace Experilous.Topologies
 										var p1a = pointSitePositions[site1aIndex];
 										var p1b = pointSitePositions[site1bIndex];
 
-										return FromLineLine(p0a, p0b - p0a, p1a, p1b - p1a, q0, q1, up, errorMargin);
+										return FromLineLine(p0a, p0b - p0a, p1a, p1b - p1a, q0, q1, normal, errorMargin);
 									}
 								}
 							case VoronoiSiteType.None:
@@ -1059,60 +1059,60 @@ namespace Experilous.Topologies
 			}
 		}
 
-		public static VoronoiEdgeShape FromPointPoint(Vector3 p0, Vector3 p1, Vector3 q0, Vector3 q1, Vector3 up)
+		public static VoronoiEdgeShape FromPointPoint(Vector3 p0, Vector3 p1, Vector3 q0, Vector3 q1, Vector3 normal)
 		{
 			var u = p1 - p0;
-			var v = Vector3.Cross(up, u).normalized;
+			var v = Vector3.Cross(normal, u).normalized;
 			var p = (p1 + p0) / 2f;
 			var s = u.sqrMagnitude / 4f;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.PythagoreanLine, v, p, s, Project(p, v, q0), Project(p, v, q1));
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.PythagoreanLine, v, p, s, ProjectTowardNegativeInfinity(p, v, q0), ProjectTowardPositiveInfinity(p, v, q1));
 		}
 
-		public static VoronoiEdgeShape FromPointLine(Vector3 p0, Vector3 p1, Vector3 v1, Vector3 q0, Vector3 q1, Vector3 up)
+		public static VoronoiEdgeShape FromPointLine(Vector3 p0, Vector3 p1, Vector3 v1, Vector3 q0, Vector3 q1, Vector3 normal)
 		{
 			var q = p0.ProjectOnto(p1, v1);
 			var u = (p0 - q) * 2f;
-			var v = Vector3.Cross(u, up);
+			var v = Vector3.Cross(u, normal);
 			var p = (p0 + q) / 2f;
 			var s = u.magnitude / 4f;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.Parabola, u, v, p, s, Project(p, v, q0), Project(p, v, q1));
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.Parabola, u, v, p, s, ProjectTowardNegativeInfinity(p, v, q0), ProjectTowardPositiveInfinity(p, v, q1));
 		}
 
-		public static VoronoiEdgeShape FromSourcePointLine(Vector3 p0, Vector3 v1, Vector3 q0, Vector3 q1, Vector3 up)
+		public static VoronoiEdgeShape FromSourcePointLine(Vector3 p0, Vector3 v1, Vector3 q0, Vector3 q1, Vector3 normal)
 		{
-			var v = Vector3.Cross(up, v1).normalized;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p0, -1f, Project(p0, v, q0), Project(p0, v, q1));
+			var v = Vector3.Cross(normal, v1).normalized;
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p0, -1f, ProjectTowardNegativeInfinity(p0, v, q0), ProjectTowardPositiveInfinity(p0, v, q1));
 		}
 
-		public static VoronoiEdgeShape FromTargetPointLine(Vector3 p0, Vector3 v1, Vector3 q0, Vector3 q1, Vector3 up)
+		public static VoronoiEdgeShape FromTargetPointLine(Vector3 p0, Vector3 v1, Vector3 q0, Vector3 q1, Vector3 normal)
 		{
-			var v = Vector3.Cross(v1, up).normalized;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p0, +1f, Project(p0, v, q0), Project(p0, v, q1));
+			var v = Vector3.Cross(v1, normal).normalized;
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p0, +1f, ProjectTowardNegativeInfinity(p0, v, q0), ProjectTowardPositiveInfinity(p0, v, q1));
 		}
 
-		public static VoronoiEdgeShape FromLinePoint(Vector3 p0, Vector3 v0, Vector3 p1, Vector3 q0, Vector3 q1, Vector3 up)
+		public static VoronoiEdgeShape FromLinePoint(Vector3 p0, Vector3 v0, Vector3 p1, Vector3 q0, Vector3 q1, Vector3 normal)
 		{
 			var q = p1.ProjectOnto(p0, v0);
 			var u = (p1 - q) * 2f;
-			var v = Vector3.Cross(up, u);
+			var v = Vector3.Cross(normal, u);
 			var p = (p1 + q) / 2f;
 			var s = u.magnitude / 4f;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.Parabola, u, v, p, s, Project(p, v, q0), Project(p, v, q1));
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.Parabola, u, v, p, s, ProjectTowardNegativeInfinity(p, v, q0), ProjectTowardPositiveInfinity(p, v, q1));
 		}
 
-		public static VoronoiEdgeShape FromLineSourcePoint(Vector3 v0, Vector3 p1, Vector3 q0, Vector3 q1, Vector3 up)
+		public static VoronoiEdgeShape FromLineSourcePoint(Vector3 v0, Vector3 p1, Vector3 q0, Vector3 q1, Vector3 normal)
 		{
-			var v = Vector3.Cross(v0, up).normalized;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p1, +1f, Project(p1, v, q0), Project(p1, v, q1));
+			var v = Vector3.Cross(v0, normal).normalized;
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p1, +1f, ProjectTowardNegativeInfinity(p1, v, q0), ProjectTowardPositiveInfinity(p1, v, q1));
 		}
 
-		public static VoronoiEdgeShape FromLineTargetPoint(Vector3 v0, Vector3 p1, Vector3 q0, Vector3 q1, Vector3 up)
+		public static VoronoiEdgeShape FromLineTargetPoint(Vector3 v0, Vector3 p1, Vector3 q0, Vector3 q1, Vector3 normal)
 		{
-			var v = Vector3.Cross(up, v0).normalized;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p1, -1f, Project(p1, v, q0), Project(p1, v, q1));
+			var v = Vector3.Cross(normal, v0).normalized;
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p1, -1f, ProjectTowardNegativeInfinity(p1, v, q0), ProjectTowardPositiveInfinity(p1, v, q1));
 		}
 
-		public static VoronoiEdgeShape FromLineLine(Vector3 p0, Vector3 v0, Vector3 p1, Vector3 v1, Vector3 q0, Vector3 q1, Vector3 up, float errorMargin = 0.0001f)
+		public static VoronoiEdgeShape FromLineLine(Vector3 p0, Vector3 v0, Vector3 p1, Vector3 v1, Vector3 q0, Vector3 q1, Vector3 normal, float errorMargin = 0.0001f)
 		{
 			var ray0 = new Ray(p0, v0);
 			var ray1 = new Ray(p1, v1);
@@ -1124,9 +1124,9 @@ namespace Experilous.Topologies
 				// Parallel Lines, Same Direction
 				var p = (p1 + p0) / 2f;
 				var s = Numerics.Math.ZeroExclusiveSign(Vector3.Dot(p0 - p1, ray1.direction));
-				var v = Vector3.Cross(ray1.direction, up) * s;
+				var v = Vector3.Cross(ray1.direction, normal) * s;
 
-				return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p, s, Project(p, v, q0), Project(p, v, q1));
+				return new VoronoiEdgeShape(VoronoiEdgeShapeType.OrthogonalLine, v, p, s, ProjectTowardNegativeInfinity(p, v, q0), ProjectTowardPositiveInfinity(p, v, q1));
 			}
 			else if (1f + cosine < errorMargin)
 			{
@@ -1134,21 +1134,21 @@ namespace Experilous.Topologies
 				var p = (p1 + p0) / 2f;
 				var v = ray0.direction;
 				var delta = p1 - p0;
-				var normal = Vector3.Cross(v, up);
-				float normalSqrMagnitude = normal.sqrMagnitude;
-				float s = (normalSqrMagnitude >= errorMargin) ? Vector3.Dot(delta, normal) / (2f * Mathf.Sqrt(normalSqrMagnitude)) : 0f; // Check for colinearity.
+				var lineNormal = Vector3.Cross(v, normal);
+				float normalSqrMagnitude = lineNormal.sqrMagnitude;
+				float s = (normalSqrMagnitude >= errorMargin) ? Vector3.Dot(delta, lineNormal) / (2f * Mathf.Sqrt(normalSqrMagnitude)) : 0f; // Check for colinearity.
 
-				return new VoronoiEdgeShape(VoronoiEdgeShapeType.ParallelLine, v, p, s, Project(p, v, q0), Project(p, v, q1));
+				return new VoronoiEdgeShape(VoronoiEdgeShapeType.ParallelLine, v, p, s, ProjectTowardNegativeInfinity(p, v, q0), ProjectTowardPositiveInfinity(p, v, q1));
 			}
 			else
 			{
 				var p = Geometry.GetNearestPoint(ray0, ray1);
 				var v = (ray0.direction - ray1.direction).normalized;
 				var shiftedCosine = 1f - cosine;
-				var sine = Vector3.Dot(Vector3.Cross(ray0.direction, ray1.direction), up);
+				var sine = Vector3.Dot(Vector3.Cross(ray0.direction, ray1.direction), normal);
 				var s = Mathf.Sqrt(sine * sine + shiftedCosine * shiftedCosine) / sine;
 
-				return new VoronoiEdgeShape(VoronoiEdgeShapeType.HalfAngleLine, v, p, s, Project(p, v, q0), Project(p, v, q1));
+				return new VoronoiEdgeShape(VoronoiEdgeShapeType.HalfAngleLine, v, p, s, ProjectTowardNegativeInfinity(p, v, q0), ProjectTowardPositiveInfinity(p, v, q1));
 			}
 		}
 
@@ -1156,7 +1156,7 @@ namespace Experilous.Topologies
 		{
 			var p = p0 + v0 / 2f;
 			var v = -v0.normalized;
-			return new VoronoiEdgeShape(VoronoiEdgeShapeType.ParallelLine, v, p, 0f, Project(p, v, q1), Project(p, v, q0));
+			return new VoronoiEdgeShape(VoronoiEdgeShapeType.ParallelLine, v, p, 0f, ProjectTowardNegativeInfinity(p, v, q1), ProjectTowardPositiveInfinity(p, v, q0));
 		}
 
 		public bool isStraight { get { return type != VoronoiEdgeShapeType.Infinite && type != VoronoiEdgeShapeType.Parabola; } }
@@ -1245,7 +1245,7 @@ namespace Experilous.Topologies
 			}
 		}
 
-		public float GetCurvature(float t, Vector3 up)
+		public float GetCurvature(float t, Vector3 normal)
 		{
 			switch (type)
 			{
@@ -1259,7 +1259,7 @@ namespace Experilous.Topologies
 				case VoronoiEdgeShapeType.Parabola:
 					{
 						float hSquared = t * t + 1f;
-						return Numerics.Math.ZeroExclusiveSign(Vector3.Dot(Vector3.Cross(v, u), up)) / (2f * s * hSquared * Mathf.Sqrt(hSquared));
+						return Numerics.Math.ZeroExclusiveSign(Vector3.Dot(Vector3.Cross(v, u), normal)) / (2f * s * hSquared * Mathf.Sqrt(hSquared));
 					}
 				default:
 					throw new NotImplementedException();
@@ -1475,6 +1475,18 @@ namespace Experilous.Topologies
 		private static float Project(Vector3 p, Vector3 v, Vector3 point)
 		{
 			return Vector3.Dot(point - p, v) / Vector3.Dot(v, v);
+		}
+
+		private static float ProjectTowardNegativeInfinity(Vector3 p, Vector3 v, Vector3 point)
+		{
+			var t = Vector3.Dot(point - p, v) / Vector3.Dot(v, v);
+			return float.IsNaN(t) ? float.NegativeInfinity : t;
+		}
+
+		private static float ProjectTowardPositiveInfinity(Vector3 p, Vector3 v, Vector3 point)
+		{
+			var t = Vector3.Dot(point - p, v) / Vector3.Dot(v, v);
+			return float.IsNaN(t) ? float.PositiveInfinity : t;
 		}
 
 		public float Project(Vector3 point)
