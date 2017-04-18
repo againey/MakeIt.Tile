@@ -54,9 +54,9 @@ namespace Experilous.Topologies
 				_value = type | ((ulong)(edge.index ^ 1) & INDEX_MASK) | (((ulong)contour << CONTOUR_SHIFT) & CONTOUR_MASK) | (((ulong)segment << SEGMENT_SHIFT) & SEGMENT_MASK);
 			}
 
-			public PositionId(TopologyFace face, int segment)
+			public PositionId(TopologyFace face, int contour, int segment)
 			{
-				_value = FACE | ((ulong)face.index & INDEX_MASK) | (((ulong)segment << SEGMENT_SHIFT) & SEGMENT_MASK);
+				_value = FACE | ((ulong)face.index & INDEX_MASK) | (((ulong)contour << CONTOUR_SHIFT) & CONTOUR_MASK) | (((ulong)segment << SEGMENT_SHIFT) & SEGMENT_MASK);
 			}
 
 			public bool Equals(PositionId other)
@@ -97,6 +97,7 @@ namespace Experilous.Topologies
 		private struct Contour
 		{
 			public int index;
+			public int nextSegmentIndex;
 			public float distance;
 			public List<Vertex> vertices;
 
@@ -119,6 +120,8 @@ namespace Experilous.Topologies
 		private float _maxCurvaturePerSegment;
 		private float _errorMargin;
 
+		private Vector3 _normal;
+
 		private TopologyFace _initialFace;
 		private TopologyFace _nextFace;
 
@@ -132,17 +135,18 @@ namespace Experilous.Topologies
 			_errorMargin = errorMargin;
 		}
 
-		public void Triangulate(VoronoiDiagram voronoiDiagram, TopologyFace initialFace, OnVertexDelegate onVertex, OnTriangleDelegate onTriangle, params float[] contourDistances)
+		public void Triangulate(VoronoiDiagram voronoiDiagram, TopologyFace initialFace, OnVertexDelegate onVertex, OnTriangleDelegate onTriangle, Vector3 normal, params float[] contourDistances)
 		{
-			BeginTriangulation(voronoiDiagram, initialFace, onVertex, onTriangle, contourDistances);
+			BeginTriangulation(voronoiDiagram, initialFace, onVertex, onTriangle, normal, contourDistances);
 			while (TriangulateSegment()) { }
 		}
 
-		public void BeginTriangulation(VoronoiDiagram voronoiDiagram, TopologyFace initialFace, OnVertexDelegate onVertex, OnTriangleDelegate onTriangle, params float[] contourDistances)
+		public void BeginTriangulation(VoronoiDiagram voronoiDiagram, TopologyFace initialFace, OnVertexDelegate onVertex, OnTriangleDelegate onTriangle, Vector3 normal, params float[] contourDistances)
 		{
 			_voronoiDiagram = voronoiDiagram;
 			_onVertex = onVertex;
 			_onTriangle = onTriangle;
+			_normal = normal;
 
 			_initialFace = TopologyFace.none;
 			_nextFace = initialFace;
@@ -175,15 +179,32 @@ namespace Experilous.Topologies
 		public bool TriangulateSegment()
 		{
 			if (_nextFace == _initialFace) return false;
-			if (!_initialFace) _initialFace = _nextFace;
 
-			switch (_voronoiDiagram._voronoiFaceSiteTypes[_nextFace])
+			var currentFace = _nextFace;
+
+			if (!_initialFace)
+			{
+				_initialFace = _nextFace;
+			}
+			else
+			{
+				_nextFace = _initialFace;
+			}
+
+			int siteIndex = _voronoiDiagram._voronoiFaceSiteIndices[currentFace];
+			var siteType = _voronoiDiagram._voronoiFaceSiteTypes[currentFace];
+
+			TopologyFaceEdge baseVoronoiEdge;
+			TopologyFaceEdge currentVoronoiEdge;
+			switch (siteType)
 			{
 				case VoronoiSiteType.Point:
-					TriangulatePointSegment();
+					baseVoronoiEdge = new TopologyFaceEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteNodeFirstVoronoiEdgeIndices[siteIndex]);
+					currentVoronoiEdge = baseVoronoiEdge;
 					break;
 				case VoronoiSiteType.Line:
-					TriangulateLineSegment();
+					baseVoronoiEdge = new TopologyFaceEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices[siteIndex]);
+					currentVoronoiEdge = baseVoronoiEdge.next;
 					break;
 				case VoronoiSiteType.None:
 					throw new InvalidOperationException();
@@ -191,31 +212,19 @@ namespace Experilous.Topologies
 					throw new NotImplementedException();
 			}
 
-			return true;
-		}
-
-		private void TriangulatePointSegment()
-		{
-			_nextFace = _initialFace;
-		}
-
-		private void TriangulateLineSegment()
-		{
-			int siteIndex = _voronoiDiagram._voronoiFaceSiteIndices[_nextFace];
-
-			_nextFace = _initialFace;
-
-			var baseVoronoiEdge = new TopologyFaceEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices[siteIndex]);
-			var currentVoronoiEdge = baseVoronoiEdge.next;
 			VoronoiEdgeShape currentEdgeShape = _voronoiDiagram._voronoiEdgeShapes[currentVoronoiEdge];
-			int currentEdgeSegmentIndex = 0;
 			float tPrev = float.NaN;
 			float tNext = 0f;
 
 			int innerContourIndex = -1;
 			int outerContourIndex = 0;
 
-			while (currentVoronoiEdge != baseVoronoiEdge)
+			for (int i = 0; i < _contourCount; ++i)
+			{
+				_contours[i].nextSegmentIndex = 0;
+			}
+
+			while (true)
 			{
 				float tNextEntrance = float.NaN;
 				float tNextExit = float.NaN;
@@ -355,18 +364,18 @@ namespace Experilous.Topologies
 				if ((moveToNextContour || innerContourIndex >= 0) && outerContourIndex < _contourCount)
 				{
 					// Subdivide current edge from tPrev to tNext
-					var cumulativeCurvature = Mathf.Abs(currentEdgeShape.GetCurvatureSum(tPrev, tNext));
+					float cumulativeCurvature = Mathf.Abs(currentEdgeShape.GetCurvatureSum(tPrev, tNext));
 					int segmentCount = Mathf.CeilToInt(cumulativeCurvature / _maxCurvaturePerSegment);
 
 					for (int i = 1; i < segmentCount; ++i)
 					{
 						float tSegment = currentEdgeShape.GetCurvatureSumOffset(tPrev, (cumulativeCurvature * i) / segmentCount);
 
-						var segmentVertexPositionId = new PositionId(currentVoronoiEdge, outerContourIndex, i, segmentCount, moveToNextContour, moveToPrevContour); //TODO: Needs fixing.
+						var segmentVertexPositionId = new PositionId(currentVoronoiEdge, outerContourIndex, i, segmentCount, moveToNextContour, moveToPrevContour);
 						var segmentVertexPosition = currentEdgeShape.Evaluate(tSegment);
 						var segmentVertexDistance = currentEdgeShape.GetDistance(tSegment);
 						_contours[outerContourIndex].vertices.Add(new Vertex(segmentVertexPositionId, segmentVertexPosition, segmentVertexDistance));
-						_onVertex(segmentVertexPositionId, segmentVertexPosition, VoronoiSiteType.Line, siteIndex, outerContourIndex, segmentVertexDistance);
+						_onVertex(segmentVertexPositionId, segmentVertexPosition, siteType, siteIndex, outerContourIndex, segmentVertexDistance);
 
 						tPrev = tSegment;
 					}
@@ -374,17 +383,53 @@ namespace Experilous.Topologies
 
 				if (moveToPrevContour)
 				{
-					// Subdivide current contour from ??? to ???
+					// Subdivide current contour from its last position to the new position.
 					var contourVertices = _contours[innerContourIndex].vertices;
 					if (contourVertices.Count > 0)
 					{
-						Vector3 prevPosition = contourVertices[contourVertices.Count - 1].position;
-						Vector3 nextPosition;
-						// No subdivision implemented yet for straight line contours.
+						switch (siteType)
+						{
+							case VoronoiSiteType.Point:
+								{
+									var pivotPosition = _voronoiDiagram._pointSitePositions[siteIndex];
+
+									var prevPosition = contourVertices[contourVertices.Count - 1].position;
+									var prevVector = prevPosition - pivotPosition;
+									var nextVector = position - pivotPosition;
+									var prevDirection = prevVector.normalized;
+									var nextDirection = nextVector.normalized;
+									float angleCosine = Vector3.Dot(prevDirection, nextDirection);
+									float angleSine = Vector3.Dot(Vector3.Cross(prevDirection, nextDirection), _normal);
+									float cumulativeCurvature = Mathf.Repeat(Mathf.Atan2(angleSine, angleCosine), Mathf.PI * 2f);
+									int segmentCount = Mathf.CeilToInt(cumulativeCurvature / _maxCurvaturePerSegment);
+
+									if (segmentCount > 1)
+									{
+										int nextSegmentIndex = _contours[innerContourIndex].nextSegmentIndex;
+										var rightVector = Vector3.Cross(_normal, prevVector);
+										for (int i = 1; i < segmentCount; ++i)
+										{
+											float tSegment = (cumulativeCurvature * i) / segmentCount;
+
+											var segmentVertexPositionId = new PositionId(currentFace, innerContourIndex, nextSegmentIndex++); //TODO: When distance is 0, make this position id be assigned to the edge rather than face.
+											var segmentVertexPosition = pivotPosition + prevVector * Mathf.Cos(tSegment) + rightVector * Mathf.Sin(tSegment);
+											_contours[innerContourIndex].vertices.Add(new Vertex(segmentVertexPositionId, segmentVertexPosition, distance));
+											_onVertex(segmentVertexPositionId, segmentVertexPosition, siteType, siteIndex, innerContourIndex, distance);
+
+											tPrev = tSegment;
+										}
+										_contours[innerContourIndex].nextSegmentIndex = nextSegmentIndex;
+									}
+								}
+								break;
+							case VoronoiSiteType.Line:
+								// No straight line subdivision supported at this time; do nothing.
+								break;
+						}
 					}
 
 					_contours[innerContourIndex].vertices.Add(new Vertex(positionId, position, distance));
-					_onVertex(positionId, position, VoronoiSiteType.Line, siteIndex, innerContourIndex, distance);
+					_onVertex(positionId, position, siteType, siteIndex, innerContourIndex, distance);
 
 					if (outerContourIndex < _contourCount)
 					{
@@ -399,12 +444,15 @@ namespace Experilous.Topologies
 				else if ((moveToNextContour || innerContourIndex >= 0) && outerContourIndex < _contourCount)
 				{
 					_contours[outerContourIndex].vertices.Add(new Vertex(positionId, position, distance));
-					_onVertex(positionId, position, VoronoiSiteType.Line, siteIndex, outerContourIndex, distance);
+					_onVertex(positionId, position, siteType, siteIndex, outerContourIndex, distance);
 				}
 
 				if (moveToNextEdge)
 				{
 					currentVoronoiEdge = currentVoronoiEdge.next;
+
+					if (currentVoronoiEdge == baseVoronoiEdge) break;
+
 					currentEdgeShape = _voronoiDiagram._voronoiEdgeShapes[currentVoronoiEdge];
 					tPrev = currentEdgeShape.t0;
 				}
@@ -428,6 +476,8 @@ namespace Experilous.Topologies
 			}
 
 			_contours[0].vertices.Clear();
+
+			return true;
 		}
 
 		private void CreateTriangles(int outerContourIndex)

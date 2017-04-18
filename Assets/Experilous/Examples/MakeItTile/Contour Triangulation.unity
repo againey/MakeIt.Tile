@@ -143,13 +143,17 @@ MonoBehaviour:
   - {x: 8, y: 2, z: 0}
   - {x: 6, y: -3, z: 0}
   contourDistances:
-  - 0.5
-  - 1.5
-  - 3.4
+  - 1
+  - 2
+  - 2.5
+  - 3.5
+  - 4
   contourColors:
   - {r: 0.249991, g: 0.503, b: 0.249991, a: 1}
-  - {r: 0.753, g: 0.374241, b: 0.753, a: 1}
-  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.75, g: 1, b: 0.75, a: 1}
+  - {r: 0.7490196, g: 1, b: 0.7490196, a: 1}
+  - {r: 0.5259819, g: 0.403, b: 1, a: 1}
+  - {r: 0, g: 0, b: 0, a: 1}
 --- !u!4 &1318447153
 Transform:
   m_ObjectHideFlags: 0
@@ -211,8 +215,8 @@ Camera:
   m_GameObject: {fileID: 1452298696}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -246,7 +250,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1452298696}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 3, y: 1.5, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

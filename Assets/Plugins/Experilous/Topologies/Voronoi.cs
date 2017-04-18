@@ -994,7 +994,7 @@ namespace Experilous.Topologies
 									}
 									else if(site0Index == site1bIndex)
 									{
-										return FromTargetPointLine(p0, p1a - p0, q0, q1, normal);
+										return FromTargetPointLine(p0, p0 - p1a, q0, q1, normal);
 									}
 									else
 									{

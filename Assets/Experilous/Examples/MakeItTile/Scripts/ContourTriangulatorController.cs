@@ -54,11 +54,11 @@ namespace Experilous.Examples.MakeItTile
 							{
 								vertexColors.Add(contourColors[0]);
 							}
-							Debug.LogFormat("Add Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexPositions.Count - 1, positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
+							//Debug.LogFormat("Add Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexPositions.Count - 1, positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
 						}
 						else
 						{
-							Debug.LogFormat("Reuse Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexIndexMap[positionId], positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
+							//Debug.LogFormat("Reuse Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexIndexMap[positionId], positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
 						}
 					};
 
@@ -68,12 +68,12 @@ namespace Experilous.Examples.MakeItTile
 						triangleIndices.Add(vertexIndexMap[positionId0]);
 						triangleIndices.Add(vertexIndexMap[positionId1]);
 						triangleIndices.Add(vertexIndexMap[positionId2]);
-						Debug.LogFormat("Triangle({0}, {1}, {2}):  {1}, {2}, {3}", vertexIndexMap[positionId0], vertexIndexMap[positionId1], vertexIndexMap[positionId2], vertexPositions[vertexIndexMap[positionId0]].ToString("F2"), vertexPositions[vertexIndexMap[positionId1]].ToString("F2"), vertexPositions[vertexIndexMap[positionId2]].ToString("F2"));
+						//Debug.LogFormat("Triangle({0}, {1}, {2}):  {1}, {2}, {3}", vertexIndexMap[positionId0], vertexIndexMap[positionId1], vertexIndexMap[positionId2], vertexPositions[vertexIndexMap[positionId0]].ToString("F2"), vertexPositions[vertexIndexMap[positionId1]].ToString("F2"), vertexPositions[vertexIndexMap[positionId2]].ToString("F2"));
 					};
 
 				var triangulator = new ContourTriangulator(0.25f, 0.0001f);
-				var edge = new TopologyEdge(diagram._voronoiTopology, diagram._siteEdgeFirstVoronoiEdgeIndices[1]);
-				triangulator.Triangulate(diagram, edge.sourceFace, onVertex, onTriangle, contourDistances);
+				var edge = new TopologyEdge(diagram._voronoiTopology, diagram._siteEdgeFirstVoronoiEdgeIndices[0]);
+				triangulator.Triangulate(diagram, edge.sourceFace, onVertex, onTriangle, Vector3.back, contourDistances);
 
 				var gameObject = new GameObject();
 				gameObject.name = "Generated Contour Mesh";
