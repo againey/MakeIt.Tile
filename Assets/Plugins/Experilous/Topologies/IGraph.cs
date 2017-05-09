@@ -45,7 +45,7 @@ namespace Experilous.Topologies
 		public static GraphNode none { get { return new GraphNode(); } }
 
 		public IGraph graph { get { return _graph; } }
-		public int index { get { return _index; } }
+		public int index { get { return _index; } set { _index = value; } }
 		public static implicit operator bool(GraphNode node) { return node._graph != null && node._index >= 0; }
 
 		public int neighborCount { get { return _graph.GetNodeNeighborCount(_index); } }
@@ -84,7 +84,7 @@ namespace Experilous.Topologies
 
 				public bool MoveNext()
 				{
-					if (_nextEdgeIndex != _firstEdgeIndex || _currentEdgeIndex == -1)
+					if (_firstEdgeIndex != -1 && (_nextEdgeIndex != _firstEdgeIndex || _currentEdgeIndex == -1))
 					{
 						_currentEdgeIndex = _nextEdgeIndex;
 						_nextEdgeIndex = _graph.GetEdgeNextLateralEdgeIndex(_currentEdgeIndex);
@@ -286,7 +286,7 @@ namespace Experilous.Topologies
 		public static GraphEdge none { get { return new GraphEdge(); } }
 
 		public IGraph graph { get { return _graph; } }
-		public int index { get { return _index; } }
+		public int index { get { return _index; } set { _index = value; } }
 		public static implicit operator bool(GraphEdge edge) { return edge._graph != null && edge._index >= 0; }
 
 		public GraphEdge twin { get { return new GraphEdge(_graph, _index ^ 1); } }

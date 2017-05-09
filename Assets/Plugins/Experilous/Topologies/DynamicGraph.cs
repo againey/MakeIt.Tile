@@ -4,16 +4,18 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Experilous.Topologies
 {
+	[Serializable]
 	public class DynamicGraph : IGraph
 	{
-		protected List<int> _nodeNeighborCounts;
-		protected List<int> _nodeFirstEdgeIndices;
-		protected List<int> _edgeNextChainedEdgeIndices;
-		protected List<int> _edgeNextLateralEdgeIndices;
-		protected List<int> _edgeTargetNodeIndices;
+		[SerializeField] protected List<int> _nodeNeighborCounts;
+		[SerializeField] protected List<int> _nodeFirstEdgeIndices;
+		[SerializeField] protected List<int> _edgeNextChainedEdgeIndices;
+		[SerializeField] protected List<int> _edgeNextLateralEdgeIndices;
+		[SerializeField] protected List<int> _edgeTargetNodeIndices;
 
 		#region Graph Creation
 
@@ -151,6 +153,9 @@ namespace Experilous.Topologies
 
 		#region Graph Modification
 
+		public delegate void RemapNodeIndexDelegate(int toNodeIndex, int fromNodeIndex);
+		public delegate void RemapEdgeIndexDelegate(int toEdgeIndex, int toTwinIndex, int fromEdgeIndex, int fromTwinIndex);
+
 		public void AddNode(out int nodeIndex)
 		{
 			nodeIndex = _nodeNeighborCounts.Count;
@@ -166,7 +171,7 @@ namespace Experilous.Topologies
 			return new GraphNode(this, nodeIndex);
 		}
 
-		public void RemoveNode(int nodeIndex, Action<int, int> remap = null)
+		public void RemoveNode(int nodeIndex, RemapNodeIndexDelegate remap = null)
 		{
 			if (nodeIndex < 0 || nodeIndex >= _nodeNeighborCounts.Count) throw new ArgumentOutOfRangeException("nodeIndex");
 
@@ -175,7 +180,7 @@ namespace Experilous.Topologies
 			DeleteNode(nodeIndex, remap);
 		}
 
-		private void DeleteNode(int nodeIndex, Action<int, int> remap)
+		private void DeleteNode(int nodeIndex, RemapNodeIndexDelegate remap)
 		{
 			int lastNodeIndex = _nodeNeighborCounts.Count - 1;
 
@@ -196,10 +201,39 @@ namespace Experilous.Topologies
 			_nodeFirstEdgeIndices.RemoveAt(lastNodeIndex);
 		}
 
-		public void Remove(GraphNode node)
+		public void RemoveNodeAndEdges(int nodeIndex, RemapNodeIndexDelegate remapNode = null, RemapEdgeIndexDelegate remapEdge = null)
+		{
+			if (nodeIndex < 0 || nodeIndex >= _nodeNeighborCounts.Count) throw new ArgumentOutOfRangeException("nodeIndex");
+
+			while (_nodeNeighborCounts[nodeIndex] > 0)
+			{
+				int edgeIndex = _nodeFirstEdgeIndices[nodeIndex];
+				int twinIndex = edgeIndex ^ 1;
+				DetachEdgeFromSourceNode(edgeIndex);
+				DetachEdgeFromSourceNode(twinIndex);
+				DeleteEdge(edgeIndex, twinIndex, remapEdge);
+			}
+
+			DeleteNode(nodeIndex, remapNode);
+		}
+
+		public void Remove(GraphNode node, RemapNodeIndexDelegate remap = null)
 		{
 			if (!ReferenceEquals(node.graph, this)) throw new ArgumentException("The provided node does not belong to this graph.", "node");
-			RemoveNode(node.index);
+			RemoveNode(node.index, remap);
+		}
+
+		public void Remove(GraphNode node, bool removeEdges, RemapNodeIndexDelegate remapNode = null, RemapEdgeIndexDelegate remapEdge = null)
+		{
+			if (!ReferenceEquals(node.graph, this)) throw new ArgumentException("The provided node does not belong to this graph.", "node");
+			if (removeEdges)
+			{
+				RemoveNodeAndEdges(node.index, remapNode, remapEdge);
+			}
+			else
+			{
+				RemoveNode(node.index, remapNode);
+			}
 		}
 
 		public int ConnectNodes(int firstNodeIndex, int secondNodeIndex)
@@ -340,7 +374,7 @@ namespace Experilous.Topologies
 			AttachEdgeToSourceNodeAfter(edge.index, prevEdge.index);
 		}
 
-		public void RemoveEdge(int edgeIndex, Action<int, int, int, int> remap = null)
+		public void RemoveEdge(int edgeIndex, RemapEdgeIndexDelegate remap = null)
 		{
 			if (edgeIndex < 0 || edgeIndex >= _edgeNextChainedEdgeIndices.Count) throw new ArgumentOutOfRangeException("edgeIndex");
 
@@ -352,14 +386,13 @@ namespace Experilous.Topologies
 			DeleteEdge(edgeIndex, twinIndex, remap);
 		}
 
-		private void DeleteEdge(int edgeIndex, int twinIndex, Action<int, int, int, int> remap)
+		private void DeleteEdge(int edgeIndex, int twinIndex, RemapEdgeIndexDelegate remap)
 		{
 			int lastEdgeIndex = (_edgeNextChainedEdgeIndices.Count - 2) | (edgeIndex & 1);
 			int lastTwinIndex = lastEdgeIndex ^ 1;
 
 			if (lastEdgeIndex != edgeIndex)
 			{
-
 				for (int i = 0; i < _nodeFirstEdgeIndices.Count; ++i)
 				{
 					if (_nodeFirstEdgeIndices[i] == lastEdgeIndex) _nodeFirstEdgeIndices[i] = edgeIndex;
@@ -393,10 +426,10 @@ namespace Experilous.Topologies
 			_edgeTargetNodeIndices.RemoveRange(lastEdgeIndex, 2);
 		}
 
-		public void Remove(GraphEdge edge)
+		public void Remove(GraphEdge edge, RemapEdgeIndexDelegate remap = null)
 		{
 			if (!ReferenceEquals(edge.graph, this)) throw new ArgumentException("The provided edge does not belong to this graph.", "edge");
-			RemoveEdge(edge.index);
+			RemoveEdge(edge.index, remap);
 		}
 
 		public void DetachEdgeFromSourceNode(int edgeIndex)
@@ -482,7 +515,7 @@ namespace Experilous.Topologies
 			}
 		}
 
-		public void CollapseEdge(int edgeIndex, Action<int, int> remapNode = null, Action<int, int, int, int> remapEdges = null)
+		public void CollapseEdge(int edgeIndex, RemapNodeIndexDelegate remapNode = null, RemapEdgeIndexDelegate remapEdges = null)
 		{
 			int twinIndex = edgeIndex ^ 1;
 
@@ -508,7 +541,7 @@ namespace Experilous.Topologies
 			DeleteNode(sourceNodeIndex, remapNode);
 		}
 
-		public void Collapse(GraphEdge edge, Action<int, int> remapNode = null, Action<int, int, int, int> remapEdges = null)
+		public void Collapse(GraphEdge edge, RemapNodeIndexDelegate remapNode = null, RemapEdgeIndexDelegate remapEdges = null)
 		{
 			if (!ReferenceEquals(edge.graph, this)) throw new ArgumentException("The provided edge does not belong to this graph.", "edge");
 			CollapseEdge(edge.index, remapNode, remapEdges);

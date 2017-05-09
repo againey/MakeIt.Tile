@@ -10,6 +10,9 @@ namespace Experilous.Examples.MakeItTile
 	{
 		public Material material;
 
+		public DynamicGraph siteGraph;
+		public List<Vector3> pointSitePositions;
+
 		public Vector3[] polygonVertices;
 		public float[] contourDistances;
 		public Color[] contourColors;
