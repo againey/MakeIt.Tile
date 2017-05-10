@@ -332,6 +332,8 @@ namespace Experilous.Topologies
 
 			var pointSite = new GraphNode(_siteGraph, ev.nodeIndex);
 
+			_orderedLineSites.Clear();
+
 			if (pointSite.neighborCount > 0)
 			{
 				voronoiNode = _voronoiGraph.AddNode();

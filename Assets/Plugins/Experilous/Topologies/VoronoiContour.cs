@@ -286,6 +286,11 @@ namespace Experilous.Topologies
 						// Current contour exits after end of current edge; ignore it for now.
 						tNextExit = float.NaN;
 					}
+					else if (tNextExit < tPrev)
+					{
+						// Concave curve with an irrelevant earlier exit and subsequent entrance.
+						tNextExit = float.NaN;
+					}
 				}
 
 				if (!float.IsNaN(tNextEntrance) && !float.IsNaN(tNextExit))

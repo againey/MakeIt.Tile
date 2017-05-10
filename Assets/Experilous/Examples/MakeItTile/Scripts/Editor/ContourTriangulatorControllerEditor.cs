@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Experilous.Topologies;
-using ScaledRay2D = Experilous.Numerics.ScaledRay2D;
+using Experilous.Numerics;
 
 namespace Experilous.Examples.MakeItTile
 {
@@ -96,6 +96,9 @@ namespace Experilous.Examples.MakeItTile
 		private HandleState _handleState = HandleState.None;
 
 		private PlanarVoronoiGenerator _voronoiGenerator;
+		private VoronoiDiagram _voronoiDiagram;
+		private TopologyNodeDataArray<Vector3> _finiteVoronoiNodePositions;
+		private Sphere _voronoiBounds;
 		private ContourTriangulator _contourTriangulator;
 
 		protected void OnEnable()
@@ -134,6 +137,11 @@ namespace Experilous.Examples.MakeItTile
 			if (_contourTriangulator == null)
 			{
 				_contourTriangulator = new ContourTriangulator();
+			}
+
+			if (_voronoiDiagram == null)
+			{
+				RebuildContourMesh();
 			}
 
 			Tools.hidden = _editSiteGraph;
@@ -462,6 +470,8 @@ namespace Experilous.Examples.MakeItTile
 						break;
 					case EventType.Repaint:
 						{
+							PaintVoronoiDiagram();
+
 							foreach (var edge in controller.siteGraph.edges)
 							{
 								if (edge.isFirstTwin)
@@ -494,6 +504,8 @@ namespace Experilous.Examples.MakeItTile
 
 				if (Event.current.type == EventType.Repaint)
 				{
+					PaintVoronoiDiagram();
+
 					Handles.color = _edgeStaticHandleColor;
 					foreach (var edge in controller.siteGraph.edges)
 					{
@@ -1090,6 +1102,264 @@ namespace Experilous.Examples.MakeItTile
 			}
 		}
 
+		private void PaintVoronoiDiagram()
+		{
+			if (_voronoiDiagram == null) return;
+
+			var topology = _voronoiDiagram._voronoiTopology;
+			var voronoiEdgeShapes = _voronoiDiagram._voronoiEdgeShapes;
+
+			foreach (var edge in topology.edges)
+			{
+				if (edge.isFirstTwin)
+				{
+					var p0 = _finiteVoronoiNodePositions[edge.sourceNode];
+					var p1 = _finiteVoronoiNodePositions[edge.targetNode];
+					var edgeShape = voronoiEdgeShapes[edge];
+					if (edgeShape.isFinite)
+					{
+						if (edgeShape.isStraight)
+						{
+							Handles.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+							Handles.DrawAAPolyLine(2f, p0, p1);
+						}
+						else if (edgeShape.type == VoronoiEdgeShapeType.Parabola)
+						{
+							float cumulativeCurvature = Mathf.Abs(edgeShape.GetCurvatureSum(edgeShape.t0, edgeShape.t1));
+							int segmentCount = Mathf.CeilToInt(cumulativeCurvature * 256f);
+							var points = new Vector3[segmentCount + 1];
+
+							points[0] = p0;
+							for (int i = 1; i < segmentCount; ++i)
+							{
+								float tSegment = edgeShape.GetCurvatureSumOffset(edgeShape.t0, (cumulativeCurvature * i) / segmentCount);
+								points[i] = edgeShape.Evaluate(tSegment);
+							}
+							points[segmentCount] = p1;
+
+							Handles.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+							Handles.DrawAAPolyLine(2f, points);
+						}
+					}
+					else
+					{
+						var v0 = p0 - _voronoiBounds.center;
+						var v1 = p1 - _voronoiBounds.center;
+						var v = new Vector2(
+							Vector3.Dot(v1, v0),
+							Vector3.Dot(v1, new Vector3(v0.y, -v0.x)));
+						var angle = Mathf.Atan2(v.x, v.y) * Mathf.Rad2Deg;
+						Handles.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+						Handles.DrawWireArc(_voronoiBounds.center, Vector3.back, v0, angle, v0.magnitude);
+					}
+				}
+			}
+
+			foreach (var node in topology.nodes)
+			{
+				var p = _finiteVoronoiNodePositions[node];
+				Handles.color = Color.gray;
+				Handles.DrawSolidDisc(p, Vector3.back, HandleUtility.GetHandleSize(p) / 25f);
+			}
+		}
+
+		private static bool IsFinite(Vector3 v)
+		{
+			return
+				!float.IsNaN(v.x) && !float.IsInfinity(v.x) &&
+				!float.IsNaN(v.y) && !float.IsInfinity(v.y) &&
+				!float.IsNaN(v.z) && !float.IsInfinity(v.z);
+		}
+
+		private void FinitizeVoronoiNodePositions()
+		{
+			var siteGraph = _voronoiDiagram._siteGraph;
+			var pointSitePositions = _voronoiDiagram._pointSitePositions;
+			var voronoiTopology = _voronoiDiagram._voronoiTopology;
+			var voronoiNodePositions = _voronoiDiagram._voronoiNodePositions;
+			var voronoiFaceSiteTypes = _voronoiDiagram._voronoiFaceSiteTypes;
+			var voronoiFaceSiteIndices = _voronoiDiagram._voronoiFaceSiteIndices;
+
+			_finiteVoronoiNodePositions = new TopologyNodeDataArray<Vector3>(voronoiNodePositions.Count);
+
+			var positionSum = Vector3.zero;
+			var positionCount = 0;
+
+			foreach (var position in pointSitePositions)
+			{
+				positionSum += position;
+				++positionCount;
+			}
+
+			for (int i = 0; i < voronoiTopology.nodeCount; ++i)
+			{
+				var position = voronoiNodePositions[i];
+				if (IsFinite(position))
+				{
+					positionSum += position;
+					++positionCount;
+				}
+			}
+			var positionAvg = positionSum / positionCount;
+
+			float maxDistance = 0f;
+
+			foreach (var position in pointSitePositions)
+			{
+				maxDistance = Mathf.Max(maxDistance, Vector3.Distance(position, positionAvg));
+			}
+
+			for (int i = 0; i < voronoiTopology.nodeCount; ++i)
+			{
+				var position = voronoiNodePositions[i];
+				if (IsFinite(position))
+				{
+					maxDistance = Mathf.Max(maxDistance, Vector3.Distance(position, positionAvg));
+				}
+			}
+
+			_voronoiBounds = new Sphere(positionAvg, maxDistance * 2f);
+
+			for (int i = 0; i < voronoiTopology.nodeCount; ++i)
+			{
+				_finiteVoronoiNodePositions[i] = voronoiNodePositions[i];
+				if (!IsFinite(voronoiNodePositions[i]))
+				{
+					foreach (var edge in voronoiTopology.nodes[i].edges)
+					{
+						if (voronoiFaceSiteTypes[edge] != VoronoiSiteType.None && voronoiFaceSiteTypes[edge.twin] != VoronoiSiteType.None)
+						{
+							switch (voronoiFaceSiteTypes[edge])
+							{
+								case VoronoiSiteType.Point:
+									{
+										var siteIndex0 = voronoiFaceSiteIndices[edge];
+										var p0 = pointSitePositions[siteIndex0];
+
+										switch (voronoiFaceSiteTypes[edge.twin])
+										{
+											case VoronoiSiteType.Point:
+												{
+													var siteIndex1 = voronoiFaceSiteIndices[edge.twin];
+													var p1 = pointSitePositions[siteIndex1];
+
+													var ray = new ScaledRay((p0 + p1) / 2f, Vector3.Cross(Vector3.back, p1 - p0));
+													Vector3 confinedPosition;
+													if (Geometry.IntersectForwardInternal(_voronoiBounds, ray, out confinedPosition))
+													{
+														_finiteVoronoiNodePositions[i] = confinedPosition;
+													}
+													break;
+												}
+											case VoronoiSiteType.Line:
+												{
+													var siteIndex1 = voronoiFaceSiteIndices[edge.twin];
+													var siteIndex1a = siteGraph.GetEdgeTargetNodeIndex(siteIndex1 ^ 1);
+													var siteIndex1b = siteGraph.GetEdgeTargetNodeIndex(siteIndex1);
+													var p1a = pointSitePositions[siteIndex1a];
+													var p1b = pointSitePositions[siteIndex1b];
+													var v1 = p1b - p1a;
+
+													if (siteIndex0 == siteIndex1b)
+													{
+														var ray = new ScaledRay(p1b, Vector3.Cross(v1, Vector3.back));
+
+														Vector3 confinedPosition;
+														if (Geometry.IntersectForwardInternal(_voronoiBounds, ray, out confinedPosition))
+														{
+															_finiteVoronoiNodePositions[i] = confinedPosition;
+														}
+													}
+													else
+													{
+														var parabola = Parabola.FromFocusDirectrix(p0, new ScaledRay(p1a, v1));
+
+														Vector3 confinedPosition;
+														if (Geometry.IntersectAscendingExit(parabola, _voronoiBounds, out confinedPosition))
+														{
+															_finiteVoronoiNodePositions[i] = confinedPosition;
+														}
+													}
+													break;
+												}
+											default: throw new NotImplementedException();
+										}
+										break;
+									}
+								case VoronoiSiteType.Line:
+									{
+										var siteIndex0 = voronoiFaceSiteIndices[edge];
+										var siteIndex0a = siteGraph.GetEdgeTargetNodeIndex(siteIndex0 ^ 1);
+										var siteIndex0b = siteGraph.GetEdgeTargetNodeIndex(siteIndex0);
+										var p0a = pointSitePositions[siteIndex0a];
+										var p0b = pointSitePositions[siteIndex0b];
+										var v0 = p0b - p0a;
+
+										switch (voronoiFaceSiteTypes[edge.twin])
+										{
+											case VoronoiSiteType.Point:
+												{
+													var siteIndex1 = voronoiFaceSiteIndices[edge.twin];
+													if (siteIndex0a == siteIndex1)
+													{
+														var ray = new ScaledRay(p0a, Vector3.Cross(v0, Vector3.back));
+
+														Vector3 confinedPosition;
+														if (Geometry.IntersectForwardInternal(_voronoiBounds, ray, out confinedPosition))
+														{
+															_finiteVoronoiNodePositions[i] = confinedPosition;
+														}
+													}
+													else
+													{
+														var p1 = pointSitePositions[siteIndex1];
+														var parabola = Parabola.FromFocusDirectrix(p1, new ScaledRay(p0a, v0));
+
+														Vector3 confinedPosition;
+														if (Geometry.IntersectAscendingExit(parabola, _voronoiBounds, out confinedPosition))
+														{
+															_finiteVoronoiNodePositions[i] = confinedPosition;
+														}
+													}
+													break;
+												}
+											case VoronoiSiteType.Line:
+												{
+													var siteIndex1 = voronoiFaceSiteIndices[edge.twin];
+													var siteIndex1a = siteGraph.GetEdgeTargetNodeIndex(siteIndex1 ^ 1);
+													var siteIndex1b = siteGraph.GetEdgeTargetNodeIndex(siteIndex1);
+													var p1a = pointSitePositions[siteIndex1a];
+													var p1b = pointSitePositions[siteIndex1b];
+													var v1 = p1b - p1a;
+
+													var ray0 = new Ray(p0a, p0b - p0a);
+													var ray1 = new Ray(p1a, p1b - p1a);
+
+													var origin = Geometry.GetNearestPoint(ray0, ray1);
+													var direction = ray1.direction - ray0.direction;
+
+													var ray = new ScaledRay(origin, direction);
+
+													Vector3 confinedPosition;
+													if (Geometry.IntersectForwardInternal(_voronoiBounds, ray, out confinedPosition))
+													{
+														_finiteVoronoiNodePositions[i] = confinedPosition;
+													}
+													break;
+												}
+											default: throw new NotImplementedException();
+										}
+										break;
+									}
+								default: throw new NotImplementedException();
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		private void RebuildContourMesh()
 		{
 			var controller = (ContourTriangulatorController)target;
@@ -1105,7 +1375,8 @@ namespace Experilous.Examples.MakeItTile
 			if (controller.siteGraph.nodeCount > 0)
 			{
 				_voronoiGenerator.SetSites(controller.siteGraph, controller.pointSitePositions, Vector3.zero, Vector3.right, Vector3.up);
-				var diagram = _voronoiGenerator.Generate();
+				_voronoiDiagram = _voronoiGenerator.Generate();
+				FinitizeVoronoiNodePositions();
 
 				var vertexIndexMap = new Dictionary<ContourTriangulator.PositionId, int>();
 				var vertexPositions = new List<Vector3>();
@@ -1155,10 +1426,10 @@ namespace Experilous.Examples.MakeItTile
 				{
 				}
 
-				if (diagram._siteEdgeFirstVoronoiEdgeIndices.Count > 0)
+				if (_voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices.Count > 0)
 				{
-					var edge = new TopologyEdge(diagram._voronoiTopology, diagram._siteEdgeFirstVoronoiEdgeIndices[0]);
-					_contourTriangulator.Triangulate(diagram, edge.sourceFace, onVertex, onTriangle, Vector3.back, contourDistances);
+					var edge = new TopologyEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices[0]);
+					_contourTriangulator.Triangulate(_voronoiDiagram, edge.sourceFace, onVertex, onTriangle, Vector3.back, contourDistances);
 
 					mesh.SetVertices(vertexPositions);
 					mesh.SetColors(vertexColors);
