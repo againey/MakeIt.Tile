@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Experilous.Topologies;
+using ScaledRay2D = Experilous.Numerics.ScaledRay2D;
 
 namespace Experilous.Examples.MakeItTile
 {
@@ -22,6 +23,7 @@ namespace Experilous.Examples.MakeItTile
 		private const float _nodeDefaultHandleSize = 1f / 25f;
 		private const float _nodeHoverHandleSize = 1f / 20f;
 		private const float _nodeActiveHandleSize = 1f / 20f;
+		private static Color _nodeStaticHandleColor = new Color(0.5f, 0.75f, 1f, 1f);
 		private static Color _nodeDefaultHandleColor = new Color(0f, 1f, 0f, 1f);
 		private static Color _nodeWillAlterHandleColor = new Color(0.5f, 1f, 0.5f, 1f);
 		private static Color _nodeWillRemoveHandleColor = new Color(1f, 0.5f, 0.5f, 1f);
@@ -30,16 +32,19 @@ namespace Experilous.Examples.MakeItTile
 		private static Color _nodeConnectingHandleColor = new Color(0.5f, 1f, 0.5f, 1f);
 		private static Color _nodeRemovingHandleColor = new Color(1f, 0f, 0f, 1f);
 		private static Color _nodeAddingHandleColor = new Color(1f, 1f, 1f, 1f);
+		private static Color _nodeInvalidHandleColor = new Color(1f, 0f, 0f, 0.5f);
 
-		private const float _edgeDefaultHandleWidth = 5f / 4f;
-		private const float _edgeHoverHandleWidth = 5f / 2f;
-		private const float _edgeActiveHandleWidth = 5f / 2f;
+		private const float _edgeDefaultHandleWidth = 2f;
+		private const float _edgeHoverHandleWidth = 4f;
+		private const float _edgeActiveHandleWidth = 4f;
+		private static Color _edgeStaticHandleColor = new Color(0.25f, 0.5f, 0.75f, 1f);
 		private static Color _edgeDefaultHandleColor = new Color(0f, 1f, 0f, 1f);
 		private static Color _edgeWillSplitHandleColor = new Color(0.5f, 1f, 0.5f, 1f);
 		private static Color _edgeWillRemoveHandleColor = new Color(1f, 0.5f, 0.5f, 1f);
 		private static Color _edgeSplittingHandleColor = new Color(0.5f, 1f, 0.5f, 1f);
 		private static Color _edgeRemovingHandleColor = new Color(1f, 0f, 0f, 1f);
 		private static Color _edgeAddingHandleColor = new Color(1f, 1f, 1f, 1f);
+		private static Color _edgeInvalidHandleColor = new Color(1f, 0f, 0f, 0.5f);
 
 		private Vector2 _mouseDownPosition;
 
@@ -72,14 +77,19 @@ namespace Experilous.Examples.MakeItTile
 			WillRemoveNode, // nearest to node with shift key
 			WillRemoveEdge, // nearest to edge with shift key
 			WillAddNode, // nearest to node with control key
+			WillAddEdge, // right mouse button down near node with no modifier key, no target node
 			WillSplitEdge, // nearest to edge with control key
 			MovingNode, // left mouse buton down near node with no modifier key
 			AddingEdge, // right mouse button down near node with no modifier key
 			SplittingEdge, // left/right mouse button down nearest to edge with control key
-			AddingNode, // left mouse button down nearest to node with control key
-			AddingNodeEdge, // right mouse button down nearest to node with control key
+			AddingNode, // left mouse button down not near edge with control key, right mouse button down not near edge with control key but no nearest node
+			AddingNodeEdge, // right mouse button down not near edge with control key
 			RemovingNode, // left/right mouse button down nearest to node with shift key
 			RemovingEdge, // left/right mouse button down nearest to edge with shift key
+			CannotMoveNode, // left mouse buton down near node with no modifier key, invalid edge arrangement
+			CannotAddEdge, // right mouse button down near node with no modifier key, invalid edge arrangement
+			CannotAddNodeEdge, // right mouse button down nearest to node with control key, invalid edge arrangement
+			CannotSplitEdge, // left/right mouse button down nearest to edge with control key, invalid edge arrangement
 		}
 
 		private MouseButton _mouseButtonState = MouseButton.None;
@@ -184,7 +194,7 @@ namespace Experilous.Examples.MakeItTile
 
 				int controlId = GUIUtility.GetControlID(_dynamicGraphHandleHash, FocusType.Passive);
 
-				switch (ev.type)
+				switch (ev.GetTypeForControl(controlId))
 				{
 					case EventType.Layout:
 						if (EditorWindow.mouseOverWindow == SceneView.currentDrawingSceneView)
@@ -194,7 +204,7 @@ namespace Experilous.Examples.MakeItTile
 
 							if (_handleState != HandleState.Canceled)
 							{
-								_handleState = DetermineHandleState(ev);
+								_handleState = DetermineHandleState(ev, controller, mousePosition);
 							}
 
 							switch (_handleState)
@@ -210,6 +220,7 @@ namespace Experilous.Examples.MakeItTile
 									HandleUtility.AddControl(controlId, _nearestEdgeDistance);
 									break;
 								case HandleState.MovingNode:
+								case HandleState.CannotMoveNode:
 									HandleUtility.AddControl(controlId, Vector2.Distance(_mouseDownNodePosition, _mouseDownPosition));
 									break;
 								case HandleState.WillAddNode:
@@ -217,6 +228,9 @@ namespace Experilous.Examples.MakeItTile
 								case HandleState.AddingNodeEdge:
 								case HandleState.AddingEdge:
 								case HandleState.SplittingEdge:
+								case HandleState.CannotAddEdge:
+								case HandleState.CannotAddNodeEdge:
+								case HandleState.CannotSplitEdge:
 									HandleUtility.AddControl(controlId, 0f);
 									break;
 							}
@@ -278,13 +292,13 @@ namespace Experilous.Examples.MakeItTile
 								_mouseDownEdgeDistance = _nearestEdgeDistance;
 							}
 
-							_handleState = DetermineHandleState(ev);
+							_handleState = DetermineHandleState(ev, controller, mousePosition);
 						}
 						break;
 					case EventType.MouseDrag:
 						if (GUIUtility.hotControl == controlId && _mouseButtonState != MouseButton.None && _handleState != HandleState.Canceled)
 						{
-							_handleState = DetermineHandleState(ev);
+							_handleState = DetermineHandleState(ev, controller, mousePosition);
 
 							if (_handleState != HandleState.None && _handleState != HandleState.Canceled)
 							{
@@ -390,19 +404,17 @@ namespace Experilous.Examples.MakeItTile
 									GUI.changed = true;
 									break;
 								case HandleState.AddingNodeEdge:
-									if (_nearestNode)
-									{
-										Undo.RecordObject(controller, "Add and Connect Point Site");
-										controller.siteGraph.Connect(_nearestNode, controller.siteGraph.AddNode());
-									}
-									else
-									{
-										Undo.RecordObject(controller, "Add Point Site");
-										controller.siteGraph.AddNode();
-									}
+									Undo.RecordObject(controller, "Add and Connect Point Site");
+									controller.siteGraph.Connect(_nearestNode, controller.siteGraph.AddNode());
 									controller.pointSitePositions.Add(mousePosition);
 									EditorUtility.SetDirty(controller);
 									GUI.changed = true;
+									break;
+								case HandleState.WillAddEdge:
+								case HandleState.CannotMoveNode:
+								case HandleState.CannotAddEdge:
+								case HandleState.CannotAddNodeEdge:
+								case HandleState.CannotSplitEdge:
 									break;
 								default:
 									throw new InvalidOperationException();
@@ -411,7 +423,7 @@ namespace Experilous.Examples.MakeItTile
 							GUIUtility.hotControl = 0;
 							EditorGUIUtility.SetWantsMouseJumping(0);
 
-							_handleState = DetermineHandleState(ev);
+							_handleState = DetermineHandleState(ev, controller, mousePosition);
 
 							_mouseDownNode = GraphNode.none;
 							_mouseDownEdge = GraphEdge.none;
@@ -459,26 +471,29 @@ namespace Experilous.Examples.MakeItTile
 			{
 				if (controller.siteGraph.nodeCount == 0) return;
 
-				Handles.color = _edgeDefaultHandleColor;
-				foreach (var edge in controller.siteGraph.edges)
+				if (Event.current.type == EventType.Repaint)
 				{
-					if (edge.isFirstTwin)
+					Handles.color = _edgeStaticHandleColor;
+					foreach (var edge in controller.siteGraph.edges)
 					{
-						Vector3 p0 = controller.pointSitePositions[edge.sourceNode.index];
-						Vector3 p1 = controller.pointSitePositions[edge.targetNode.index];
-						float size = HandleUtility.GetHandleSize((p0 + p1) / 2f) * _edgeDefaultHandleWidth;
-						Handles.DrawAAPolyLine(size, p0, p1);
+						if (edge.isFirstTwin)
+						{
+							Vector3 p0 = controller.pointSitePositions[edge.sourceNode.index];
+							Vector3 p1 = controller.pointSitePositions[edge.targetNode.index];
+							Handles.DrawAAPolyLine(_edgeDefaultHandleWidth, p0, p1);
+						}
 					}
-				}
 
-				Handles.color = _nodeDefaultHandleColor;
-				foreach (var node in controller.siteGraph.nodes)
-				{
-					using (var changeCheck = new EditorGUI.ChangeCheckScope())
+					Handles.color = _nodeStaticHandleColor;
+					Vector3 normal = -Camera.current.transform.forward;
+					foreach (var node in controller.siteGraph.nodes)
 					{
-						Vector3 nodePosition = controller.pointSitePositions[node.index];
-						float size = HandleUtility.GetHandleSize(nodePosition) * _nodeDefaultHandleSize;
-						Handles.DrawSolidDisc(nodePosition, Vector3.back, size);
+						using (var changeCheck = new EditorGUI.ChangeCheckScope())
+						{
+							Vector3 nodePosition = controller.pointSitePositions[node.index];
+							float size = HandleUtility.GetHandleSize(nodePosition) * _nodeDefaultHandleSize;
+							Handles.DrawSolidDisc(nodePosition, normal, size);
+						}
 					}
 				}
 			}
@@ -540,7 +555,7 @@ namespace Experilous.Examples.MakeItTile
 			}
 		}
 
-		private HandleState DetermineHandleState(Event ev)
+		private HandleState DetermineHandleState(Event ev, ContourTriangulatorController controller, Vector2 mousePosition)
 		{
 			switch (_mouseButtonState)
 			{
@@ -579,7 +594,14 @@ namespace Experilous.Examples.MakeItTile
 					{
 						if (_mouseDownNode && _mouseDownNodeDistance <= _nodeLongActiveDistance)
 						{
-							return HandleState.MovingNode;
+							if (MoveIsValid(controller, _mouseDownNode, mousePosition + _mouseDownNodePosition - _mouseDownPosition))
+							{
+								return HandleState.MovingNode;
+							}
+							else
+							{
+								return HandleState.CannotMoveNode;
+							}
 						}
 					}
 					else if (ev.shift && !ev.control)
@@ -598,7 +620,14 @@ namespace Experilous.Examples.MakeItTile
 					{
 						if (_mouseDownEdge && _mouseDownEdgeDistance <= _edgeShortActiveDistance)
 						{
-							return HandleState.SplittingEdge;
+							if (SplitIsValid(controller, _mouseDownEdge, mousePosition))
+							{
+								return HandleState.SplittingEdge;
+							}
+							else
+							{
+								return HandleState.CannotSplitEdge;
+							}
 						}
 
 						return HandleState.AddingNode;
@@ -609,7 +638,18 @@ namespace Experilous.Examples.MakeItTile
 					{
 						if (_mouseDownNode && _mouseDownNodeDistance <= _nodeLongActiveDistance)
 						{
-							return HandleState.AddingEdge;
+							if (!_nearestNode || _nearestNode == _mouseDownNode || _nearestNodeDistance > _nodeLongActiveDistance)
+							{
+								return HandleState.WillAddEdge;
+							}
+							else if (NewEdgeIsValid(controller, _mouseDownNode, _nearestNode))
+							{
+								return HandleState.AddingEdge;
+							}
+							else
+							{
+								return HandleState.CannotAddEdge;
+							}
 						}
 					}
 					else if (ev.shift && !ev.control)
@@ -628,10 +668,28 @@ namespace Experilous.Examples.MakeItTile
 					{
 						if (_mouseDownEdge && _mouseDownEdgeDistance <= _edgeShortActiveDistance)
 						{
-							return HandleState.SplittingEdge;
+							if (SplitIsValid(controller, _mouseDownEdge, mousePosition))
+							{
+								return HandleState.SplittingEdge;
+							}
+							else
+							{
+								return HandleState.CannotSplitEdge;
+							}
 						}
 
-						return HandleState.AddingNodeEdge;
+						if (!_nearestNode)
+						{
+							return HandleState.AddingNode;
+						}
+						else if (NewEdgeIsValid(controller, _nearestNode, mousePosition))
+						{
+							return HandleState.AddingNodeEdge;
+						}
+						else
+						{
+							return HandleState.CannotAddNodeEdge;
+						}
 					}
 					break;
 			}
@@ -639,9 +697,123 @@ namespace Experilous.Examples.MakeItTile
 			return HandleState.None;
 		}
 
+		private bool MoveIsValid(ContourTriangulatorController controller, GraphNode node, Vector2 p)
+		{
+			foreach (var nodeEdge in node.edges)
+			{
+				var targetNode = nodeEdge.targetNode;
+
+				Vector2 p0 = p;
+				Vector2 p1 = controller.pointSitePositions[targetNode.index];
+				if ((p1 - p0).sqrMagnitude < 0.1f) return false;
+
+				var nodeRay = new ScaledRay2D(p0, p1 - p0);
+				foreach (var otherEdge in controller.siteGraph.edges)
+				{
+					if (otherEdge.isFirstTwin && otherEdge.sourceNode != node && otherEdge.targetNode != node && otherEdge.sourceNode != targetNode && otherEdge.targetNode != targetNode)
+					{
+						Vector2 q0 = controller.pointSitePositions[otherEdge.sourceNode.index];
+						Vector2 q1 = controller.pointSitePositions[otherEdge.targetNode.index];
+						var otherRay = new ScaledRay2D(q0, q1 - q0);
+						float t0, t1;
+						if (Numerics.Geometry.GetIntersectionParameters(nodeRay, otherRay, out t0, out t1) && t0 >= 0f && t0 <= 1f && t1 >= 0f && t1 <= 1f)
+						{
+							return false;
+						}
+					}
+				}
+			}
+
+			return true;
+		}
+
+		private bool NewEdgeIsValid(ContourTriangulatorController controller, GraphNode node, Vector2 p)
+		{
+			Vector2 p0 = p;
+			Vector2 p1 = controller.pointSitePositions[node.index];
+			if ((p1 - p0).sqrMagnitude < 0.1f) return false;
+
+			var newRay = new ScaledRay2D(p0, p1 - p0);
+			foreach (var otherEdge in controller.siteGraph.edges)
+			{
+				if (otherEdge.isFirstTwin && otherEdge.sourceNode != node && otherEdge.targetNode != node)
+				{
+					Vector2 q0 = controller.pointSitePositions[otherEdge.sourceNode.index];
+					Vector2 q1 = controller.pointSitePositions[otherEdge.targetNode.index];
+					var otherRay = new ScaledRay2D(q0, q1 - q0);
+					float t0, t1;
+					if (Numerics.Geometry.GetIntersectionParameters(newRay, otherRay, out t0, out t1) && t0 >= 0f && t0 <= 1f && t1 >= 0f && t1 <= 1f)
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+
+		private bool NewEdgeIsValid(ContourTriangulatorController controller, GraphNode sourceNode, GraphNode targetNode)
+		{
+			Vector2 p0 = controller.pointSitePositions[sourceNode.index];
+			Vector2 p1 = controller.pointSitePositions[targetNode.index];
+			if ((p1 - p0).sqrMagnitude < 0.1f) return false;
+
+			var newRay = new ScaledRay2D(p0, p1 - p0);
+			foreach (var otherEdge in controller.siteGraph.edges)
+			{
+				if (otherEdge.isFirstTwin && otherEdge.sourceNode != sourceNode && otherEdge.targetNode != sourceNode && otherEdge.sourceNode != targetNode && otherEdge.targetNode != targetNode)
+				{
+					Vector2 q0 = controller.pointSitePositions[otherEdge.sourceNode.index];
+					Vector2 q1 = controller.pointSitePositions[otherEdge.targetNode.index];
+					var otherRay = new ScaledRay2D(q0, q1 - q0);
+					float t0, t1;
+					if (Numerics.Geometry.GetIntersectionParameters(newRay, otherRay, out t0, out t1) && t0 >= 0f && t0 <= 1f && t1 >= 0f && t1 <= 1f)
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+
+		private bool SplitIsValid(ContourTriangulatorController controller, GraphEdge edge, Vector2 p)
+		{
+			var sourceNode = edge.sourceNode;
+			var targetNode = edge.targetNode;
+			Vector2 p0 = controller.pointSitePositions[sourceNode.index];
+			Vector2 p1 = p;
+			Vector2 p2 = controller.pointSitePositions[targetNode.index];
+			if ((p1 - p0).sqrMagnitude < 0.1f || (p2 - p1).sqrMagnitude < 0.1f) return false;
+
+			var newRay0 = new ScaledRay2D(p0, p1 - p0);
+			var newRay1 = new ScaledRay2D(p1, p2 - p1);
+			foreach (var otherEdge in controller.siteGraph.edges)
+			{
+				if (otherEdge.isFirstTwin)
+				{
+					Vector2 q0 = controller.pointSitePositions[otherEdge.sourceNode.index];
+					Vector2 q1 = controller.pointSitePositions[otherEdge.targetNode.index];
+					var otherRay = new ScaledRay2D(q0, q1 - q0);
+					float t0, t1;
+					if (otherEdge.sourceNode != sourceNode && otherEdge.targetNode != sourceNode && Numerics.Geometry.GetIntersectionParameters(newRay0, otherRay, out t0, out t1) && t0 >= 0f && t0 <= 1f && t1 >= 0f && t1 <= 1f)
+					{
+						return false;
+					}
+					if (otherEdge.sourceNode != targetNode && otherEdge.targetNode != targetNode && Numerics.Geometry.GetIntersectionParameters(newRay1, otherRay, out t0, out t1) && t0 >= 0f && t0 <= 1f && t1 >= 0f && t1 <= 1f)
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+
 		private void PaintNode(ContourTriangulatorController controller, GraphNode node, Vector2 mousePosition)
 		{
 			Vector2 p0 = controller.pointSitePositions[node.index];
+			Vector3 normal = -Camera.current.transform.forward;
 
 			float baseSize;
 
@@ -653,19 +825,25 @@ namespace Experilous.Examples.MakeItTile
 						p0 = mousePosition + _mouseDownNodePosition - _mouseDownPosition;
 						baseSize = HandleUtility.GetHandleSize(p0);
 						Handles.color = _nodeMovingHandleColor;
-						Handles.DrawSolidDisc(p0, Vector3.back, baseSize * _nodeActiveHandleSize);
+						Handles.DrawSolidDisc(p0, normal, baseSize * _nodeActiveHandleSize);
 						return;
 					case HandleState.AddingEdge:
 						p0 = _mouseDownNodePosition;
 						baseSize = HandleUtility.GetHandleSize(p0);
 						Handles.color = _nodeConnectingHandleColor;
-						Handles.DrawSolidDisc(p0, Vector3.back, baseSize * _nodeActiveHandleSize);
+						Handles.DrawSolidDisc(p0, normal, baseSize * _nodeActiveHandleSize);
 						return;
 					case HandleState.RemovingNode:
 						p0 = _mouseDownNodePosition;
 						baseSize = HandleUtility.GetHandleSize(p0);
 						Handles.color = _nodeRemovingHandleColor;
-						Handles.DrawSolidDisc(p0, Vector3.back, baseSize * _nodeActiveHandleSize);
+						Handles.DrawSolidDisc(p0, normal, baseSize * _nodeActiveHandleSize);
+						return;
+					case HandleState.CannotMoveNode:
+						p0 = mousePosition + _mouseDownNodePosition - _mouseDownPosition;
+						baseSize = HandleUtility.GetHandleSize(p0);
+						Handles.color = _nodeInvalidHandleColor;
+						Handles.DrawSolidDisc(p0, normal, baseSize * _nodeDefaultHandleSize);
 						return;
 				}
 			}
@@ -678,13 +856,13 @@ namespace Experilous.Examples.MakeItTile
 						p0 = _nearestNodePosition;
 						baseSize = HandleUtility.GetHandleSize(p0);
 						Handles.color = _nodeWillAlterHandleColor;
-						Handles.DrawSolidDisc(p0, Vector3.back, baseSize * _nodeHoverHandleSize);
+						Handles.DrawSolidDisc(p0, normal, baseSize * _nodeHoverHandleSize);
 						return;
 					case HandleState.WillRemoveNode:
 						p0 = _nearestNodePosition;
 						baseSize = HandleUtility.GetHandleSize(p0);
 						Handles.color = _nodeWillRemoveHandleColor;
-						Handles.DrawSolidDisc(p0, Vector3.back, baseSize * _nodeHoverHandleSize);
+						Handles.DrawSolidDisc(p0, normal, baseSize * _nodeHoverHandleSize);
 						return;
 					case HandleState.AddingEdge:
 						if (node != _mouseDownNode && _nearestNodeDistance <= _nodeLongActiveDistance)
@@ -692,7 +870,17 @@ namespace Experilous.Examples.MakeItTile
 							p0 = _nearestNodePosition;
 							baseSize = HandleUtility.GetHandleSize(p0);
 							Handles.color = _nodeConnectingHandleColor;
-							Handles.DrawSolidDisc(p0, Vector3.back, baseSize * _nodeActiveHandleSize);
+							Handles.DrawSolidDisc(p0, normal, baseSize * _nodeActiveHandleSize);
+							return;
+						}
+						break;
+					case HandleState.CannotAddEdge:
+						if (node != _mouseDownNode && _nearestNodeDistance <= _nodeLongActiveDistance)
+						{
+							p0 = _nearestNodePosition;
+							baseSize = HandleUtility.GetHandleSize(p0);
+							Handles.color = _nodeInvalidHandleColor;
+							Handles.DrawSolidDisc(p0, normal, baseSize * _nodeDefaultHandleSize);
 							return;
 						}
 						break;
@@ -701,35 +889,46 @@ namespace Experilous.Examples.MakeItTile
 
 			baseSize = HandleUtility.GetHandleSize(p0);
 			Handles.color = _nodeDefaultHandleColor;
-			Handles.DrawSolidDisc(p0, Vector3.back, baseSize * _nodeDefaultHandleSize);
+			Handles.DrawSolidDisc(p0, normal, baseSize * _nodeDefaultHandleSize);
 		}
 
 		private void PaintPossibleNode(ContourTriangulatorController controller, Vector2 mousePosition)
 		{
 			float baseSize;
+			Vector3 normal = -Camera.current.transform.forward;
 
 			switch (_handleState)
 			{
 				case HandleState.WillAddNode:
 					baseSize = HandleUtility.GetHandleSize(mousePosition);
 					Handles.color = _nodeWillAddHandleColor;
-					Handles.DrawSolidDisc(mousePosition, Vector3.back, baseSize * _nodeHoverHandleSize);
+					Handles.DrawSolidDisc(mousePosition, normal, baseSize * _nodeHoverHandleSize);
 					break;
 				case HandleState.WillSplitEdge:
 					baseSize = HandleUtility.GetHandleSize(_nearestEdgePosition);
 					Handles.color = _nodeWillAddHandleColor;
-					Handles.DrawSolidDisc(_nearestEdgePosition, Vector3.back, baseSize * _nodeHoverHandleSize);
+					Handles.DrawSolidDisc(_nearestEdgePosition, normal, baseSize * _nodeHoverHandleSize);
 					break;
 				case HandleState.AddingNode:
 				case HandleState.AddingNodeEdge:
 					baseSize = HandleUtility.GetHandleSize(mousePosition);
 					Handles.color = _nodeAddingHandleColor;
-					Handles.DrawSolidDisc(mousePosition, Vector3.back, baseSize * _nodeActiveHandleSize);
+					Handles.DrawSolidDisc(mousePosition, normal, baseSize * _nodeActiveHandleSize);
 					break;
 				case HandleState.SplittingEdge:
 					baseSize = HandleUtility.GetHandleSize(mousePosition);
 					Handles.color = _nodeAddingHandleColor;
-					Handles.DrawSolidDisc(mousePosition, Vector3.back, baseSize * _nodeActiveHandleSize);
+					Handles.DrawSolidDisc(mousePosition, normal, baseSize * _nodeActiveHandleSize);
+					break;
+				case HandleState.CannotAddNodeEdge:
+					baseSize = HandleUtility.GetHandleSize(mousePosition);
+					Handles.color = _nodeInvalidHandleColor;
+					Handles.DrawSolidDisc(mousePosition, normal, baseSize * _nodeDefaultHandleSize);
+					break;
+				case HandleState.CannotSplitEdge:
+					baseSize = HandleUtility.GetHandleSize(mousePosition);
+					Handles.color = _nodeInvalidHandleColor;
+					Handles.DrawSolidDisc(mousePosition, normal, baseSize * _nodeDefaultHandleSize);
 					break;
 			}
 		}
@@ -739,21 +938,21 @@ namespace Experilous.Examples.MakeItTile
 			Vector2 p0 = controller.pointSitePositions[edge.sourceNode.index];
 			Vector2 p1 = controller.pointSitePositions[edge.targetNode.index];
 
-			float baseSize;
-
 			if (edge == _mouseDownEdge)
 			{
 				switch (_handleState)
 				{
 					case HandleState.SplittingEdge:
-						baseSize = HandleUtility.GetHandleSize(mousePosition);
 						Handles.color = _edgeSplittingHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeActiveHandleWidth, p0, mousePosition, p1);
+						Handles.DrawAAPolyLine(_edgeActiveHandleWidth, p0, mousePosition, p1);
 						return;
 					case HandleState.RemovingEdge:
-						baseSize = HandleUtility.GetHandleSize(_mouseDownEdgePosition);
 						Handles.color = _edgeRemovingHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeActiveHandleWidth, p0, p1);
+						Handles.DrawAAPolyLine(_edgeActiveHandleWidth, p0, p1);
+						return;
+					case HandleState.CannotSplitEdge:
+						Handles.color = _edgeInvalidHandleColor;
+						Handles.DrawAAPolyLine(_edgeDefaultHandleWidth, p0, mousePosition, p1);
 						return;
 				}
 			}
@@ -763,14 +962,12 @@ namespace Experilous.Examples.MakeItTile
 				switch (_handleState)
 				{
 					case HandleState.WillSplitEdge:
-						baseSize = HandleUtility.GetHandleSize(_nearestEdgePosition);
 						Handles.color = _edgeWillSplitHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeHoverHandleWidth, p0, p1);
+						Handles.DrawAAPolyLine(_edgeHoverHandleWidth, p0, p1);
 						return;
 					case HandleState.WillRemoveEdge:
-						baseSize = HandleUtility.GetHandleSize(_nearestEdgePosition);
 						Handles.color = _edgeWillRemoveHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeHoverHandleWidth, p0, p1);
+						Handles.DrawAAPolyLine(_edgeHoverHandleWidth, p0, p1);
 						return;
 				}
 			}
@@ -790,9 +987,22 @@ namespace Experilous.Examples.MakeItTile
 						}
 						break;
 					case HandleState.RemovingNode:
-						baseSize = HandleUtility.GetHandleSize(_mouseDownNodePosition);
 						Handles.color = _edgeRemovingHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeActiveHandleWidth, p0, p1);
+						Handles.DrawAAPolyLine(_edgeActiveHandleWidth, p0, p1);
+						return;
+					case HandleState.CannotMoveNode:
+						if (edge.sourceNode == _mouseDownNode)
+						{
+							p0 = mousePosition + _mouseDownNodePosition - _mouseDownPosition;
+							Handles.color = _edgeInvalidHandleColor;
+							Handles.DrawAAPolyLine(_edgeDefaultHandleWidth, p0, p1);
+						}
+						else //if (edge.targetNode == _mouseDownNode)
+						{
+							p1 = mousePosition + _mouseDownNodePosition - _mouseDownPosition;
+							Handles.color = _edgeInvalidHandleColor;
+							Handles.DrawAAPolyLine(_edgeDefaultHandleWidth, p0, p1);
+						}
 						return;
 				}
 			}
@@ -802,48 +1012,58 @@ namespace Experilous.Examples.MakeItTile
 				switch (_handleState)
 				{
 					case HandleState.WillRemoveNode:
-						baseSize = HandleUtility.GetHandleSize(_mouseDownNodePosition);
 						Handles.color = _edgeWillRemoveHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeHoverHandleWidth, p0, p1);
+						Handles.DrawAAPolyLine(_edgeHoverHandleWidth, p0, p1);
 						return;
 				}
 			}
 
-			baseSize = HandleUtility.GetHandleSize((p0 + p1) / 2f);
 			Handles.color = _edgeDefaultHandleColor;
-			Handles.DrawAAPolyLine(baseSize * _edgeDefaultHandleWidth, p0, p1);
+			Handles.DrawAAPolyLine(_edgeDefaultHandleWidth, p0, p1);
 		}
 
 		private void PaintPossibleEdge(ContourTriangulatorController controller, Vector2 mousePosition)
 		{
 			switch (_handleState)
 			{
+				case HandleState.WillAddEdge:
+					{
+						Vector2 p0 = controller.pointSitePositions[_mouseDownNode.index];
+						Vector2 p1 = mousePosition;
+						Handles.color = _edgeAddingHandleColor;
+						Handles.DrawAAPolyLine(_edgeDefaultHandleWidth, p0, p1);
+					}
+					break;
 				case HandleState.AddingEdge:
-					if (_nearestNode != _mouseDownNode && _nearestNodeDistance <= _nodeLongActiveDistance)
 					{
 						Vector2 p0 = controller.pointSitePositions[_mouseDownNode.index];
 						Vector2 p1 = controller.pointSitePositions[_nearestNode.index];
-						float baseSize = HandleUtility.GetHandleSize((p0 + p1) / 2f);
 						Handles.color = _edgeAddingHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeActiveHandleWidth, p0, p1);
-					}
-					else
-					{
-						Vector2 p0 = controller.pointSitePositions[_mouseDownNode.index];
-						Vector2 p1 = mousePosition;
-						float baseSize = HandleUtility.GetHandleSize((p0 + p1) / 2f);
-						Handles.color = _edgeAddingHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeDefaultHandleWidth, p0, p1);
+						Handles.DrawAAPolyLine(_edgeActiveHandleWidth, p0, p1);
 					}
 					break;
 				case HandleState.AddingNodeEdge:
-					if (_nearestNode && _nearestNodeDistance <= _nodeLongActiveDistance)
 					{
 						Vector2 p0 = controller.pointSitePositions[_nearestNode.index];
 						Vector2 p1 = mousePosition;
-						float baseSize = HandleUtility.GetHandleSize((p0 + p1) / 2f);
 						Handles.color = _edgeAddingHandleColor;
-						Handles.DrawAAPolyLine(baseSize * _edgeActiveHandleWidth, p0, p1);
+						Handles.DrawAAPolyLine(_edgeActiveHandleWidth, p0, p1);
+					}
+					break;
+				case HandleState.CannotAddEdge:
+					{
+						Vector2 p0 = controller.pointSitePositions[_mouseDownNode.index];
+						Vector2 p1 = controller.pointSitePositions[_nearestNode.index];
+						Handles.color = _edgeInvalidHandleColor;
+						Handles.DrawAAPolyLine(_edgeDefaultHandleWidth, p0, p1);
+					}
+					break;
+				case HandleState.CannotAddNodeEdge:
+					{
+						Vector2 p0 = controller.pointSitePositions[_nearestNode.index];
+						Vector2 p1 = mousePosition;
+						Handles.color = _edgeInvalidHandleColor;
+						Handles.DrawAAPolyLine(_edgeDefaultHandleWidth, p0, p1);
 					}
 					break;
 			}
