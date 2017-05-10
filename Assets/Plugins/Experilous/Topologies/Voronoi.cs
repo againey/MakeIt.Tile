@@ -81,8 +81,6 @@ namespace Experilous.Topologies
 			_right = right.normalized;
 			_up = Vector3.Cross(right, Vector3.Cross(up, right)).normalized;
 
-			_beach.Reset();
-
 			_sweep = float.NegativeInfinity;
 
 			foreach (var pointSite in _siteGraph.nodes)
@@ -98,32 +96,39 @@ namespace Experilous.Topologies
 
 		public VoronoiDiagram Generate()
 		{
-			while (Step()) { }
+			VoronoiDiagram voronoiDiagram;
 
-			var convertedNodePositions = new TopologyNodeDataArray<Vector3>(_voronoiNodePositions.Count);
-			for (int i = 0; i < _voronoiNodePositions.Count; ++i)
+			try
 			{
-				var position = _voronoiNodePositions[i];
-				convertedNodePositions[i] = _origin + position.x * _right + position.y * _up;
+				while (Step()) { }
+
+				var convertedNodePositions = new TopologyNodeDataArray<Vector3>(_voronoiNodePositions.Count);
+				for (int i = 0; i < _voronoiNodePositions.Count; ++i)
+				{
+					var position = _voronoiNodePositions[i];
+					convertedNodePositions[i] = _origin + position.x * _right + position.y * _up;
+				}
+
+				voronoiDiagram = FinalizeVoronoiDiagram();
 			}
+			finally
+			{
+				_siteGraph = null;
+				_originalPointSitePositions = null;
 
-			var voronoiDiagram = FinalizeVoronoiDiagram();
+				_beach.Reset();
 
-			_siteGraph = null;
-			_originalPointSitePositions = null;
+				_siteNodeFirstVoronoiEdgeIndices = null;
+				_siteEdgeFirstVoronoiEdgeIndices = null;
 
-			_beach.Reset();
+				_splitEventQueue.Clear();
+				_mergeEventQueue.Clear();
 
-			_siteNodeFirstVoronoiEdgeIndices = null;
-			_siteEdgeFirstVoronoiEdgeIndices = null;
+				_voronoiGraph.Clear();
+				_voronoiNodePositions.Clear();
 
-			_splitEventQueue.Clear();
-			_mergeEventQueue.Clear();
-
-			_voronoiGraph.Clear();
-			_voronoiNodePositions.Clear();
-
-			_pointSitePositions.Clear();
+				_pointSitePositions.Clear();
+			}
 
 			return voronoiDiagram;
 		}

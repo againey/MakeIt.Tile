@@ -135,6 +135,32 @@ namespace Experilous.Topologies
 			_errorMargin = errorMargin;
 		}
 
+		public float maxCurvaturePerSegment
+		{
+			get
+			{
+				return _maxCurvaturePerSegment;
+			}
+			set
+			{
+				if (value <= 0f) throw new ArgumentOutOfRangeException("value", "The maximum curvature per segment must be greater than zero.");
+				_maxCurvaturePerSegment = value;
+			}
+		}
+
+		public float errorMargin
+		{
+			get
+			{
+				return _errorMargin;
+			}
+			set
+			{
+				if (value <= 0f) throw new ArgumentOutOfRangeException("value", "The error margin must be greater than zero.");
+				_errorMargin = value;
+			}
+		}
+
 		public void Triangulate(VoronoiDiagram voronoiDiagram, TopologyFace initialFace, OnVertexDelegate onVertex, OnTriangleDelegate onTriangle, Vector3 normal, params float[] contourDistances)
 		{
 			BeginTriangulation(voronoiDiagram, initialFace, onVertex, onTriangle, normal, contourDistances);

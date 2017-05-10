@@ -95,6 +95,9 @@ namespace Experilous.Examples.MakeItTile
 		private MouseButton _mouseButtonState = MouseButton.None;
 		private HandleState _handleState = HandleState.None;
 
+		private PlanarVoronoiGenerator _voronoiGenerator;
+		private ContourTriangulator _contourTriangulator;
+
 		protected void OnEnable()
 		{
 			ContourTriangulatorController controller = target as ContourTriangulatorController;
@@ -107,7 +110,7 @@ namespace Experilous.Examples.MakeItTile
 
 			if (controller.pointSitePositions == null)
 			{
-				controller.pointSitePositions = new List<Vector3>();
+				controller.pointSitePositions = new ContourTriangulatorController.GraphNodePositionList();
 			}
 
 			while (controller.pointSitePositions.Count < controller.siteGraph.nodeCount)
@@ -122,6 +125,16 @@ namespace Experilous.Examples.MakeItTile
 
 			_mouseButtonState = MouseButton.None;
 			_handleState = HandleState.None;
+
+			if (_voronoiGenerator == null)
+			{
+				_voronoiGenerator = new PlanarVoronoiGenerator(0.0001f);
+			}
+
+			if (_contourTriangulator == null)
+			{
+				_contourTriangulator = new ContourTriangulator();
+			}
 
 			Tools.hidden = _editSiteGraph;
 		}
@@ -171,6 +184,7 @@ namespace Experilous.Examples.MakeItTile
 
 			if (EditorGUI.EndChangeCheck())
 			{
+				EditorApplication.delayCall += RebuildContourMesh;
 				SceneView.RepaintAll();
 			}
 		}
@@ -316,6 +330,7 @@ namespace Experilous.Examples.MakeItTile
 									controller.pointSitePositions[_mouseDownNode.index] = controller.transform.InverseTransformPoint(_mouseDownNodePosition + (mousePosition - _mouseDownPosition));
 									EditorUtility.SetDirty(controller);
 									GUI.changed = true;
+									EditorApplication.delayCall += RebuildContourMesh;
 									break;
 								case HandleState.AddingEdge:
 									if (_nearestNode != _mouseDownNode && _nearestNodeDistance <= _nodeLongActiveDistance && !_mouseDownNode.FindEdge(_nearestNode))
@@ -324,6 +339,7 @@ namespace Experilous.Examples.MakeItTile
 										controller.siteGraph.Connect(_mouseDownNode, _nearestNode);
 										EditorUtility.SetDirty(controller);
 										GUI.changed = true;
+										EditorApplication.delayCall += RebuildContourMesh;
 									}
 									break;
 								case HandleState.SplittingEdge:
@@ -338,6 +354,7 @@ namespace Experilous.Examples.MakeItTile
 										controller.siteGraph.Connect(newNode, targetNode);
 										EditorUtility.SetDirty(controller);
 										GUI.changed = true;
+										EditorApplication.delayCall += RebuildContourMesh;
 									}
 									break;
 								case HandleState.RemovingNode:
@@ -374,6 +391,7 @@ namespace Experilous.Examples.MakeItTile
 										});
 									EditorUtility.SetDirty(controller);
 									GUI.changed = true;
+									EditorApplication.delayCall += RebuildContourMesh;
 									break;
 								case HandleState.RemovingEdge:
 									Undo.RecordObject(controller, "Remove Line Site");
@@ -395,6 +413,7 @@ namespace Experilous.Examples.MakeItTile
 										});
 									EditorUtility.SetDirty(controller);
 									GUI.changed = true;
+									EditorApplication.delayCall += RebuildContourMesh;
 									break;
 								case HandleState.AddingNode:
 									Undo.RecordObject(controller, "Add Point Site");
@@ -402,6 +421,7 @@ namespace Experilous.Examples.MakeItTile
 									controller.pointSitePositions.Add(mousePosition);
 									EditorUtility.SetDirty(controller);
 									GUI.changed = true;
+									EditorApplication.delayCall += RebuildContourMesh;
 									break;
 								case HandleState.AddingNodeEdge:
 									Undo.RecordObject(controller, "Add and Connect Point Site");
@@ -409,6 +429,7 @@ namespace Experilous.Examples.MakeItTile
 									controller.pointSitePositions.Add(mousePosition);
 									EditorUtility.SetDirty(controller);
 									GUI.changed = true;
+									EditorApplication.delayCall += RebuildContourMesh;
 									break;
 								case HandleState.WillAddEdge:
 								case HandleState.CannotMoveNode:
@@ -1067,6 +1088,89 @@ namespace Experilous.Examples.MakeItTile
 					}
 					break;
 			}
+		}
+
+		private void RebuildContourMesh()
+		{
+			var controller = (ContourTriangulatorController)target;
+
+			var meshFilter = controller.GetComponent<MeshFilter>();
+			var mesh = meshFilter.sharedMesh;
+			if (mesh == null)
+			{
+				mesh = meshFilter.sharedMesh = new Mesh();
+			}
+			mesh.Clear();
+
+			if (controller.siteGraph.nodeCount > 0)
+			{
+				_voronoiGenerator.SetSites(controller.siteGraph, controller.pointSitePositions, Vector3.zero, Vector3.right, Vector3.up);
+				var diagram = _voronoiGenerator.Generate();
+
+				var vertexIndexMap = new Dictionary<ContourTriangulator.PositionId, int>();
+				var vertexPositions = new List<Vector3>();
+				var vertexColors = new List<Color>();
+				var triangleIndices = new List<int>();
+
+				var contourColors = controller.contourColors;
+				var contourDistances = controller.contourDistances;
+
+				ContourTriangulator.OnVertexDelegate onVertex =
+					(ContourTriangulator.PositionId positionId, Vector3 position, VoronoiSiteType siteType, int siteIndex, int contourIndex, float distance) =>
+					{
+						if (!vertexIndexMap.ContainsKey(positionId))
+						{
+							vertexIndexMap.Add(positionId, vertexPositions.Count);
+							vertexPositions.Add(position);
+							if (contourIndex > 0)
+							{
+								vertexColors.Add(Color.Lerp(contourColors[contourIndex - 1], contourColors[contourIndex], (distance - contourDistances[contourIndex - 1]) / (contourDistances[contourIndex] - contourDistances[contourIndex - 1])));
+							}
+							else
+							{
+								vertexColors.Add(contourColors[0]);
+							}
+						//Debug.LogFormat("Add Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexPositions.Count - 1, positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
+					}
+						else
+						{
+						//Debug.LogFormat("Reuse Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexIndexMap[positionId], positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
+					}
+					};
+
+				ContourTriangulator.OnTriangleDelegate onTriangle =
+					(ContourTriangulator.PositionId positionId0, ContourTriangulator.PositionId positionId1, ContourTriangulator.PositionId positionId2) =>
+					{
+						triangleIndices.Add(vertexIndexMap[positionId0]);
+						triangleIndices.Add(vertexIndexMap[positionId1]);
+						triangleIndices.Add(vertexIndexMap[positionId2]);
+					//Debug.LogFormat("Triangle({0}, {1}, {2}):  {1}, {2}, {3}", vertexIndexMap[positionId0], vertexIndexMap[positionId1], vertexIndexMap[positionId2], vertexPositions[vertexIndexMap[positionId0]].ToString("F2"), vertexPositions[vertexIndexMap[positionId1]].ToString("F2"), vertexPositions[vertexIndexMap[positionId2]].ToString("F2"));
+				};
+
+				try
+				{
+					_contourTriangulator.maxCurvaturePerSegment = controller.maxCurvaturPerSegment;
+				}
+				catch (Exception)
+				{
+				}
+
+				if (diagram._siteEdgeFirstVoronoiEdgeIndices.Count > 0)
+				{
+					var edge = new TopologyEdge(diagram._voronoiTopology, diagram._siteEdgeFirstVoronoiEdgeIndices[0]);
+					_contourTriangulator.Triangulate(diagram, edge.sourceFace, onVertex, onTriangle, Vector3.back, contourDistances);
+
+					mesh.SetVertices(vertexPositions);
+					mesh.SetColors(vertexColors);
+					mesh.SetIndices(triangleIndices.ToArray(), MeshTopology.Triangles, 0);
+				}
+			}
+
+			mesh.RecalculateBounds();
+			mesh.RecalculateNormals();
+			mesh.UploadMeshData(true);
+
+			EditorUtility.SetDirty(controller);
 		}
 	}
 }
