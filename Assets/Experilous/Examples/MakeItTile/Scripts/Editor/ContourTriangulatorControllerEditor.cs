@@ -46,6 +46,18 @@ namespace Experilous.Examples.MakeItTile
 		private static Color _edgeAddingHandleColor = new Color(1f, 1f, 1f, 1f);
 		private static Color _edgeInvalidHandleColor = new Color(1f, 0f, 0f, 0.5f);
 
+		private static float _voronoiNodeDefaultRadius = 0.04f;
+		private static float _voronoiNodeLabeledRadius = 0.12f;
+		private static float _voronoidEdgeWidth = 2f;
+		private static float _voronoiEdgeOffset = 0.03f;
+		private static float _voronoiEdgeArrowOffset = 0.075f;
+		private static float _voronoiEdgeLabelOffset = 0.12f;
+		private static float _voronoiEdgeMaxCurvaturePerSegment = 1f / 256f;
+		private static GUIStyle _voronoiNodeLabelStyle;
+		private static GUIStyle _voronoiEdgeLabelStyle;
+		private static Color _voronoiFiniteEdgeColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+		private static Color _voronoiInfiniteEdgeColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+
 		private Vector2 _mouseDownPosition;
 
 		private GraphNode _mouseDownNode;
@@ -94,6 +106,8 @@ namespace Experilous.Examples.MakeItTile
 
 		private MouseButton _mouseButtonState = MouseButton.None;
 		private HandleState _handleState = HandleState.None;
+
+		[SerializeField] private bool _showVoronoiLabels;
 
 		private PlanarVoronoiGenerator _voronoiGenerator;
 		private VoronoiDiagram _voronoiDiagram;
@@ -159,7 +173,7 @@ namespace Experilous.Examples.MakeItTile
 			GUILayout.FlexibleSpace();
 			using (var changeCheck = new EditorGUI.ChangeCheckScope())
 			{
-				_editSiteGraph = GUILayout.Toggle(_editSiteGraph, new GUIContent("Edit Site Graph"), GUI.skin.button, GUILayout.Width(160f));
+				_editSiteGraph = GUILayout.Toggle(_editSiteGraph, new GUIContent("Edit Site Graph"), GUI.skin.button, GUILayout.Width(128f));
 				if (changeCheck.changed)
 				{
 					if (_editSiteGraph)
@@ -171,7 +185,7 @@ namespace Experilous.Examples.MakeItTile
 					Tools.hidden = _editSiteGraph;
 				}
 			}
-			if (GUILayout.Button(new GUIContent("Reset Site Graph"), GUILayout.Width(160f)))
+			if (GUILayout.Button(new GUIContent("Reset Site Graph"), GUILayout.Width(128f)))
 			{
 				var controller = (ContourTriangulatorController)target;
 
@@ -182,8 +196,12 @@ namespace Experilous.Examples.MakeItTile
 				GUI.changed = true;
 				Repaint();
 			}
+			if (GUILayout.Button(new GUIContent("Rebuild Mesh"), GUILayout.Width(128f)))
+			{
+			}
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
+			_showVoronoiLabels = GUILayout.Toggle(_showVoronoiLabels, new GUIContent("Show Voronoi Labels"));
 			GUILayout.Space(12f);
 
 			GUI.enabled = !_editSiteGraph;
@@ -1106,60 +1124,196 @@ namespace Experilous.Examples.MakeItTile
 		{
 			if (_voronoiDiagram == null) return;
 
+			if (_voronoiNodeLabelStyle == null)
+			{
+				_voronoiNodeLabelStyle = new GUIStyle(EditorStyles.boldLabel);
+				_voronoiNodeLabelStyle.alignment = TextAnchor.UpperLeft;
+				_voronoiNodeLabelStyle.fontSize = 12;
+				_voronoiNodeLabelStyle.normal.textColor = Color.white;
+				_voronoiNodeLabelStyle.padding.top = 1;
+				_voronoiNodeLabelStyle.padding.bottom = 4;
+			}
+
+			if (_voronoiEdgeLabelStyle == null)
+			{
+				_voronoiEdgeLabelStyle = new GUIStyle(EditorStyles.label);
+				_voronoiEdgeLabelStyle.alignment = TextAnchor.UpperLeft;
+				_voronoiEdgeLabelStyle.fontSize = 10;
+				_voronoiEdgeLabelStyle.normal.textColor = Color.white;
+				_voronoiEdgeLabelStyle.padding.top = 1;
+				_voronoiEdgeLabelStyle.padding.bottom = 4;
+			}
+
 			var topology = _voronoiDiagram._voronoiTopology;
 			var voronoiEdgeShapes = _voronoiDiagram._voronoiEdgeShapes;
 
+			var normal = -Camera.current.transform.forward;
+
+			float voronoiNodeRadius = _showVoronoiLabels ? _voronoiNodeLabeledRadius : _voronoiNodeDefaultRadius;
+
 			foreach (var edge in topology.edges)
 			{
-				if (edge.isFirstTwin)
+				var p0 = _finiteVoronoiNodePositions[edge.sourceNode];
+				var p1 = _finiteVoronoiNodePositions[edge.targetNode];
+				var s0 = HandleUtility.GetHandleSize(p0);
+				var s1 = HandleUtility.GetHandleSize(p1);
+				var e0 = s0 * _voronoiEdgeOffset;
+				var e1 = s1 * _voronoiEdgeOffset;
+				var a0 = s0 * _voronoiEdgeArrowOffset;
+				var a1 = s1 * _voronoiEdgeArrowOffset;
+				var n0 = s0 * voronoiNodeRadius + e0;
+				var n1 = s1 * voronoiNodeRadius + e1;
+				var edgeShape = voronoiEdgeShapes[edge];
+
+				if (edgeShape.isFinite)
 				{
-					var p0 = _finiteVoronoiNodePositions[edge.sourceNode];
-					var p1 = _finiteVoronoiNodePositions[edge.targetNode];
-					var edgeShape = voronoiEdgeShapes[edge];
-					if (edgeShape.isFinite)
+					Handles.color = _voronoiFiniteEdgeColor;
+
+					if (edgeShape.isStraight)
 					{
-						if (edgeShape.isStraight)
-						{
-							Handles.color = new Color(0.5f, 0.5f, 0.5f, 1f);
-							Handles.DrawAAPolyLine(2f, p0, p1);
-						}
-						else if (edgeShape.type == VoronoiEdgeShapeType.Parabola)
-						{
-							float cumulativeCurvature = Mathf.Abs(edgeShape.GetCurvatureSum(edgeShape.t0, edgeShape.t1));
-							int segmentCount = Mathf.CeilToInt(cumulativeCurvature * 256f);
-							var points = new Vector3[segmentCount + 1];
+						var v = (p1 - p0).normalized;
+						var u = Vector3.Cross(normal, v);
+						Handles.DrawAAPolyLine(_voronoidEdgeWidth, p0 - u * e0 + v * n0, p1 - u * e1 - v * n1, p1 - u * (e1 + a1) - v * (n1 + e1 + a1));
 
-							points[0] = p0;
-							for (int i = 1; i < segmentCount; ++i)
-							{
-								float tSegment = edgeShape.GetCurvatureSumOffset(edgeShape.t0, (cumulativeCurvature * i) / segmentCount);
-								points[i] = edgeShape.Evaluate(tSegment);
-							}
-							points[segmentCount] = p1;
-
-							Handles.color = new Color(0.5f, 0.5f, 0.5f, 1f);
-							Handles.DrawAAPolyLine(2f, points);
+						if (_showVoronoiLabels)
+						{
+							var midpoint = (p0 + p1) / 2f;
+							var label = new GUIContent(edge.index.ToString());
+							var labelSize = _voronoiEdgeLabelStyle.CalcSize(label);
+							var labelPosition = HandleUtility.WorldToGUIPoint(midpoint - u * HandleUtility.GetHandleSize(midpoint) * _voronoiEdgeLabelOffset);
+							Handles.BeginGUI();
+							GUI.Label(new Rect(labelPosition - labelSize / 2f, labelSize), label, _voronoiEdgeLabelStyle);
+							Handles.EndGUI();
 						}
+					}
+					else if (edgeShape.type == VoronoiEdgeShapeType.Parabola)
+					{
+						var v0 = edgeShape.GetDirection(edgeShape.t0);
+						var u0 = Vector3.Cross(normal, v0);
+						var v1 = edgeShape.GetDirection(edgeShape.t1);
+						var u1 = Vector3.Cross(normal, v1);
+
+						float cumulativeCurvature = Mathf.Abs(edgeShape.GetCurvatureSum(edgeShape.t0, edgeShape.t1));
+						int segmentCount = Mathf.CeilToInt(cumulativeCurvature / _voronoiEdgeMaxCurvaturePerSegment);
+						var points = new Vector3[segmentCount + 2];
+
+						points[0] = p0 - u0 * e0 + v0 * n0;
+						for (int i = 1; i < segmentCount; ++i)
+						{
+							float tSegment = edgeShape.GetCurvatureSumOffset(edgeShape.t0, (cumulativeCurvature * i) / segmentCount);
+							float tCurve = 1f - 2f * (tSegment - edgeShape.t0) / (edgeShape.t1 - edgeShape.t0);
+							var pSegment = edgeShape.Evaluate(tSegment);
+							var vSegment = edgeShape.GetDirection(tSegment);
+							var uSegment = Vector3.Cross(normal, vSegment);
+							points[i] = pSegment - uSegment * e0 + vSegment * n0 * tCurve;
+						}
+						points[segmentCount] = p1 - u1 * e1 - v1 * n1;
+						points[segmentCount + 1] = p1 - u1 * (e1 + a1) - v1 * (n1 + e1 + a1);
+
+						Handles.DrawAAPolyLine(_voronoidEdgeWidth, points);
+
+						if (_showVoronoiLabels)
+						{
+							float tMidpoint = edgeShape.GetCurvatureSumOffset(edgeShape.t0, cumulativeCurvature / 2f);
+							var pMidpoint = edgeShape.Evaluate(tMidpoint);
+							var vMidpoint = edgeShape.GetDirection(tMidpoint);
+							var uMidpoint = Vector3.Cross(normal, vMidpoint);
+							var label = new GUIContent(edge.index.ToString());
+							var labelSize = _voronoiEdgeLabelStyle.CalcSize(label);
+							var labelPosition = HandleUtility.WorldToGUIPoint(pMidpoint - uMidpoint * HandleUtility.GetHandleSize(pMidpoint) * _voronoiEdgeLabelOffset);
+							Handles.BeginGUI();
+							GUI.Label(new Rect(labelPosition - labelSize / 2f, labelSize), label, _voronoiEdgeLabelStyle);
+							Handles.EndGUI();
+						}
+					}
+				}
+				else
+				{
+					var wU = p0 - _voronoiBounds.center;
+					var wE = p1 - _voronoiBounds.center;
+					var wR = Vector3.Cross(Vector3.back, wU);
+					var dot0 = Vector3.Dot(wE.normalized, wU.normalized);
+					var dot1 = Vector3.Dot(wE.normalized, wR.normalized);
+					var arc = Mathf.Atan2(Vector3.Dot(wE, wR), Vector3.Dot(wE, wU));
+
+					float sign;
+
+					if (_voronoiDiagram._voronoiFaceSiteTypes[edge] == VoronoiSiteType.None)
+					{
+						arc = Mathf.Repeat(arc, Mathf.PI * 2f);
+						sign = +1f;
 					}
 					else
 					{
-						var v0 = p0 - _voronoiBounds.center;
-						var v1 = p1 - _voronoiBounds.center;
-						var v = new Vector2(
-							Vector3.Dot(v1, v0),
-							Vector3.Dot(v1, new Vector3(v0.y, -v0.x)));
-						var angle = Mathf.Atan2(v.x, v.y) * Mathf.Rad2Deg;
-						Handles.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-						Handles.DrawWireArc(_voronoiBounds.center, Vector3.back, v0, angle, v0.magnitude);
+						arc = Mathf.PI * 2f - Mathf.Repeat(arc, Mathf.PI * 2f);
+						sign = -1f;
+					}
+
+					float radius = _voronoiBounds.radius + (e0 + e1) / 2f * sign;
+					float arrowRadius = radius + a1 * sign;
+					wU = wU.WithMagnitude(radius);
+					wR = wR.WithMagnitude(radius) * sign;
+					float arcEndOffset0 = n0 / radius;
+					float arcEndOffset1 = n1 / radius;
+					float arcArrowOffset = a1 / radius;
+
+					float cumulativeCurvature = Mathf.Repeat(arc, Mathf.PI * 2f) - (arcEndOffset0 + arcEndOffset1);
+					if (cumulativeCurvature > 0f)
+					{
+						int segmentCount = Mathf.CeilToInt(cumulativeCurvature / _voronoiEdgeMaxCurvaturePerSegment);
+						var points = new Vector3[segmentCount + 2];
+
+						points[0] = _voronoiBounds.center + wU * Mathf.Cos(arcEndOffset0) + wR * Mathf.Sin(arcEndOffset0);
+						for (int i = 1; i < segmentCount; ++i)
+						{
+							float angleSegment = arcEndOffset0 + cumulativeCurvature * i / segmentCount;
+							points[i] = _voronoiBounds.center + wU * Mathf.Cos(angleSegment) + wR * Mathf.Sin(angleSegment);
+						}
+						points[segmentCount] = _voronoiBounds.center + wU * Mathf.Cos(arc - arcEndOffset1) + wR * Mathf.Sin(arc - arcEndOffset1);
+						points[segmentCount + 1] = _voronoiBounds.center + (wU * Mathf.Cos(arc - arcEndOffset1 - arcArrowOffset) + wR * Mathf.Sin(arc - arcEndOffset1 - arcArrowOffset)).WithMagnitude(arrowRadius);
+
+						Handles.color = _voronoiInfiniteEdgeColor;
+						Handles.DrawAAPolyLine(_voronoidEdgeWidth, points);
+					}
+
+					if (_showVoronoiLabels)
+					{
+						float angleMidpoint = arcEndOffset0 + cumulativeCurvature / 2f;
+						var uMidpoint = (wU * Mathf.Cos(angleMidpoint) + wR * Mathf.Sin(angleMidpoint)).normalized;
+						var pMidpoint = _voronoiBounds.center + uMidpoint * _voronoiBounds.radius;
+						var label = new GUIContent(edge.index.ToString());
+						var labelSize = _voronoiEdgeLabelStyle.CalcSize(label);
+						var labelPosition = HandleUtility.WorldToGUIPoint(pMidpoint + uMidpoint * HandleUtility.GetHandleSize(pMidpoint) * _voronoiEdgeLabelOffset * sign);
+						Handles.BeginGUI();
+						GUI.Label(new Rect(labelPosition - labelSize / 2f, labelSize), label, _voronoiEdgeLabelStyle);
+						Handles.EndGUI();
 					}
 				}
 			}
 
-			foreach (var node in topology.nodes)
+			if (_showVoronoiLabels)
 			{
-				var p = _finiteVoronoiNodePositions[node];
-				Handles.color = Color.gray;
-				Handles.DrawSolidDisc(p, Vector3.back, HandleUtility.GetHandleSize(p) / 25f);
+				foreach (var node in topology.nodes)
+				{
+					var p = _finiteVoronoiNodePositions[node];
+					Handles.color = Color.gray;
+					Handles.DrawSolidDisc(p, Vector3.back, HandleUtility.GetHandleSize(p) * _voronoiNodeLabeledRadius);
+					var label = new GUIContent(node.index.ToString());
+					var labelSize = _voronoiNodeLabelStyle.CalcSize(label);
+					var labelPosition = HandleUtility.WorldToGUIPoint(p);
+					Handles.BeginGUI();
+					GUI.Label(new Rect(labelPosition - labelSize / 2f, labelSize), label, _voronoiNodeLabelStyle);
+					Handles.EndGUI();
+				}
+			}
+			else
+			{
+				foreach (var node in topology.nodes)
+				{
+					var p = _finiteVoronoiNodePositions[node];
+					Handles.color = Color.gray;
+					Handles.DrawSolidDisc(p, Vector3.back, HandleUtility.GetHandleSize(p) * _voronoiNodeDefaultRadius);
+				}
 			}
 		}
 
@@ -1372,11 +1526,19 @@ namespace Experilous.Examples.MakeItTile
 			}
 			mesh.Clear();
 
+			var stopwatch = new System.Diagnostics.Stopwatch();
+
 			if (controller.siteGraph.nodeCount > 0)
 			{
+				stopwatch.Start();
 				_voronoiGenerator.SetSites(controller.siteGraph, controller.pointSitePositions, Vector3.zero, Vector3.right, Vector3.up);
 				_voronoiDiagram = _voronoiGenerator.Generate();
 				FinitizeVoronoiNodePositions();
+				stopwatch.Stop();
+
+				Debug.LogFormat("Time to generate voronoi diagram:  {0:F6} ms", 1000d * stopwatch.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency);
+
+				stopwatch.Reset();
 
 				var vertexIndexMap = new Dictionary<ContourTriangulator.PositionId, int>();
 				var vertexPositions = new List<Vector3>();
@@ -1418,18 +1580,25 @@ namespace Experilous.Examples.MakeItTile
 					//Debug.LogFormat("Triangle({0}, {1}, {2}):  {1}, {2}, {3}", vertexIndexMap[positionId0], vertexIndexMap[positionId1], vertexIndexMap[positionId2], vertexPositions[vertexIndexMap[positionId0]].ToString("F2"), vertexPositions[vertexIndexMap[positionId1]].ToString("F2"), vertexPositions[vertexIndexMap[positionId2]].ToString("F2"));
 				};
 
-				try
-				{
-					_contourTriangulator.maxCurvaturePerSegment = controller.maxCurvaturPerSegment;
-				}
-				catch (Exception)
-				{
-				}
-
 				if (_voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices.Count > 0)
 				{
 					var edge = new TopologyEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices[0]);
-					_contourTriangulator.Triangulate(_voronoiDiagram, edge.sourceFace, onVertex, onTriangle, Vector3.back, contourDistances);
+					_contourTriangulator.maxCurvaturePerSegment = controller.maxCurvaturPerSegment;
+
+					stopwatch.Start();
+
+					try
+					{
+						_contourTriangulator.Triangulate(_voronoiDiagram, edge.sourceFace, onVertex, onTriangle, Vector3.back, contourDistances);
+					}
+					catch (Exception ex)
+					{
+						Debug.LogFormat("Exception ({0}) while triangulating contour:  \"{1}\"", ex.GetType().Name, ex.Message);
+					}
+
+					stopwatch.Stop();
+
+					Debug.LogFormat("Time to triangulate contour:  {0:F6} ms", 1000d * stopwatch.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency);
 
 					mesh.SetVertices(vertexPositions);
 					mesh.SetColors(vertexColors);
