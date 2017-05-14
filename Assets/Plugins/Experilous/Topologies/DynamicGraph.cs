@@ -83,6 +83,28 @@ namespace Experilous.Topologies
 			return clone;
 		}
 
+		public void CopyTo(DynamicGraph other)
+		{
+			other._nodeNeighborCounts.Clear();
+			other._nodeFirstEdgeIndices.Clear();
+			other._edgeNextChainedEdgeIndices.Clear();
+			other._edgeNextLateralEdgeIndices.Clear();
+			other._edgeTargetNodeIndices.Clear();
+
+			for (int i = 0; i < nodeCount; ++i)
+			{
+				other._nodeNeighborCounts.Add(GetNodeNeighborCount(i));
+				other._nodeFirstEdgeIndices.Add(GetNodeFirstEdgeIndex(i));
+			}
+
+			for (int i = 0; i < edgeCount; ++i)
+			{
+				other._edgeNextChainedEdgeIndices.Add(GetEdgeNextChainedEdgeIndex(i));
+				other._edgeNextLateralEdgeIndices.Add(GetEdgeNextLateralEdgeIndex(i));
+				other._edgeTargetNodeIndices.Add(GetEdgeTargetNodeIndex(i));
+			}
+		}
+
 		#endregion
 
 		#region IGraph Implementation
