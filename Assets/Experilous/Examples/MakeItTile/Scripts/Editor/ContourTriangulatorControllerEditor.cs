@@ -55,6 +55,7 @@ namespace Experilous.Examples.MakeItTile
 		private static float _voronoiEdgeMaxCurvaturePerSegment = 1f / 256f;
 		private static GUIStyle _voronoiNodeLabelStyle;
 		private static GUIStyle _voronoiEdgeLabelStyle;
+		private static Color _voronoiNodeColor = new Color(1f, 1f, 1f, 0.25f);
 		private static Color _voronoiFiniteEdgeColor = new Color(0.5f, 0.5f, 0.5f, 1f);
 		private static Color _voronoiInfiniteEdgeColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
@@ -107,6 +108,7 @@ namespace Experilous.Examples.MakeItTile
 		private MouseButton _mouseButtonState = MouseButton.None;
 		private HandleState _handleState = HandleState.None;
 
+		[SerializeField] private bool _showVoronoiDiagram;
 		[SerializeField] private bool _showVoronoiLabels;
 
 		private PlanarVoronoiGenerator _voronoiGenerator;
@@ -201,7 +203,18 @@ namespace Experilous.Examples.MakeItTile
 			}
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
-			_showVoronoiLabels = GUILayout.Toggle(_showVoronoiLabels, new GUIContent("Show Voronoi Labels"));
+			_showVoronoiDiagram = GUILayout.Toggle(_showVoronoiDiagram, new GUIContent("Show Voronoi Diagram"));
+			if (_showVoronoiDiagram)
+			{
+				_showVoronoiLabels = GUILayout.Toggle(_showVoronoiLabels, new GUIContent("Show Voronoi Labels"));
+			}
+			else
+			{
+				bool wasEnabled = GUI.enabled;
+				GUI.enabled = false;
+				GUILayout.Toggle(false, new GUIContent("Show Voronoi Labels"));
+				GUI.enabled = wasEnabled;
+			}
 			GUILayout.Space(12f);
 
 			GUI.enabled = !_editSiteGraph;
@@ -488,8 +501,6 @@ namespace Experilous.Examples.MakeItTile
 						break;
 					case EventType.Repaint:
 						{
-							PaintVoronoiDiagram();
-
 							foreach (var edge in controller.siteGraph.edges)
 							{
 								if (edge.isFirstTwin)
@@ -506,6 +517,8 @@ namespace Experilous.Examples.MakeItTile
 							}
 
 							PaintPossibleNode(controller, mousePosition);
+
+							PaintVoronoiDiagram();
 						}
 						break;
 				}
@@ -522,8 +535,6 @@ namespace Experilous.Examples.MakeItTile
 
 				if (Event.current.type == EventType.Repaint)
 				{
-					PaintVoronoiDiagram();
-
 					Handles.color = _edgeStaticHandleColor;
 					foreach (var edge in controller.siteGraph.edges)
 					{
@@ -546,6 +557,8 @@ namespace Experilous.Examples.MakeItTile
 							Handles.DrawSolidDisc(nodePosition, normal, size);
 						}
 					}
+
+					PaintVoronoiDiagram();
 				}
 			}
 		}
@@ -1122,7 +1135,7 @@ namespace Experilous.Examples.MakeItTile
 
 		private void PaintVoronoiDiagram()
 		{
-			if (_voronoiDiagram == null) return;
+			if (_voronoiDiagram == null || !_showVoronoiDiagram) return;
 
 			if (_voronoiNodeLabelStyle == null)
 			{
@@ -1296,7 +1309,7 @@ namespace Experilous.Examples.MakeItTile
 				foreach (var node in topology.nodes)
 				{
 					var p = _finiteVoronoiNodePositions[node];
-					Handles.color = Color.gray;
+					Handles.color = _voronoiNodeColor;
 					Handles.DrawSolidDisc(p, Vector3.back, HandleUtility.GetHandleSize(p) * _voronoiNodeLabeledRadius);
 					var label = new GUIContent(node.index.ToString());
 					var labelSize = _voronoiNodeLabelStyle.CalcSize(label);

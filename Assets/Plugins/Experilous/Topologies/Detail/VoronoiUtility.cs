@@ -144,6 +144,8 @@ namespace Experilous.Topologies.Detail
 					return segment != null;
 				}
 			}
+
+			public Vector2 mergePosition { get { return position - new Vector2(0f, distance); } }
 		}
 
 		public class MergeEventQueue
@@ -826,6 +828,7 @@ namespace Experilous.Topologies.Detail
 
 				if (i0 == i1a)
 				{
+					// Source Point of next, Line, Line
 					var v1 = p1b - p1a;
 					var v2 = p2b - p2a;
 					var n2 = v2.PerpendicularCCW();
@@ -852,18 +855,20 @@ namespace Experilous.Topologies.Detail
 				{
 					if (i1 != i2a)
 					{
-						var v1 = p2a - p2b;
-						var v0 = p0a - p0b;
-						var n0 = v0.PerpendicularCW();
-						CheckForMergeEvent_NormalLineLine(p2b, v1, p0b, v0, n0, errorMargin, segment, queue);
+						// Line, Target Point of prev, Line
+						var v0 = p0b - p0a;
+						var v2 = p2b - p2a;
+						var n2 = v2.PerpendicularCCW();
+						CheckForMergeEvent_NormalLineLine(p0b, v0, p2a, v2, n2, errorMargin, segment, queue);
 					}
 				}
 				else if (i1 == i2a)
 				{
-					var v1 = p0b - p0a;
-					var v2 = p2b - p2a;
-					var n2 = v2.PerpendicularCCW();
-					CheckForMergeEvent_NormalLineLine(p0a, v1, p2a, v2, n2, errorMargin, segment, queue);
+					// Line, Source Point of next, Line
+					var v0 = p0a - p0b;
+					var v2 = p2a - p2b;
+					var n0 = v0.PerpendicularCW();
+					CheckForMergeEvent_NormalLineLine(p2a, v2, p0b, v0, n0, errorMargin, segment, queue);
 				}
 				else
 				{
@@ -884,8 +889,9 @@ namespace Experilous.Topologies.Detail
 
 				if (i1b == i2)
 				{
-					var v1 = p1a - p1b;
+					// Line, Line, Target Point of prev
 					var v0 = p0a - p0b;
+					var v1 = p1a - p1b;
 					var n0 = v0.PerpendicularCW();
 					CheckForMergeEvent_NormalLineLine(p1b, v1, p0b, v0, n0, errorMargin, segment, queue);
 				}
