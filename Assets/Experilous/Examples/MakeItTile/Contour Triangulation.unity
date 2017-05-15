@@ -138,17 +138,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   siteGraph:
-    _nodeNeighborCounts: 02000000020000000200000002000000
-    _nodeFirstEdgeIndices: 04000000000000000300000005000000
-    _edgeNextChainedEdgeIndices: 0500000002000000070000000000000001000000060000000300000004000000
-    _edgeNextLateralEdgeIndices: 0200000005000000000000000700000006000000010000000400000003000000
-    _edgeTargetNodeIndices: 0300000001000000020000000100000003000000000000000200000000000000
+    _nodeNeighborCounts: 010000000200000001000000
+    _nodeFirstEdgeIndices: 020000000300000001000000
+    _edgeNextChainedEdgeIndices: 01000000030000000000000002000000
+    _edgeNextLateralEdgeIndices: 03000000010000000200000000000000
+    _edgeTargetNodeIndices: 02000000010000000100000000000000
   pointSitePositions:
     _list:
-    - {x: -1.1035919, y: 7.515108, z: 0}
-    - {x: 0.92457676, y: -2.4596415, z: 0}
-    - {x: 9.588506, y: -6.921475, z: 0}
-    - {x: -5.764329, y: -9.509474, z: 0}
+    - {x: -1.5221627, y: 8.142963, z: 0}
+    - {x: 3.714457, y: 2.2286747, z: 0}
+    - {x: -0.10534334, y: -8.493393, z: 0}
   maxCurvaturPerSegment: 0.125
   contourDistances:
   - 2
@@ -396,7 +395,7 @@ Mesh:
   m_IndexBuffer: 
   m_Skin: []
   m_VertexData:
-    m_CurrentChannels: 3
+    m_CurrentChannels: 7
     m_VertexCount: 0
     m_Channels:
     - stream: 0
@@ -408,9 +407,9 @@ Mesh:
       format: 0
       dimension: 3
     - stream: 0
-      offset: 0
+      offset: 24
       format: 0
-      dimension: 0
+      dimension: 4
     - stream: 0
       offset: 0
       format: 0

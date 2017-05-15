@@ -693,21 +693,21 @@ namespace Experilous.Topologies.Detail
 			}
 		}
 
-		private static void CheckForMergeEvent_NormalLineLine(Vector2 p1, Vector2 v1, Vector2 p2, Vector2 v2, Vector2 n2, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		private static void CheckForMergeEvent_NormalLineLine(Vector2 n0, Vector2 p1, Vector2 v1, Vector2 p2, Vector2 v2, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
-			if (Vector3.Dot(v1, n2) < errorMargin)
+			var q = p2 - p1;
+			float f = Geometry.DotPerpendicularCCW(q, v2);
+			if (f < errorMargin) // Point with normal must be on the CCW normal side of the second line.
 			{
-				Vector2 q2 = p2 - p1;
 				float len1 = v1.magnitude;
 				float len2 = v2.magnitude;
 
-				float f2 = Vector2.Dot(n2, q2);
-				float determinant = -Vector2.Dot(v1, n2);
+				float determinant = Vector2.Dot(v2, n0);
 
 				float gx = (len1 * v2.x - len2 * v1.x) / determinant;
 				float gy = (len1 * v2.y - len2 * v1.y) / determinant;
-				float hx = -f2 * v1.x / determinant;
-				float hy = -f2 * v1.y / determinant;
+				float hx = -f * v1.x / determinant;
+				float hy = -f * v1.y / determinant;
 
 				float a = gx * gx + gy * gy - 1f;
 				float b = 2f * (gx * hx + gy * hy);
@@ -828,11 +828,14 @@ namespace Experilous.Topologies.Detail
 
 				if (i0 == i1a)
 				{
-					// Source Point of next, Line, Line
+					// Source Point of next (p1a), Line, Line
 					var v1 = p1b - p1a;
 					var v2 = p2b - p2a;
-					var n2 = v2.PerpendicularCCW();
-					CheckForMergeEvent_NormalLineLine(p1a, v1, p2a, v2, n2, errorMargin, segment, queue);
+					var n0 = v1.PerpendicularCCW();
+					if (Vector2.Dot(n0, v2) > -errorMargin) // Second line must point in roughly same direction as the normal (lines must be concave).
+					{
+						CheckForMergeEvent_NormalLineLine(n0, p1a, v1, p2a, v2, errorMargin, segment, queue);
+					}
 				}
 				else
 				{
@@ -855,20 +858,26 @@ namespace Experilous.Topologies.Detail
 				{
 					if (i1 != i2a)
 					{
-						// Line, Target Point of prev, Line
+						// Line, Target Point of prev (p0b), Line
 						var v0 = p0b - p0a;
 						var v2 = p2b - p2a;
-						var n2 = v2.PerpendicularCCW();
-						CheckForMergeEvent_NormalLineLine(p0b, v0, p2a, v2, n2, errorMargin, segment, queue);
+						var n1 = v0.PerpendicularCCW();
+						if (Vector2.Dot(n1, v2) > -errorMargin) // Second line must point in roughly same direction as the normal (lines must be concave).
+						{
+							CheckForMergeEvent_NormalLineLine(n1, p0b, v0, p2a, v2, errorMargin, segment, queue);
+						}
 					}
 				}
 				else if (i1 == i2a)
 				{
-					// Line, Source Point of next, Line
-					var v0 = p0a - p0b;
-					var v2 = p2a - p2b;
-					var n0 = v0.PerpendicularCW();
-					CheckForMergeEvent_NormalLineLine(p2a, v2, p0b, v0, n0, errorMargin, segment, queue);
+					// Line, Source Point of next (p2a), Line
+					var v0 = p0b - p0a;
+					var v2 = p2b - p2a;
+					var n1 = v2.PerpendicularCCW();
+					if (Vector2.Dot(v0, n1) < errorMargin) // First line must point in roughly opposite direction as the normal (lines must be concave).
+					{
+						CheckForMergeEvent_NormalLineLine(n1, p2a, v2, p0b, v0, errorMargin, segment, queue);
+					}
 				}
 				else
 				{
@@ -889,11 +898,14 @@ namespace Experilous.Topologies.Detail
 
 				if (i1b == i2)
 				{
-					// Line, Line, Target Point of prev
-					var v0 = p0a - p0b;
-					var v1 = p1a - p1b;
-					var n0 = v0.PerpendicularCW();
-					CheckForMergeEvent_NormalLineLine(p1b, v1, p0b, v0, n0, errorMargin, segment, queue);
+					// Line, Line, Target Point of prev (p1b)
+					var v0 = p0b - p0a;
+					var v1 = p1b - p1a;
+					var n2 = v1.PerpendicularCCW();
+					if (Vector2.Dot(v0, n2) < errorMargin) // First line must point in roughly opposite direction as the normal (lines must be concave).
+					{
+						CheckForMergeEvent_NormalLineLine(n2, p1b, v1, p0b, v0, errorMargin, segment, queue);
+					}
 				}
 				else
 				{
