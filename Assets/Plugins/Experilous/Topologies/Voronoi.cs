@@ -541,7 +541,7 @@ namespace Experilous.Topologies
 
 				float x = GetSegmentRightBound(segment);
 
-				if (!float.IsNaN(x) && position.x <= x)
+				if (!float.IsNaN(x) && position.x - x < _errorMargin)
 				{
 					return segment;
 				}
