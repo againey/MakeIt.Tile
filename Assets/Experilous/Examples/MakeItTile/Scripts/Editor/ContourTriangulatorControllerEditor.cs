@@ -1662,7 +1662,11 @@ namespace Experilous.Examples.MakeItTile
 				var triangleIndices = new List<int>();
 
 				var contourColors = controller.contourColors;
-				var contourDistances = controller.contourDistances;
+				var contourDistances = (float[])controller.contourDistances.Clone();
+				for (int i = 0; i < contourDistances.Length; ++i)
+				{
+					contourDistances[i] *= controller.contourDistanceScale;
+				}
 
 				ContourTriangulator.OnVertexDelegate onVertex =
 					(ContourTriangulator.PositionId positionId, Vector3 position, VoronoiSiteType siteType, int siteIndex, int contourIndex, float distance) =>
@@ -1699,6 +1703,7 @@ namespace Experilous.Examples.MakeItTile
 				if (_voronoiDiagram != null && _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices.Count > 0 && controller.GetComponent<MeshRenderer>().enabled)
 				{
 					var edge = new TopologyEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices[0]);
+					if (controller.twinEdge) edge = edge.twin;
 					_contourTriangulator.maxCurvaturePerSegment = controller.maxCurvaturPerSegment;
 
 					stopwatch.Start();

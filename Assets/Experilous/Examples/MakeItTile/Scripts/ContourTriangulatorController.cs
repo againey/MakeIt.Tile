@@ -27,6 +27,9 @@ namespace Experilous.Examples.MakeItTile
 		public GraphNodePositionList pointSitePositions;
 
 		public float maxCurvaturPerSegment = 0.25f;
+		public bool twinEdge = false;
+		[Range(0.1f, 10f)]
+		public float contourDistanceScale = 1f;
 
 		public float[] contourDistances;
 		public Color[] contourColors;

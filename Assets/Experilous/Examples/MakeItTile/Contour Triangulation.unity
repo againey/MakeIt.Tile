@@ -158,6 +158,8 @@ MonoBehaviour:
     - {x: 6.2910137, y: 4.5579348, z: 0}
     - {x: 11.769182, y: 6.1865816, z: 0}
   maxCurvaturPerSegment: 0.125
+  twinEdge: 0
+  contourDistanceScale: 1
   contourDistances:
   - 2
   - 2.5
