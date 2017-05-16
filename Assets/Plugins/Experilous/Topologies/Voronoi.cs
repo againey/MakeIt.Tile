@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Experilous.Numerics;
 using Experilous.Topologies.Detail;
+using InfiniteLoopGuard = Experilous.MakeItRandom.Detail.InfiniteLoopGuard;
 
 namespace Experilous.Topologies
 {
@@ -100,7 +101,8 @@ namespace Experilous.Topologies
 
 			try
 			{
-				while (Step()) { }
+				var guard = new InfiniteLoopGuard(1000);
+				while (Step()) { guard.Iterate(); }
 
 				var convertedNodePositions = new TopologyNodeDataArray<Vector3>(_voronoiNodePositions.Count);
 				for (int i = 0; i < _voronoiNodePositions.Count; ++i)
@@ -116,7 +118,8 @@ namespace Experilous.Topologies
 				_siteGraph = null;
 				_originalPointSitePositions = null;
 
-				_beach.Reset();
+				//_beach.Reset();
+				_beach.Clear();
 
 				_siteNodeFirstVoronoiEdgeIndices = null;
 				_siteEdgeFirstVoronoiEdgeIndices = null;
@@ -167,11 +170,13 @@ namespace Experilous.Topologies
 
 					int neighborCount = 0;
 					var edgeIndex = firstEdgeIndex;
+					var guard = new InfiniteLoopGuard(100);
 					do
 					{
 						edgeTargetFaceIndices[edgeIndex ^ 1] = faceIndex;
 						++neighborCount;
 						edgeIndex = _voronoiGraph.GetEdgeNextChainedEdgeIndex(edgeIndex);
+						guard.Iterate();
 					} while (edgeIndex != firstEdgeIndex);
 
 					faceNeighborCounts[faceIndex] = neighborCount;
@@ -339,10 +344,12 @@ namespace Experilous.Topologies
 				voronoiNode = _voronoiGraph.AddNode();
 				_voronoiNodePositions.Add(_pointSitePositions[ev.nodeIndex]);
 
+				var guard = new InfiniteLoopGuard(10);
 				foreach (var edge in pointSite.edges)
 				{
 					var direction = (_pointSitePositions[edge.targetNode] - _pointSitePositions[edge.sourceNode]).normalized;
 					InsertOrdered(_orderedLineSites, CreateDirectedEdge(direction, edge.index));
+					guard.Iterate();
 				}
 
 				incomingLineCount = _orderedLineSites.Count;
@@ -376,18 +383,22 @@ namespace Experilous.Topologies
 				// Assert(prevSegment.siteType == VoronoiSiteType.Line && new GraphEdge(_siteGraph, prevSegment.siteIndex).sourceNode == ev.siteIndex);
 
 				var lastIncomingLine = _orderedLineSites[incomingLineCount - 1];
+				var guard = new InfiniteLoopGuard(1000);
 				while (nextSegment.siteType != VoronoiSiteType.Line || nextSegment.siteIndex != lastIncomingLine.edgeIndex)
 				{
 					nextSegment = nextSegment.nextSegment;
+					guard.Iterate();
 				}
 
 				_voronoiGraph.AttachEdgeToSourceNode(nextSegment.prevEdgeIndex, voronoiNode.index);
 				var segment = nextSegment.prevSegment;
+				guard = new InfiniteLoopGuard(1000);
 				while (!ReferenceEquals(segment, prevSegment))
 				{
 					_voronoiGraph.AttachEdgeToSourceNode(segment.prevEdgeIndex, voronoiNode.index);
 					segment = segment.prevSegment;
 					_beach.Remove(segment.nextSegment);
+					guard.Iterate();
 				}
 
 				if (outgoingLineCount > 0)
@@ -493,6 +504,13 @@ namespace Experilous.Topologies
 				}
 			}
 
+#if UNITY_EDITOR
+			if (voronoiNode)
+			{
+				_voronoiGraph.ValidateNodeEdgeRing(voronoiNode.index);
+			}
+#endif
+
 			CheckForMergeEvent(prevSegment);
 			if (incomingLineCount == 0)
 			{
@@ -530,6 +548,7 @@ namespace Experilous.Topologies
 			//TODO: Convert to a balanced binary tree search.
 
 			VoronoiUtility.BeachSegment segment = _beach.head;
+			var guard = new InfiniteLoopGuard(1000);
 			while (segment.nextSegment != null)
 			{
 				var nextSegment = segment.nextSegment;
@@ -547,6 +566,7 @@ namespace Experilous.Topologies
 				}
 
 				segment = segment.nextSegment;
+				guard.Iterate();
 			}
 
 			return segment;
@@ -829,6 +849,10 @@ namespace Experilous.Topologies
 			_voronoiGraph.AttachEdgeToSourceNodeAfter(edgeIndex1, edgeIndex0);
 			_voronoiGraph.AttachEdgeToSourceNodeAfter(edgeIndex2, edgeIndex1);
 
+#if UNITY_EDITOR
+			_voronoiGraph.ValidateNodeEdgeRing(nodeIndex);
+#endif
+
 			if (!float.IsNaN(position.x))
 			{
 				int neighborNodeIndex = _voronoiGraph.GetEdgeTargetNodeIndex(edgeIndex0);
@@ -838,6 +862,9 @@ namespace Experilous.Topologies
 					if (!float.IsNaN(neighborPosition.x) && (neighborPosition - position).sqrMagnitude < _errorMargin)
 					{
 						MergeVoronoiNodes(edgeIndex0);
+#if UNITY_EDITOR
+						_voronoiGraph.ValidateNodeEdgeRing(neighborNodeIndex);
+#endif
 					}
 				}
 
@@ -848,6 +875,9 @@ namespace Experilous.Topologies
 					if (!float.IsNaN(neighborPosition.x) && (neighborPosition - position).sqrMagnitude < _errorMargin)
 					{
 						MergeVoronoiNodes(edgeIndex1);
+#if UNITY_EDITOR
+						_voronoiGraph.ValidateNodeEdgeRing(neighborNodeIndex);
+#endif
 					}
 				}
 			}
@@ -867,6 +897,7 @@ namespace Experilous.Topologies
 		private void RemapEdgeData(int toEdgeIndex, int toTwinIndex, int fromEdgeIndex, int fromTwinIndex)
 		{
 			var segment = _beach.head.nextSegment;
+			var guard = new InfiniteLoopGuard(1000);
 			while (segment.nextSegment != null)
 			{
 				if (segment.prevEdgeIndex == fromEdgeIndex) segment.prevEdgeIndex = toEdgeIndex;
@@ -874,6 +905,7 @@ namespace Experilous.Topologies
 				if (segment.nextEdgeIndex == fromEdgeIndex) segment.nextEdgeIndex = toEdgeIndex;
 				if (segment.nextEdgeIndex == fromTwinIndex) segment.nextEdgeIndex = toTwinIndex;
 				segment = segment.nextSegment;
+				guard.Iterate();
 			}
 			//_voronoiEdgeStuff[toEdgeIndex] = _voronoiEdgeStuff[fromEdgeIndex];
 			//_voronoiEdgeStuff[toTwinIndex] = _voronoiEdgeStuff[fromTwinIndex];

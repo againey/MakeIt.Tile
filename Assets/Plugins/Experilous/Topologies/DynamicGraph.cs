@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using InfiniteLoopGuard = Experilous.MakeItRandom.Detail.InfiniteLoopGuard;
 
 namespace Experilous.Topologies
 {
@@ -227,6 +228,7 @@ namespace Experilous.Topologies
 		{
 			if (nodeIndex < 0 || nodeIndex >= _nodeNeighborCounts.Count) throw new ArgumentOutOfRangeException("nodeIndex");
 
+			var guard = new InfiniteLoopGuard(10);
 			while (_nodeNeighborCounts[nodeIndex] > 0)
 			{
 				int edgeIndex = _nodeFirstEdgeIndices[nodeIndex];
@@ -234,6 +236,7 @@ namespace Experilous.Topologies
 				DetachEdgeFromSourceNode(edgeIndex);
 				DetachEdgeFromSourceNode(twinIndex);
 				DeleteEdge(edgeIndex, twinIndex, remapEdge);
+				guard.Iterate();
 			}
 
 			DeleteNode(nodeIndex, remapNode);
@@ -501,6 +504,7 @@ namespace Experilous.Topologies
 
 			int firstEdgeIndex = _nodeFirstEdgeIndices[nodeIndex];
 			int edgeIndex = firstEdgeIndex;
+			var guard = new InfiniteLoopGuard(10);
 			while (edgeIndex != firstEdgeIndex)
 			{
 				int nextEdgeIndex = _edgeNextLateralEdgeIndices[edgeIndex];
@@ -509,6 +513,7 @@ namespace Experilous.Topologies
 				_edgeNextLateralEdgeIndices[edgeIndex] = -1;
 
 				edgeIndex = nextEdgeIndex;
+				guard.Iterate();
 			}
 
 			_nodeNeighborCounts[nodeIndex] = 0;
@@ -545,10 +550,12 @@ namespace Experilous.Topologies
 			int targetNodeIndex = _edgeTargetNodeIndices[edgeIndex];
 
 			int sourceEdgeIndex = _edgeNextLateralEdgeIndices[edgeIndex];
+			var guard = new InfiniteLoopGuard(10);
 			while (sourceEdgeIndex != edgeIndex)
 			{
 				_edgeTargetNodeIndices[sourceEdgeIndex ^ 1] = targetNodeIndex;
 				sourceEdgeIndex = _edgeNextLateralEdgeIndices[sourceEdgeIndex];
+				guard.Iterate();
 			}
 
 			_edgeNextChainedEdgeIndices[_edgeNextLateralEdgeIndices[edgeIndex] ^ 1] = _edgeNextChainedEdgeIndices[edgeIndex];
@@ -676,6 +683,44 @@ namespace Experilous.Topologies
 		public int[] GetEdgeTargetNodeIndices()
 		{
 			return _edgeTargetNodeIndices.ToArray();
+		}
+
+		#endregion
+
+		#region Graph Diagnostics
+
+		public void Validate()
+		{
+			for (int i = 0; i < _nodeNeighborCounts.Count; ++i)
+			{
+				ValidateNodeEdgeRing(i);
+			}
+		}
+
+		public void ValidateNodeEdgeRing(int nodeIndex)
+		{
+			if (nodeIndex < 0 || nodeIndex >= _nodeNeighborCounts.Count) throw new ArgumentOutOfRangeException("nodeIndex");
+
+			int neighborCount = _nodeNeighborCounts[nodeIndex];
+			int edgeIndex = _nodeFirstEdgeIndices[nodeIndex];
+			int firstEdgeIndex = edgeIndex;
+			int edgeCount = 0;
+			var guard = new InfiniteLoopGuard(10);
+			do
+			{
+				if (edgeCount >= neighborCount)
+				{
+					throw new InvalidOperationException(string.Format("Node {0} has more edges in its circular linked list than its alleged neighbor count ({1}).", nodeIndex, neighborCount));
+				}
+				edgeIndex = _edgeNextLateralEdgeIndices[edgeIndex];
+				++edgeCount;
+				guard.Iterate();
+			} while (edgeIndex != firstEdgeIndex);
+
+			if (edgeCount < neighborCount)
+			{
+				throw new InvalidOperationException(string.Format("Node {0} has fewer edges ({1}) in its circular linked list than its alleged neighbor count ({2}).", nodeIndex, edgeCount, neighborCount));
+			}
 		}
 
 		#endregion

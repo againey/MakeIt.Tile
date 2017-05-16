@@ -1696,7 +1696,7 @@ namespace Experilous.Examples.MakeItTile
 					//Debug.LogFormat("Triangle({0}, {1}, {2}):  {1}, {2}, {3}", vertexIndexMap[positionId0], vertexIndexMap[positionId1], vertexIndexMap[positionId2], vertexPositions[vertexIndexMap[positionId0]].ToString("F2"), vertexPositions[vertexIndexMap[positionId1]].ToString("F2"), vertexPositions[vertexIndexMap[positionId2]].ToString("F2"));
 				};
 
-				if (_voronoiDiagram != null && _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices.Count > 0)
+				if (_voronoiDiagram != null && _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices.Count > 0 && controller.GetComponent<MeshRenderer>().enabled)
 				{
 					var edge = new TopologyEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices[0]);
 					_contourTriangulator.maxCurvaturePerSegment = controller.maxCurvaturPerSegment;

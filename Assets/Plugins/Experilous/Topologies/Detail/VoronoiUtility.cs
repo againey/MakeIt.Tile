@@ -297,6 +297,12 @@ namespace Experilous.Topologies.Detail
 				_head = GetSegment(null, null, -1, -1);
 			}
 
+			public void Clear()
+			{
+				_pool.Clear();
+				_head = GetSegment(null, null, -1, -1);
+			}
+
 			public BeachSegment head { get { return _head; } }
 
 			public BeachSegment Split(BeachSegment segment)
@@ -695,27 +701,25 @@ namespace Experilous.Topologies.Detail
 
 		private static void CheckForMergeEvent_NormalLineLine(Vector2 n0, Vector2 p1, Vector2 v1, Vector2 p2, Vector2 v2, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
-			var q = p2 - p1;
-			float f = Geometry.DotPerpendicularCCW(q, v2);
-			if (f < errorMargin) // Point with normal must be on the CCW normal side of the second line.
-			{
-				float len1 = v1.magnitude;
-				float len2 = v2.magnitude;
+			float f = Geometry.DotPerpendicularCW(p2 - p1, v2);
 
-				float determinant = Vector2.Dot(v2, n0);
+			float len1 = v1.magnitude;
+			float len2 = v2.magnitude;
 
-				float gx = (len1 * v2.x - len2 * v1.x) / determinant;
-				float gy = (len1 * v2.y - len2 * v1.y) / determinant;
-				float hx = -f * v1.x / determinant;
-				float hy = -f * v1.y / determinant;
+			float determinant = Vector2.Dot(v2, n0);
 
-				float a = gx * gx + gy * gy - 1f;
-				float b = 2f * (gx * hx + gy * hy);
+			float gx = (len1 * v2.x - len2 * v1.x) / determinant;
+			float gy = (len1 * v2.y - len2 * v1.y) / determinant;
+			float hx = f * v1.x / determinant;
+			float hy = f * v1.y / determinant;
 
-				var distance = -0.5f * b / a;
-				var mergePosition = new Vector2(p1.x + gx * distance + hx, p1.y + gy * distance + hy);
-				queue.Push(mergePosition, distance, segment);
-			}
+			float a = gx * gx + gy * gy - 1f;
+			float b = 2f * (gx * hx + gy * hy);
+
+			var distance = -0.5f * b / a;
+			if (distance < -errorMargin) return;
+			var mergePosition = new Vector2(p1.x + gx * distance + hx, p1.y + gy * distance + hy);
+			queue.Push(mergePosition, distance, segment);
 		}
 
 		private static void CheckForMergeEvent_LineLineLine(Vector2 p0a, Vector2 p0b, Vector2 p1a, Vector2 p1b, Vector2 p2a, Vector2 p2b, float errorMargin, BeachSegment segment, MergeEventQueue queue)
@@ -832,10 +836,7 @@ namespace Experilous.Topologies.Detail
 					var v1 = p1b - p1a;
 					var v2 = p2b - p2a;
 					var n0 = v1.PerpendicularCCW();
-					if (Vector2.Dot(n0, v2) > -errorMargin) // Second line must point in roughly same direction as the normal (lines must be concave).
-					{
-						CheckForMergeEvent_NormalLineLine(n0, p1a, v1, p2a, v2, errorMargin, segment, queue);
-					}
+					CheckForMergeEvent_NormalLineLine(n0, p1a, v1, p2a, v2, errorMargin, segment, queue);
 				}
 				else
 				{
@@ -862,7 +863,7 @@ namespace Experilous.Topologies.Detail
 						var v0 = p0b - p0a;
 						var v2 = p2b - p2a;
 						var n1 = v0.PerpendicularCCW();
-						if (Vector2.Dot(n1, v2) > -errorMargin) // Second line must point in roughly same direction as the normal (lines must be concave).
+						if (Geometry.IsBetween(Vector2.down, n1, v2.PerpendicularCCW()))
 						{
 							CheckForMergeEvent_NormalLineLine(n1, p0b, v0, p2a, v2, errorMargin, segment, queue);
 						}
@@ -874,7 +875,7 @@ namespace Experilous.Topologies.Detail
 					var v0 = p0b - p0a;
 					var v2 = p2b - p2a;
 					var n1 = v2.PerpendicularCCW();
-					if (Vector2.Dot(v0, n1) < errorMargin) // First line must point in roughly opposite direction as the normal (lines must be concave).
+					if (Geometry.IsBetween(Vector2.down, v0.PerpendicularCCW(), n1))
 					{
 						CheckForMergeEvent_NormalLineLine(n1, p2a, v2, p0b, v0, errorMargin, segment, queue);
 					}
@@ -902,10 +903,7 @@ namespace Experilous.Topologies.Detail
 					var v0 = p0b - p0a;
 					var v1 = p1b - p1a;
 					var n2 = v1.PerpendicularCCW();
-					if (Vector2.Dot(v0, n2) < errorMargin) // First line must point in roughly opposite direction as the normal (lines must be concave).
-					{
-						CheckForMergeEvent_NormalLineLine(n2, p1b, v1, p0b, v0, errorMargin, segment, queue);
-					}
+					CheckForMergeEvent_NormalLineLine(n2, p1b, v1, p0b, v0, errorMargin, segment, queue);
 				}
 				else
 				{
