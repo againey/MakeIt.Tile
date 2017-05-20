@@ -26,12 +26,31 @@ namespace Experilous.Examples.MakeItTile
 
 		public GraphNodePositionList pointSitePositions;
 
-		public float maxCurvaturPerSegment = 0.25f;
+		public float maxCurvaturePerSegment = 0.25f;
 		public bool twinEdge = false;
 		[Range(0.1f, 10f)]
 		public float contourDistanceScale = 1f;
 
-		public float[] contourDistances;
+		public float[] contourOffsets;
 		public Color[] contourColors;
+
+		protected void OnEnable()
+		{
+			if (contourOffsets == null || contourOffsets.Length < 2)
+			{
+				contourOffsets = new float[] { 0f, 1f };
+			}
+
+			if (contourColors == null || contourColors.Length < 2)
+			{
+				contourColors = new Color[] { Color.white, Color.black };
+			}
+
+			if (contourOffsets.Length != contourColors.Length)
+			{
+				contourOffsets = new float[] { 0f, 1f };
+				contourColors = new Color[] { Color.white, Color.black };
+			}
+		}
 	}
 }

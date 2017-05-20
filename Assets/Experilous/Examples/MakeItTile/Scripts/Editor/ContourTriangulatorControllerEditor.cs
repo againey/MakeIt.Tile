@@ -120,6 +120,12 @@ namespace Experilous.Examples.MakeItTile
 		private DynamicGraph _mouseDragSiteGraph;
 		private ContourTriangulatorController.GraphNodePositionList _mouseDragPointSitePositions;
 
+		[SerializeField] private bool _contourListExpanded = false;
+		private GUIStyle _addButtonStyle;
+		private Texture2D _addButtonImage;
+		private GUIStyle _removeButtonStyle;
+		private Texture2D _removeButtonImage;
+
 		protected void OnEnable()
 		{
 			ContourTriangulatorController controller = target as ContourTriangulatorController;
@@ -175,6 +181,9 @@ namespace Experilous.Examples.MakeItTile
 			{
 				_mouseDragPointSitePositions = new ContourTriangulatorController.GraphNodePositionList();
 			}
+
+			_addButtonStyle = null;
+			_removeButtonStyle = null;
 
 			Tools.hidden = _editSiteGraph;
 		}
@@ -233,9 +242,87 @@ namespace Experilous.Examples.MakeItTile
 			}
 			GUILayout.Space(12f);
 
-			GUI.enabled = !_editSiteGraph;
+			controller.twinEdge = EditorGUILayout.Toggle("Use Twin Edge", controller.twinEdge);
+			controller.maxCurvaturePerSegment = EditorGUILayout.Slider("Max Curvature Per Segment", controller.maxCurvaturePerSegment, 0.01f, Mathf.PI / 2f);
+			controller.contourDistanceScale = EditorGUILayout.Slider("Contour Distance Scale", controller.contourDistanceScale, 0.1f, 10f);
 
-			base.OnInspectorGUI();
+			_contourListExpanded = EditorGUILayout.Foldout(_contourListExpanded, "Contours");
+			if (_contourListExpanded)
+			{
+				EditorGUI.indentLevel += 1;
+
+				if (_addButtonStyle == null)
+				{
+					_addButtonStyle = new GUIStyle(GUI.skin.GetStyle("ol plus"));
+					int width = _addButtonStyle.normal.background.width;
+					int height = _addButtonStyle.normal.background.height;
+					_addButtonStyle.fixedWidth = width;
+					_addButtonStyle.fixedHeight = height;
+					_addButtonStyle.margin = new RectOffset(0, 0, 0, 0);
+					_addButtonStyle.border = new RectOffset(width, 0, height, 0);
+					_addButtonStyle.padding = new RectOffset(0, 0, 0, 0);
+					_addButtonStyle.contentOffset = Vector2.zero;
+					_addButtonStyle.stretchWidth = _addButtonStyle.stretchHeight = false;
+				}
+
+				if (_removeButtonStyle == null)
+				{
+					_removeButtonStyle = new GUIStyle(GUI.skin.GetStyle("ol minus"));
+					int width = _removeButtonStyle.normal.background.width;
+					int height = _removeButtonStyle.normal.background.height;
+					_removeButtonStyle.fixedWidth = width;
+					_removeButtonStyle.fixedHeight = height;
+					_removeButtonStyle.margin = new RectOffset(0, 0, 0, 0);
+					_removeButtonStyle.border = new RectOffset(width, 0, height, 0);
+					_removeButtonStyle.padding = new RectOffset(0, 0, 0, 0);
+					_removeButtonStyle.contentOffset = Vector2.zero;
+					_removeButtonStyle.stretchWidth = _removeButtonStyle.stretchHeight = false;
+				}
+
+				GUILayout.BeginHorizontal();
+
+				GUILayout.Label("#", GUILayout.Width(30f));
+				GUILayout.Space(15f);
+				GUILayout.Label("Offset", GUILayout.ExpandWidth(true));
+				GUILayout.Space(15f);
+				GUILayout.Label("Color", GUILayout.Width(85f));
+				GUILayout.Space(10f + _addButtonStyle.fixedWidth + _removeButtonStyle.fixedWidth);
+
+				GUILayout.EndHorizontal();
+
+				for (int i = 0; i < controller.contourOffsets.Length; ++i)
+				{
+					GUILayout.BeginHorizontal();
+
+					GUILayout.Label(i.ToString(), GUILayout.Width(30f));
+					controller.contourOffsets[i] = EditorGUILayout.Slider(controller.contourOffsets[i], 0f, 10f, GUILayout.ExpandWidth(true));
+					controller.contourColors[i] = EditorGUILayout.ColorField(controller.contourColors[i], GUILayout.Width(100f));
+
+					GUILayout.Space(10f);
+
+					if (GUILayout.Button(new GUIContent("", "Add Contour"), _addButtonStyle))
+					{
+						int index = i;
+						EditorApplication.delayCall += () => { AddContour(index); };
+						GUI.changed = true;
+					}
+
+					Core.GUIExtensions.PushEnable(controller.contourOffsets.Length > 2);
+
+					if (GUILayout.Button(new GUIContent("", "Remove Contour"), _removeButtonStyle))
+					{
+						int index = i;
+						EditorApplication.delayCall += () => { RemoveContour(index); };
+						GUI.changed = true;
+					}
+
+					Core.GUIExtensions.PopEnable();
+
+					GUILayout.EndHorizontal();
+				}
+
+				EditorGUI.indentLevel -= 1;
+			}
 
 			if (EditorGUI.EndChangeCheck())
 			{
@@ -246,6 +333,61 @@ namespace Experilous.Examples.MakeItTile
 				}
 				SceneView.RepaintAll();
 			}
+		}
+
+		private void AddContour(int index)
+		{
+			var controller = (ContourTriangulatorController)target;
+
+			Undo.RecordObject(controller, "Add Contour");
+
+			int oldLength = controller.contourOffsets.Length;
+			int newLength = oldLength + 1;
+
+			var newOffsets = new float[newLength];
+			var newColors = new Color[newLength];
+
+			Array.Copy(controller.contourOffsets, 0, newOffsets, 0, index);
+			Array.Copy(controller.contourColors, 0, newColors, 0, index);
+
+			Array.Copy(controller.contourOffsets, index, newOffsets, index + 1, oldLength - index);
+			Array.Copy(controller.contourColors, index, newColors, index + 1, oldLength - index);
+
+			newOffsets[index] = 0f;
+			newColors[index] = controller.contourColors[index];
+
+			controller.contourOffsets = newOffsets;
+			controller.contourColors = newColors;
+
+			RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
+			EditorUtility.SetDirty(controller);
+		}
+
+		private void RemoveContour(int index)
+		{
+			var controller = (ContourTriangulatorController)target;
+
+			Undo.RecordObject(controller, "Remove Contour");
+
+			int oldLength = controller.contourOffsets.Length;
+			int newLength = oldLength - 1;
+
+			var newOffsets = new float[newLength];
+			var newColors = new Color[newLength];
+
+			Array.Copy(controller.contourOffsets, 0, newOffsets, 0, index);
+			Array.Copy(controller.contourColors, 0, newColors, 0, index);
+
+			Array.Copy(controller.contourOffsets, index + 1, newOffsets, index, newLength - index);
+			Array.Copy(controller.contourColors, index + 1, newColors, index, newLength - index);
+
+			newOffsets[index] = controller.contourOffsets[index] + controller.contourOffsets[index + 1];
+
+			controller.contourOffsets = newOffsets;
+			controller.contourColors = newColors;
+
+			RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
+			EditorUtility.SetDirty(controller);
 		}
 
 		protected void OnSceneGUI()
@@ -1662,10 +1804,12 @@ namespace Experilous.Examples.MakeItTile
 				var triangleIndices = new List<int>();
 
 				var contourColors = controller.contourColors;
-				var contourDistances = (float[])controller.contourDistances.Clone();
+				var contourDistances = new float[controller.contourOffsets.Length];
+				float cumulativeDistance = 0f;
 				for (int i = 0; i < contourDistances.Length; ++i)
 				{
-					contourDistances[i] *= controller.contourDistanceScale;
+					cumulativeDistance += controller.contourOffsets[i] * controller.contourDistanceScale;
+					contourDistances[i] = cumulativeDistance;
 				}
 
 				ContourTriangulator.OnVertexDelegate onVertex =
@@ -1704,7 +1848,7 @@ namespace Experilous.Examples.MakeItTile
 				{
 					var edge = new TopologyEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices[0]);
 					if (controller.twinEdge) edge = edge.twin;
-					_contourTriangulator.maxCurvaturePerSegment = controller.maxCurvaturPerSegment;
+					_contourTriangulator.maxCurvaturePerSegment = controller.maxCurvaturePerSegment;
 
 					stopwatch.Start();
 
