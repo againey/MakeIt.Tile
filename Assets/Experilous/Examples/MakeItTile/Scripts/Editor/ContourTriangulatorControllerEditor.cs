@@ -52,7 +52,7 @@ namespace Experilous.Examples.MakeItTile
 		private static float _voronoiEdgeOffset = 0.03f;
 		private static float _voronoiEdgeArrowOffset = 0.075f;
 		private static float _voronoiEdgeLabelOffset = 0.12f;
-		private static float _voronoiEdgeMaxCurvaturePerSegment = 1f / 256f;
+		private static float _voronoiEdgeMaxAngleChangePerSegment = 1f / 256f;
 		private static GUIStyle _voronoiNodeLabelStyle;
 		private static GUIStyle _voronoiEdgeLabelStyle;
 		private static Color _voronoiNodeColor = new Color(1f, 1f, 1f, 0.25f);
@@ -116,10 +116,13 @@ namespace Experilous.Examples.MakeItTile
 		private TopologyNodeDataArray<Vector3> _finiteVoronoiNodePositions;
 		private Sphere _voronoiBounds;
 		private ContourTriangulator _contourTriangulator;
+		private List<ContourDescriptor> _contourLoops;
 
 		private DynamicGraph _mouseDragSiteGraph;
 		private ContourTriangulatorController.GraphNodePositionList _mouseDragPointSitePositions;
+		private bool[] _mouseDragContoursEnabled;
 
+		[SerializeField] private bool _contourLayerListExpanded = false;
 		[SerializeField] private bool _contourListExpanded = false;
 		private GUIStyle _addButtonStyle;
 		private Texture2D _addButtonImage;
@@ -168,7 +171,8 @@ namespace Experilous.Examples.MakeItTile
 			{
 				EditorApplication.delayCall += () =>
 				{
-					RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
+					RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+					RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
 				};
 			}
 
@@ -246,8 +250,8 @@ namespace Experilous.Examples.MakeItTile
 			controller.maxCurvaturePerSegment = EditorGUILayout.Slider("Max Curvature Per Segment", controller.maxCurvaturePerSegment, 0.01f, Mathf.PI / 2f);
 			controller.contourDistanceScale = EditorGUILayout.Slider("Contour Distance Scale", controller.contourDistanceScale, 0.1f, 10f);
 
-			_contourListExpanded = EditorGUILayout.Foldout(_contourListExpanded, "Contours");
-			if (_contourListExpanded)
+			_contourLayerListExpanded = EditorGUILayout.Foldout(_contourLayerListExpanded, "Contour Layers");
+			if (_contourLayerListExpanded)
 			{
 				EditorGUI.indentLevel += 1;
 
@@ -300,7 +304,7 @@ namespace Experilous.Examples.MakeItTile
 
 					GUILayout.Space(10f);
 
-					if (GUILayout.Button(new GUIContent("", "Add Contour"), _addButtonStyle))
+					if (GUILayout.Button(new GUIContent("", "Add Contour Layer"), _addButtonStyle))
 					{
 						int index = i;
 						EditorApplication.delayCall += () => { AddContour(index); };
@@ -309,7 +313,7 @@ namespace Experilous.Examples.MakeItTile
 
 					Core.GUIExtensions.PushEnable(controller.contourOffsets.Length > 2);
 
-					if (GUILayout.Button(new GUIContent("", "Remove Contour"), _removeButtonStyle))
+					if (GUILayout.Button(new GUIContent("", "Remove Contour Layer"), _removeButtonStyle))
 					{
 						int index = i;
 						EditorApplication.delayCall += () => { RemoveContour(index); };
@@ -324,12 +328,29 @@ namespace Experilous.Examples.MakeItTile
 				EditorGUI.indentLevel -= 1;
 			}
 
+			_contourListExpanded = EditorGUILayout.Foldout(_contourListExpanded, "Contours");
+			if (_contourListExpanded)
+			{
+				EditorGUI.indentLevel += 1;
+
+				for (int i = 0; i < controller.contoursEnabled.Length; ++i)
+				{
+					controller.contoursEnabled[i] = EditorGUILayout.Toggle(new GUIContent(string.Format("Contour Loop {0}", i)), controller.contoursEnabled[i]);
+				}
+
+				EditorGUI.indentLevel -= 1;
+			}
+
 			if (EditorGUI.EndChangeCheck())
 			{
 				if (Event.current.type != EventType.Repaint)
 				{
-					RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
-					EditorUtility.SetDirty(controller);
+					EditorApplication.delayCall += () =>
+					{
+						RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+						RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
+						EditorUtility.SetDirty(controller);
+					};
 				}
 				SceneView.RepaintAll();
 			}
@@ -359,7 +380,8 @@ namespace Experilous.Examples.MakeItTile
 			controller.contourOffsets = newOffsets;
 			controller.contourColors = newColors;
 
-			RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
+			RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+			RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
 			EditorUtility.SetDirty(controller);
 		}
 
@@ -381,12 +403,16 @@ namespace Experilous.Examples.MakeItTile
 			Array.Copy(controller.contourOffsets, index + 1, newOffsets, index, newLength - index);
 			Array.Copy(controller.contourColors, index + 1, newColors, index, newLength - index);
 
-			newOffsets[index] = controller.contourOffsets[index] + controller.contourOffsets[index + 1];
+			if (index < newLength)
+			{
+				newOffsets[index] = controller.contourOffsets[index] + controller.contourOffsets[index + 1];
+			}
 
 			controller.contourOffsets = newOffsets;
 			controller.contourColors = newColors;
 
-			RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
+			RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+			RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
 			EditorUtility.SetDirty(controller);
 		}
 
@@ -533,8 +559,12 @@ namespace Experilous.Examples.MakeItTile
 								case HandleState.MovingNode:
 									Undo.RecordObject(controller, "Move Point Site");
 									controller.pointSitePositions[_mouseDownNode.index] = controller.transform.InverseTransformPoint(_mouseDownNodePosition + (mousePosition - _mouseDownPosition));
-									RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
-									EditorUtility.SetDirty(controller);
+									EditorApplication.delayCall += () =>
+									{
+										RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+										RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
+										EditorUtility.SetDirty(controller);
+									};
 									GUI.changed = true;
 									break;
 								case HandleState.AddingEdge:
@@ -542,8 +572,12 @@ namespace Experilous.Examples.MakeItTile
 									{
 										Undo.RecordObject(controller, "Add Line Site");
 										controller.siteGraph.Connect(_mouseDownNode, _nearestNode);
-										RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
-										EditorUtility.SetDirty(controller);
+										EditorApplication.delayCall += () =>
+										{
+											RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+											RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
+											EditorUtility.SetDirty(controller);
+										};
 										GUI.changed = true;
 									}
 									break;
@@ -557,8 +591,12 @@ namespace Experilous.Examples.MakeItTile
 										controller.siteGraph.Remove(_mouseDownEdge);
 										controller.siteGraph.Connect(sourceNode, newNode);
 										controller.siteGraph.Connect(newNode, targetNode);
-										RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
-										EditorUtility.SetDirty(controller);
+										EditorApplication.delayCall += () =>
+										{
+											RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+											RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
+											EditorUtility.SetDirty(controller);
+										};
 										GUI.changed = true;
 									}
 									break;
@@ -594,8 +632,12 @@ namespace Experilous.Examples.MakeItTile
 												_nearestEdge.index = toTwinIndex;
 											}
 										});
-									RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
-									EditorUtility.SetDirty(controller);
+									EditorApplication.delayCall += () =>
+									{
+										RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+										RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
+										EditorUtility.SetDirty(controller);
+									};
 									GUI.changed = true;
 									break;
 								case HandleState.RemovingEdge:
@@ -616,24 +658,36 @@ namespace Experilous.Examples.MakeItTile
 												_nearestEdge.index = toTwinIndex;
 											}
 										});
-									RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
-									EditorUtility.SetDirty(controller);
+									EditorApplication.delayCall += () =>
+									{
+										RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+										RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
+										EditorUtility.SetDirty(controller);
+									};
 									GUI.changed = true;
 									break;
 								case HandleState.AddingNode:
 									Undo.RecordObject(controller, "Add Point Site");
 									controller.siteGraph.AddNode();
 									controller.pointSitePositions.Add(mousePosition);
-									RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
-									EditorUtility.SetDirty(controller);
+									EditorApplication.delayCall += () =>
+									{
+										RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+										RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
+										EditorUtility.SetDirty(controller);
+									};
 									GUI.changed = true;
 									break;
 								case HandleState.AddingNodeEdge:
 									Undo.RecordObject(controller, "Add and Connect Point Site");
 									controller.siteGraph.Connect(_nearestNode, controller.siteGraph.AddNode());
 									controller.pointSitePositions.Add(mousePosition);
-									RebuildContourMesh(controller.siteGraph, controller.pointSitePositions);
-									EditorUtility.SetDirty(controller);
+									EditorApplication.delayCall += () =>
+									{
+										RebuildVoronoiDiagram(controller.siteGraph, controller.pointSitePositions, out controller.contoursEnabled);
+										RebuildContourMesh(controller.siteGraph, controller.pointSitePositions, controller.contoursEnabled);
+										EditorUtility.SetDirty(controller);
+									};
 									GUI.changed = true;
 									break;
 								case HandleState.WillAddEdge:
@@ -737,7 +791,8 @@ namespace Experilous.Examples.MakeItTile
 					controller.siteGraph.CopyTo(_mouseDragSiteGraph);
 					controller.pointSitePositions.CopyTo(_mouseDragPointSitePositions);
 					_mouseDragPointSitePositions[_mouseDownNode.index] = controller.transform.InverseTransformPoint(_mouseDownNodePosition + (mousePosition - _mouseDownPosition));
-					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions);
+					RebuildVoronoiDiagram(_mouseDragSiteGraph, _mouseDragPointSitePositions, out _mouseDragContoursEnabled);
+					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions, _mouseDragContoursEnabled);
 					break;
 				case HandleState.AddingEdge:
 					if (_nearestNode != _mouseDownNode && _nearestNodeDistance <= _nodeLongActiveDistance && !_mouseDownNode.FindEdge(_nearestNode))
@@ -745,7 +800,8 @@ namespace Experilous.Examples.MakeItTile
 						controller.siteGraph.CopyTo(_mouseDragSiteGraph);
 						controller.pointSitePositions.CopyTo(_mouseDragPointSitePositions);
 						_mouseDragSiteGraph.ConnectNodes(_mouseDownNode.index, _nearestNode.index);
-						RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions);
+						RebuildVoronoiDiagram(_mouseDragSiteGraph, _mouseDragPointSitePositions, out _mouseDragContoursEnabled);
+						RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions, _mouseDragContoursEnabled);
 					}
 					break;
 				case HandleState.SplittingEdge:
@@ -759,7 +815,8 @@ namespace Experilous.Examples.MakeItTile
 						_mouseDragSiteGraph.RemoveEdge(_mouseDownEdge.index);
 						_mouseDragSiteGraph.ConnectNodes(sourceNode.index, newNode.index);
 						_mouseDragSiteGraph.ConnectNodes(newNode.index, targetNode.index);
-						RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions);
+						RebuildVoronoiDiagram(_mouseDragSiteGraph, _mouseDragPointSitePositions, out _mouseDragContoursEnabled);
+						RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions, _mouseDragContoursEnabled);
 					}
 					break;
 				case HandleState.RemovingNode:
@@ -771,33 +828,38 @@ namespace Experilous.Examples.MakeItTile
 							_mouseDragPointSitePositions[toNodeIndex] = _mouseDragPointSitePositions[fromNodeIndex];
 							_mouseDragPointSitePositions.RemoveAt(fromNodeIndex);
 						});
-					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions);
+					RebuildVoronoiDiagram(_mouseDragSiteGraph, _mouseDragPointSitePositions, out _mouseDragContoursEnabled);
+					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions, _mouseDragContoursEnabled);
 					break;
 				case HandleState.RemovingEdge:
 					controller.siteGraph.CopyTo(_mouseDragSiteGraph);
 					controller.pointSitePositions.CopyTo(_mouseDragPointSitePositions);
 					_mouseDragSiteGraph.RemoveEdge(_mouseDownEdge.index);
-					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions);
+					RebuildVoronoiDiagram(_mouseDragSiteGraph, _mouseDragPointSitePositions, out _mouseDragContoursEnabled);
+					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions, _mouseDragContoursEnabled);
 					break;
 				case HandleState.AddingNode:
 					controller.siteGraph.CopyTo(_mouseDragSiteGraph);
 					controller.pointSitePositions.CopyTo(_mouseDragPointSitePositions);
 					_mouseDragSiteGraph.AddNode();
 					_mouseDragPointSitePositions.Add(mousePosition);
-					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions);
+					RebuildVoronoiDiagram(_mouseDragSiteGraph, _mouseDragPointSitePositions, out _mouseDragContoursEnabled);
+					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions, _mouseDragContoursEnabled);
 					break;
 				case HandleState.AddingNodeEdge:
 					controller.siteGraph.CopyTo(_mouseDragSiteGraph);
 					controller.pointSitePositions.CopyTo(_mouseDragPointSitePositions);
 					_mouseDragSiteGraph.ConnectNodes(_nearestNode.index, _mouseDragSiteGraph.AddNode().index);
 					_mouseDragPointSitePositions.Add(mousePosition);
-					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions);
+					RebuildVoronoiDiagram(_mouseDragSiteGraph, _mouseDragPointSitePositions, out _mouseDragContoursEnabled);
+					RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions, _mouseDragContoursEnabled);
 					break;
 				default:
 					return;
 			}
 
-			RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions);
+			RebuildVoronoiDiagram(_mouseDragSiteGraph, _mouseDragPointSitePositions, out _mouseDragContoursEnabled);
+			RebuildContourMesh(_mouseDragSiteGraph, _mouseDragPointSitePositions, _mouseDragContoursEnabled);
 		}
 
 		private void FindNearestNode(ContourTriangulatorController controller, Vector2 mousePosition)
@@ -1443,14 +1505,14 @@ namespace Experilous.Examples.MakeItTile
 						var v1 = edgeShape.GetDirection(edgeShape.t1);
 						var u1 = Vector3.Cross(normal, v1);
 
-						float cumulativeCurvature = Mathf.Abs(edgeShape.GetCurvatureSum(edgeShape.t0, edgeShape.t1));
-						int segmentCount = Mathf.CeilToInt(cumulativeCurvature / _voronoiEdgeMaxCurvaturePerSegment);
+						float angleChange = Mathf.Abs(edgeShape.GetAngleChange(edgeShape.t0, edgeShape.t1));
+						int segmentCount = Mathf.CeilToInt(angleChange / _voronoiEdgeMaxAngleChangePerSegment);
 						var points = new Vector3[segmentCount + 2];
 
 						points[0] = p0 - u0 * e0 + v0 * n0;
 						for (int i = 1; i < segmentCount; ++i)
 						{
-							float tSegment = edgeShape.GetCurvatureSumOffset(edgeShape.t0, (cumulativeCurvature * i) / segmentCount);
+							float tSegment = edgeShape.GetAngleChangeOffset(edgeShape.t0, (angleChange * i) / segmentCount);
 							float tCurve = 1f - 2f * (tSegment - edgeShape.t0) / (edgeShape.t1 - edgeShape.t0);
 							var pSegment = edgeShape.Evaluate(tSegment);
 							var vSegment = edgeShape.GetDirection(tSegment);
@@ -1464,7 +1526,7 @@ namespace Experilous.Examples.MakeItTile
 
 						if (_showVoronoiLabels)
 						{
-							float tMidpoint = edgeShape.GetCurvatureSumOffset(edgeShape.t0, cumulativeCurvature / 2f);
+							float tMidpoint = edgeShape.GetAngleChangeOffset(edgeShape.t0, angleChange / 2f);
 							var pMidpoint = edgeShape.Evaluate(tMidpoint);
 							var vMidpoint = edgeShape.GetDirection(tMidpoint);
 							var uMidpoint = Vector3.Cross(normal, vMidpoint);
@@ -1507,16 +1569,16 @@ namespace Experilous.Examples.MakeItTile
 					float arcEndOffset1 = n1 / radius;
 					float arcArrowOffset = a1 / radius;
 
-					float cumulativeCurvature = Mathf.Repeat(arc, Mathf.PI * 2f) - (arcEndOffset0 + arcEndOffset1);
-					if (cumulativeCurvature > 0f)
+					float angleChange = Mathf.Repeat(arc, Mathf.PI * 2f) - (arcEndOffset0 + arcEndOffset1);
+					if (angleChange > 0f)
 					{
-						int segmentCount = Mathf.CeilToInt(cumulativeCurvature / _voronoiEdgeMaxCurvaturePerSegment);
+						int segmentCount = Mathf.CeilToInt(angleChange / _voronoiEdgeMaxAngleChangePerSegment);
 						var points = new Vector3[segmentCount + 2];
 
 						points[0] = _voronoiBounds.center + wU * Mathf.Cos(arcEndOffset0) + wR * Mathf.Sin(arcEndOffset0);
 						for (int i = 1; i < segmentCount; ++i)
 						{
-							float angleSegment = arcEndOffset0 + cumulativeCurvature * i / segmentCount;
+							float angleSegment = arcEndOffset0 + angleChange * i / segmentCount;
 							points[i] = _voronoiBounds.center + wU * Mathf.Cos(angleSegment) + wR * Mathf.Sin(angleSegment);
 						}
 						points[segmentCount] = _voronoiBounds.center + wU * Mathf.Cos(arc - arcEndOffset1) + wR * Mathf.Sin(arc - arcEndOffset1);
@@ -1528,7 +1590,7 @@ namespace Experilous.Examples.MakeItTile
 
 					if (_showVoronoiLabels)
 					{
-						float angleMidpoint = arcEndOffset0 + cumulativeCurvature / 2f;
+						float angleMidpoint = arcEndOffset0 + angleChange / 2f;
 						var uMidpoint = (wU * Mathf.Cos(angleMidpoint) + wR * Mathf.Sin(angleMidpoint)).normalized;
 						var pMidpoint = _voronoiBounds.center + uMidpoint * _voronoiBounds.radius;
 						var label = new GUIContent(edge.index.ToString());
@@ -1764,17 +1826,10 @@ namespace Experilous.Examples.MakeItTile
 			}
 		}
 
-		private void RebuildContourMesh(IGraph siteGraph, IGraphNodeData<Vector3> pointSitePositions)
+		private void RebuildVoronoiDiagram(IGraph siteGraph, IGraphNodeData<Vector3> pointSitePositions, out bool[] contoursEnabled)
 		{
 			var controller = (ContourTriangulatorController)target;
-
-			var meshFilter = controller.GetComponent<MeshFilter>();
-			var mesh = meshFilter.sharedMesh;
-			if (mesh == null)
-			{
-				mesh = meshFilter.sharedMesh = new Mesh();
-			}
-			mesh.Clear();
+			contoursEnabled = controller.contoursEnabled;
 
 			var stopwatch = new System.Diagnostics.Stopwatch();
 
@@ -1786,6 +1841,28 @@ namespace Experilous.Examples.MakeItTile
 					_voronoiGenerator.SetSites(siteGraph, pointSitePositions, Vector3.zero, Vector3.right, Vector3.up);
 					_voronoiDiagram = _voronoiGenerator.Generate();
 					FinitizeVoronoiNodePositions();
+
+					_contourLoops = _voronoiDiagram.FindAllContourLoops(controller.contourOffsets[0] * controller.contourDistanceScale, _contourLoops);
+
+					if (controller.contoursEnabled == null || _contourLoops.Count != controller.contoursEnabled.Length)
+					{
+						var oldContoursEnabled = controller.contoursEnabled;
+						var newContoursEnabled = new bool[_contourLoops.Count];
+
+						if (oldContoursEnabled != null && oldContoursEnabled.Length > 0)
+						{
+							Array.Copy(oldContoursEnabled, newContoursEnabled, System.Math.Min(oldContoursEnabled.Length, newContoursEnabled.Length));
+						}
+						else
+						{
+							for (int i = 0; i < newContoursEnabled.Length; ++i)
+							{
+								newContoursEnabled[i] = true;
+							}
+						}
+
+						contoursEnabled = newContoursEnabled;
+					}
 				}
 				catch (Exception ex)
 				{
@@ -1795,9 +1872,23 @@ namespace Experilous.Examples.MakeItTile
 				stopwatch.Stop();
 
 				//Debug.LogFormat("Time to generate voronoi diagram:  {0:F6} ms", 1000d * stopwatch.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency);
+			}
+		}
 
-				stopwatch.Reset();
+		private void RebuildContourMesh(IGraph siteGraph, IGraphNodeData<Vector3> pointSitePositions, bool[] contoursEnabled)
+		{
+			var controller = (ContourTriangulatorController)target;
 
+			var meshFilter = controller.GetComponent<MeshFilter>();
+			var mesh = meshFilter.sharedMesh;
+			if (mesh == null)
+			{
+				mesh = meshFilter.sharedMesh = new Mesh();
+			}
+			mesh.Clear();
+
+			if (siteGraph.nodeCount > 0 && _voronoiDiagram != null && _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices.Count > 0 && controller.GetComponent<MeshRenderer>().enabled)
+			{
 				var vertexIndexMap = new Dictionary<ContourTriangulator.PositionId, int>();
 				var vertexPositions = new List<Vector3>();
 				var vertexColors = new List<Color>();
@@ -1827,17 +1918,23 @@ namespace Experilous.Examples.MakeItTile
 							{
 								vertexColors.Add(contourColors[0]);
 							}
-						//Debug.LogFormat("Add Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexPositions.Count - 1, positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
-					}
+							//Debug.LogFormat("Add Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexPositions.Count - 1, positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
+						}
 						else
 						{
 						//Debug.LogFormat("Reuse Vertex({0}):  {1}, {2}, {3}, {4}, {5}, {6:F4}, {7}", vertexIndexMap[positionId], positionId, position.ToString("F2"), siteType, siteIndex, contourIndex, distance, vertexColors[vertexColors.Count - 1]);
-					}
+						}
 					};
 
 				ContourTriangulator.OnTriangleDelegate onTriangle =
 					(ContourTriangulator.PositionId positionId0, ContourTriangulator.PositionId positionId1, ContourTriangulator.PositionId positionId2) =>
 					{
+						int i0 = vertexIndexMap[positionId0];
+						int i1 = vertexIndexMap[positionId1];
+						int i2 = vertexIndexMap[positionId2];
+						var p0 = vertexPositions[i0];
+						var p1 = vertexPositions[i1];
+						var p2 = vertexPositions[i2];
 						triangleIndices.Add(vertexIndexMap[positionId0]);
 						triangleIndices.Add(vertexIndexMap[positionId1]);
 						triangleIndices.Add(vertexIndexMap[positionId2]);
@@ -1848,13 +1945,21 @@ namespace Experilous.Examples.MakeItTile
 				{
 					var edge = new TopologyEdge(_voronoiDiagram._voronoiTopology, _voronoiDiagram._siteEdgeFirstVoronoiEdgeIndices[0]);
 					if (controller.twinEdge) edge = edge.twin;
-					_contourTriangulator.maxCurvaturePerSegment = controller.maxCurvaturePerSegment;
+					_contourTriangulator.maxAngleChangePerSegment = controller.maxCurvaturePerSegment;
+
+					var stopwatch = new System.Diagnostics.Stopwatch();
 
 					stopwatch.Start();
 
 					try
 					{
-						_contourTriangulator.Triangulate(_voronoiDiagram, edge.sourceFace, onVertex, onTriangle, Vector3.back, contourDistances);
+						for (int i = 0; i < controller.contoursEnabled.Length; ++i)
+						{
+							if (contoursEnabled[i])
+							{
+								_contourTriangulator.Triangulate(_voronoiDiagram, onVertex, onTriangle, Vector3.back, _contourLoops[i], contourDistances);
+							}
+						}
 					}
 					catch (Exception ex)
 					{

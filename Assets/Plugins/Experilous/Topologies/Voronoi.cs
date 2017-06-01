@@ -8,6 +8,7 @@ using UnityEngine;
 using Experilous.Numerics;
 using Experilous.Topologies.Detail;
 using InfiniteLoopGuard = Experilous.MakeItRandom.Detail.InfiniteLoopGuard;
+using Math = Experilous.Numerics.Math;
 
 namespace Experilous.Topologies
 {
@@ -1284,6 +1285,42 @@ namespace Experilous.Topologies
 			}
 		}
 
+		public float GetAngleChange(float t0, float t1)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					return float.NaN;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+				case VoronoiEdgeShapeType.ParallelLine:
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					return 0f;
+				case VoronoiEdgeShapeType.Parabola:
+					return Mathf.Atan(2f * t1) - Mathf.Atan(2f * t0);
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		public float GetAngleChangeOffset(float t0, float angle)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					return float.NaN;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+				case VoronoiEdgeShapeType.ParallelLine:
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					return (angle == 0f) ? t0 : (angle > 0f) ? float.PositiveInfinity : float.NegativeInfinity;
+				case VoronoiEdgeShapeType.Parabola:
+					return Mathf.Tan(angle + Mathf.Atan(2f * t0)) / 2f;
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
 		public float GetCurvature(float t, Vector3 normal)
 		{
 			switch (type)
@@ -1298,48 +1335,7 @@ namespace Experilous.Topologies
 				case VoronoiEdgeShapeType.Parabola:
 					{
 						float hSquared = t * t + 1f;
-						return Numerics.Math.ZeroExclusiveSign(Vector3.Dot(Vector3.Cross(v, u), normal)) / (2f * s * hSquared * Mathf.Sqrt(hSquared));
-					}
-				default:
-					throw new NotImplementedException();
-			}
-		}
-
-		public float GetCurvatureSum(float t0, float t1)
-		{
-			switch (type)
-			{
-				case VoronoiEdgeShapeType.Infinite:
-					return float.NaN;
-				case VoronoiEdgeShapeType.OrthogonalLine:
-				case VoronoiEdgeShapeType.HalfAngleLine:
-				case VoronoiEdgeShapeType.ParallelLine:
-				case VoronoiEdgeShapeType.PythagoreanLine:
-					return 0f;
-				case VoronoiEdgeShapeType.Parabola:
-						return t1 / (2f * s * Mathf.Sqrt(t1 * t1 + 1f)) - t0 / (2f * s * Mathf.Sqrt(t0 * t0 + 1f));
-				default:
-					throw new NotImplementedException();
-			}
-		}
-
-		public float GetCurvatureSumOffset(float t0, float curvatureSum)
-		{
-			switch (type)
-			{
-				case VoronoiEdgeShapeType.Infinite:
-					return float.NaN;
-				case VoronoiEdgeShapeType.OrthogonalLine:
-				case VoronoiEdgeShapeType.HalfAngleLine:
-				case VoronoiEdgeShapeType.ParallelLine:
-				case VoronoiEdgeShapeType.PythagoreanLine:
-					return (curvatureSum == 0f) ? t0 : (curvatureSum > 0f) ? float.PositiveInfinity : float.NegativeInfinity;
-				case VoronoiEdgeShapeType.Parabola:
-					{
-						var c0 = t0 / (2f * s * Mathf.Sqrt(t0 * t0 + 1f));
-						var c1 = c0 + curvatureSum;
-						var a = s * c1;
-						return 2f * s * c1 / Mathf.Sqrt(1f - 4f * a * a);
+						return Math.ZeroExclusiveSign(Vector3.Dot(Vector3.Cross(v, u), normal)) / (2f * s * hSquared * Mathf.Sqrt(hSquared));
 					}
 				default:
 					throw new NotImplementedException();
@@ -1466,6 +1462,96 @@ namespace Experilous.Topologies
 			}
 		}
 
+		public void GetNearest(out float t, out float distance)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					t = float.NaN;
+					distance = float.PositiveInfinity;
+					break;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+					if (s > 0f)
+					{
+						t = t0;
+						distance = t0 / s;
+					}
+					else
+					{
+						t = t1;
+						distance = t1 / s;
+					}
+					break;
+				case VoronoiEdgeShapeType.ParallelLine:
+					t = t0;
+					distance = s;
+					break;
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					if (t0 <= 0f)
+					{
+						if (t1 >= 0f)
+						{
+							t = 0f;
+							distance = Mathf.Sqrt(s);
+						}
+						else if (t0 >= t1)
+						{
+							t = t0;
+							distance = Mathf.Sqrt(t0 * t0 + s);
+						}
+						else
+						{
+							t = t1;
+							distance = Mathf.Sqrt(t1 * t1 + s);
+						}
+					}
+					else if (t0 <= t1)
+					{
+						t = t0;
+						distance = Mathf.Sqrt(t0 * t0 + s);
+					}
+					else
+					{
+						t = t1;
+						distance = Mathf.Sqrt(t1 * t1 + s);
+					}
+					break;
+				case VoronoiEdgeShapeType.Parabola:
+					if (t0 <= 0f)
+					{
+						if (t1 >= 0f)
+						{
+							t = 0f;
+							distance = s;
+						}
+						else if (t0 >= t1)
+						{
+							t = t0;
+							distance = (t0 * t0 * 4f + 1f) * s;
+						}
+						else
+						{
+							t = t1;
+							distance = (t1 * t1 * 4f + 1f) * s;
+						}
+					}
+					else if (t0 <= t1)
+					{
+						t = t0;
+						distance = (t0 * t0 * 4f + 1f) * s;
+					}
+					else
+					{
+						t = t1;
+						distance = (t1 * t1 * 4f + 1f) * s;
+					}
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
 		public float GetFarthest()
 		{
 			switch (type)
@@ -1506,6 +1592,60 @@ namespace Experilous.Topologies
 						float t = Mathf.Max(Mathf.Abs(t0), Mathf.Abs(t1));
 						return (t * t * 4f + 1f) * s;
 					}
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		public void GetFarthest(out float t, out float distance)
+		{
+			switch (type)
+			{
+				case VoronoiEdgeShapeType.Infinite:
+					t = float.NaN;
+					distance = float.PositiveInfinity;
+					break;
+				case VoronoiEdgeShapeType.OrthogonalLine:
+				case VoronoiEdgeShapeType.HalfAngleLine:
+					if (s <= 0f)
+					{
+						t = t0;
+						distance = t0 / s;
+					}
+					else
+					{
+						t = t1;
+						distance = t1 / s;
+					}
+					break;
+				case VoronoiEdgeShapeType.ParallelLine:
+					t = t1;
+					distance = s;
+					break;
+				case VoronoiEdgeShapeType.PythagoreanLine:
+					if (Mathf.Abs(t0) > Mathf.Abs(t1))
+					{
+						t = t0;
+						distance = Mathf.Sqrt(t0 * t0 + s);
+					}
+					else
+					{
+						t = t1;
+						distance = Mathf.Sqrt(t1 * t1 + s);
+					}
+					break;
+				case VoronoiEdgeShapeType.Parabola:
+					if (Mathf.Abs(t0) > Mathf.Abs(t1))
+					{
+						t = t0;
+						distance = (t0 * t0 * 4f + 1f) * s;
+					}
+					else
+					{
+						t = t1;
+						distance = (t1 * t1 * 4f + 1f) * s;
+					}
+					break;
 				default:
 					throw new NotImplementedException();
 			}
@@ -1725,6 +1865,114 @@ namespace Experilous.Topologies
 			_voronoiFaceSiteTypes = voronoiFaceSiteTypes;
 			_voronoiFaceSiteIndices = voronoiFaceSiteIndices;
 			_voronoiEdgeShapes = voronoiEdgeShapes;
+		}
+
+		public List<ContourDescriptor> FindAllContourLoops(float distance, List<ContourDescriptor> loops = null, float errorMargin = 0.0001f)
+		{
+			if (loops == null)
+			{
+				loops = new List<ContourDescriptor>();
+			}
+			else
+			{
+				loops.Clear();
+			}
+
+			TopologyEdgeDataArray<int> edgeLoopIndices = new TopologyEdgeDataArray<int>(_voronoiTopology.edgeCount);
+
+			for (int i = 0; i < _voronoiTopology.edgeCount; ++i)
+			{
+				edgeLoopIndices[i] = -1;
+			}
+
+			for (int i = 0; i < _voronoiTopology.edgeCount; ++i)
+			{
+				if (edgeLoopIndices[i] != -1) continue;
+
+				var edgeShape = _voronoiEdgeShapes[i];
+
+				var t = edgeShape.IntersectEntranceUnclamped(distance);
+
+				if (Math.ApproximateGreaterOrEqual(t, edgeShape.t0, errorMargin) &&
+					Math.ApproximateLessOrEqual(t, edgeShape.t1, errorMargin))
+				{
+					if (Math.ApproximateGreaterThan(t, edgeShape.t0, errorMargin))
+					{
+						if (Math.ApproximateLessThan(t, edgeShape.t1, errorMargin))
+						{
+							// Contour enters in middle of edge.
+							loops.Add(BuildContourLoop(distance, new TopologyFaceEdge(_voronoiTopology, i), t, loops.Count, edgeLoopIndices, errorMargin));
+						}
+						else
+						{
+							// Contour enters right at end of edge.
+							if (edgeShape.GetDistanceDerivative(t) > errorMargin || edgeShape.GetDistanceSecondDerivative(t) > errorMargin)
+							{
+								// Either distance 1st deriv or 2nd deriv is positive.
+								loops.Add(BuildContourLoop(distance, new TopologyFaceEdge(_voronoiTopology, i), t, loops.Count, edgeLoopIndices, errorMargin));
+							}
+						}
+					}
+					else
+					{
+						if (Math.ApproximateLessThan(t, edgeShape.t1, errorMargin))
+						{
+							// Contour enters right at start of edge.
+							loops.Add(BuildContourLoop(distance, new TopologyFaceEdge(_voronoiTopology, i), t, loops.Count, edgeLoopIndices, errorMargin));
+						}
+						else
+						{
+							// Contour enters right at both start and end of edge.
+							throw new NotImplementedException();
+						}
+					}
+				}
+			}
+
+			return loops;
+		}
+
+		private ContourDescriptor BuildContourLoop(float distance, TopologyFaceEdge firstEdge, float tFirst, int loopIndex, TopologyEdgeDataArray<int> edgeLoopIndices, float errorMargin = 0.0001f)
+		{
+			var edge = firstEdge;
+			float tEntrance = tFirst;
+			float tExit;
+
+			var entranceEdgeIndices = new List<int>();
+			var entranceParameters = new List<float>();
+
+			var edgeShape = _voronoiEdgeShapes[edge];
+
+			int outer = 0;
+
+			do
+			{
+				if (++outer > 1000) throw new InvalidOperationException();
+				edgeLoopIndices[edge] = loopIndex;
+				entranceEdgeIndices.Add(edge.index);
+				entranceParameters.Add(tEntrance);
+
+				tExit = edgeShape.IntersectExitUnclamped(distance);
+
+				int inner = 0;
+
+				while (float.IsNaN(tExit) || Math.ApproximateLessThan(tExit, tEntrance, errorMargin) || Math.ApproximateGreaterThan(tExit, edgeShape.t1, errorMargin))
+				{
+					if (++inner > 1000) throw new InvalidOperationException();
+
+					edge = edge.next;
+					edgeShape = _voronoiEdgeShapes[edge];
+					tEntrance = edgeShape.t0;
+					tExit = edgeShape.IntersectExitUnclamped(distance);
+				}
+
+				edge = edge.twin;
+				edgeShape = _voronoiEdgeShapes[edge];
+				tEntrance = -tExit;
+				edgeLoopIndices[edge] = loopIndex;
+			} while (edge != firstEdge || Math.ApproximateLessThan(tEntrance, tFirst, errorMargin));
+
+			return new ContourDescriptor(distance, entranceEdgeIndices, entranceParameters, true);
 		}
 	}
 }

@@ -34,6 +34,8 @@ namespace Experilous.Examples.MakeItTile
 		public float[] contourOffsets;
 		public Color[] contourColors;
 
+		public bool[] contoursEnabled;
+
 		protected void OnEnable()
 		{
 			if (contourOffsets == null || contourOffsets.Length < 2)
