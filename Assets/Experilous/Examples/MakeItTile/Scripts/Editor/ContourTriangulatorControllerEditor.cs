@@ -1458,6 +1458,8 @@ namespace Experilous.Examples.MakeItTile
 
 			var topology = _voronoiDiagram._voronoiTopology;
 			var voronoiEdgeShapes = _voronoiDiagram._voronoiEdgeShapes;
+			var voronoiEdgeShapeLowerBounds = _voronoiDiagram._voronoiEdgeShapeLowerBounds;
+			var voronoiEdgeShapeUpperBounds = _voronoiDiagram._voronoiEdgeShapeUpperBounds;
 
 			var normal = -Camera.current.transform.forward;
 
@@ -1476,6 +1478,8 @@ namespace Experilous.Examples.MakeItTile
 				var n0 = s0 * voronoiNodeRadius + e0;
 				var n1 = s1 * voronoiNodeRadius + e1;
 				var edgeShape = voronoiEdgeShapes[edge];
+				var edgeShapeLowerBound = voronoiEdgeShapeLowerBounds[edge];
+				var edgeShapeUpperBound = voronoiEdgeShapeUpperBounds[edge];
 
 				if (edgeShape.isFinite)
 				{
@@ -1500,20 +1504,20 @@ namespace Experilous.Examples.MakeItTile
 					}
 					else if (edgeShape.type == VoronoiEdgeShapeType.Parabola)
 					{
-						var v0 = edgeShape.GetDirection(edgeShape.t0);
+						var v0 = edgeShape.GetDirection(edgeShapeLowerBound);
 						var u0 = Vector3.Cross(normal, v0);
-						var v1 = edgeShape.GetDirection(edgeShape.t1);
+						var v1 = edgeShape.GetDirection(edgeShapeUpperBound);
 						var u1 = Vector3.Cross(normal, v1);
 
-						float angleChange = Mathf.Abs(edgeShape.GetAngleChange(edgeShape.t0, edgeShape.t1));
+						float angleChange = Mathf.Abs(edgeShape.GetAngleChange(edgeShapeLowerBound, edgeShapeUpperBound));
 						int segmentCount = Mathf.CeilToInt(angleChange / _voronoiEdgeMaxAngleChangePerSegment);
 						var points = new Vector3[segmentCount + 2];
 
 						points[0] = p0 - u0 * e0 + v0 * n0;
 						for (int i = 1; i < segmentCount; ++i)
 						{
-							float tSegment = edgeShape.GetAngleChangeOffset(edgeShape.t0, (angleChange * i) / segmentCount);
-							float tCurve = 1f - 2f * (tSegment - edgeShape.t0) / (edgeShape.t1 - edgeShape.t0);
+							float tSegment = edgeShape.GetAngleChangeOffset(edgeShapeLowerBound, (angleChange * i) / segmentCount);
+							float tCurve = 1f - 2f * (tSegment - edgeShapeLowerBound) / (edgeShapeUpperBound - edgeShapeLowerBound);
 							var pSegment = edgeShape.Evaluate(tSegment);
 							var vSegment = edgeShape.GetDirection(tSegment);
 							var uSegment = Vector3.Cross(normal, vSegment);
@@ -1526,7 +1530,7 @@ namespace Experilous.Examples.MakeItTile
 
 						if (_showVoronoiLabels)
 						{
-							float tMidpoint = edgeShape.GetAngleChangeOffset(edgeShape.t0, angleChange / 2f);
+							float tMidpoint = edgeShape.GetAngleChangeOffset(edgeShapeLowerBound, angleChange / 2f);
 							var pMidpoint = edgeShape.Evaluate(tMidpoint);
 							var vMidpoint = edgeShape.GetDirection(tMidpoint);
 							var uMidpoint = Vector3.Cross(normal, vMidpoint);
@@ -1841,7 +1845,15 @@ namespace Experilous.Examples.MakeItTile
 					_voronoiGenerator.SetSites(siteGraph, pointSitePositions, Vector3.zero, Vector3.right, Vector3.up);
 					_voronoiDiagram = _voronoiGenerator.Generate();
 					FinitizeVoronoiNodePositions();
+				}
+				catch (Exception ex)
+				{
+					Debug.LogErrorFormat("Exception ({0}) while generating voronoi diagram:  \"{1}\"\n{2}", ex.GetType().Name, ex.Message, ex.StackTrace);
+					_voronoiDiagram = null;
+				}
 
+				try
+				{
 					_contourLoops = _voronoiDiagram.FindAllContourLoops(controller.contourOffsets[0] * controller.contourDistanceScale, _contourLoops);
 
 					if (controller.contoursEnabled == null || _contourLoops.Count != controller.contoursEnabled.Length)
@@ -1866,8 +1878,7 @@ namespace Experilous.Examples.MakeItTile
 				}
 				catch (Exception ex)
 				{
-					Debug.LogErrorFormat("Exception ({0}) while generating voronoi diagram:  \"{1}\"\n{2}", ex.GetType().Name, ex.Message, ex.StackTrace);
-					_voronoiDiagram = null;
+					Debug.LogErrorFormat("Exception ({0}) while generating contour loops:  \"{1}\"\n{2}", ex.GetType().Name, ex.Message, ex.StackTrace);
 				}
 				stopwatch.Stop();
 

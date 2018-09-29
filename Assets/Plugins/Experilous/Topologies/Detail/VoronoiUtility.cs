@@ -213,6 +213,57 @@ namespace Experilous.Topologies.Detail
 			}
 
 			public bool isEmpty { get { return _queue.isEmpty; } }
+
+			public MergeEvent Prepare(Vector2 mergePosition, float distance, BeachSegment segment)
+			{
+				var eventPosition = new Vector2(mergePosition.x, mergePosition.y + distance);
+				if (_pool.Count > 0)
+				{
+					int lastIndex = _pool.Count - 1;
+					var ev = _pool[lastIndex];
+					ev.position = eventPosition;
+					ev.distance = distance;
+					return ev;
+				}
+				else
+				{
+					var ev = new MergeEvent(eventPosition, distance, segment);
+					_pool.Add(ev);
+					return ev;
+				}
+			}
+
+			public MergeEvent prepared
+			{
+				get
+				{
+					if (_pool.Count == 0) return null;
+					var ev = _pool[_pool.Count - 1];
+					if (ev.segment == null) return null;
+					return ev;
+				}
+			}
+
+			public MergeEvent PushPrepared()
+			{
+				if (_pool.Count == 0) throw new InvalidOperationException("No prepared event is available to push.");
+				int lastIndex = _pool.Count - 1;
+				var ev = _pool[lastIndex];
+				if (ev.segment == null) throw new InvalidOperationException("No prepared event is available to push.");
+				_pool.RemoveAt(lastIndex);
+				ev.segment.SetMergeEvent(ev);
+				_queue.Push(ev);
+				return ev;
+			}
+
+			public void CancelPrepared()
+			{
+				if (_pool.Count == 0) return;
+				var ev = _pool[_pool.Count - 1];
+				if (ev.segment == null) return;
+				ev.segment.SetMergeEvent(ev);
+				ev.segment = null;
+			}
 		}
 
 		#endregion
@@ -551,25 +602,24 @@ namespace Experilous.Topologies.Detail
 
 		#region CheckForMergeEvent
 
-		private static void CheckForMergeEvent_PointPointPoint(Vector2 p0, Vector2 p1, Vector2 p2, BeachSegment segment, MergeEventQueue queue)
+		private static MergeEvent CheckForMergeEvent_PointPointPoint(Vector2 p0, Vector2 p1, Vector2 p2, BeachSegment segment, MergeEventQueue queue)
 		{
 			var v0 = p1 - p0;
 			var v2 = p1 - p2;
 
 			float determinant = Geometry.DotPerpendicularCCW(v0, v2);
-			if (determinant > 0f)
-			{
-				float lenSqr0 = v0.sqrMagnitude;
-				float lenSqr2 = v2.sqrMagnitude;
-				float cx = 0.5f * (v2.y * lenSqr0 - v0.y * lenSqr2) / determinant;
-				float cy = 0.5f * (v0.x * lenSqr2 - v2.x * lenSqr0) / determinant;
+			if (determinant == 0f) return null;
 
-				var mergeOffset = new Vector2(cx, cy);
-				queue.Push(p1 + mergeOffset, mergeOffset.magnitude, segment);
-			}
+			float lenSqr0 = v0.sqrMagnitude;
+			float lenSqr2 = v2.sqrMagnitude;
+			float cx = 0.5f * (v2.y * lenSqr0 - v0.y * lenSqr2) / determinant;
+			float cy = 0.5f * (v0.x * lenSqr2 - v2.x * lenSqr0) / determinant;
+
+			var mergeOffset = new Vector2(cx, cy);
+			return queue.Prepare(p1 + mergeOffset, mergeOffset.magnitude, segment);
 		}
 
-		private static void CheckForMergeEvent_PointLinePoint(Vector2 p0, Vector2 p1a, Vector2 p1b, Vector2 p2, float errorMargin, bool lineInMiddle, BeachSegment segment, MergeEventQueue queue)
+		private static MergeEvent CheckForMergeEvent_PointLinePoint(Vector2 p0, Vector2 p1a, Vector2 p1b, Vector2 p2, float errorMargin, bool lineInMiddle, BeachSegment segment, MergeEventQueue queue)
 		{
 			var v1 = p1b - p1a;
 			var n1 = v1.PerpendicularCCW();
@@ -612,12 +662,12 @@ namespace Experilous.Topologies.Detail
 					}
 					else
 					{
-						return;
+						return null;
 					}
 				}
 				else
 				{
-					return;
+					return null;
 				}
 			}
 			else if (lineInMiddle)
@@ -627,13 +677,13 @@ namespace Experilous.Topologies.Detail
 			}
 			else
 			{
-				return;
+				return null;
 			}
 
-			queue.Push(p1a + v1 * x + n1 * y, Mathf.Sqrt(vSqrLen) * Mathf.Abs(y), segment);
+			return queue.Prepare(p1a + v1 * x + n1 * y, Mathf.Sqrt(vSqrLen) * Mathf.Abs(y), segment);
 		}
 
-		private static void CheckForMergeEvent_PointLineNormal(Vector2 p0, Vector2 p1, Vector2 v1, Vector2 n1, BeachSegment segment, MergeEventQueue queue)
+		private static MergeEvent CheckForMergeEvent_PointLineNormal(Vector2 p0, Vector2 p1, Vector2 v1, Vector2 n1, BeachSegment segment, MergeEventQueue queue)
 		{
 			var vSqrLen = v1.sqrMagnitude;
 
@@ -642,10 +692,10 @@ namespace Experilous.Topologies.Detail
 
 			float y = (q0.x * q0.x / q0.y + q0.y) / 2f;
 
-			queue.Push(p1 + n1 * y, Mathf.Sqrt(vSqrLen) * y, segment);
+			return queue.Prepare(p1 + n1 * y, Mathf.Sqrt(vSqrLen) * y, segment);
 		}
 
-		private static void CheckForMergeEvent_LinePointLine(Vector2 p0a, Vector2 p0b, Vector2 p1, Vector2 p2a, Vector2 p2b, float errorMargin, bool pointInMiddle, BeachSegment segment, MergeEventQueue queue)
+		private static MergeEvent CheckForMergeEvent_LinePointLine(Vector2 p0a, Vector2 p0b, Vector2 p1, Vector2 p2a, Vector2 p2b, float errorMargin, bool pointInMiddle, BeachSegment segment, MergeEventQueue queue)
 		{
 			Vector2 q0a = p0a - p1;
 			Vector2 q2a = p2a - p1;
@@ -677,13 +727,17 @@ namespace Experilous.Topologies.Detail
 					{
 						var distance = (-b + Mathf.Sqrt(sqr) * Mathf.Sign(Geometry.DotPerpendicularCW(v0, v2)) * (pointInMiddle ? +1f : -1f)) / (2f * a);
 						var mergePosition = new Vector2(p1.x + gx * distance + hx, p1.y + gy * distance + hy);
-						queue.Push(mergePosition, distance, segment);
+						return queue.Prepare(mergePosition, distance, segment);
 					}
 					else if (sqr > -errorMargin)
 					{
 						var distance = -0.5f * b / a;
 						var mergePosition = new Vector2(p1.x + gx * distance + hx, p1.y + gy * distance + hy);
-						queue.Push(mergePosition, distance, segment);
+						return queue.Prepare(mergePosition, distance, segment);
+					}
+					else
+					{
+						return null;
 					}
 				}
 				else
@@ -699,7 +753,7 @@ namespace Experilous.Topologies.Detail
 			}
 		}
 
-		private static void CheckForMergeEvent_NormalLineLine(Vector2 n0, Vector2 p1, Vector2 v1, Vector2 p2, Vector2 v2, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		private static MergeEvent CheckForMergeEvent_NormalLineLine(Vector2 n0, Vector2 p1, Vector2 v1, Vector2 p2, Vector2 v2, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			float f = Geometry.DotPerpendicularCW(p2 - p1, v2);
 
@@ -717,12 +771,12 @@ namespace Experilous.Topologies.Detail
 			float b = 2f * (gx * hx + gy * hy);
 
 			var distance = -0.5f * b / a;
-			if (distance < -errorMargin) return;
+			if (distance < -errorMargin) return null;
 			var mergePosition = new Vector2(p1.x + gx * distance + hx, p1.y + gy * distance + hy);
-			queue.Push(mergePosition, distance, segment);
+			return queue.Prepare(mergePosition, distance, segment);
 		}
 
-		private static void CheckForMergeEvent_LineLineLine(Vector2 p0a, Vector2 p0b, Vector2 p1a, Vector2 p1b, Vector2 p2a, Vector2 p2b, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		private static MergeEvent CheckForMergeEvent_LineLineLine(Vector2 p0a, Vector2 p0b, Vector2 p1a, Vector2 p1b, Vector2 p2a, Vector2 p2b, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			Vector2 q0a = p0a - p1a;
 			Vector2 q2a = p2a - p1a;
@@ -744,15 +798,15 @@ namespace Experilous.Topologies.Detail
 
 			var distance = (v1.y * hx - v1.x * hy) / (v1.x * gy - v1.y * gx - len1);
 			var mergePosition = new Vector2(p1a.x + gx * distance + hx, p1a.y + gy * distance + hy);
-			queue.Push(mergePosition, distance, segment);
+			return queue.Prepare(mergePosition, distance, segment);
 		}
 
-		public static void CheckForMergeEvent_PointPointPoint(int i0, int i1, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		public static MergeEvent CheckForMergeEvent_PointPointPoint(int i0, int i1, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
-			CheckForMergeEvent_PointPointPoint(nodePositions[i0], nodePositions[i1], nodePositions[i2], segment, queue);
+			return CheckForMergeEvent_PointPointPoint(nodePositions[i0], nodePositions[i1], nodePositions[i2], segment, queue);
 		}
 
-		public static void CheckForMergeEvent_PointPointLine(int i0, int i1, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		public static MergeEvent CheckForMergeEvent_PointPointLine(int i0, int i1, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			var p2a = nodePositions[i2a];
 			var p2b = nodePositions[i2b];
@@ -760,7 +814,7 @@ namespace Experilous.Topologies.Detail
 			{
 				var v1 = p2a - p2b;
 				var n1 = v1.PerpendicularCW();
-				CheckForMergeEvent_PointLineNormal(nodePositions[i0], p2b, v1, n1, segment, queue);
+				return CheckForMergeEvent_PointLineNormal(nodePositions[i0], p2b, v1, n1, segment, queue);
 			}
 			else
 			{
@@ -768,12 +822,16 @@ namespace Experilous.Topologies.Detail
 				var p1 = nodePositions[i1];
 				if (Geometry.DotPerpendicularCW(p2b - p2a, p0 - p1) > errorMargin)
 				{
-					CheckForMergeEvent_PointLinePoint(p0, p2a, p2b, p1, errorMargin, false, segment, queue);
+					return CheckForMergeEvent_PointLinePoint(p0, p2a, p2b, p1, errorMargin, false, segment, queue);
+				}
+				else
+				{
+					return null;
 				}
 			}
 		}
 
-		public static void CheckForMergeEvent_PointLinePoint(int i0, int i1a, int i1b, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		public static MergeEvent CheckForMergeEvent_PointLinePoint(int i0, int i1a, int i1b, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			var p1a = nodePositions[i1a];
 			var p1b = nodePositions[i1b];
@@ -783,24 +841,28 @@ namespace Experilous.Topologies.Detail
 				{
 					var v1 = p1b - p1a;
 					var n1 = v1.PerpendicularCCW();
-					CheckForMergeEvent_PointLineNormal(nodePositions[i2], p1a, v1, n1, segment, queue);
+					return CheckForMergeEvent_PointLineNormal(nodePositions[i2], p1a, v1, n1, segment, queue);
+				}
+				else
+				{
+					return null;
 				}
 			}
 			else if (i2 == i1b)
 			{
 				var v1 = p1a - p1b;
 				var n1 = v1.PerpendicularCW();
-				CheckForMergeEvent_PointLineNormal(nodePositions[i0], p1b, v1, n1, segment, queue);
+				return CheckForMergeEvent_PointLineNormal(nodePositions[i0], p1b, v1, n1, segment, queue);
 			}
 			else
 			{
 				var p0 = nodePositions[i0];
 				var p2 = nodePositions[i2];
-				CheckForMergeEvent_PointLinePoint(p0, p1a, p1b, p2, errorMargin, true, segment, queue);
+				return CheckForMergeEvent_PointLinePoint(p0, p1a, p1b, p2, errorMargin, true, segment, queue);
 			}
 		}
 
-		public static void CheckForMergeEvent_LinePointPoint(int i0a, int i0b, int i1, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		public static MergeEvent CheckForMergeEvent_LinePointPoint(int i0a, int i0b, int i1, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			var p0a = nodePositions[i0a];
 			var p0b = nodePositions[i0b];
@@ -808,7 +870,7 @@ namespace Experilous.Topologies.Detail
 			{
 				var v1 = p0b - p0a;
 				var n1 = v1.PerpendicularCCW();
-				CheckForMergeEvent_PointLineNormal(nodePositions[i2], p0a, v1, n1, segment, queue);
+				return CheckForMergeEvent_PointLineNormal(nodePositions[i2], p0a, v1, n1, segment, queue);
 			}
 			else
 			{
@@ -816,12 +878,16 @@ namespace Experilous.Topologies.Detail
 				var p2 = nodePositions[i2];
 				if (Geometry.DotPerpendicularCW(p0b - p0a, p2 - p1) > errorMargin)
 				{
-					CheckForMergeEvent_PointLinePoint(p2, p0b, p0a, p1, errorMargin, false, segment, queue);
+					return CheckForMergeEvent_PointLinePoint(p2, p0b, p0a, p1, errorMargin, false, segment, queue);
+				}
+				else
+				{
+					return null;
 				}
 			}
 		}
 
-		public static void CheckForMergeEvent_PointLineLine(int i0, int i1a, int i1b, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		public static MergeEvent CheckForMergeEvent_PointLineLine(int i0, int i1a, int i1b, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			if (i1a != i2b || i1b != i2a)
 			{
@@ -836,17 +902,21 @@ namespace Experilous.Topologies.Detail
 					var v1 = p1b - p1a;
 					var v2 = p2b - p2a;
 					var n0 = v1.PerpendicularCCW();
-					CheckForMergeEvent_NormalLineLine(n0, p1a, v1, p2a, v2, errorMargin, segment, queue);
+					return CheckForMergeEvent_NormalLineLine(n0, p1a, v1, p2a, v2, errorMargin, segment, queue);
 				}
 				else
 				{
 					var p0 = nodePositions[i0];
-					CheckForMergeEvent_LinePointLine(p1a, p1b, p0, p2a, p2b, errorMargin, false, segment, queue);
+					return CheckForMergeEvent_LinePointLine(p1a, p1b, p0, p2a, p2b, errorMargin, false, segment, queue);
 				}
+			}
+			else
+			{
+				return null;
 			}
 		}
 
-		public static void CheckForMergeEvent_LinePointLine(int i0a, int i0b, int i1, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		public static MergeEvent CheckForMergeEvent_LinePointLine(int i0a, int i0b, int i1, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			if ((i0a != i2a || i0b != i2b) && (i0a != i2b || i0b != i2a))
 			{
@@ -865,8 +935,16 @@ namespace Experilous.Topologies.Detail
 						var n1 = v0.PerpendicularCCW();
 						if (Geometry.IsBetween(Vector2.down, n1, v2.PerpendicularCCW()))
 						{
-							CheckForMergeEvent_NormalLineLine(n1, p0b, v0, p2a, v2, errorMargin, segment, queue);
+							return CheckForMergeEvent_NormalLineLine(n1, p0b, v0, p2a, v2, errorMargin, segment, queue);
 						}
+						else
+						{
+							return null;
+						}
+					}
+					else
+					{
+						return null;
 					}
 				}
 				else if (i1 == i2a)
@@ -877,18 +955,26 @@ namespace Experilous.Topologies.Detail
 					var n1 = v2.PerpendicularCCW();
 					if (Geometry.IsBetween(Vector2.down, v0.PerpendicularCCW(), n1))
 					{
-						CheckForMergeEvent_NormalLineLine(n1, p2a, v2, p0b, v0, errorMargin, segment, queue);
+						return CheckForMergeEvent_NormalLineLine(n1, p2a, v2, p0b, v0, errorMargin, segment, queue);
+					}
+					else
+					{
+						return null;
 					}
 				}
 				else
 				{
 					var p1 = nodePositions[i1];
-					CheckForMergeEvent_LinePointLine(p0a, p0b, p1, p2a, p2b, errorMargin, true, segment, queue);
+					return CheckForMergeEvent_LinePointLine(p0a, p0b, p1, p2a, p2b, errorMargin, true, segment, queue);
 				}
+			}
+			else
+			{
+				return null;
 			}
 		}
 
-		public static void CheckForMergeEvent_LineLinePoint(int i0a, int i0b, int i1a, int i1b, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		public static MergeEvent CheckForMergeEvent_LineLinePoint(int i0a, int i0b, int i1a, int i1b, int i2, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			if (i0a != i1b || i0b != i1a)
 			{
@@ -903,17 +989,21 @@ namespace Experilous.Topologies.Detail
 					var v0 = p0b - p0a;
 					var v1 = p1b - p1a;
 					var n2 = v1.PerpendicularCCW();
-					CheckForMergeEvent_NormalLineLine(n2, p1b, v1, p0b, v0, errorMargin, segment, queue);
+					return CheckForMergeEvent_NormalLineLine(n2, p1b, v1, p0b, v0, errorMargin, segment, queue);
 				}
 				else
 				{
 					var p2 = nodePositions[i2];
-					CheckForMergeEvent_LinePointLine(p0a, p0b, p2, p1a, p1b, errorMargin, false, segment, queue);
+					return CheckForMergeEvent_LinePointLine(p0a, p0b, p2, p1a, p1b, errorMargin, false, segment, queue);
 				}
+			}
+			else
+			{
+				return null;
 			}
 		}
 
-		public static void CheckForMergeEvent_LineLineLine(int i0a, int i0b, int i1a, int i1b, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
+		public static MergeEvent CheckForMergeEvent_LineLineLine(int i0a, int i0b, int i1a, int i1b, int i2a, int i2b, IGraphNodeData<Vector2> nodePositions, float errorMargin, BeachSegment segment, MergeEventQueue queue)
 		{
 			if ((i0a != i1b || i0b != i1a) && (i1a != i2b || i1b != i2a))
 			{
@@ -924,7 +1014,11 @@ namespace Experilous.Topologies.Detail
 				var p2a = nodePositions[i2a];
 				var p2b = nodePositions[i2b];
 
-				CheckForMergeEvent_LineLineLine(p0a, p0b, p1a, p1b, p2a, p2b, errorMargin, segment, queue);
+				return CheckForMergeEvent_LineLineLine(p0a, p0b, p1a, p1b, p2a, p2b, errorMargin, segment, queue);
+			}
+			else
+			{
+				return null;
 			}
 		}
 

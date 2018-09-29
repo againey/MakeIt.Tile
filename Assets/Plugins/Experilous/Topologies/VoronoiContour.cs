@@ -238,6 +238,8 @@ namespace Experilous.Topologies
 		{
 			TopologyFaceEdge currentVoronoiEdge = new TopologyFaceEdge(_voronoiDiagram._voronoiTopology, _baseContour.entranceEdgeIndices[_baseContourCurrentIndex]);
 			VoronoiEdgeShape currentEdgeShape = _voronoiDiagram._voronoiEdgeShapes[currentVoronoiEdge];
+			float currentEdgeShapeLowerBound = _voronoiDiagram._voronoiEdgeShapeLowerBounds[currentVoronoiEdge];
+			float currentEdgeShapeUpperBound = _voronoiDiagram._voronoiEdgeShapeUpperBounds[currentVoronoiEdge];
 			float tPrev = _baseContour.entranceParameters[_baseContourCurrentIndex];
 			float tNext;
 
@@ -258,7 +260,7 @@ namespace Experilous.Topologies
 				PositionId positionId;
 				Vector3 position;
 
-				if (Numerics.Math.ApproximateLessOrEqual(tPrev, currentEdgeShape.t0, _errorMargin))
+				if (Numerics.Math.ApproximateLessOrEqual(tPrev, currentEdgeShapeLowerBound, _errorMargin))
 				{
 					// Next contour enters before or right at start of current edge.
 					positionId = new PositionId(currentVoronoiEdge.prevNode);
@@ -275,8 +277,10 @@ namespace Experilous.Topologies
 				_onVertex(positionId, position, siteType, siteIndex, innerContourIndex, _contourLayers[innerContourIndex].distance);
 			}
 
+			var guard = new MakeItRandom.Detail.InfiniteLoopGuard(1000);
 			while (innerContourIndex >= 0)
 			{
+				guard.Iterate();
 				float tNextEntrance = float.NaN;
 				float tNextExit = float.NaN;
 
@@ -287,12 +291,12 @@ namespace Experilous.Topologies
 				if (outerContourIndex < _contourLayerCount)
 				{
 					tNextEntrance = currentEdgeShape.IntersectEntranceUnclamped(_contourLayers[outerContourIndex].distance);
-					if (Numerics.Math.ApproximateGreaterThan(tNextEntrance, currentEdgeShape.t1, _errorMargin))
+					if (Numerics.Math.ApproximateGreaterThan(tNextEntrance, currentEdgeShapeUpperBound, _errorMargin))
 					{
 						// Next contour enters after end of current edge; ignore it for now.
 						tNextEntrance = float.NaN;
 					}
-					else if (Numerics.Math.ApproximateGreaterOrEqual(tNextEntrance, currentEdgeShape.t1, _errorMargin))
+					else if (Numerics.Math.ApproximateGreaterOrEqual(tNextEntrance, currentEdgeShapeUpperBound, _errorMargin))
 					{
 						// Next contour enters right at end of current edge.
 						if (currentEdgeShape.GetDistanceDerivative(tNextEntrance) <= _errorMargin && currentEdgeShape.GetDistanceSecondDerivative(tNextEntrance) <= _errorMargin)
@@ -306,7 +310,7 @@ namespace Experilous.Topologies
 				if (innerContourIndex >= 0)
 				{
 					tNextExit = currentEdgeShape.IntersectExitUnclamped(_contourLayers[innerContourIndex].distance);
-					if (Numerics.Math.ApproximateGreaterThan(tNextExit, currentEdgeShape.t1, _errorMargin))
+					if (Numerics.Math.ApproximateGreaterThan(tNextExit, currentEdgeShapeUpperBound, _errorMargin))
 					{
 						// Current contour exits after end of current edge; ignore it for now.
 						tNextExit = float.NaN;
@@ -340,14 +344,14 @@ namespace Experilous.Topologies
 					moveToNextContour = true;
 					distance = _contourLayers[outerContourIndex].distance;
 
-					if (Numerics.Math.ApproximateLessThan(tNextEntrance, currentEdgeShape.t1, _errorMargin))
+					if (Numerics.Math.ApproximateLessThan(tNextEntrance, currentEdgeShapeUpperBound, _errorMargin))
 					{
 						// Next contour enters before end of current edge.
 						tNext = tNextEntrance;
 
 						moveToNextEdge = false;
 
-						if (Numerics.Math.ApproximateLessOrEqual(tNextEntrance, currentEdgeShape.t0, _errorMargin))
+						if (Numerics.Math.ApproximateLessOrEqual(tNextEntrance, currentEdgeShapeLowerBound, _errorMargin))
 						{
 							// Next contour enters before or right at start of current edge.
 							positionId = new PositionId(currentVoronoiEdge.prevNode);
@@ -363,7 +367,7 @@ namespace Experilous.Topologies
 					else
 					{
 						// Next contour enters right at end of current edge.
-						tNext = currentEdgeShape.t1;
+						tNext = currentEdgeShapeUpperBound;
 
 						moveToNextEdge = true;
 
@@ -376,7 +380,7 @@ namespace Experilous.Topologies
 					moveToPrevContour = true;
 					distance = _contourLayers[innerContourIndex].distance;
 
-					if (Numerics.Math.ApproximateLessThan(tNextExit, currentEdgeShape.t1, _errorMargin))
+					if (Numerics.Math.ApproximateLessThan(tNextExit, currentEdgeShapeUpperBound, _errorMargin))
 					{
 						// Current contour exits before end of current edge.
 						tNext = tNextExit;
@@ -389,7 +393,7 @@ namespace Experilous.Topologies
 					else
 					{
 						// Current contour exits right at end of current edge.
-						tNext = currentEdgeShape.t1;
+						tNext = currentEdgeShapeUpperBound;
 
 						moveToNextEdge = true;
 
@@ -399,7 +403,7 @@ namespace Experilous.Topologies
 				}
 				else
 				{
-					tNext = currentEdgeShape.t1;
+					tNext = currentEdgeShapeUpperBound;
 
 					moveToNextEdge = true;
 
@@ -506,7 +510,9 @@ namespace Experilous.Topologies
 					currentVoronoiEdge = currentVoronoiEdge.next;
 
 					currentEdgeShape = _voronoiDiagram._voronoiEdgeShapes[currentVoronoiEdge];
-					tPrev = currentEdgeShape.t0;
+					currentEdgeShapeLowerBound = _voronoiDiagram._voronoiEdgeShapeLowerBounds[currentVoronoiEdge];
+					currentEdgeShapeUpperBound = _voronoiDiagram._voronoiEdgeShapeUpperBounds[currentVoronoiEdge];
+					tPrev = currentEdgeShapeLowerBound;
 				}
 				else
 				{

@@ -43,7 +43,7 @@ namespace Experilous.Topologies.Tests
 		}
 
 		#endregion
-
+#if false
 		[Test]
 		public void FromPointPoint()
 		{
@@ -1064,6 +1064,7 @@ namespace Experilous.Topologies.Tests
 			AssertApproximatelyEqual(-Mathf.Sqrt(2f) / 20f, edgeShape.GetCurvature(+1f, Vector3.back), 0.0001f);
 			AssertApproximatelyEqual(-Mathf.Sqrt(5f) / 125f, edgeShape.GetCurvature(+2f, Vector3.back), 0.0001f);
 		}
+#endif
 	}
 }
 #endif
