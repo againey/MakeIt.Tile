@@ -1,7 +1,11 @@
 root = true
 
-[*.{cs,shader}]
+[*.{cs,shader,html,aml,svg}]
 indent_style = tab
 indent_size = 4
-end_of_line = CRLF
+charset = UTF-8
+
+[*.{meta,unity,asset,prefab,mat,shfbproj}]
+indent_style = space
+indent_size = 2
 charset = UTF-8
