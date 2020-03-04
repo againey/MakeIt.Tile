@@ -44,8 +44,6 @@
     <Preliminary>False</Preliminary>
     <NamingMethod>MemberName</NamingMethod>
     <HelpTitle>Make It Tile User&amp;#39%3bs Manual</HelpTitle>
-    <FeedbackEMailLinkText>againey%40experilous.com</FeedbackEMailLinkText>
-    <FeedbackEMailAddress>againey%40experilous.com</FeedbackEMailAddress>
     <CopyrightText>Copyright Andy Gainey</CopyrightText>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
