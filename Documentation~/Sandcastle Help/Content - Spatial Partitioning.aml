@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="085fb9ef-bacc-43a6-8f64-ec0fc464eac4" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<section>
+			<content>
+				<para>
+					Spatial partitioning is a means of dividing up space in such a way
+					that certain types of spatial lookups can be performed efficiently.
+					For topologies, a common operation is to determine which face a
+					particular ray intersects, if any.  Implementations of the
+					<codeEntityReference>T:MakeIt.Tile.IFaceSpatialPartitioning</codeEntityReference>
+					interface provide this functionality.
+				</para>
+				<para>
+					This framework comes with the
+					<codeEntityReference>T:MakeIt.Tile.UniversalFaceSpatialPartitioning</codeEntityReference>
+					class, a generic implementation that works with any topology.
+					Whether you are working with a sphere or a plane, with square
+					grids, hexagonal grids, or randomized tiles, this class will be
+					able to tell you which face any specified ray intersects. It
+					will even work with wrap-around worlds, when the ray is aimed
+					at a region outside of the canonical world bounds.
+				</para>
+				<para>
+					If you have a highly regular grid and need to perform a large
+					number of ray intersections, it may be preferable to implement
+					a more intelligent and efficient intersection test using knowledge
+					of the grids irregularity.
+				</para>
+				<code language="C#" title="Mouse picking by raycasting against spatial partition.">
+					<![CDATA[
+						class MousePicker : MonoBehaviour
+						{
+							public Camera camera;
+							public Transform manifold;
+							
+							private IFaceSpatialPartitioning _partitioning;
+							
+							// To be called by another script that has already created a manifold.
+							public void Initialize(Surface surface, Topology topology, IVertexAttribute<Vector3> vertexPositions)
+							{
+								_partitioning = UniversalFaceSpatialPartitioning(surface, topology, vertexPositions);
+							}
+							
+							protected void Update()
+							{
+								var worldRay = camera.ScreenPointToRay(Input.mousePosition);
+
+								var manifoldRay = new Ray(
+									manifold.InverseTransformPoint(worldRay.origin),
+									manifold.InverseTransformDirection(worldRay.direction));
+									
+								var face = _partitioning.FindFace(manifoldRay);
+								
+								if (face)
+								{
+									Debug.LogFormat("Mouse Position: {0}; Intersected Face: {1}", Input.mousePosition, face.index);
+								}
+							}
+						}
+					]]>
+				</code>
+			</content>
+		</section>
+		<relatedTopics>
+			<codeEntityReference>T:MakeIt.Tile.IFaceSpatialPartitioning</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.UniversalFaceSpatialPartitioning</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>

@@ -1,2 +1,0 @@
-    <DocumentationFile>Temp\UnityVS_bin\Debug\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>

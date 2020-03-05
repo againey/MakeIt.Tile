@@ -1,1 +1,0 @@
-%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /p:Configuration="Make It Tile Help.shfbproj"

@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="8c9c513b-f20d-41b0-af60-1b11cd048497" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				Edge wrap is the foundation on which wrap-around behavior at the
+				edges of a world can be built.
+			</para>
+		</summary>
+		<section>
+			<content>
+				<para>
+					The <codeEntityReference>T:MakeIt.Tile.DynamicMesh</codeEntityReference>
+					class is responsible for building one or more
+					<codeEntityReference>T:UnityEngine.Mesh</codeEntityReference>
+					objects for a topology, as well as easing the process of updating
+					that mesh as various attributes of the topology change.  It does
+					this by triangulating topology faces according to a custom triangulation
+					method provided it, and maintaining arrays of all relevant mesh data
+					for easy and efficient updates.
+				</para>
+				<para>
+					Meshes can utilize a variety of different vertex attributes, depending
+					on what is needed by the shader in use.  Therefore, the dynamic mesh is
+					capable of accepting any combination of vertex attributes, and can acquire
+					their values in any way desired. This is achieved through the generalized
+					<codeEntityReference>T:MakeIt.Tile.DynamicMesh.ITriangulation</codeEntityReference>
+					interface, as well as standard implementations of that interface which
+					expose vertex attribute retrieval through custom delegates.
+				</para>
+				<para>
+					The four supplied triangulation methods are strip, fan, umbrella, and
+					kite corner triangulation.  The strip method will order the vertices
+					and vertex indices of each face in such a way as to follow the
+					conventional triangle strip pattern, and the fan does likewise for its
+					respective common pattern.  Note, however, that this does not mean that
+					the GPU will be sent draw calls to render faces as actual triangle strips
+					or fans, only that the triangle vertices will be ordered in this fashion.
+				</para>
+				<para>
+					The umbrella pattern is similar to the fan, except that instead of
+					starting at an arbitrary outer vertex and creating a fan from the
+					remaining outer vertices, it requires a center vertex also, and then
+					builds a fan around all the outer vertices.  Additionally, the first
+					and last triangles of this fan share the first vertex with each other,
+					whereas a fan would require a duplicate.
+				</para>
+				<para>
+					These three methods also support subdividing the face into concentric
+					rings, specified by ring depth which defaults to 1.  Therefore, not
+					only will the triangulation need values for the outer vertices (and
+					the center vertex for the umbrella pattern), vertex attribute values
+					will also be needed for the inner vertices.  The delegates consumed
+					by these triangulation classes will therefore expect the same number
+					of vertex values to be supplied during each call as there are concentric
+					rings, setting the outermost rings first, moving inward to the innermost
+					rings last.
+				</para>
+				<para>
+					The kite corner pattern is restricted to exactly two concentric rings,
+					because it triangulates each corner of a face as a kite, with a single
+					vertex of the kite on the inner ring of vertices, and the other three
+					along the outer ring, one at the actual position of the outer corner
+					of the face, and the other two leading and following that middle
+					vertex.  If arranged properly (which can be done with the help of
+					<codeEntityReference>Overload:MakeIt.Tile.EdgeAttributeUtility.CalculateFaceEdgeCornerKitePositionsFromVertexPositions</codeEntityReference>),
+					this allows the outer two points of the kite to be right angles,
+					the ideal setting for rendering perfectly rounded corners with the
+					help of an appropriately coded shader.
+				</para>
+				<para>
+					Once a dynamic mesh has been constructed, the actual <codeEntityReference>T:UnityEngine.Mesh</codeEntityReference>
+					instances are accessible through the <codeEntityReference>P:MakeIt.Tile.DynamicMesh.submeshCount</codeEntityReference>
+					property and the <codeEntityReference>M:MakeIt.Tile.DynamicMesh.GetSubmesh(System.Int32)</codeEntityReference>
+					method, or through the <codeEntityReference>P:MakeIt.Tile.DynamicMesh.submeshes</codeEntityReference>
+					enumerable property.  (Note that "submesh" in this context is distinct from the submesh concept of Unity's
+					<codeEntityReference>T:UnityEngine.Mesh</codeEntityReference> class, and refers to entirely separate
+					<codeEntityReference>T:UnityEngine.Mesh</codeEntityReference> instances, each with their own subset of vertices.)
+				</para>
+				<para>
+					If changes need to occur to any particular vertex attribute or to any particular area of the mesh,
+					<codeEntityReference>M:MakeIt.Tile.DynamicMesh.RebuildFace(MakeIt.Tile.Topology.Face,MakeIt.Tile.DynamicMesh.ITriangulation)</codeEntityReference>
+					can be used to update a face's mesh data.  It must be given the same type of triangulation that was
+					used to originally construct the mesh, but the details of how the vertex attribute values are assigned
+					can differ.  In particular, not all attributes need to be set; values that stay the same can be
+					completely skipped.  For example, perhaps only the vertex colors need to be updated, or the UV values;
+					positions and normals can be left as they are in this case.
+				</para>
+				<para>
+					Rebuilding a face only updates the main memory representation of the
+					mesh data. Once all faces have been rebuilt with new data, call
+					<codeEntityReference>M:MakeIt.Tile.DynamicMesh.RebuildMesh(MakeIt.Tile.DynamicMesh.VertexAttributes)</codeEntityReference>
+					to finalize the changes and apply them to the actual
+					<codeEntityReference>T:UnityEngine.Mesh</codeEntityReference>
+					instances.  You can specify which vertex attributes are to be considered
+					dirty.  Only these arrays will be updated, and only for submeshes marked
+					dirty through the process of rebuilding a face within a submesh.  This
+					makes dynamic mesh updates more efficient than a brute-force rebuilding
+					of all the data from scratch.
+				</para>
+				<para>
+					The triangle indices themselves cannot be altered once constructed,
+					so do not attempt to alter the overall topological structure
+					(such as through randomization or pivoting/spinning individual edges).
+					If you do so, you will need to create a new dynamic mesh from scratch
+					rather than reusing the current one and all of its submeshes.
+				</para>
+			</content>
+		</section>
+		<relatedTopics>
+			<codeEntityReference>T:MakeIt.Tile.DynamicMesh</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.DynamicMesh.ITriangulation</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.DynamicMesh.VertexAttributes</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.DynamicMesh.IVertexAttributes</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.DynamicMesh.IIndexedVertexAttributes</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.SeparatedFacesStripTriangulation</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.SeparatedFacesFanTriangulation</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.SeparatedFacesUmbrellaTriangulation</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.SeparatedFacesKiteCornerStripTriangulation</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>

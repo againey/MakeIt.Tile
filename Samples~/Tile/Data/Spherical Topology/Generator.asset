@@ -1,0 +1,3417 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 402ad9582560bfc4a968dfbb74991266, type: 3}
+  m_Name: Generator
+  m_EditorClassIdentifier: 
+  _generators:
+  - {fileID: 11492004}
+  - {fileID: 11445166}
+  - {fileID: 11485256}
+  - {fileID: 11406732}
+  - {fileID: 11436586}
+  - {fileID: 11423438}
+  - {fileID: 11437190}
+  - {fileID: 11410880}
+  - {fileID: 11481958}
+  - {fileID: 11466238}
+  - {fileID: 11478982}
+  - {fileID: 11431978}
+  - {fileID: 11440936}
+  - {fileID: 11490834}
+  _assetCollection: {fileID: 11400000, guid: e03d529bb365fdd43ba2e22da80ddb15, type: 2}
+--- !u!114 &11401396
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11401898
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11402046
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11466238}
+--- !u!114 &11402494
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11410880}
+--- !u!114 &11403112
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11406732}
+--- !u!114 &11403234
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11404898
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11404992
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485256}
+--- !u!114 &11405316
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11406732
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3751b9dc02d22a448258d4d7a53a8ee, type: 3}
+  m_Name: Face/Centroids
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  flatten: 1
+  surfaceInputSlot:
+    _generator: {fileID: 11406732}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11488540}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11407918}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11406732}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11403112}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11406732}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11458212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11478306}
+    isActive: 1
+  faceCentroidsOutputSlot:
+    _generator: {fileID: 11406732}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 4878523017137654e9285451c39b08a9, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11410986}
+    - {fileID: 11457210}
+    - {fileID: 11417020}
+    _key: {fileID: 11430212}
+    name: Face Centroids
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11407358
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11407918
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11406732}
+--- !u!114 &11408510
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11409382
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11423438}
+--- !u!114 &11409514
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11410566
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11437190}
+--- !u!114 &11410880
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6a6de0d3fa5dea48ad06ea7997a5fbe, type: 3}
+  m_Name: Face Edge/Offset Vertex Positions
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  topologyInputSlot:
+    _generator: {fileID: 11410880}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11424374}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11410880}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11458212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11402494}
+    isActive: 1
+  offsetsInputSlot:
+    _generator: {fileID: 11410880}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11410566}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11464700}
+    isActive: 1
+  scale: .0500000007
+  offsetVertexPositionsOutputSlot:
+    _generator: {fileID: 11410880}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 92eba1f558b3fe744b843ca74a211b23, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11436612}
+    _key: {fileID: 11445268}
+    name: Offset Vertex Positions
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11410986
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11436586}
+--- !u!114 &11411280
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11436586}
+--- !u!114 &11412080
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485586}
+--- !u!114 &11412284
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11412940
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11413798
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11415994
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11416484
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11416506
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485586}
+--- !u!114 &11416706
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11466238}
+--- !u!114 &11416916
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11416956
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11417020
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11437190}
+--- !u!114 &11417062
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11466238}
+--- !u!114 &11417920
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11418508
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11419758
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11419892
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11421220
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11423438
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d4f349977af60b4195a4500b77349db, type: 3}
+  m_Name: Vertex/Normals
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  calculationMethod: 0
+  surfaceInputSlot:
+    _generator: {fileID: 11423438}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11488540}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11409382}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11423438}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11471150}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11423438}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11458212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11453446}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 11423438}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  faceNormalsInputSlot:
+    _generator: {fileID: 11423438}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  vertexNormalsOutputSlot:
+    _generator: {fileID: 11423438}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: ca047adc7670f6846ae2c3c035166ec0, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11428630}
+    _key: {fileID: 11446392}
+    name: Vertex Normals
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11424140
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11490834}
+--- !u!114 &11424374
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11410880}
+--- !u!114 &11425504
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11425898
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11427104
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11428040
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485586}
+--- !u!114 &11428082
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11428630
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11430212
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11406732}
+--- !u!114 &11431978
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2d2d13a49470a14eb0abe1b53709f6c, type: 3}
+  m_Name: Unity Asset/Mesh
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  sourceType: 0
+  triangulation: 2
+  ringDepth: 2
+  maxVerticesPerSubmesh: 65534
+  vertexAttributes: 7
+  showMeshOutputs: 0
+  topologyInputSlot:
+    _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11448244}
+    isActive: 1
+  faceGroupCollectionInputSlot:
+    _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroupCollection, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  faceGroupInputSlot:
+    _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  ringVertexPositionsInputSlots:
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11458212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11487826}
+    isActive: 1
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11445268}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11436612}
+    isActive: 1
+  ringVertexNormalsInputSlots:
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11446392}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11428630}
+    isActive: 1
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11411280}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11409514}
+    isActive: 1
+  ringVertexColorsInputSlots:
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11474224}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11494572}
+    isActive: 1
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11444800}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11457984}
+    isActive: 1
+  ringVertexColor32sInputSlots: []
+  ringVertexUV1sInputSlots: []
+  ringVertexUV2sInputSlots: []
+  ringVertexUV3sInputSlots: []
+  ringVertexUV4sInputSlots: []
+  ringVertexTangentsInputSlots: []
+  centerVertexPositionsInputSlots:
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11430212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11457210}
+    isActive: 1
+  centerVertexNormalsInputSlots:
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11411280}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11493260}
+    isActive: 1
+  centerVertexColorsInputSlots:
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11444800}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11418508}
+    isActive: 1
+  centerVertexColor32sInputSlots: []
+  centerVertexUV1sInputSlots: []
+  centerVertexUV2sInputSlots: []
+  centerVertexUV3sInputSlots: []
+  centerVertexUV4sInputSlots: []
+  centerVertexTangentsInputSlots: []
+  dynamicMeshOutputSlot:
+    _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.DynamicMesh, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 53b4ca489f6ab6a4982952da8b088adf, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11499980}
+    _key: {fileID: 11478246}
+    name: Dynamic Mesh
+    path: 
+    isActive: 1
+    isEnabled: 1
+  meshOutputSlots:
+  - _generator: {fileID: 11431978}
+    _assetType:
+      _assemblyQualifiedTypeName: UnityEngine.Mesh, UnityEngine, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 4300000, guid: 413f1d8bdc9717e4abbe1f97ac13df3e, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11404898}
+    name: Mesh
+    path: Meshes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11432320
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11432648
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11433556
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11435030
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11435082
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11436586
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f39ea72028a3c7478e78cd21185fcd2, type: 3}
+  m_Name: Face/Normals
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  calculationMethod: 0
+  surfaceInputSlot:
+    _generator: {fileID: 11436586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11488540}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11458848}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11436586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11461142}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 11436586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11430212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11410986}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11436586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  vertexNormalsInputSlot:
+    _generator: {fileID: 11436586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  faceNormalsOutputSlot:
+    _generator: {fileID: 11436586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 207654e02e3ca7e4aac0a55179719db2, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11493260}
+    - {fileID: 11409514}
+    _key: {fileID: 11411280}
+    name: Face Normals
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11436612
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11437190
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73a17dd3f45e38845a865ad217a23018, type: 3}
+  m_Name: Face Edge/Bisectors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11437190}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11488540}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11483444}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11437190}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11497858}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11437190}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11458212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11471732}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 11437190}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11430212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11417020}
+    isActive: 1
+  bisectorsOutputSlot:
+    _generator: {fileID: 11437190}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 27b53171fc7ec0f4d8158847a702d075, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11464700}
+    _key: {fileID: 11410566}
+    name: Face Edge Bisectors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11439214
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485256}
+--- !u!114 &11439732
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485256}
+--- !u!114 &11439910
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485256}
+--- !u!114 &11440936
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 618b41d5d38e63543ad5787b5521137f, type: 3}
+  m_Name: Unity Asset/Prefab
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  dynamicMeshInputSlot:
+    _generator: {fileID: 11440936}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.DynamicMesh, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11478246}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11499980}
+    isActive: 1
+  meshPrefab: {fileID: 3309004, guid: 71a09b6d0d7bf794191e027263c95a39, type: 2}
+  prefabOutputSlot:
+    _generator: {fileID: 11440936}
+    _assetType:
+      _assemblyQualifiedTypeName: UnityEngine.GameObject, UnityEngine, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 137498, guid: 7d1281a32cdf137488f634a722e46fce, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11467906}
+    name: Prefab
+    path: 
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11442772
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11445166}
+--- !u!114 &11444800
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11466238}
+--- !u!114 &11445166
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad06bb241e42dd45bd9a493b176d26c, type: 3}
+  m_Name: Utility/Random Engine
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  randomness:
+    randomType: 0
+    seedSource: 1
+    seedNumber: 0
+    seedText: 
+    randomSeedInputSlot:
+      _generator: {fileID: 11445166}
+      _assetType:
+        _assemblyQualifiedTypeName: MakeIt.Random.IRandom, Assembly-CSharp-firstpass,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _sourceKey: {fileID: 0}
+      _isOptional: 0
+      _isMutating: 1
+      _key: {fileID: 0}
+      isActive: 0
+  randomOutputSlot:
+    _generator: {fileID: 11445166}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Random.IRandom, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 0
+    _connectionTargets:
+    - {fileID: 11404992}
+    - {fileID: 11496254}
+    - {fileID: 11416706}
+    _key: {fileID: 11459272}
+    name: Randomness
+    path: 
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11445236
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11445268
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11410880}
+--- !u!114 &11445736
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11446392
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11423438}
+--- !u!114 &11448244
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11448450
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11449976
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11450186
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11452200
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11452298
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11453446
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11423438}
+--- !u!114 &11454154
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11456548
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11456686
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11457210
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11457984
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11458212
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11492004}
+--- !u!114 &11458848
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11436586}
+--- !u!114 &11459272
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11445166}
+--- !u!114 &11459660
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11490834}
+--- !u!114 &11461142
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11436586}
+--- !u!114 &11461432
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11463762
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11466238}
+--- !u!114 &11464322
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11464586
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11464700
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11410880}
+--- !u!114 &11466238
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4a223cc09199345b6719657c8953ba, type: 3}
+  m_Name: Face/Colors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  colorSource: 2
+  topologyInputSlot:
+    _generator: {fileID: 11466238}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  constantColor: {r: 1, g: 1, b: 1, a: 1}
+  faceGroupCollectionInputSlot:
+    _generator: {fileID: 11466238}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroupCollection, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11432648}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11417062}
+    isActive: 1
+  faceGroupIndicesInputSlot:
+    _generator: {fileID: 11466238}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[System.Int32,
+        mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],
+        Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11492876}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11402046}
+    isActive: 1
+  randomness:
+    randomType: 0
+    seedSource: 3
+    seedNumber: 0
+    seedText: 
+    randomSeedInputSlot:
+      _generator: {fileID: 11466238}
+      _assetType:
+        _assemblyQualifiedTypeName: MakeIt.Random.IRandom, Assembly-CSharp-firstpass,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _sourceKey: {fileID: 11459272}
+      _isOptional: 0
+      _isMutating: 1
+      _key: {fileID: 11416706}
+      isActive: 1
+  faceGroupColorsOutputSlot:
+    _generator: {fileID: 11466238}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceGroupAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: dbcc058dcce8fca4dab4076245fb4df2, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11490316}
+    name: Face Group Colors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+  faceColorsOutputSlot:
+    _generator: {fileID: 11466238}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 44110506ad605274390011d71c932a4a, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11418508}
+    - {fileID: 11457984}
+    _key: {fileID: 11444800}
+    name: Face Colors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11467636
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11467756
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11467906
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11440936}
+--- !u!114 &11467996
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11468138
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11468954
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11471150
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11423438}
+--- !u!114 &11471316
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11471732
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11437190}
+--- !u!114 &11471990
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11473698
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11490834}
+--- !u!114 &11473832
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11474224
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11478982}
+--- !u!114 &11474824
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11478246
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11478306
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11406732}
+--- !u!114 &11478982
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b02086eb9ae76c848aa7803957f483de, type: 3}
+  m_Name: Face Edge/Colors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  colorSource: 0
+  topologyInputSlot:
+    _generator: {fileID: 11478982}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  faceColorsInputSlot:
+    _generator: {fileID: 11478982}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  constantColor: {r: 0, g: 0, b: 0, a: 1}
+  blendWeight: .5
+  faceEdgeColorsOutputSlot:
+    _generator: {fileID: 11478982}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Color,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 4c3f1fa6d2a5a9640ac812a96ca0770c, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11494572}
+    _key: {fileID: 11474224}
+    name: Face Edge Colors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11479684
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11481304
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11481958
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efdb8a8c518ec84a9d1dfc834e74cc9, type: 3}
+  m_Name: Face Group/Random
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  topologyInputSlot:
+    _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11421220}
+    isActive: 1
+  groupCount: 60
+  randomness:
+    randomType: 0
+    seedSource: 3
+    seedNumber: 0
+    seedText: 
+    randomSeedInputSlot:
+      _generator: {fileID: 11481958}
+      _assetType:
+        _assemblyQualifiedTypeName: MakeIt.Random.IRandom, Assembly-CSharp-firstpass,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _sourceKey: {fileID: 11459272}
+      _isOptional: 0
+      _isMutating: 1
+      _key: {fileID: 11496254}
+      isActive: 1
+  faceGroupCollectionOutputSlot:
+    _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroupCollection, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 612c80251bdb71a4d9f1acbf5fc3dca3, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11417062}
+    _key: {fileID: 11432648}
+    name: Random Face Groups
+    path: Face Groups
+    isActive: 1
+    isEnabled: 1
+  faceGroupIndicesOutputSlot:
+    _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[System.Int32,
+        mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],
+        Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: fa0e7c4d0a33ab84482e17778b960a61, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11402046}
+    _key: {fileID: 11492876}
+    name: Random Face Group Indices
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+  faceGroupOutputSlots:
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11449976}
+    name: Face Group 0
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11427104}
+    name: Face Group 1
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11482416}
+    name: Face Group 2
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11450186}
+    name: Face Group 3
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11491422}
+    name: Face Group 4
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11445736}
+    name: Face Group 5
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11496718}
+    name: Face Group 6
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11490180}
+    name: Face Group 7
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11401396}
+    name: Face Group 8
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11419758}
+    name: Face Group 9
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11468954}
+    name: Face Group 10
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11491166}
+    name: Face Group 11
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11467756}
+    name: Face Group 12
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11433556}
+    name: Face Group 13
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11468138}
+    name: Face Group 14
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11432320}
+    name: Face Group 15
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11412940}
+    name: Face Group 16
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11425504}
+    name: Face Group 17
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11419892}
+    name: Face Group 18
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11495884}
+    name: Face Group 19
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11452298}
+    name: Face Group 20
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11416956}
+    name: Face Group 21
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11464586}
+    name: Face Group 22
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11456686}
+    name: Face Group 23
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11425898}
+    name: Face Group 24
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11428082}
+    name: Face Group 25
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11485680}
+    name: Face Group 26
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11407358}
+    name: Face Group 27
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11445236}
+    name: Face Group 28
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11471316}
+    name: Face Group 29
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11486602}
+    name: Face Group 30
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11464322}
+    name: Face Group 31
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11498564}
+    name: Face Group 32
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11435030}
+    name: Face Group 33
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11416916}
+    name: Face Group 34
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11471990}
+    name: Face Group 35
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11403234}
+    name: Face Group 36
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11401898}
+    name: Face Group 37
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11490872}
+    name: Face Group 38
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11490896}
+    name: Face Group 39
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11474824}
+    name: Face Group 40
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11467636}
+    name: Face Group 41
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11416484}
+    name: Face Group 42
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11454154}
+    name: Face Group 43
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11499428}
+    name: Face Group 44
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11417920}
+    name: Face Group 45
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11452200}
+    name: Face Group 46
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11408510}
+    name: Face Group 47
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11456548}
+    name: Face Group 48
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11413798}
+    name: Face Group 49
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11415994}
+    name: Face Group 50
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11412284}
+    name: Face Group 51
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11467996}
+    name: Face Group 52
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11461432}
+    name: Face Group 53
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11479684}
+    name: Face Group 54
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11481304}
+    name: Face Group 55
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11473832}
+    name: Face Group 56
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11448450}
+    name: Face Group 57
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11405316}
+    name: Face Group 58
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+  - _generator: {fileID: 11481958}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.FaceGroup, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 1
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11435082}
+    name: Face Group 59
+    path: Random Face Groups
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11482416
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11483444
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11437190}
+--- !u!114 &11485256
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71887e38c9009334ab0efdcb7070be50, type: 3}
+  m_Name: Topology/Randomizer
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11485256}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11488540}
+    _isOptional: 0
+    _isMutating: 1
+    _key: {fileID: 11439910}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11485256}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 1
+    _key: {fileID: 11439732}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11485256}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11458212}
+    _isOptional: 1
+    _isMutating: 1
+    _key: {fileID: 11439214}
+    isActive: 1
+  passCount: 1
+  frequency: .100000001
+  randomness:
+    randomType: 0
+    seedSource: 3
+    seedNumber: 0
+    seedText: 
+    randomSeedInputSlot:
+      _generator: {fileID: 11485256}
+      _assetType:
+        _assemblyQualifiedTypeName: MakeIt.Random.IRandom, Assembly-CSharp-firstpass,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _sourceKey: {fileID: 11459272}
+      _isOptional: 0
+      _isMutating: 1
+      _key: {fileID: 11404992}
+      isActive: 1
+  minVertexNeighbors: 3
+  maxVertexNeighbors: 3
+  minFaceNeighbors: 5
+  maxFaceNeighbors: 7
+  lockBoundaryPositions: 1
+  relaxForRegularityWeight: .5
+  maxRelaxIterations: 20
+  relaxRelativePrecision: .949999988
+  maxRepairIterations: 20
+  repairRate: .5
+--- !u!114 &11485586
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73a17dd3f45e38845a865ad217a23018, type: 3}
+  m_Name: Face Edge/Bisectors
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11485586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11485586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11428040}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11485586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11458212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11412080}
+    isActive: 1
+  facePositionsInputSlot:
+    _generator: {fileID: 0}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IFaceAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 0}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 0}
+    isActive: 0
+  bisectorsOutputSlot:
+    _generator: {fileID: 11485586}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IEdgeAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 0}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11416506}
+    name: Face Edge Bisectors
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11485680
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11486602
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11487826
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11488540
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11492004}
+--- !u!114 &11489802
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11490834}
+--- !u!114 &11490180
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11490316
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11466238}
+--- !u!114 &11490834
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3ceb89166537d142b11d0ce4f008826, type: 3}
+  m_Name: Utility/Face Spatial Partitioning
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  surfaceInputSlot:
+    _generator: {fileID: 11490834}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Surface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11488540}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11473698}
+    isActive: 1
+  topologyInputSlot:
+    _generator: {fileID: 11490834}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11498902}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11459660}
+    isActive: 1
+  vertexPositionsInputSlot:
+    _generator: {fileID: 11490834}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _sourceKey: {fileID: 11458212}
+    _isOptional: 0
+    _isMutating: 0
+    _key: {fileID: 11424140}
+    isActive: 1
+  partitioningOutputSlot:
+    _generator: {fileID: 11490834}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.UniversalFaceSpatialPartitioning,
+        Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 49fd2b0b8e2c401418f937921e3af160, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets: []
+    _key: {fileID: 11489802}
+    name: Face Spatial Partitioning
+    path: 
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11490872
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11490896
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11491166
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11491422
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11492004
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c53500211e655e84c9308b6de796e103, type: 3}
+  m_Name: Topology/Spherical Manifold
+  m_EditorClassIdentifier: 
+  executive: {fileID: 11400000}
+  radius: 10
+  primaryPole: {x: 0, y: 1, z: 0}
+  equatorialPole: {x: 1, y: 0, z: 0}
+  isInverted: 0
+  sphericalPolyhedron: 4
+  subdivisionDegree: 10
+  useDualPolyhedron: 1
+  surfaceOutputSlot:
+    _generator: {fileID: 11492004}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.SphericalSurface, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: a06e1bf151983b74bbcfb1f0ef811d48, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11407918}
+    - {fileID: 11458848}
+    - {fileID: 11409382}
+    - {fileID: 11473698}
+    - {fileID: 11439910}
+    - {fileID: 11483444}
+    _key: {fileID: 11488540}
+    name: Surface
+    path: 
+    isActive: 1
+    isEnabled: 1
+  topologyOutputSlot:
+    _generator: {fileID: 11492004}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.Topology, Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: 8f66805fcda8e5941a93b49c9767979e, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11403112}
+    - {fileID: 11461142}
+    - {fileID: 11471150}
+    - {fileID: 11448244}
+    - {fileID: 11459660}
+    - {fileID: 11439732}
+    - {fileID: 11421220}
+    - {fileID: 11428040}
+    - {fileID: 11424374}
+    - {fileID: 11497858}
+    _key: {fileID: 11498902}
+    name: Topology
+    path: 
+    isActive: 1
+    isEnabled: 1
+  vertexPositionsOutputSlot:
+    _generator: {fileID: 11492004}
+    _assetType:
+      _assemblyQualifiedTypeName: MakeIt.Tile.IVertexAttribute`1[[UnityEngine.Vector3,
+        UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], Assembly-CSharp-firstpass,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    _persistedAsset: {fileID: 11400000, guid: fe42c8cf129cfc540a5bf9eb7162b2da, type: 2}
+    _availability: 3
+    _persistable: 1
+    _connectionTargets:
+    - {fileID: 11478306}
+    - {fileID: 11453446}
+    - {fileID: 11487826}
+    - {fileID: 11424140}
+    - {fileID: 11439214}
+    - {fileID: 11412080}
+    - {fileID: 11402494}
+    - {fileID: 11471732}
+    _key: {fileID: 11458212}
+    name: Vertex Positions
+    path: Attributes
+    isActive: 1
+    isEnabled: 1
+--- !u!114 &11492610
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11492876
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11493260
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11493678
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11485256}
+--- !u!114 &11494572
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11431978}
+--- !u!114 &11495884
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11496254
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11496718
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11497858
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11437190}
+--- !u!114 &11498564
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11498902
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11492004}
+--- !u!114 &11499428
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b20ea09714d6f4b83ce0de2f30aaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11481958}
+--- !u!114 &11499980
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b261287b863585d47a2b69a84c175120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _generator: {fileID: 11440936}

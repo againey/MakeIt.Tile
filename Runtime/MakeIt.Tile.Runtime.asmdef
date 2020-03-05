@@ -1,0 +1,23 @@
+{
+    "name": "MakeIt.Tile",
+    "references": [
+        "GUID:b29e5b94a73ad954ca922da4c1587b97",
+        "GUID:d19cc27eacdb46f5a398be19647fb340",
+        "GUID:ce612ff1c73a472b802d9964321a3d31"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.andygainey.makeit.colorful",
+            "expression": "2.0.0",
+            "define": "MAKEIT_COLORFUL_2_0_OR_NEWER"
+        }
+    ],
+    "noEngineReferences": false
+}

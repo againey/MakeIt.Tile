@@ -5,7 +5,12 @@ indent_style = tab
 indent_size = 4
 charset = UTF-8
 
-[*.{meta,unity,asset,prefab,mat,shfbproj}]
+[*.{meta,unity,asset,prefab,mat,json,shfbproj}]
 indent_style = space
 indent_size = 2
+charset = UTF-8
+
+[*.{asmdef}]
+indent_style = space
+indent_size = 4
 charset = UTF-8

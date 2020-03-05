@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="685165ae-969e-47cf-a277-4b2d54d169d4" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				Edge wrap is the foundation on which wrap-around behavior at the
+				edges of a world can be built.
+			</para>
+		</summary>
+		<section>
+			<content>
+				<para>
+					Many games, turn based strategy and role playing games in particular,
+					have made use of worlds and levels that wrap at their outer boundaries,
+					such that entities moving across the boundary on one side will appear
+					instantly on the far side.  MakeIt.Tile is fully capable of generating
+					topologies that also behave in this fashion.  However, because of
+					certain aspects of modern game engines (in particular, the rasterized
+					rendering of triangles rather than the blitting of sprites), this can
+					become tricky in the details.  To account for and hide this complexity,
+					wrapping behavior is stored for every single edge in the topology, and
+					in most cases, this data allows the library to do the expected right
+					thing automatically.
+				</para>
+				<para>
+					One of the difficulties of topologies that wrap is that certain elements
+					can seem to be in multiple places at once.  For example, in the diagram
+					below which wraps both horizontally and vertically, you can see that
+					vertex 10 on the left side, a corner of face 5, is also on the right
+					side as a corner of face 9.  This is because faces 5 and 9 are directly
+					next to each other, as far as the topology is concerned, and thus it is
+					only inevitable that they share a couple of vertices.  But there is only
+					one vertex which can only have one position.  The question becomes how
+					to get the "ghosted" position on the right when appropriate, without
+					overly complicating the topology itself, such as by duplicating vertex
+					10 and somehow treating both vertices as distinct and yet representative
+					of the same vertex.
+				</para>
+				<mediaLink>
+					<caption placement="after">Square grid that wraps both horizontally and vertically, with "ghosted" or duplicated elements in copper.</caption>
+					<image placement="center" xlink:href="square-grid-wrapped"/>
+				</mediaLink>
+				<para>
+					MakeIt.Tile accomplishes this by tracking wrapping behavior between
+					various neighboring elements per edge, and then using the context of
+					how an element is being accessed to adjust data appropriately.  For
+					example, when getting the position of a vertex, it matter which face
+					is contenxtually relevant.  If you are trying to to draw a square
+					for face 5, then you want the position reported for vertex 10 to be
+					the position on the left.  However, if you are drawing face 9, you
+					want the position on the right.  This context can be communicated to
+					the system by accessing the vertex position not directly, but through
+					the appropriate face edge.  Accessing vertex 10 through face edge 21
+					says that you want the attribute for vertex 10 relative to the near
+					face of that edge, face 5.  If you use face edge 38 instead, you can
+					get the vertex attribute relative to face 9.
+				</para>
+				<para>
+					To get a bit more detailed about the process, when accessing a vertex
+					attribute using a face edge, the question to ask is if a wrapping
+					boundary is crossed when transitioning from the near face of the edge
+					to its far vertex, and if so, along which axes and in which directions
+					did the boundary crossing go.  When accessing vertex 10 using face
+					edge 21, no such boundary crossing occurs, and so the vertex attributes
+					can be accessed directly.  But accessing it from face 9 through edge
+					38, a boundary is crossed in the positive direction of the first
+					(horizontal/x) axis.  Because of this, the original position needs to
+					have the horizontal axis vector added to it to get the final position.
+				</para>
+				<para>
+					The edge wrap data stores such relations for both axes, tracking both
+					positive and negative directions, for the relations between any two
+					kinds of topology elements except for edge-to-edge.  So in addition to
+					the above example, other combinations of accessing vertex, face, or
+					edge attributes using either vertex edges or face edges will do the
+					intelligent thing concerning edge wrapping.  If you have a face
+					attribute collection of the centers of all the faces, and you wish
+					to compare the center position of face 9 with all of its neighbors,
+					faces 4, 8, and 14 would do the ordinary thing, and then if looking
+					up face 5 through face edge 39, the center of face 5 could be returned
+					as if it were immediately to the right of face 9, rather than far to
+					the left.  If you use vertex edges instead of face edges, then the
+					same kind of logic will apply, but will look for a boundary crossing
+					when transitioning from the near <legacyItalic>vertex</legacyItalic>
+					of the edge to the far vertex or face of the edge or the edge itself,
+					depending on what type of attribute collection you access.
+				</para>
+				<alert class="important">
+					<para>
+						To get the behavior described above, you must use an attribute type
+						that knows how to apply wrapping behavior to the values stored within
+						the attribute collection.  MakeIt.Tile comes with three attribute
+						collections to do this for standard three-dimenstional positions:
+						<codeEntityReference>T:MakeIt.Tile.PositionalVertexAttribute</codeEntityReference>,
+						<codeEntityReference>T:MakeIt.Tile.PositionalFaceAttribute</codeEntityReference>, and
+						<codeEntityReference>T:MakeIt.Tile.PositionalEdgeAttribute</codeEntityReference>.
+						If you have data other than basic positional data that needs
+						to react to wrapping boundaries, you can use the above types
+						as examples for constructing your own implementation of
+						<codeEntityReference>T:MakeIt.Tile.IVertexAttribute`1</codeEntityReference>,
+						<codeEntityReference>T:MakeIt.Tile.IFaceAttribute`1</codeEntityReference>, or
+						<codeEntityReference>T:MakeIt.Tile.IEdgeAttribute`1</codeEntityReference>.
+					</para>
+				</alert>
+			</content>
+		</section>
+		<relatedTopics>
+			<codeEntityReference>T:MakeIt.Tile.EdgeWrap</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.EdgeWrapUtility</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.Topology.VertexEdge</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.Topology.FaceEdge</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.IVertexAttribute`1</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.IFaceAttribute`1</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.IEdgeAttribute`1</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.PositionalVertexAttribute</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.PositionalFaceAttribute</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.PositionalEdgeAttribute</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.WrappableAxis2</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.QuadrilateralSurface</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.RectangularQuadGrid</codeEntityReference>
+			<codeEntityReference>T:MakeIt.Tile.RectangularHexGrid</codeEntityReference>
+		</relatedTopics>
+	</developerConceptualDocument>
+</topic>

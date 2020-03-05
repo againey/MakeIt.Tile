@@ -1,0 +1,25 @@
+{
+    "name": "MakeIt.Tile.Editor.Tests",
+    "references": [
+        "GUID:b29e5b94a73ad954ca922da4c1587b97",
+        "GUID:d19cc27eacdb46f5a398be19647fb340",
+        "GUID:ce612ff1c73a472b802d9964321a3d31",
+        "GUID:659c8ec4af284da2bfdd95161cea6a98",
+        "GUID:b9cd7b3112a3424fadda143d69b86a97",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
