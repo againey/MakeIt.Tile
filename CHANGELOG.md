@@ -7,6 +7,14 @@ and starting from v3.0.0, this project adheres to [Semantic Versioning](https://
 
 ## [Unreleased]
 
+## [3.0.0] - 2020-03-07
+
+### Changed
+
+* Released as open source under the terms of the Apache License, Version 2.0.
+* Rearranged files to match the Unity 2019 package specification.
+* Created assembly definitions for runtime, editor, and editor tests.
+
 ## [2.1.0] - 2017-01-14
 
 Coincided with release of Make It Random v2.0 and Make It Colorful v1.1.
