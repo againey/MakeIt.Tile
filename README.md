@@ -87,7 +87,7 @@ using IntVector2 = Experilous.Numerics.IntVector2;
 
 MakeIt.Tile is a complex library with a lot of potential to be improved given
 recent updates made by Unity. In the meantime, please refer to the online
-[Make It Tile User's Manual](http://experilous.com/1/product/make-it-tile/2.0/documentation/)
+[Make It Tile User's Manual](https://experilous.com/1/product/make-it-tile/2.0/documentation/)
 for v2.0 from November 2016.
 
 ## Versioning
