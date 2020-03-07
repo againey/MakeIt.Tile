@@ -1,0 +1,27 @@
+{
+  "name": "com.andygainey.makeit.tile",
+  "version": "3.0.0",
+  "displayName": "MakeIt.Tile",
+  "description": "Code library for generating and working with tiled worlds.",
+  "unity": "2019.3",
+  "unityRelease": "3f1",
+  "keywords": [
+    "tile",
+    "tiles",
+    "hex",
+    "map",
+    "grid",
+    "square",
+    "topology",
+    "geometry"
+  ],
+  "author": {
+    "name": "Andy Gainey",
+    "url": "https://github.com/againey"
+  },
+  "dependencies": {
+    "com.unity.test-framework": "1.1.11",
+    "com.andygainey.makeit.core": "git://github.com/againey/MakeIt.Core#v1.0.0",
+    "com.andygainey.makeit.random": "git://github.com/againey/MakeIt.Random#v3.0.0"
+  }
+}

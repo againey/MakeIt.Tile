@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="0c879b33-6cff-4557-98d1-0794eeb719c8" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<summary>
+			<para>
+				MakeIt.Tile includes example scenes to let you explore some of the
+				features provided by the library.  These scenes are summarized below.
+			</para>
+		</summary>
+		<introduction>
+			<autoOutline />
+		</introduction>
+		<section address="spherical-path-finding">
+			<title>Spherical Path Finding</title>
+			<content>
+				<mediaLink>
+					<caption placement="after">The "Spherical Path Finding Demo.unity" demo scene.</caption>
+					<image placement="center" xlink:href="example-scene-spherical-path-finding"/>
+				</mediaLink>
+				<para>
+					The spherical path finding scene demonstrates a simplistic generation
+					of a tiled planet with different terrain types, unit and tile selection
+					using a spatial partitioning, path finding over the surface with differing
+					costs for different terrain, and an actively updated fog of war.
+				</para>
+			</content>
+		</section>
+		<section address="jumble-go">
+			<title>Jumble Go</title>
+			<content>
+				<mediaLink>
+					<caption placement="after">The "Jumble Go.unity" demo scene.</caption>
+					<image placement="center" xlink:href="example-scene-jumble-go"/>
+				</mediaLink>
+				<para>
+					The Jumble Go scene is a partial implementation of the game of Go,
+					altered to be played on the jumbled tiles that MakeIt.Tile can
+					easily generate.  Basic rules for valid moves and captures are
+					implemented using the topology visitation algorithms.
+				</para>
+			</content>
+		</section>
+		<section address="texture-demo">
+			<title>Texture Demo</title>
+			<content>
+				<mediaLink>
+					<caption placement="after">The "Texture Demo.unity" demo scene.</caption>
+					<image placement="center" xlink:href="example-scene-texture-demo"/>
+				</mediaLink>
+				<para>
+					The texture demo scene utilizes some of the UV calculation utilities
+					provided by MakeIt.Tile to show some of the ways that a texture can
+					be mapped onto the dynamic mesh generated for a topology.
+				</para>
+			</content>
+		</section>
+		<section address="tutorial-1">
+			<title>Tutorial 1</title>
+			<content>
+				<mediaLink>
+					<caption placement="after">The "Juble Go.unity" demo scene.</caption>
+					<image placement="center" xlink:href="example-scene-tutorial-1"/>
+				</mediaLink>
+				<para>
+					The tutorial 1 scene is the product of following through the first
+					<externalLink>
+						<linkText>video tutorial</linkText>
+						<linkAlternateText>Tutorial 1 Video</linkAlternateText>
+						<linkUri>https://www.youtube.com/watch?v=Gl9TaOvjKX4/</linkUri>
+					</externalLink>
+					for MakeIt.Tile.
+				</para>
+				<alert type="note">
+					<para>
+						There are some minor differences between what is in the video and
+						the code that comes with the asset.  The video was recorded for
+						version 1.0 (when the asset was known as "Tile-Based Worlds").
+						Nonetheless, all the concepts and overall structure remain the same.
+					</para>
+				</alert>
+			</content>
+		</section>
+		<section address="planar-topologies">
+			<title>Planar Topologies</title>
+			<content>
+				<mediaLink>
+					<caption placement="after">The "Planar Topologies.unity" demo scene.</caption>
+					<image placement="center" xlink:href="example-scene-planar-topologies"/>
+				</mediaLink>
+				<para>
+					The planar topologies scene includes the prefabs of a few different
+					pre-generated topologies, which can all be found in the folder
+					/Samples~/Tile/Data/, and edited by selecting the Generator asset
+					in each subfolder.
+				</para>
+			</content>
+		</section>
+		<section address="spherical-topology">
+			<title>Spherical Topology</title>
+			<content>
+				<mediaLink>
+					<caption placement="after">The "Spherical Topology.unity" demo scene.</caption>
+					<image placement="center" xlink:href="example-scene-spherical-topology"/>
+				</mediaLink>
+				<para>
+					The spherical topology scene includes the prefab of a pre-generated
+					topology, which can all be found in the folder
+					/Samples~/Tile/Data/Spherical Topology, and edited by selecting the
+					Generator asset in that folder.
+				</para>
+			</content>
+		</section>
+	</developerConceptualDocument>
+</topic>
