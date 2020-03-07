@@ -16,11 +16,12 @@
     "geometry"
   ],
   "author": {
-    "name": "Andy Gainey"
+    "name": "Andy Gainey",
+    "url": "https://github.com/againey"
   },
   "dependencies": {
     "com.unity.test-framework": "1.1.11",
-    "com.andygainey.makeit.core": "1.0.0",
-    "com.andygainey.makeit.random": "3.0.0"
+    "com.andygainey.makeit.core": "git://github.com/againey/MakeIt.Core#v1.0.0",
+    "com.andygainey.makeit.random": "git://github.com/againey/MakeIt.Random#v3.0.0"
   }
 }
